@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Peculiex — India's Investment Marketplace</title>
+<meta name="description" content="Peculiex: Listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds & insurance — all in one premium platform." />
+
+<!-- SEO + Social -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Peculiex — India's Investment Marketplace" />
+<meta property="og:description" content="Listed, unlisted, mutual funds, PMS, AIF, bonds, insurance — curated by experts, executed in seconds." />
+<meta property="og:site_name" content="Peculiex" />
+<meta property="og:locale" content="en_IN" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Peculiex — India's Investment Marketplace" />
+<meta name="twitter:description" content="Listed, unlisted, mutual funds, PMS, AIF, bonds, insurance — curated by experts, executed in seconds." />
+<meta name="theme-color" content="#01696f" />
+<meta name="color-scheme" content="light" />
+
+<!-- Inline SVG favicon (no separate file required) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5' fill='%2301696f'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-size='52' font-family='Georgia,serif' font-weight='600' fill='white'%3EP%3C/text%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2301696f'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-size='52' font-family='Georgia,serif' font-weight='600' fill='white'%3EP%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ╔══════════ ICON SPRITE ══════════╗ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-trending-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="3,17 9,11 13,15 21,7"/><polyline points="14,7 21,7 21,14"/>
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+    </symbol>
+    <symbol id="i-bar-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="6" y1="20" x2="6" y2="13"/><line x1="12" y1="20" x2="12" y2="6"/><line x1="18" y1="20" x2="18" y2="10"/>
+    </symbol>
+    <symbol id="i-gem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20"/><path d="M10 3l-2 6 4 12 4-12-2-6"/>
+    </symbol>
+    <symbol id="i-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/><path d="M9 11h2M13 11h2M9 7h2M13 7h2"/>
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>
+    </symbol>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-7H10v7H5a1 1 0 0 1-1-1z"/>
+    </symbol>
+    <symbol id="i-coin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><path d="M14.5 8.5h-3.5a2.25 2.25 0 0 0 0 4.5h2a2.25 2.25 0 0 1 0 4.5h-3.5M12 6.5v2M12 15.5v2"/>
+    </symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+    </symbol>
+    <symbol id="i-pie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>
+    </symbol>
+    <symbol id="i-line-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="3,3 3,21 21,21"/><polyline points="7,15 11,10 14,12 20,5"/>
+    </symbol>
+    <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3l2.9 6 6.6 1-4.7 4.6 1.1 6.6L12 18l-5.9 3.2 1.1-6.6L2.5 10l6.6-1z"/>
+    </symbol>
+    <symbol id="i-store" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M9 14h6"/>
+      <path d="M3 9a3 3 0 0 0 6 0a3 3 0 0 0 6 0a3 3 0 0 0 6 0"/>
+    </symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+      <path d="M14 3v6h6"/><path d="M8 13h8M8 17h6"/>
+    </symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19V5M5 12l7-7 7 7"/>
+    </symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 5v14M5 12l7 7 7-7"/>
+    </symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14M12 5l7 7-7 7"/>
+    </symbol>
+  </defs>
+</svg>
+
+
+<!-- ╔══════════ PRELOADER ══════════╗ -->
+<div class="preloader" id="preloader">
+  <div class="pre-inner">
+    <div class="pre-logo">
+      <span class="pre-letter">P</span>
+      <span class="pre-letter">E</span>
+      <span class="pre-letter">C</span>
+      <span class="pre-letter">U</span>
+      <span class="pre-letter">L</span>
+      <span class="pre-letter">I</span>
+      <span class="pre-letter pre-em">E</span>
+      <span class="pre-letter pre-em">X</span>
+    </div>
+    <div class="pre-bar"><span></span></div>
+    <div class="pre-status">Curating markets…</div>
+  </div>
+</div>
+
+<!-- ╔══════════ CUSTOM CURSOR ══════════╗ -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ╔══════════ AURORA BACKGROUND ══════════╗ -->
+<div class="aurora">
+  <div class="aurora-blob a1"></div>
+  <div class="aurora-blob a2"></div>
+  <div class="aurora-blob a3"></div>
+  <div class="grain"></div>
+</div>
+
+<!-- ╔══════════ SIDE-RAIL SECTION NAV ══════════╗ -->
+<nav class="side-rail" id="sideRail" aria-label="Section navigator">
+  <a href="#hero"          data-rail="hero"><span></span><i>Hero</i></a>
+  <a href="#why"           data-rail="why"><span></span><i>Why us</i></a>
+  <a href="#products"      data-rail="products"><span></span><i>Products</i></a>
+  <a href="#markets"       data-rail="markets"><span></span><i>Markets</i></a>
+  <a href="#unlisted"      data-rail="unlisted"><span></span><i>Unlisted</i></a>
+  <a href="#calculator"    data-rail="calculator"><span></span><i>Calculator</i></a>
+  <a href="#dashboard"     data-rail="dashboard"><span></span><i>Dashboard</i></a>
+  <a href="#testimonials"  data-rail="testimonials"><span></span><i>Trust</i></a>
+  <a href="#pricing"       data-rail="pricing"><span></span><i>Pricing</i></a>
+  <a href="#onboard"       data-rail="onboard"><span></span><i>Get started</i></a>
+</nav>
+
+<!-- ╔══════════ LIVE ACTIVITY TOAST STACK ══════════╗ -->
+<div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
+
+<!-- ╔══════════ COOKIE CONSENT BANNER ══════════╗ -->
+<div class="cookie-banner" id="cookieBanner" role="dialog" aria-live="polite" aria-label="Cookie consent">
+  <div class="cb-icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M21 12.4A9 9 0 1 1 11.6 3a4 4 0 0 0 4 4 4 4 0 0 0 4 4 4 4 0 0 0 1.4 1.4z"
+            stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle cx="9"  cy="10" r="1" fill="currentColor"/>
+      <circle cx="14" cy="14" r="1" fill="currentColor"/>
+      <circle cx="9"  cy="16" r="1" fill="currentColor"/>
+    </svg>
+  </div>
+  <div class="cb-text">
+    <strong>We use cookies to keep things working.</strong>
+    <span>Essential cookies run the platform. Analytics cookies help us improve the experience. You can change this anytime in settings.</span>
+  </div>
+  <div class="cb-actions">
+    <button class="btn btn-ghost" type="button" id="cookieDecline">Essential only</button>
+    <button class="btn btn-primary" type="button" id="cookieAccept" data-magnetic>Accept all</button>
+  </div>
+</div>
+
+<!-- ╔══════════ TOP MARKET TICKER ══════════╗ -->
+<div class="ticker-bar">
+  <div class="ticker-track" id="tickerTrack">
+    <!-- filled by JS, with duplicate for seamless loop -->
+  </div>
+</div>
+
+<!-- ╔══════════ NAV ══════════╗ -->
+<header class="main-nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="#top" class="logo" data-magnetic>
+      <span class="logo-mark"><span>P</span></span>
+      <span class="logo-text">PECULI<em>EX</em></span>
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#markets" class="nav-link">Markets</a></li>
+        <li><a href="#unlisted" class="nav-link">Unlisted</a></li>
+        <li><a href="#products" class="nav-link">Products</a></li>
+        <li><a href="#calculator" class="nav-link">Calculator</a></li>
+        <li><a href="#dashboard" class="nav-link">Dashboard</a></li>
+        <li><a href="#onboard" class="nav-link">Get Started</a></li>
+      </ul>
+    </nav>
+    <div class="nav-cta">
+      <a href="#onboard" class="btn btn-outline" data-magnetic>Login</a>
+      <a href="#onboard" class="btn btn-gold" data-magnetic>Open Account</a>
+      <button class="mobile-toggle" id="mobileToggle" aria-label="menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<a id="top"></a>
+
+<!-- ╔══════════ HERO ══════════╗ -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-pattern" data-parallax="0.04"></div>
+  <div class="hero-spotlight" id="heroSpotlight"></div>
+  <div class="hero-orb" data-parallax="-0.10"></div>
+  <div class="hero-orb-2" data-parallax="0.06"></div>
+
+  <div class="container hero-shell">
+    <div class="hero-content">
+      <div class="hero-pill reveal">
+        <span class="pill-dot"></span>
+        SEBI Registered · Trusted by 4,000+ investors
+      </div>
+
+      <h1 class="hero-title" id="heroTitle">
+        <span class="line"><span class="seg">Invest with</span> <em class="seg seg-em">clarity</em></span>
+        <span class="line"><span class="seg">across every asset class.</span></span>
+      </h1>
+
+      <p class="hero-sub reveal">
+        Listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, and insurance — curated by experts, executed in seconds.
+      </p>
+
+      <div class="hero-chips reveal">
+        <span class="hchip">Equities</span>
+        <span class="hchip">Unlisted</span>
+        <span class="hchip">Mutual Funds</span>
+        <span class="hchip">PMS</span>
+        <span class="hchip">Bonds</span>
+        <span class="hchip">Insurance</span>
+      </div>
+
+      <div class="hero-ctas reveal">
+        <a href="#onboard" class="btn btn-primary btn-lg btn-arrow" data-magnetic>
+          <span>Start Investing</span>
+          <span class="btn-arrow-track" aria-hidden="true">
+            <svg viewBox="0 0 14 14" fill="none"><path d="M1 7h12m0 0L8 2m5 5l-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 14 14" fill="none"><path d="M1 7h12m0 0L8 2m5 5l-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+        <a href="#markets" class="btn btn-ghost btn-lg" data-magnetic>
+          Explore Markets <span class="arrow">→</span>
+        </a>
+      </div>
+
+      <div class="hero-stats reveal">
+        <div class="stat">
+          <div class="stat-num">₹<span class="counter" data-target="450" data-suffix="">0</span>Cr+</div>
+          <div class="stat-label">Assets Managed</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num"><span class="counter" data-target="4000" data-suffix="+">0</span></div>
+          <div class="stat-label">Active Investors</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num"><span class="counter" data-target="8" data-suffix="+">0</span></div>
+          <div class="stat-label">Product Categories</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num"><span class="counter" data-target="15" data-suffix="yr">0</span></div>
+          <div class="stat-label">Industry Experience</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating cards stack -->
+    <div class="hero-stage" id="heroStage">
+
+      <!-- Allocation Rings card (top right) -->
+      <div class="hero-card hc-alloc reveal" data-depth="0.5" data-tilt>
+        <div class="hc-head">
+          <span class="hc-mini">Asset Mix</span>
+          <span class="hc-pct hc-up"><svg class="trend-icon"><use href="#i-arrow-up"/></svg> 4.2%</span>
+        </div>
+        <div class="hc-body alloc-body">
+          <svg viewBox="0 0 140 140" class="alloc-rings" id="allocRings">
+            <circle cx="70" cy="70" r="58" stroke="rgba(30,28,24,.06)" stroke-width="9" fill="none"/>
+            <circle cx="70" cy="70" r="46" stroke="rgba(30,28,24,.06)" stroke-width="9" fill="none"/>
+            <circle cx="70" cy="70" r="34" stroke="rgba(30,28,24,.06)" stroke-width="9" fill="none"/>
+            <circle id="ring1" class="ring" cx="70" cy="70" r="58" stroke="#01696f" stroke-width="9" fill="none"
+              stroke-linecap="round" stroke-dasharray="0 999" transform="rotate(-90 70 70)"/>
+            <circle id="ring2" class="ring" cx="70" cy="70" r="46" stroke="#2563eb" stroke-width="9" fill="none"
+              stroke-linecap="round" stroke-dasharray="0 999" transform="rotate(-90 70 70)"/>
+            <circle id="ring3" class="ring" cx="70" cy="70" r="34" stroke="#16a34a" stroke-width="9" fill="none"
+              stroke-linecap="round" stroke-dasharray="0 999" transform="rotate(-90 70 70)"/>
+          </svg>
+          <ul class="alloc-mini">
+            <li><span style="background:#01696f"></span>Equity <i>42%</i></li>
+            <li><span style="background:#2563eb"></span>MF <i>22%</i></li>
+            <li><span style="background:#16a34a"></span>Unlisted <i>14%</i></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Main Portfolio card (center) -->
+      <div class="hero-card hc-main reveal" data-depth="1" data-tilt>
+        <div class="hc-head">
+          <div class="hc-dot dot-r"></div><div class="hc-dot dot-y"></div><div class="hc-dot dot-g"></div>
+          <span class="hc-title">Live Portfolio</span>
+          <span class="hc-live"><span class="pulse-dot"></span>LIVE</span>
+        </div>
+        <div class="hc-body">
+          <div class="hc-row">
+            <div>
+              <div class="hc-mini">Total AUM</div>
+              <div class="hc-big">₹2,84,12,500</div>
+            </div>
+            <div class="hc-pct up"><svg class="trend-icon"><use href="#i-arrow-up"/></svg> 4.2% MTD</div>
+          </div>
+          <svg class="hc-chart" viewBox="0 0 320 110" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="heroGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#01696f" stop-opacity=".25"/>
+                <stop offset="100%" stop-color="#01696f" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path id="heroArea" d="" fill="url(#heroGrad)"></path>
+            <path id="heroLine" d="" fill="none" stroke="#01696f" stroke-width="1.8"/>
+          </svg>
+          <div class="hc-foot">
+            <div><span class="hc-mini">1D</span><strong class="up">+₹18,420</strong></div>
+            <div><span class="hc-mini">1M</span><strong class="up">+₹1,12,840</strong></div>
+            <div><span class="hc-mini">1Y</span><strong class="up">+18.4%</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Transactions card (bottom left) -->
+      <div class="hero-card hc-tx reveal" data-depth="1.4" data-tilt>
+        <div class="hc-head">
+          <span class="pulse-dot"></span>
+          <span class="hc-title">Activity · just now</span>
+        </div>
+        <ul class="tx-list">
+          <li class="tx-row">
+            <span class="tx-icon up"><svg><use href="#i-arrow-up"/></svg></span>
+            <div class="tx-meta"><b>SIP · HDFC Flexi Cap</b><i>Auto-debit · 10:00 AM</i></div>
+            <strong>₹10,000</strong>
+          </li>
+          <li class="tx-row">
+            <span class="tx-icon up"><svg><use href="#i-arrow-up"/></svg></span>
+            <div class="tx-meta"><b>Buy · Reliance Ind.</b><i>NSE · 12:42 PM</i></div>
+            <strong>₹2,840</strong>
+          </li>
+          <li class="tx-row">
+            <span class="tx-icon dn"><svg><use href="#i-arrow-down"/></svg></span>
+            <div class="tx-meta"><b>Sell · TCS</b><i>NSE · 02:18 PM</i></div>
+            <strong>₹3,920</strong>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trust marquee -->
+  <div class="hero-trust reveal">
+    <span class="trust-label">Regulated &amp; Trusted by</span>
+    <div class="trust-track">
+      <div class="trust-row">
+        <span>SEBI</span><i></i><span>RBI</span><i></i><span>NSE</span><i></i>
+        <span>BSE</span><i></i><span>NSDL</span><i></i><span>CDSL</span><i></i>
+        <span>AMFI</span><i></i><span>NPCI</span><i></i>
+        <span>SEBI</span><i></i><span>RBI</span><i></i><span>NSE</span><i></i>
+        <span>BSE</span><i></i><span>NSDL</span><i></i><span>CDSL</span><i></i>
+        <span>AMFI</span><i></i><span>NPCI</span><i></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">
+    <span></span>
+    <p>scroll</p>
+  </div>
+</section>
+
+<!-- ╔══════════ WHY PECULIEX ══════════╗ -->
+<section id="why" class="why-sec">
+  <div class="container">
+    <div class="sec-head sec-head-center reveal">
+      <div class="label">Why Peculiex</div>
+      <h2 class="stitle">Built for investors who <em>refuse to compromise.</em></h2>
+      <p class="sdesc">Six fundamentals that separate us from every other platform in India.</p>
+    </div>
+
+    <div class="why-grid">
+      <article class="why-card reveal" data-tilt>
+        <div class="why-icon"><svg><use href="#i-shield"/></svg></div>
+        <h3>Bank-grade security</h3>
+        <p>RBI &amp; SEBI compliant. End-to-end encryption. Annual third-party audits. Your wealth, fully protected.</p>
+        <div class="why-meta"><span class="status-dot"></span>SOC 2 · ISO 27001</div>
+      </article>
+
+      <article class="why-card reveal" data-tilt>
+        <div class="why-icon"><svg><use href="#i-gem"/></svg></div>
+        <h3>Curated by experts</h3>
+        <p>Every product is hand-picked by SEBI-registered advisors. We say no to nine out of ten opportunities we evaluate.</p>
+        <div class="why-meta"><span class="status-dot"></span>15+ years experience</div>
+      </article>
+
+      <article class="why-card reveal" data-tilt>
+        <div class="why-icon"><svg><use href="#i-grid"/></svg></div>
+        <h3>One unified platform</h3>
+        <p>Equities, mutual funds, unlisted, PMS, AIF, bonds, insurance — and a single dashboard that ties it all together.</p>
+        <div class="why-meta"><span class="status-dot"></span>8 asset classes</div>
+      </article>
+
+      <article class="why-card reveal" data-tilt>
+        <div class="why-icon"><svg><use href="#i-coin"/></svg></div>
+        <h3>Transparent pricing</h3>
+        <p>Flat advisory fees. Zero hidden charges. No revenue from product manufacturers — your interest is the only one we serve.</p>
+        <div class="why-meta"><span class="status-dot"></span>No commissions, ever</div>
+      </article>
+
+      <article class="why-card reveal" data-tilt>
+        <div class="why-icon"><svg><use href="#i-star"/></svg></div>
+        <h3>Premium support</h3>
+        <p>A dedicated relationship manager for every investor. WhatsApp, email, or call — your advisor is reachable in minutes.</p>
+        <div class="why-meta"><span class="status-dot"></span>Dedicated RM included</div>
+      </article>
+
+      <article class="why-card reveal" data-tilt>
+        <div class="why-icon"><svg><use href="#i-trending-up"/></svg></div>
+        <h3>Real-time execution</h3>
+        <p>From research to investing — completed in seconds. No paperwork. No fragmentation. No waiting on multiple platforms.</p>
+        <div class="why-meta"><span class="status-dot"></span>&lt; 60 seconds to invest</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ╔══════════ MARKETPLACE ══════════╗ -->
+<section id="products" class="marketplace">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div class="label">Marketplace</div>
+      <h2 class="stitle">Every financial product, <em>one destination</em></h2>
+      <p class="sdesc">From equities to alternative investments — explore, compare, and invest with guidance at every step.</p>
+    </div>
+
+    <div class="product-grid">
+      <article class="product reveal" data-tilt>
+        <div class="p-icon"><svg><use href="#i-trending-up"/></svg></div>
+        <h3>Equities</h3>
+        <p>Track listed shares with live price feeds, sparkline trends, and watchlist-driven discovery.</p>
+        <span class="p-link">Explore <i>→</i></span>
+      </article>
+      <article class="product reveal" data-tilt>
+        <div class="p-icon"><svg><use href="#i-lock"/></svg></div>
+        <h3>Unlisted Shares</h3>
+        <p>Access curated pre-IPO and private market opportunities with advisor-assisted execution.</p>
+        <span class="p-link">Explore <i>→</i></span>
+      </article>
+      <article class="product reveal" data-tilt>
+        <div class="p-icon"><svg><use href="#i-bar-chart"/></svg></div>
+        <h3>Mutual Funds</h3>
+        <p>SIP & lump sum across 40+ AMCs. Goal-based planning with built-in calculators.</p>
+        <span class="p-link">Explore <i>→</i></span>
+      </article>
+      <article class="product reveal" data-tilt>
+        <div class="p-icon"><svg><use href="#i-gem"/></svg></div>
+        <h3>PMS &amp; AIF</h3>
+        <p>Portfolio management services and alternative investment funds for HNI and UHNI investors.</p>
+        <span class="p-link">Explore <i>→</i></span>
+      </article>
+      <article class="product reveal" data-tilt>
+        <div class="p-icon"><svg><use href="#i-building"/></svg></div>
+        <h3>Bonds &amp; G-Sec</h3>
+        <p>Government securities, corporate bonds, tax-free bonds, and NCD opportunities.</p>
+        <span class="p-link">Explore <i>→</i></span>
+      </article>
+      <article class="product reveal" data-tilt>
+        <div class="p-icon"><svg><use href="#i-shield"/></svg></div>
+        <h3>Insurance</h3>
+        <p>Term life, health, and ULIP products from top insurers with comparison tools.</p>
+        <span class="p-link">Explore <i>→</i></span>
+      </article>
+      <article class="product reveal" data-tilt>
+        <div class="p-icon"><svg><use href="#i-home"/></svg></div>
+        <h3>Real Estate</h3>
+        <p>Fractional real estate and REIT opportunities for portfolio diversification.</p>
+        <span class="p-link soon">Coming Soon <i>→</i></span>
+      </article>
+      <article class="product reveal" data-tilt>
+        <div class="p-icon"><svg><use href="#i-coin"/></svg></div>
+        <h3>Gold &amp; Commodities</h3>
+        <p>Digital gold, sovereign gold bonds, and commodity ETFs for safe-haven allocation.</p>
+        <span class="p-link">Explore <i>→</i></span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ╔══════════ MARKETS ══════════╗ -->
+<section id="markets" class="markets">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div class="label">Listed Shares</div>
+      <h2 class="stitle">Market <em>opportunities</em></h2>
+      <p class="sdesc">Track and invest in top Indian equities with real-time insights.</p>
+    </div>
+
+    <div class="filter-bar reveal">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="up">Gainers</button>
+      <button class="chip" data-filter="watch">Watchlist</button>
+      <button class="chip" data-filter="stable">Stable</button>
+    </div>
+
+    <div class="indices-row reveal">
+      <div class="index-card"><span>NIFTY 50</span><strong id="ix-nifty">22,530.70</strong><em class="up"><svg class="trend-icon"><use href="#i-arrow-up"/></svg> +1.35%</em></div>
+      <div class="index-card"><span>SENSEX</span><strong id="ix-sensex">74,119.39</strong><em class="up"><svg class="trend-icon"><use href="#i-arrow-up"/></svg> +0.92%</em></div>
+      <div class="index-card"><span>BANK NIFTY</span><strong id="ix-bank">48,650.15</strong><em class="dn"><svg class="trend-icon"><use href="#i-arrow-down"/></svg> −0.34%</em></div>
+      <div class="index-card"><span>India VIX</span><strong id="ix-vix">13.28</strong><em class="dn"><svg class="trend-icon"><use href="#i-arrow-down"/></svg> −2.10%</em></div>
+    </div>
+
+    <div class="stock-grid" id="stockGrid">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ╔══════════ UNLISTED ══════════╗ -->
+<section id="unlisted" class="unlisted">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div class="label">Unlisted Shares</div>
+      <h2 class="stitle">Private market <em>opportunities</em></h2>
+      <p class="sdesc">Curated pre-IPO and unlisted share inventory with transparent pricing and advisor-assisted purchase flows.</p>
+    </div>
+
+    <div class="filter-bar reveal">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="trend">Trending</button>
+      <button class="chip" data-filter="avail">Available</button>
+      <button class="chip" data-filter="lim">Limited</button>
+    </div>
+
+    <div class="unlisted-grid" id="unlistedGrid"></div>
+  </div>
+</section>
+
+<!-- ╔══════════ SIP CALCULATOR ══════════╗ -->
+<section id="calculator" class="calc-sec">
+  <div class="container calc-grid">
+    <div class="calc-left reveal">
+      <div class="label">Mutual Funds</div>
+      <h2 class="stitle">Plan your <em>SIP returns</em></h2>
+      <p class="sdesc">Visualise how systematic investments compound over time.</p>
+
+      <div class="calc-card">
+        <div class="slider-row">
+          <div class="slider-head"><span>Monthly SIP</span><strong id="sipAmtLabel">₹10,000</strong></div>
+          <input type="range" id="sipAmt" min="500" max="200000" step="500" value="10000" class="range" />
+          <div class="range-meta"><span>₹500</span><span>₹2,00,000</span></div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-head"><span>Expected annual return</span><strong id="sipRateLabel">12%</strong></div>
+          <input type="range" id="sipRate" min="1" max="30" step="0.5" value="12" class="range" />
+          <div class="range-meta"><span>1%</span><span>30%</span></div>
+        </div>
+        <div class="slider-row">
+          <div class="slider-head"><span>Duration</span><strong id="sipYrLabel">10 Years</strong></div>
+          <input type="range" id="sipYr" min="1" max="40" step="1" value="10" class="range" />
+          <div class="range-meta"><span>1 yr</span><span>40 yrs</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-right reveal" data-tilt>
+      <div class="donut-wrap">
+        <svg viewBox="0 0 220 220" class="donut">
+          <circle cx="110" cy="110" r="92" stroke="rgba(255,255,255,0.05)" stroke-width="22" fill="none"/>
+          <circle id="donutInvest" cx="110" cy="110" r="92" stroke="#aeada8" stroke-width="22" fill="none"
+            stroke-dasharray="0 999" stroke-linecap="round" transform="rotate(-90 110 110)"/>
+          <circle id="donutGain" cx="110" cy="110" r="92" stroke="#01696f" stroke-width="22" fill="none"
+            stroke-dasharray="0 999" stroke-linecap="round" transform="rotate(-90 110 110)"/>
+          <text id="donutTotal" x="110" y="105" text-anchor="middle" fill="#1e1c18"
+            font-family="Instrument Serif" font-size="22">₹0</text>
+          <text x="110" y="128" text-anchor="middle" fill="#6b6a65" font-size="11" letter-spacing="2">TOTAL VALUE</text>
+        </svg>
+      </div>
+      <div class="calc-stats">
+        <div class="cs-row"><span class="dotI"></span>You invest<strong id="sipInvested">₹12,00,000</strong></div>
+        <div class="cs-row"><span class="dotG"></span>Est. returns<strong id="sipReturns">₹11,23,391</strong></div>
+        <div class="cs-row total"><span></span>Total value<strong id="sipTotal">₹23,23,391</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container insights-grid">
+    <div class="sec-head reveal" style="grid-column:1/-1">
+      <div class="label">Insights</div>
+      <h2 class="stitle">Why SIP <em>works</em></h2>
+      <p class="sdesc">Small monthly investments, compounded over time, build significant wealth.</p>
+    </div>
+    <div class="insight reveal" data-tilt>
+      <h4>Rupee cost averaging</h4>
+      <p>Buy more units when prices are low, fewer when high — automatically.</p>
+    </div>
+    <div class="insight reveal" data-tilt>
+      <h4>Power of compounding</h4>
+      <p>Your returns earn returns. Time is the greatest multiplier.</p>
+    </div>
+    <div class="insight reveal" data-tilt>
+      <h4>Start from ₹1,000</h4>
+      <p>No large lump sum needed. Begin with what's comfortable.</p>
+    </div>
+    <div class="advisor-cta reveal">
+      <h4>Need help choosing a fund?</h4>
+      <p>Our advisors will match funds to your goals, risk profile, and timeline.</p>
+      <a href="#onboard" class="btn btn-gold" data-magnetic>Talk to Advisor</a>
+    </div>
+  </div>
+</section>
+
+<!-- ╔══════════ DASHBOARD ══════════╗ -->
+<section id="dashboard" class="dash-sec">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div class="label">Dashboard</div>
+      <h2 class="stitle">Your wealth, <em>at a glance</em></h2>
+      <p class="sdesc">A unified portfolio view across all asset classes with performance analytics, allocation insights, and real-time tracking.</p>
+    </div>
+
+    <div class="dash-shell reveal" data-tilt-strong>
+      <aside class="dash-side">
+        <div class="dash-brand">PECULI<em>EX</em><span>Dashboard</span></div>
+        <div class="dash-user">
+          <div class="avatar">RB</div>
+          <div><strong>Rajesh Bansal</strong><small>Premium</small></div>
+        </div>
+        <ul class="dash-menu">
+          <li class="active"><svg class="dm-icon"><use href="#i-grid"/></svg>Overview</li>
+          <li><svg class="dm-icon"><use href="#i-pie"/></svg>Portfolio</li>
+          <li><svg class="dm-icon"><use href="#i-line-chart"/></svg>Markets</li>
+          <li><svg class="dm-icon"><use href="#i-star"/></svg>Watchlist</li>
+          <li><svg class="dm-icon"><use href="#i-store"/></svg>Marketplace</li>
+          <li><svg class="dm-icon"><use href="#i-doc"/></svg>Research</li>
+          <li><svg class="dm-icon"><use href="#i-settings"/></svg>Settings</li>
+        </ul>
+      </aside>
+      <main class="dash-main">
+        <div class="dash-greet">
+          <h3>Good morning, Rajesh</h3>
+          <p>Your portfolio is up 2.4% this week. Here's what matters today.</p>
+        </div>
+        <div class="dash-kpis">
+          <div class="kpi"><span>Total AUM</span><strong>₹2.84 Cr</strong><em class="up"><svg class="trend-icon"><use href="#i-arrow-up"/></svg> +4.2% MTD</em></div>
+          <div class="kpi"><span>Today's P&amp;L</span><strong>+₹18,420</strong><em class="up"><svg class="trend-icon"><use href="#i-arrow-up"/></svg> +0.65%</em></div>
+          <div class="kpi"><span>Active SIPs</span><strong>12</strong><em>₹1.2L/month</em></div>
+          <div class="kpi"><span>Pending Actions</span><strong>3</strong><em class="dn">2 urgent</em></div>
+        </div>
+        <div class="dash-charts">
+          <div class="dchart">
+            <div class="dchart-head"><strong>Portfolio Performance (12M)</strong><span class="up">+18.4%</span></div>
+            <svg class="dchart-svg" viewBox="0 0 600 200" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="dGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#01696f" stop-opacity=".30"/>
+                  <stop offset="100%" stop-color="#01696f" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path id="dArea" fill="url(#dGrad)" d=""></path>
+              <path id="dLine" fill="none" stroke="#01696f" stroke-width="1.8" d=""></path>
+            </svg>
+          </div>
+          <div class="dchart alloc-chart">
+            <div class="dchart-head"><strong>Asset Allocation</strong></div>
+            <ul class="alloc-list">
+              <li><span></span><b>Equity MF</b><i>42%</i></li>
+              <li><span></span><b>Direct Eq.</b><i>22%</i></li>
+              <li><span></span><b>Unlisted</b><i>14%</i></li>
+              <li><span></span><b>PMS/AIF</b><i>12%</i></li>
+              <li><span></span><b>Bonds</b><i>7%</i></li>
+              <li><span></span><b>Insurance</b><i>3%</i></li>
+            </ul>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- ╔══════════ TESTIMONIALS ══════════╗ -->
+<section id="testimonials" class="testi-sec">
+  <div class="container">
+    <div class="sec-head sec-head-center reveal">
+      <div class="label">Trust</div>
+      <h2 class="stitle">What investors <em>say about us.</em></h2>
+      <p class="sdesc">Quotes from founders, family offices, CXOs, and professionals managing serious wealth on Peculiex.</p>
+    </div>
+  </div>
+
+  <div class="testi-marquee">
+    <div class="testi-track">
+      <article class="testi">
+        <p>"Finally a platform that treats unlisted shares with the same rigor as listed ones. The diligence is exceptional."</p>
+        <div class="testi-foot"><span class="testi-avatar" style="background:#0E3F76">AS</span><div><b>Aarav Shah</b><i>Founder, Lumen Studios</i></div></div>
+      </article>
+      <article class="testi">
+        <p>"I moved my entire portfolio over after my first call with their advisor. The depth of research is unmatched."</p>
+        <div class="testi-foot"><span class="testi-avatar" style="background:#7c3aed">PK</span><div><b>Priya Kapoor</b><i>Director, MIT-K Capital</i></div></div>
+      </article>
+      <article class="testi">
+        <p>"Most platforms feel like brokerage apps. Peculiex actually feels like a private bank — without the markup."</p>
+        <div class="testi-foot"><span class="testi-avatar" style="background:#01696f">VI</span><div><b>Vikram Iyer</b><i>Managing Partner, Iyer Family Office</i></div></div>
+      </article>
+      <article class="testi">
+        <p>"The unified dashboard alone saves me three hours a week. I can finally see every asset class in one place."</p>
+        <div class="testi-foot"><span class="testi-avatar" style="background:#ea7c1c">NR</span><div><b>Neha Reddy</b><i>CFO, Zenith Health</i></div></div>
+      </article>
+      <article class="testi">
+        <p>"I've been investing for 25 years. This is the first platform that actually serves me, not the other way around."</p>
+        <div class="testi-foot"><span class="testi-avatar" style="background:#16a34a">RB</span><div><b>Rajesh Bansal</b><i>Retd. Senior Banker</i></div></div>
+      </article>
+      <article class="testi">
+        <p>"The PMS access alone justifies the platform. The team made onboarding feel personal — rare these days."</p>
+        <div class="testi-foot"><span class="testi-avatar" style="background:#dc2626">KM</span><div><b>Karan Mehta</b><i>Founder, Stride Ventures</i></div></div>
+      </article>
+      <!-- duplicates for seamless loop -->
+      <article class="testi">
+        <p>"Finally a platform that treats unlisted shares with the same rigor as listed ones. The diligence is exceptional."</p>
+        <div class="testi-foot"><span class="testi-avatar" style="background:#0E3F76">AS</span><div><b>Aarav Shah</b><i>Founder, Lumen Studios</i></div></div>
+      </article>
+      <article class="testi">
+        <p>"I moved my entire portfolio over after my first call with their advisor. The depth of research is unmatched."</p>
+        <div class="testi-foot"><span class="testi-avatar" style="background:#7c3aed">PK</span><div><b>Priya Kapoor</b><i>Director, MIT-K Capital</i></div></div>
+      </article>
+      <article class="testi">
+        <p>"Most platforms feel like brokerage apps. Peculiex actually feels like a private bank — without the markup."</p>
+        <div class="testi-foot"><span class="testi-avatar" style="background:#01696f">VI</span><div><b>Vikram Iyer</b><i>Managing Partner, Iyer Family Office</i></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ╔══════════ FAQ ══════════╗ -->
+<section id="faq" class="faq-sec">
+  <div class="container">
+    <div class="sec-head sec-head-center reveal">
+      <div class="label">FAQ</div>
+      <h2 class="stitle">Questions, <em>answered.</em></h2>
+      <p class="sdesc">Everything investors ask before getting started — straight answers, no jargon.</p>
+    </div>
+
+    <ul class="faq-list">
+      <li class="faq-item reveal">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span>Is my money safe with Peculiex?</span>
+          <span class="faq-icon"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+        </button>
+        <div class="faq-a">
+          <p>Yes. Your demat account is held with SEBI-registered partners and funds move via RBI-regulated banking rails. Peculiex never holds custody of your assets — we are an advisor and execution layer only, and every transaction settles directly into your name.</p>
+        </div>
+      </li>
+
+      <li class="faq-item reveal">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span>What's the minimum amount to start investing?</span>
+          <span class="faq-icon"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+        </button>
+        <div class="faq-a">
+          <p>You can start a SIP from ₹1,000 per month or a lump sum from ₹500. PMS and AIF have higher statutory minimums (₹50L and ₹1Cr respectively) as mandated by SEBI. Unlisted shares vary by lot size — typically ₹25,000 to ₹1L per opportunity.</p>
+        </div>
+      </li>
+
+      <li class="faq-item reveal">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span>How is Peculiex different from a discount broker?</span>
+          <span class="faq-icon"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+        </button>
+        <div class="faq-a">
+          <p>Discount brokers give you a tool. Peculiex gives you an advisor, a curated product list across 8 asset classes, and a single dashboard that ties it all together. You get curation, accountability, and a relationship — not just access to an order screen.</p>
+        </div>
+      </li>
+
+      <li class="faq-item reveal">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span>Can I withdraw or sell my investments anytime?</span>
+          <span class="faq-icon"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+        </button>
+        <div class="faq-a">
+          <p>For listed equity, mutual funds, and bonds — yes, subject to standard settlement cycles (T+1 or T+2). Unlisted shares, PMS, and AIF have lock-in periods that vary by product. Each lock-in is clearly disclosed before you invest, never buried in fine print.</p>
+        </div>
+      </li>
+
+      <li class="faq-item reveal">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span>What does Peculiex charge?</span>
+          <span class="faq-icon"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+        </button>
+        <div class="faq-a">
+          <p>A flat advisory fee starting at 0.25% per year on assets advised — billed quarterly, transparent to the rupee. We earn nothing from product manufacturers, distributors, or anyone else. Your fee is our only revenue, so our incentives stay aligned with yours.</p>
+        </div>
+      </li>
+
+      <li class="faq-item reveal">
+        <button class="faq-q" type="button" aria-expanded="false">
+          <span>Who is my advisor and how do I reach them?</span>
+          <span class="faq-icon"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+        </button>
+        <div class="faq-a">
+          <p>Every investor is paired with a SEBI-registered advisor based on goals, time horizon, and portfolio size. You can reach them via WhatsApp, email, or scheduled video call — typical response time is under 30 minutes during market hours.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ╔══════════ PRICING ══════════╗ -->
+<section id="pricing" class="pricing-sec">
+  <div class="container">
+    <div class="sec-head sec-head-center reveal">
+      <div class="label">Pricing</div>
+      <h2 class="stitle">Transparent. <em>Always.</em></h2>
+      <p class="sdesc">Pay for advice, never for products. We earn nothing from manufacturers, distributors, or anyone else — only from you.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Tier 1: Essentials -->
+      <article class="price-card reveal" data-tilt>
+        <div class="pc-head">
+          <h3>Essentials</h3>
+          <p class="pc-best">For self-directed investors</p>
+        </div>
+        <div class="pc-price">
+          <span class="pc-currency">₹</span><span class="pc-num">0</span>
+          <span class="pc-per">/ month</span>
+        </div>
+        <p class="pc-summary">Full marketplace access without an advisor — for investors who already know what they want.</p>
+        <ul class="pc-feats">
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Marketplace access · 8 asset classes</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Live market data &amp; sparklines</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Calculator suite (SIP, lumpsum, goal)</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Unified portfolio dashboard</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Email support</li>
+        </ul>
+        <a href="#onboard" class="btn btn-ghost btn-lg pc-cta" data-magnetic>Get started</a>
+      </article>
+
+      <!-- Tier 2: Advisory (Most popular, highlighted) -->
+      <article class="price-card price-card-featured reveal" data-tilt>
+        <span class="pc-tag">Most popular</span>
+        <div class="pc-head">
+          <h3>Advisory</h3>
+          <p class="pc-best">For most serious investors</p>
+        </div>
+        <div class="pc-price">
+          <span class="pc-num">0.25</span><span class="pc-currency">%</span>
+          <span class="pc-per">/ year on AUM</span>
+        </div>
+        <p class="pc-summary">Curated products, a dedicated advisor, and quarterly portfolio reviews — the way private wealth has always worked.</p>
+        <ul class="pc-feats">
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Everything in Essentials</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Dedicated SEBI-registered advisor</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Curated product list across asset classes</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>WhatsApp + scheduled video calls</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Quarterly portfolio reviews</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Tax-loss harvesting suggestions</li>
+        </ul>
+        <a href="#onboard" class="btn btn-primary btn-lg pc-cta" data-magnetic>Start free trial</a>
+      </article>
+
+      <!-- Tier 3: Private Client -->
+      <article class="price-card reveal" data-tilt>
+        <div class="pc-head">
+          <h3>Private Client</h3>
+          <p class="pc-best">For portfolios above ₹1 Cr</p>
+        </div>
+        <div class="pc-price">
+          <span class="pc-num pc-custom">Custom</span>
+          <span class="pc-per">tailored mandates</span>
+        </div>
+        <p class="pc-summary">Family-office-grade service for individuals, families, and institutions managing wealth at scale.</p>
+        <ul class="pc-feats">
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Everything in Advisory</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Dedicated family-office team</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Priority access · PMS, AIF, unlisted</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Custom investment mandates</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Estate &amp; succession planning</li>
+          <li><svg viewBox="0 0 14 14"><path d="M2 7l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Direct contact with research partners</li>
+        </ul>
+        <a href="#onboard" class="btn btn-ghost btn-lg pc-cta" data-magnetic>Contact us</a>
+      </article>
+    </div>
+
+    <p class="pricing-foot reveal">
+      <span class="status-dot"></span>
+      Compare to typical Indian wealth advisors charging <strong>1.0%&ndash;2.0%</strong> per year — and earning hidden commissions on top.
+    </p>
+  </div>
+</section>
+
+<!-- ╔══════════ ONBOARD / FORM ══════════╗ -->
+<section id="onboard" class="onboard-sec">
+  <div class="container onboard-grid">
+    <div class="onboard-left">
+      <div class="sec-head reveal">
+        <div class="label">Get Started</div>
+        <h2 class="stitle">Open your account in <em>minutes</em></h2>
+        <p class="sdesc">Start investing with a simple, guided onboarding process.</p>
+      </div>
+      <ol class="steps">
+        <li class="reveal"><span class="step-no">01</span><div><h4>Share your details</h4><p>Basic profile, contact information, and investment preferences.</p></div></li>
+        <li class="reveal"><span class="step-no">02</span><div><h4>Complete KYC verification</h4><p>Aadhaar-based eKYC or upload PAN &amp; address proof — done in under 5 minutes.</p></div></li>
+        <li class="reveal"><span class="step-no">03</span><div><h4>Get matched with an advisor</h4><p>Based on your goals and risk profile, we pair you with the right expert.</p></div></li>
+        <li class="reveal"><span class="step-no">04</span><div><h4>Start investing</h4><p>Access the full marketplace — equities, unlisted, MF, PMS, bonds &amp; more.</p></div></li>
+      </ol>
+    </div>
+
+    <form class="onboard-form reveal" data-tilt id="onboardForm">
+      <h3>Investor Interest Form</h3>
+      <p class="form-sub">Tell us about yourself and we'll get you started.</p>
+
+      <label><span>Full Name</span><input required type="text" name="name" placeholder="Your full name"/></label>
+      <div class="form-row">
+        <label><span>Email</span><input required type="email" name="email" placeholder="you@email.com"/></label>
+        <label><span>Phone</span><input required type="tel" name="phone" placeholder="+91 ..."/></label>
+      </div>
+      <div class="form-row">
+        <label><span>Interest</span>
+          <select name="interest">
+            <option>Listed Shares</option><option>Unlisted Shares</option><option>Mutual Funds</option>
+            <option>PMS / AIF</option><option>Bonds</option><option>Insurance</option><option>Demat Account</option>
+          </select>
+        </label>
+        <label><span>Budget</span>
+          <select name="budget">
+            <option>Below ₹50,000</option><option>₹50,000 – ₹2,00,000</option>
+            <option>₹2,00,000 – ₹10,00,000</option><option>₹10,00,000 – ₹50,00,000</option>
+            <option>Above ₹50,00,000</option>
+          </select>
+        </label>
+      </div>
+      <label><span>Message (optional)</span><textarea name="msg" rows="3" placeholder="Anything you'd like to share..."></textarea></label>
+      <button type="submit" class="btn btn-gold btn-lg form-submit" data-magnetic>Submit &amp; Get Started</button>
+      <div class="form-success" id="formSuccess">✓ Submitted. We'll reach out within 24 hours.</div>
+    </form>
+  </div>
+</section>
+
+<!-- ╔══════════ FOOTER ══════════╗ -->
+<footer class="site-footer">
+  <!-- Newsletter signup module -->
+  <div class="container foot-newsletter reveal">
+    <div class="fn-text">
+      <h3>Get the <em>weekly market brief.</em></h3>
+      <p>Curated insights from our research team — every Monday before markets open. No promotions, no spam, ever.</p>
+    </div>
+    <form class="fn-form" id="newsletterForm" novalidate>
+      <input type="email" name="email" placeholder="you@email.com" required aria-label="Email address" />
+      <button class="btn btn-primary" type="submit" data-magnetic>
+        <span>Subscribe</span>
+        <svg viewBox="0 0 14 14" fill="none" width="14" height="14"><path d="M1 7h12m0 0L8 2m5 5l-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <p class="fn-msg" id="fnMsg">✓ Subscribed. Look out for Monday's brief in your inbox.</p>
+    </form>
+  </div>
+
+  <!-- Multi-column links grid -->
+  <div class="container foot-grid">
+    <div class="foot-col foot-brand">
+      <div class="logo">
+        <span class="logo-mark"><span>P</span></span>
+        <span class="logo-text">PECULI<em>EX</em></span>
+      </div>
+      <p>India's premium investment marketplace. Eight asset classes, one platform, advisory-led.</p>
+      <div class="foot-reg"><span class="status-dot"></span>SEBI Registered Investment Adviser</div>
+    </div>
+
+    <div class="foot-col">
+      <h4>Products</h4>
+      <ul>
+        <li><a href="#markets">Listed Equity</a></li>
+        <li><a href="#unlisted">Unlisted Shares</a></li>
+        <li><a href="#products">Mutual Funds</a></li>
+        <li><a href="#products">PMS &amp; AIF</a></li>
+        <li><a href="#products">Bonds &amp; G-Sec</a></li>
+        <li><a href="#products">Insurance</a></li>
+      </ul>
+    </div>
+
+    <div class="foot-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#why">About</a></li>
+        <li><a href="#testimonials">Investor stories</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#onboard">Get started</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press kit</a></li>
+      </ul>
+    </div>
+
+    <div class="foot-col">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="#calculator">SIP Calculator</a></li>
+        <li><a href="#">Lumpsum Calculator</a></li>
+        <li><a href="#">Goal Planner</a></li>
+        <li><a href="#">Market Insights</a></li>
+        <li><a href="#">Glossary</a></li>
+      </ul>
+    </div>
+
+    <div class="foot-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="#">Terms of service</a></li>
+        <li><a href="#">Privacy policy</a></li>
+        <li><a href="#">Risk disclosure</a></li>
+        <li><a href="#">Grievance redressal</a></li>
+        <li><a href="#">Investor charter</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Regulatory disclosure + social band -->
+  <div class="container foot-band">
+    <div class="foot-disclaim">
+      <p><strong>Investments in securities markets are subject to market risks.</strong> Read all related documents carefully before investing. Past performance does not guarantee future returns. Peculiex Wealth Pvt. Ltd. is a SEBI Registered Investment Adviser. Demat services are provided by SEBI-registered partner brokers.</p>
+      <p class="foot-codes">SEBI RIA: INA000099999 · CIN: U67100MH2024PTC999999 · GST: 27ABCDE1234F1Z5</p>
+    </div>
+    <div class="foot-social" aria-label="Social links">
+      <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 10v8M8 7v.01M12 18v-5a3 3 0 0 1 6 0v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></a>
+      <a href="#" aria-label="X"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4l16 16M20 4L4 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></a>
+      <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+      <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2" y="6" width="20" height="13" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M10 10l5 2.5-5 2.5z" fill="currentColor"/></svg></a>
+    </div>
+  </div>
+
+  <!-- Final base row -->
+  <div class="container foot-base">
+    <span>© <span id="year"></span> Peculiex Wealth Pvt. Ltd. — All rights reserved.</span>
+    <span>Crafted with care · Mumbai, India</span>
+  </div>
+</footer>
+
+<!-- ╔══════════ SCROLL PROGRESS + BACK TO TOP ══════════╗ -->
+<div class="scroll-progress" id="scrollProgress"></div>
+<button class="back-top" id="backTop" type="button" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<script src="script.js"></script>
+</body>
+</html>
