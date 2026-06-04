@@ -1,0 +1,27 @@
+[supabase] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY missing — running in seed-only mode.
+node:events:487
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use :::4000
+[90m    at Server.setupListenHandle [as _listen2] (node:net:2008:16)[39m
+[90m    at listenInCluster (node:net:2065:12)[39m
+[90m    at Server.listen (node:net:2170:7)[39m
+    at app.listen [90m(C:\Users\ankit\OneDrive\Desktop\Upside Down Project\Wealth management\backend\[39mnode_modules\[4mexpress[24m\lib\application.js:635:24[90m)[39m
+    at Object.<anonymous> [90m(C:\Users\ankit\OneDrive\Desktop\Upside Down Project\Wealth management\backend\[39msrc\server.js:90:5[90m)[39m
+[90m    at Module._compile (node:internal/modules/cjs/loader:1830:14)[39m
+[90m    at Object..js (node:internal/modules/cjs/loader:1961:10)[39m
+[90m    at Module.load (node:internal/modules/cjs/loader:1553:32)[39m
+[90m    at Module._load (node:internal/modules/cjs/loader:1355:12)[39m
+[90m    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)[39m
+Emitted 'error' event on Server instance at:
+[90m    at emitErrorNT (node:net:2044:8)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)[39m {
+  code: [32m'EADDRINUSE'[39m,
+  errno: [33m-4091[39m,
+  syscall: [32m'listen'[39m,
+  address: [32m'::'[39m,
+  port: [33m4000[39m
+}
+
+Node.js v24.15.0
