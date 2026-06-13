@@ -97,7 +97,7 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: err.message || "Internal error" });
 });
 
-if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+if (!process.env.VERCEL) {
   const server = http.createServer(app);
   initWSS(server);
   
