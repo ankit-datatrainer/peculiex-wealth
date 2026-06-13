@@ -1,6 +1,7 @@
 "use strict";
 
 const { createClient } = require("@supabase/supabase-js");
+const WebSocket = require("ws");
 
 const url = process.env.SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -8,7 +9,8 @@ const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 let client = null;
 if (url && serviceKey) {
   client = createClient(url, serviceKey, {
-    auth: { persistSession: false, autoRefreshToken: false }
+    auth: { persistSession: false, autoRefreshToken: false },
+    realtime: { transport: WebSocket }
   });
   // eslint-disable-next-line no-console
   console.log("[supabase] connected:", url);
