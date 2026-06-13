@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { fetcher } from "@/lib/api";
+import { fetchQuotes } from "@/lib/markets";
 
 type Tick = { name: string; price: number; chg: number };
 
@@ -14,6 +14,31 @@ const arrowSVG = (up: boolean) =>
 export default function TickerBar() {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [items, setItems] = useState<Tick[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    fetchQuotes(SYMBOLS)
+      .then((res) => {
+        if (!active || !res) return;
+        setItems((prev) => {
+          const copy = [...prev];
+          for (const q of res) {
+            if (!copy.find((it) => it.name === q.symbol)) {
+              copy.push({
+                name: q.symbol,
+                price: q.price || 0,
+                chg: q.changePercent || 0
+              });
+            }
+          }
+          return copy;
+        });
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     let ws: WebSocket | null = null;

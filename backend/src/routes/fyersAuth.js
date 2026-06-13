@@ -4,11 +4,13 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const { fyersModel } = require("fyers-api-v3");
+const { signToken, verifyToken } = require("../auth/tokens");
+const { requireAuth, requireAdmin } = require("../auth/middleware");
 
 const router = express.Router();
 const fyers = new fyersModel();
 
-router.get("/login", (req, res) => {
+router.get("/login", requireAuth, requireAdmin, (req, res) => {
   const appId = process.env.FYERS_APP_ID;
   const redirectUrl = process.env.FYERS_REDIRECT_URL;
 
@@ -19,17 +21,28 @@ router.get("/login", (req, res) => {
   fyers.setAppId(appId);
   fyers.setRedirectUrl(redirectUrl);
 
-  const authUrl = fyers.generateAuthCode();
+  const stateToken = signToken({ role: req.user.role, action: "fyers_login" }, 15 * 60 * 1000);
+  const authUrl = fyers.generateAuthCode({ client_id: appId, redirect_uri: redirectUrl, state: stateToken });
   res.redirect(authUrl);
 });
 
 router.get("/callback", async (req, res) => {
   const authCode = req.query.auth_code;
+  const state = req.query.state;
   const appId = process.env.FYERS_APP_ID;
   const secretKey = process.env.FYERS_SECRET_KEY;
 
   if (!authCode) {
     return res.status(400).json({ error: "Missing auth_code in callback." });
+  }
+
+  if (!state) {
+    return res.status(400).json({ error: "Missing state in callback." });
+  }
+
+  const decodedState = verifyToken(state);
+  if (!decodedState || decodedState.action !== "fyers_login") {
+    return res.status(403).json({ error: "Invalid or expired state parameter (CSRF protection)." });
   }
 
   if (!appId || !secretKey) {

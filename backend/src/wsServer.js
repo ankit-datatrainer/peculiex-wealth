@@ -34,7 +34,11 @@ function broadcast(type, payload) {
     if (client.readyState === 1) { // 1 = OPEN
       // If payload has a symbol, only send to clients who subscribed
       if (payload && payload.symbol) {
-        if (!client.activeSymbols || !client.activeSymbols.has(payload.symbol)) {
+        const hasSymbol = client.activeSymbols && (
+          client.activeSymbols.has(payload.symbol) ||
+          (payload.yahooSymbol && client.activeSymbols.has(payload.yahooSymbol))
+        );
+        if (!hasSymbol) {
           continue; 
         }
       }

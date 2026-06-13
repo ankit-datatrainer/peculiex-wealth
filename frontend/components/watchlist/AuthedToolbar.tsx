@@ -265,16 +265,16 @@ export default function AuthedToolbar({
           height: 44px;
           padding: 0 2.5rem 0 2.5rem;
           border-radius: 22px;
-          border: 1px solid rgba(26, 25, 23, 0.15);
-          background: #ffffff;
+          border: 1px solid var(--color-border, rgba(26, 25, 23, 0.15));
+          background: var(--color-surface-2, #ffffff);
           font-size: 0.9rem;
           font-family: var(--font-body, inherit);
-          color: #1e1c18;
+          color: var(--color-text, #1e1c18);
           transition: all 0.25s var(--ease);
           box-shadow: var(--shadow-sm);
         }
         .tb-search::placeholder {
-          color: #a3a19a;
+          color: var(--color-text-faint, #a3a19a);
         }
         .tb-search:focus {
           outline: none;
@@ -286,7 +286,7 @@ export default function AuthedToolbar({
           left: 1rem;
           top: 50%;
           transform: translateY(-50%);
-          color: #a3a19a;
+          color: var(--color-text-faint, #a3a19a);
           pointer-events: none;
         }
         .tb-clear {
@@ -298,8 +298,8 @@ export default function AuthedToolbar({
           height: 26px;
           border: 0;
           border-radius: 50%;
-          background: rgba(26, 25, 23, 0.05);
-          color: #6b6964;
+          background: var(--color-surface-offset, rgba(26, 25, 23, 0.05));
+          color: var(--color-text-muted, #6b6964);
           font-size: 1rem;
           line-height: 1;
           cursor: pointer;
@@ -308,16 +308,16 @@ export default function AuthedToolbar({
           transition: all 0.2s;
         }
         .tb-clear:hover {
-          background: rgba(26, 25, 23, 0.1);
-          color: #1e1c18;
+          background: var(--color-surface-offset, rgba(26, 25, 23, 0.1));
+          color: var(--color-text, #1e1c18);
         }
 
         /* suggestions */
         .tb-suggest {
           position: absolute;
           inset: calc(100% + 8px) 0 auto 0;
-          background: #ffffff;
-          border: 1px solid rgba(26, 25, 23, 0.1);
+          background: var(--color-surface-2, #ffffff);
+          border: 1px solid var(--color-divider, rgba(26, 25, 23, 0.1));
           border-radius: 12px;
           box-shadow: 0 10px 40px rgba(0,0,0,0.08);
           overflow: hidden;
@@ -327,7 +327,7 @@ export default function AuthedToolbar({
         }
         .tb-suggest-empty {
           padding: 1.2rem;
-          color: #6b6964;
+          color: var(--color-text-muted, #6b6964);
           font-size: 0.9rem;
           text-align: center;
         }
@@ -340,17 +340,17 @@ export default function AuthedToolbar({
           padding: 0.8rem 1rem;
           background: transparent;
           border: 0;
-          border-bottom: 1px solid rgba(26, 25, 23, 0.05);
+          border-bottom: 1px solid var(--color-divider, rgba(26, 25, 23, 0.05));
           cursor: pointer;
           text-align: left;
-          color: #1e1c18;
+          color: var(--color-text, #1e1c18);
           transition: background 0.2s var(--ease);
         }
         .tb-suggest-row:last-child {
           border-bottom: none;
         }
         .tb-suggest-row:hover {
-          background: #fdfdfc;
+          background: var(--color-surface-offset, #fdfdfc);
         }
         .tb-suggest-row:disabled {
           opacity: 0.5;
@@ -369,7 +369,7 @@ export default function AuthedToolbar({
         }
         .tb-suggest-name {
           font-size: 0.75rem;
-          color: #6b6964;
+          color: var(--color-text-muted, #6b6964);
           margin-top: 2px;
         }
         .tb-suggest-right {
@@ -378,8 +378,8 @@ export default function AuthedToolbar({
           align-items: flex-end;
           font-size: 0.85rem;
         }
-        .tb-up { color: #01696f; font-size: 0.75rem; font-weight: 500; }
-        .tb-dn { color: #dc2626; font-size: 0.75rem; font-weight: 500; }
+        .tb-up { color: var(--color-success, #01696f); font-size: 0.75rem; font-weight: 500; }
+        .tb-dn { color: var(--color-danger, #dc2626); font-size: 0.75rem; font-weight: 500; }
         
         .tb-suggest-add {
           font-size: 0.75rem;
@@ -387,7 +387,7 @@ export default function AuthedToolbar({
           color: var(--color-primary, #01696f);
           padding: 0.3rem 0.6rem;
           border-radius: 6px;
-          background: rgba(1, 105, 111, 0.1);
+          background: var(--color-primary-highlight, rgba(1, 105, 111, 0.1));
           transition: all 0.2s;
         }
         .tb-suggest-row:hover .tb-suggest-add {
@@ -418,10 +418,10 @@ export default function AuthedToolbar({
         .tb-filters {
           display: flex;
           gap: 0.25rem;
-          background: #fdfdfc;
+          background: var(--color-surface-offset, #fdfdfc);
           padding: 0.3rem;
           border-radius: 10px;
-          border: 1px solid rgba(26, 25, 23, 0.1);
+          border: 1px solid var(--color-divider, rgba(26, 25, 23, 0.1));
         }
         .tb-chip {
           padding: 0.45rem 1rem;
@@ -430,18 +430,18 @@ export default function AuthedToolbar({
           border-radius: 8px;
           font-size: 0.85rem;
           font-weight: 600;
-          color: #6b6964;
+          color: var(--color-text-muted, #6b6964);
           cursor: pointer;
           transition: all 0.2s;
           display: flex;
           align-items: center;
         }
         .tb-chip:hover {
-          color: #1e1c18;
-          background: rgba(26, 25, 23, 0.05);
+          color: var(--color-text, #1e1c18);
+          background: var(--color-surface-offset, rgba(26, 25, 23, 0.05));
         }
         .tb-chip.active {
-          background: #ffffff;
+          background: var(--color-surface-2, #ffffff);
           color: var(--color-primary, #01696f);
           box-shadow: 0 1px 4px rgba(0,0,0,0.06);
         }
@@ -457,19 +457,19 @@ export default function AuthedToolbar({
           align-items: center;
           height: 36px;
           padding: 0 0.8rem;
-          background: #ffffff;
-          border: 1px solid rgba(26, 25, 23, 0.15);
+          background: var(--color-surface-2, #ffffff);
+          border: 1px solid var(--color-border, rgba(26, 25, 23, 0.15));
           border-radius: 8px;
-          color: #6b6964;
+          color: var(--color-text-muted, #6b6964);
           font-size: 0.85rem;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s;
         }
         .tb-icon-btn:hover {
-          background: #fdfdfc;
-          color: #1e1c18;
-          border-color: rgba(26, 25, 23, 0.25);
+          background: var(--color-surface-offset, #fdfdfc);
+          color: var(--color-text, #1e1c18);
+          border-color: var(--color-border, rgba(26, 25, 23, 0.25));
         }
         .tb-view {
           display: flex;
@@ -479,9 +479,9 @@ export default function AuthedToolbar({
           padding: 0 0.6rem;
         }
         .tb-view-btn.active {
-          background: rgba(1, 105, 111, 0.08);
+          background: var(--color-primary-highlight, rgba(1, 105, 111, 0.08));
           color: var(--color-primary, #01696f);
-          border-color: rgba(1, 105, 111, 0.2);
+          border-color: var(--color-primary, rgba(1, 105, 111, 0.2));
         }
 
         @media (max-width: 860px) {

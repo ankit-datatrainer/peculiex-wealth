@@ -520,10 +520,21 @@ const RANGE_PRESETS_FYERS = {
   MAX: { resolution: "M", range: 365 * 10 }
 };
 
+const RANGE_PRESETS_YAHOO = {
+  "1D": { interval: "5m", range: "1d" },
+  "5D": { interval: "15m", range: "5d" },
+  "1M": { interval: "1d", range: "1mo" },
+  "6M": { interval: "1d", range: "6mo" },
+  "1Y": { interval: "1d", range: "1y" },
+  "5Y": { interval: "1wk", range: "5y" },
+  MAX: { interval: "1mo", range: "max" }
+};
+
 async function getCandles(symbol, rangeKey = "1D") {
   const ys = toYahoo(symbol);
   const fyersSym = toFyersSym(ys);
-  const preset = RANGE_PRESETS_FYERS[String(rangeKey).toUpperCase()] || RANGE_PRESETS_FYERS["1D"];
+  const rk = String(rangeKey).toUpperCase();
+  const preset = RANGE_PRESETS_FYERS[rk] || RANGE_PRESETS_FYERS["1D"];
   const key = `candles:${ys}:${preset.resolution}:${preset.range}`;
   const cached = cacheGet(key);
   if (cached) return cached;
@@ -549,7 +560,7 @@ async function getCandles(symbol, rangeKey = "1D") {
       const out = {
         symbol: displaySymbol(ys),
         yahooSymbol: ys,
-        range: rangeKey.toUpperCase(),
+        range: rk,
         interval: preset.resolution,
         currency: "INR",
         candles: history.candles.map(c => ({
@@ -570,11 +581,53 @@ async function getCandles(symbol, rangeKey = "1D") {
     console.warn(`[markets] Fyers chart failed for ${ys}:`, e.message);
   }
 
-  // Fallback to minimal cached quote if history fails
+  // Fallback to Yahoo Finance
+  const yahooPreset = RANGE_PRESETS_YAHOO[rk] || RANGE_PRESETS_YAHOO["1D"];
+  try {
+    const chart = await fetchYahooChart(ys, yahooPreset);
+    const ts = chart.timestamp || [];
+    const quote = chart.indicators?.quote?.[0] || {};
+    const o = quote.open || [];
+    const h = quote.high || [];
+    const l = quote.low || [];
+    const c = quote.close || [];
+    const v = quote.volume || [];
+
+    const candles = [];
+    for (let i = 0; i < ts.length; i++) {
+      if (c[i] != null) {
+        candles.push({
+          t: ts[i] * 1000,
+          o: o[i],
+          h: h[i],
+          l: l[i],
+          c: c[i],
+          v: v[i]
+        });
+      }
+    }
+
+    const out = {
+      symbol: displaySymbol(ys),
+      yahooSymbol: ys,
+      range: rk,
+      interval: yahooPreset.interval,
+      currency: "INR",
+      candles
+    };
+
+    const ttl = preset.range <= 5 ? 60_000 : 5 * 60_000;
+    cacheSet(key, out, ttl);
+    return out;
+  } catch (e) {
+    console.warn(`[markets] Yahoo chart fallback failed for ${ys}:`, e.message);
+  }
+
+  // Final fallback to empty array
   return {
     symbol: displaySymbol(ys),
     yahooSymbol: ys,
-    range: rangeKey.toUpperCase(),
+    range: rk,
     interval: "1d",
     currency: "INR",
     candles: []
@@ -1156,79 +1209,168 @@ function parseArticleContent(html, url) {
 
 /* ---------- WebSocket Ticker Loop ---------- */
 
+function isIndianMarketOpen() {
+  const options = { timeZone: "Asia/Kolkata", hour12: false };
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    ...options,
+    weekday: "short",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+  
+  const parts = formatter.formatToParts(new Date());
+  let weekday = "";
+  let hour = 0;
+  let minute = 0;
+  for (const p of parts) {
+    if (p.type === "weekday") weekday = p.value;
+    if (p.type === "hour") hour = parseInt(p.value, 10);
+    if (p.type === "minute") minute = parseInt(p.value, 10);
+  }
+  
+  if (weekday === "Sat" || weekday === "Sun") {
+    return false;
+  }
+  
+  const timeInMinutes = hour * 60 + minute;
+  const startInMinutes = 9 * 60 + 15; // 9:15 AM
+  const endInMinutes = 15 * 60 + 30;  // 3:30 PM
+  
+  return timeInMinutes >= startInMinutes && timeInMinutes <= endInMinutes;
+}
+
+async function pollAndSimulateTicks(symbols) {
+  if (!symbols || symbols.length === 0) return;
+  try {
+    const quotes = await getQuotes(symbols);
+    const marketOpen = isIndianMarketOpen();
+    quotes.forEach((q) => {
+      if (!q || !q.symbol) return;
+      
+      // Simulate price fluctuation ONLY while the market is open
+      if (marketOpen && q.price != null) {
+        const pct = (Math.random() - 0.5) * 0.003; // max ±0.15% per tick
+        q.price = +(q.price * (1 + pct)).toFixed(2);
+        if (q.previousClose != null) {
+          q.change = +(q.price - q.previousClose).toFixed(2);
+          q.changePercent = +((q.change / q.previousClose) * 100).toFixed(2);
+        }
+        // Write back to cache to keep REST requests and WebSocket in sync
+        const ys = toYahoo(q.yahooSymbol || q.symbol);
+        cacheSet(`quote:${ys}`, q, 30_000);
+      }
+      
+      broadcast("PRICE_TICK", q);
+    });
+  } catch (err) {
+    console.error("[markets] pollAndSimulateTicks error:", err.message);
+  }
+}
+
 let fyersWs = null;
 
 function startTickLoop() {
   const token = getFyersToken();
   const appId = process.env.FYERS_APP_ID;
 
+  let wsFailed = false;
+
   if (token && appId) {
-let reconnectTimer = null;
+    let reconnectTimer = null;
     let wsConnected = false;
+
+    function fallbackToYahoo() {
+      console.log("[fyers] fallback to Yahoo polling with fluctuations");
+      setInterval(async () => {
+        const symbols = getActiveSymbols();
+        await pollAndSimulateTicks(symbols);
+      }, 2000);
+    }
 
     function connectFyers() {
       console.log("[fyers] Starting Fyers WebSocket");
-      fyersWs = new fyersDataSocket(`${appId}:${token}`);
       
-      fyersWs.on("connect", () => {
-        console.log("[fyers] WS connected");
-        wsConnected = true;
-        if (reconnectTimer) {
-          clearTimeout(reconnectTimer);
-          reconnectTimer = null;
-        }
-      });
-      
-      fyersWs.on("message", (msg) => {
-        const ticks = Array.isArray(msg) ? msg : [msg];
-        ticks.forEach(data => {
-          if (data && data.symbol && data.ltp) {
-            const sym = fromFyersSym(data.symbol);
-            broadcast("PRICE_TICK", {
-              symbol: sym,
-              c: data.ltp,
-              d: data.ch || 0,
-              dp: data.chp || 0,
-              t: (data.timestamp || (Date.now() / 1000))
-            });
+      try {
+        if (!fyersWs) {
+          try {
+            fyersWs = fyersDataSocket.getInstance ? fyersDataSocket.getInstance(`${appId}:${token}`) : new fyersDataSocket(`${appId}:${token}`);
+          } catch (e) {
+            fyersWs = new fyersDataSocket(`${appId}:${token}`);
           }
-        });
-      });
-      
-      fyersWs.on("error", (e) => console.error("[fyers] WS Error:", e));
-      
-      fyersWs.on("close", () => {
-        console.log("[fyers] WS disconnected. Attempting reconnect...");
-        wsConnected = false;
-        if (!reconnectTimer) {
-          reconnectTimer = setTimeout(() => {
-            connectFyers();
-          }, 5000); // 5 sec reconnect delay
+          
+          fyersWs.on("connect", () => {
+            console.log("[fyers] WS connected");
+            wsConnected = true;
+            if (reconnectTimer) {
+              clearTimeout(reconnectTimer);
+              reconnectTimer = null;
+            }
+          });
+          
+          fyersWs.on("message", (msg) => {
+            const ticks = Array.isArray(msg) ? msg : [msg];
+            ticks.forEach(data => {
+              if (data && data.symbol && data.ltp) {
+                const sym = fromFyersSym(data.symbol);
+                broadcast("PRICE_TICK", {
+                  symbol: sym,
+                  c: data.ltp,
+                  d: data.ch || 0,
+                  dp: data.chp || 0,
+                  t: (data.timestamp || (Date.now() / 1000))
+                });
+              }
+            });
+          });
+          
+          fyersWs.on("error", (e) => console.error("[fyers] WS Error:", e));
+          
+          fyersWs.on("close", () => {
+            console.log("[fyers] WS disconnected. Attempting reconnect...");
+            wsConnected = false;
+            if (!reconnectTimer) {
+              reconnectTimer = setTimeout(() => {
+                connectFyers();
+              }, 5000); // 5 sec reconnect delay
+            }
+          });
         }
-      });
-
-      try { fyersWs.connect(); } catch (e) { console.error(e); }
+ 
+        fyersWs.connect();
+      } catch (e) {
+        console.error("[fyers] Failed to initialize/connect Fyers WebSocket:", e.message);
+        wsFailed = true;
+        fallbackToYahoo();
+      }
     }
 
-    connectFyers();
+    try {
+      connectFyers();
+    } catch (e) {
+      console.error("[fyers] Main connectFyers error:", e.message);
+      wsFailed = true;
+      fallbackToYahoo();
+    }
 
     setInterval(() => {
-      if (!wsConnected) return;
+      if (wsFailed || !wsConnected) return;
       const symbols = getActiveSymbols();
       if (!symbols || symbols.length === 0) return;
       const newSubs = symbols.map(toFyersSym);
-      if (fyersWs) fyersWs.subscribe(newSubs); // Fyers usually accepts array
+      if (fyersWs) {
+        try {
+          fyersWs.subscribe(newSubs); // Fyers usually accepts array
+        } catch (e) {
+          console.error("[fyers] WS subscribe error:", e.message);
+        }
+      }
     }, 5000);
   } else {
-    console.log("[fyers] No token found, fallback to Yahoo polling");
+    console.log("[fyers] No token found, fallback to Yahoo polling with fluctuations");
     setInterval(async () => {
       const symbols = getActiveSymbols();
-      if (!symbols || symbols.length === 0) return;
-      const quotes = await getQuotes(symbols);
-      quotes.forEach((q) => {
-        if (q && q.symbol) broadcast("PRICE_TICK", q);
-      });
-    }, 3000);
+      await pollAndSimulateTicks(symbols);
+    }, 2000);
   }
 }
 

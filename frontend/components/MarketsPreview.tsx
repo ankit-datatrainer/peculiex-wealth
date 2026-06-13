@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { fetcher } from "@/lib/api";
-import { fmtINR2, randomSpark, sparkPath, getCompanyDomain } from "@/lib/util";
+import { fmtINR2, randomSpark, sparkPath, sparkLastPoint, getCompanyDomain, getCompanyLogo } from "@/lib/util";
 import WatchlistButton from "./WatchlistButton";
 
 type Stock = {
@@ -71,34 +71,28 @@ export default function MarketsPreview() {
             const vals = sparks[s.sym] || [100, 100, 100, 100, 100]; // fallback spark
             return (
               <article className="stock reveal visible" key={s.sym}>
-                <div className="stock-head">
-                  <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                    <img 
-                      src={`https://logo.clearbit.com/${getCompanyDomain(s.sym, s.name)}`}
-                      alt=""
-                      style={{ width: 32, height: 32, borderRadius: 999, objectFit: "contain", background: "#fff", border: "1px solid rgba(0,0,0,0.05)" }}
-                      onError={(e) => {
-                        const t = e.currentTarget;
-                        t.style.display = "none";
-                        const fb = t.nextElementSibling as HTMLElement | null;
-                        if (fb) fb.style.display = "grid";
-                      }}
-                    />
-                    <span className="unl-logo-fallback" style={{ display: "none", width: 32, height: 32, borderRadius: 999, background: "#01696f", color: "#fff", placeItems: "center", fontSize: "0.85rem", fontWeight: 600, letterSpacing: 1 }}>
-                      {s.sym.slice(0, 2)}
-                    </span>
-                    <div>
-                      <div className="stock-name">{s.name}</div>
-                      <div className="stock-sym">{s.sym}</div>
+                <Link href={`/markets/${encodeURIComponent(s.sym)}`} className="stock-link" aria-label={`Open ${s.name} details`}>
+                  <div className="stock-head">
+                    <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                      <img 
+                        src={getCompanyLogo(getCompanyDomain(s.sym, s.name))}
+                        alt=""
+                        style={{ width: 32, height: 32, borderRadius: 999, objectFit: "contain", background: "#fff", border: "1px solid rgba(0,0,0,0.05)" }}
+                        onError={(e) => {
+                          const t = e.currentTarget;
+                          t.style.display = "none";
+                          const fb = t.nextElementSibling as HTMLElement | null;
+                          if (fb) fb.style.display = "grid";
+                        }}
+                      />
+                      <span className="unl-logo-fallback" style={{ display: "none", width: 32, height: 32, borderRadius: 999, background: "#01696f", color: "#fff", placeItems: "center", fontSize: "0.85rem", fontWeight: 600, letterSpacing: 1 }}>
+                        {s.sym.slice(0, 2)}
+                      </span>
+                      <div>
+                        <div className="stock-name">{s.name}</div>
+                        <div className="stock-sym">{s.sym}</div>
+                      </div>
                     </div>
-                  </div>
-                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                    <WatchlistButton
-                      symbol={s.sym}
-                      name={s.name}
-                      price={s.price}
-                      kind="listed"
-                    />
                     <span className={`stock-pill ${up ? "up" : "dn"}`}>
                       <svg className="trend-icon">
                         <use href={`#i-arrow-${up ? "up" : "down"}`} />
@@ -106,23 +100,24 @@ export default function MarketsPreview() {
                       {Math.abs(s.chg).toFixed(2)}%
                     </span>
                   </div>
-                </div>
-                <div className="stock-price">
-                  <b>₹{fmtINR2(s.price)}</b>
-                </div>
+                  <div className="stock-price">
+                    <b>₹{fmtINR2(s.price)}</b>
+                  </div>
                 <svg className="stock-spark" viewBox="0 0 100 50" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id={`mp-g${i}`} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={up ? "#16a34a" : "#dc2626"} stopOpacity=".25" />
-                      <stop offset="100%" stopColor={up ? "#16a34a" : "#dc2626"} stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                  <path d={`${sparkPath(vals)} L100,50 L0,50 Z`} fill={`url(#mp-g${i})`} />
-                  <path d={sparkPath(vals)} fill="none" stroke={up ? "#16a34a" : "#dc2626"} strokeWidth="1.6" />
-                </svg>
-                <div className="stock-meta">
-                  <span>Vol {s.vol}</span>
-                  <span>Mcap {s.cap}</span>
+                    <path d={sparkPath(vals)} fill="none" stroke={up ? "#16a34a" : "#dc2626"} strokeWidth="1.0" strokeLinejoin="round" />
+                  </svg>
+                  <div className="stock-meta">
+                    <span>Vol {s.vol}</span>
+                    <span>Mcap {s.cap}</span>
+                  </div>
+                </Link>
+                <div className="stock-actions">
+                  <WatchlistButton
+                    symbol={s.sym}
+                    name={s.name}
+                    price={s.price}
+                    kind="listed"
+                  />
                 </div>
               </article>
             );

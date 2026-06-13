@@ -16,10 +16,10 @@ import {
   type NewsItem,
   type StockProfile
 } from "@/lib/markets";
-import { getCompanyDomain } from "@/lib/util";
+import { getCompanyDomain, getCompanyLogo } from "@/lib/util";
 import PriceChart from "./PriceChart";
 import WatchlistButton from "./WatchlistButton";
-import PaperTradeButtons from "./PaperTradeButtons";
+
 
 type Props = { symbol: string };
 
@@ -164,7 +164,7 @@ export default function StockDetail({ symbol }: Props) {
             <div className="stock-logo-wrap" style={{ position: "relative", width: 48, height: 48, borderRadius: "50%", overflow: "hidden", border: "1px solid var(--c-border)", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--c-bg-hover)", fontSize: "1.2rem", fontWeight: "bold", color: "var(--c-text-mut)" }}>
               <span style={{ position: "absolute", zIndex: 0 }}>{display.symbol.charAt(0)}</span>
               <Image
-                src={`https://logo.clearbit.com/${getCompanyDomain(display.symbol, display.name)}?size=200`}
+                src={getCompanyLogo(getCompanyDomain(display.symbol, display.name))}
                 alt={display.symbol}
                 fill
                 style={{ objectFit: "cover", zIndex: 1 }}
@@ -197,7 +197,7 @@ export default function StockDetail({ symbol }: Props) {
           </div>
 
           <div className="stock-page-actions" style={{ display: "flex", gap: "12px" }}>
-            <PaperTradeButtons symbol={display.symbol} currentPrice={display.price ?? 0} />
+
             <WatchlistButton
               symbol={display.symbol}
               name={display.name}

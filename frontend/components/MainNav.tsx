@@ -173,8 +173,8 @@ export default function MainNav() {
                   gap: 8,
                   padding: "0.4rem 0.55rem 0.4rem 0.4rem",
                   borderRadius: 999,
-                  border: "1px solid rgba(0,0,0,0.08)",
-                  background: "#fff",
+                  border: "1px solid var(--color-border)",
+                  background: "var(--color-surface, #fff)",
                   cursor: "pointer",
                   fontFamily: "inherit"
                 }}
@@ -228,8 +228,8 @@ export default function MainNav() {
                     position: "absolute",
                     top: "calc(100% + 8px)",
                     right: 0,
-                    background: "#fff",
-                    border: "1px solid rgba(0,0,0,0.08)",
+                    background: "var(--color-surface, #fff)",
+                    border: "1px solid var(--color-border)",
                     borderRadius: 14,
                     minWidth: 220,
                     boxShadow: "0 18px 40px rgba(15,23,42,0.12)",
@@ -240,7 +240,7 @@ export default function MainNav() {
                   <div
                     style={{
                       padding: "0.75rem 1rem",
-                      borderBottom: "1px solid rgba(0,0,0,0.06)",
+                      borderBottom: "1px solid var(--color-border)",
                       fontSize: "0.78rem"
                     }}
                   >

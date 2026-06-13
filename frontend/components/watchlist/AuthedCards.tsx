@@ -84,8 +84,8 @@ export default function AuthedCards({
         }
         
         .c-card {
-          background: #ffffff;
-          border: 1px solid rgba(26, 25, 23, 0.1);
+          background: var(--color-surface-2, #ffffff);
+          border: 1px solid var(--color-divider, rgba(26, 25, 23, 0.1));
           border-radius: 8px;
           padding: 0.6rem 0.4rem;
           display: flex;
@@ -96,7 +96,7 @@ export default function AuthedCards({
           position: relative;
           cursor: pointer;
           transition: all 0.2s var(--ease);
-          color: #1e1c18;
+          color: var(--color-text, #1e1c18);
           min-height: 70px;
         }
         
@@ -109,17 +109,17 @@ export default function AuthedCards({
         }
         
         .c-card:hover {
-          background: #fdfdfc;
+          background: var(--color-surface-offset, #fdfdfc);
           transform: translateY(-2px);
           box-shadow: 0 8px 16px rgba(0,0,0,0.06);
-          border-color: rgba(26, 25, 23, 0.15);
+          border-color: var(--color-border, rgba(26, 25, 23, 0.15));
         }
 
         .c-sym {
           font-family: var(--font-display, inherit);
           font-weight: 600;
           font-size: 0.75rem;
-          color: #6b6964;
+          color: var(--color-text-muted, #6b6964);
           letter-spacing: 0.02em;
           text-transform: uppercase;
           margin-bottom: 0.2rem;
@@ -133,7 +133,7 @@ export default function AuthedCards({
           font-family: var(--font-display, inherit);
           font-weight: 700;
           font-size: 1.05rem;
-          color: #1e1c18;
+          color: var(--color-text, #1e1c18);
           font-variant-numeric: tabular-nums;
           margin-bottom: 0.1rem;
         }
@@ -144,10 +144,10 @@ export default function AuthedCards({
           font-variant-numeric: tabular-nums;
         }
         .c-chg.up {
-          color: #01696f;
+          color: var(--color-success, #01696f);
         }
         .c-chg.dn {
-          color: #dc2626;
+          color: var(--color-danger, #dc2626);
         }
 
         .c-remove {

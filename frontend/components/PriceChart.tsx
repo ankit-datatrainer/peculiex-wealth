@@ -139,25 +139,41 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
   const innerW = W - PAD.l - PAD.r;
   const innerH = H - PAD.t - PAD.b;
 
+  const timeBounds = useMemo(() => {
+    if (!points.length) return { min: 0, max: 1, range: 1 };
+    let minT = points[0].t;
+    let maxT = points[points.length - 1].t;
+
+    if (tf === "1D" && points.length > 0) {
+      const firstDate = new Date(points[0].t);
+      const openTime = new Date(firstDate);
+      openTime.setHours(9, 15, 0, 0);
+      const closeTime = new Date(firstDate);
+      closeTime.setHours(15, 30, 0, 0);
+      
+      minT = openTime.getTime();
+      maxT = closeTime.getTime();
+      
+      if (points[0].t < minT) minT = points[0].t;
+      if (points[points.length - 1].t > maxT) maxT = points[points.length - 1].t;
+    }
+    
+    const timeRange = maxT - minT || 1;
+    return { min: minT, max: maxT, range: timeRange };
+  }, [points, tf]);
+
   const path = useMemo(() => {
     if (!points.length || !stats) return "";
     const range = stats.max - stats.min || 1;
     return points
       .map((p, i) => {
-        const x = PAD.l + (i / Math.max(1, points.length - 1)) * innerW;
+        const x = PAD.l + ((p.t - timeBounds.min) / timeBounds.range) * innerW;
         const y = PAD.t + (1 - (p.c - stats.min) / range) * innerH;
         return (i === 0 ? "M" : "L") + x.toFixed(2) + "," + y.toFixed(2);
       })
       .join(" ");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [points, stats, innerW, innerH]);
-
-  const areaPath = useMemo(() => {
-    if (!path) return "";
-    return `${path} L ${PAD.l + innerW},${PAD.t + innerH} L ${PAD.l},${
-      PAD.t + innerH
-    } Z`;
-  }, [path, innerW, innerH]);
+  }, [points, stats, innerW, innerH, timeBounds]);
 
   // Pointer to nearest point
   const onMove = (e: React.MouseEvent<SVGSVGElement>) => {
@@ -165,15 +181,25 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
     const rect = (e.currentTarget as SVGSVGElement).getBoundingClientRect();
     const xRel = e.clientX - rect.left - PAD.l;
     const ratio = Math.max(0, Math.min(1, xRel / innerW));
-    const idx = Math.round(ratio * (points.length - 1));
-    setHoverIdx(idx);
+    
+    const targetT = timeBounds.min + ratio * timeBounds.range;
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    for (let i = 0; i < points.length; i++) {
+      const diff = Math.abs(points[i].t - targetT);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = i;
+      }
+    }
+    setHoverIdx(closestIdx);
   };
   const onLeave = () => setHoverIdx(null);
 
   const hover = hoverIdx != null ? points[hoverIdx] : null;
   const hoverX =
     hover && stats
-      ? PAD.l + (hoverIdx! / Math.max(1, points.length - 1)) * innerW
+      ? PAD.l + ((hover.t - timeBounds.min) / timeBounds.range) * innerW
       : 0;
   const hoverY =
     hover && stats
@@ -262,7 +288,7 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
                   fontSize="10"
                   fill="#8a8680"
                 >
-                  {fmtTimeLabel(points[0].t)}
+                  {fmtTimeLabel(timeBounds.min)}
                 </text>
                 <text
                   x={PAD.l + innerW / 2}
@@ -271,7 +297,7 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
                   fill="#8a8680"
                   textAnchor="middle"
                 >
-                  {fmtTimeLabel(points[Math.floor(points.length / 2)].t)}
+                  {fmtTimeLabel(timeBounds.min + timeBounds.range / 2)}
                 </text>
                 <text
                   x={PAD.l + innerW}
@@ -280,7 +306,7 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
                   fill="#8a8680"
                   textAnchor="end"
                 >
-                  {fmtTimeLabel(points[points.length - 1].t)}
+                  {fmtTimeLabel(timeBounds.max)}
                 </text>
               </>
             )}
@@ -346,11 +372,11 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
               className={`pchart-tab-pill${tf === f ? " active" : ""}`}
               onClick={() => setTf(f)}
               style={{
-                padding: "4px 12px",
+                padding: "6px 14px",
                 borderRadius: "999px",
-                border: "none",
-                background: tf === f ? "var(--c-text)" : "transparent",
-                color: tf === f ? "var(--c-bg)" : "var(--c-text-mut)",
+                border: tf === f ? "none" : "1px solid var(--color-divider)",
+                background: tf === f ? "var(--color-primary)" : "transparent",
+                color: tf === f ? "#fff" : "var(--color-text-muted)",
                 fontSize: "0.85rem",
                 fontWeight: 600,
                 cursor: "pointer",
@@ -366,7 +392,7 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
           target="_blank" 
           rel="noreferrer"
           className="pchart-terminal-btn"
-          style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.9rem", color: "var(--c-brand)", fontWeight: 600, textDecoration: "none" }}
+          style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.9rem", color: "var(--color-primary)", fontWeight: 600, textDecoration: "none" }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>

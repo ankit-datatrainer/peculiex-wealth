@@ -22,8 +22,10 @@ const { hashPassword } = require("./auth/tokens");
 
 const http = require("http");
 const { initWSS } = require("./wsServer");
+const helmet = require("helmet");
 
 const app = express();
+app.use(helmet());
 const PORT = Number(process.env.PORT || 4000);
 const ORIGIN = process.env.CORS_ORIGIN || "http://127.0.0.1:3000";
 

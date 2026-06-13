@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
+import { apiPostJSON } from "@/lib/api";
 
 export default function PaperTradeButtons({ symbol, currentPrice }: { symbol: string, currentPrice: number }) {
   const { user } = useAuth();
@@ -21,21 +22,12 @@ export default function PaperTradeButtons({ symbol, currentPrice }: { symbol: st
     setLoading(true);
     setMessage(null);
     try {
-      const res = await fetch("/api/paper-trades", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
-        },
-        body: JSON.stringify({
-          symbol,
-          type,
-          quantity: 1, // Defaulting to 1 for simplicity in this MVP UI
-          price: currentPrice
-        })
+      await apiPostJSON("/api/paper-trades", {
+        symbol,
+        type,
+        quantity: 1, // Defaulting to 1 for simplicity in this MVP UI
+        price: currentPrice
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Trade failed");
       
       setMessage({ type: "success", text: `Successfully ${type === "buy" ? "bought" : "sold"} 1 share of ${symbol} at ₹${currentPrice}!` });
     } catch (err: any) {

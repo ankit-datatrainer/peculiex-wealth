@@ -33,15 +33,22 @@ const STOCKS = [
 ];
 
 const UNLISTED = [
-  { domain: "oyorooms.com", name: "Oyo Hotels", sector: "Hospitality", brand: "#EE2E24", initial: "O", price: 54, iv: "+12.5%", tag: "trend" },
-  { domain: "nseindia.com", name: "NSE India", sector: "Exchange", brand: "#F58220", initial: "N", price: 3850, iv: "+8.2%", tag: "trend" },
-  { domain: "pharmeasy.in", name: "Pharmeasy", sector: "Healthtech", brand: "#10847E", initial: "P", price: 8.5, iv: "-3.4%", tag: "avail" },
-  { domain: "chennaisuperkings.com", name: "CSK", sector: "Sports", brand: "#FFCD00", initial: "C", price: 204, iv: "+18.6%", tag: "trend" },
-  { domain: "boat-lifestyle.com", name: "BOAT", sector: "Consumer Tech", brand: "#111111", initial: "b", price: 1450, iv: "+5.2%", tag: "avail" },
-  { domain: "tatacapital.com", name: "Tata Capital", sector: "NBFC", brand: "#486AAB", initial: "T", price: 920, iv: "+9.8%", tag: "lim" },
-  { domain: "hdbfs.com", name: "HDB Financial", sector: "NBFC", brand: "#004C8F", initial: "H", price: 1180, iv: "+11.2%", tag: "avail" },
-  { domain: "swiggy.com", name: "Swiggy", sector: "Foodtech", brand: "#FC8019", initial: "S", price: 430, iv: "+22.1%", tag: "lim" },
-  { domain: "relianceretail.com", name: "Reliance Retail", sector: "Retail", brand: "#0E3F76", initial: "R", price: 1380, iv: "+15.0%", tag: "trend" }
+  { domain: "sbimf.com", name: "SBI Funds Management Ltd.", sector: "Asset Management", brand: "#0066b3", initial: "S", price: 791, iv: "1", tag: "avail" },
+  { domain: "amc.ppfas.com", name: "Parag Parikh Financial Advisory Services", sector: "Asset Management", brand: "#3a9e3a", initial: "P", price: 18050, iv: "10", tag: "lim" },
+  { domain: "careinsurance.com", name: "Care Health Insurance Ltd.", sector: "Insurance", brand: "#f37021", initial: "C", price: 117.75, iv: "10", tag: "avail" },
+  { domain: "orbisfinancial.in", name: "Orbis Financial Corporation", sector: "Financial Services", brand: "#173a72", initial: "O", price: 394, iv: "10", tag: "trend" },
+  { domain: "chennaisuperkings.com", name: "CSK", sector: "Sports", brand: "#FFCD00", initial: "C", price: 254, iv: "0.1", tag: "trend" },
+  { domain: "herofincorp.com", name: "Hero Fincorp", sector: "Financial Services", brand: "#e02020", initial: "H", price: 1030, iv: "10", tag: "avail" },
+  { domain: "cial.aero", name: "CIAL", sector: "Aviation", brand: "#005a8f", initial: "C", price: 435, iv: "2", tag: "avail" },
+  { domain: "incred.com", name: "Incred Holdings", sector: "Financial Services", brand: "#0a2f4d", initial: "I", price: 146, iv: "10", tag: "avail" },
+  { domain: "vivriticapital.com", name: "Vivriti Capital", sector: "Financial Services", brand: "#353272", initial: "V", price: 802, iv: "10", tag: "lim" },
+  { domain: "veedacr.com", name: "Veeda Clinical Research", sector: "Clinical Research", brand: "#2f9c4d", initial: "V", price: 457, iv: "2", tag: "avail" },
+  { domain: "oyorooms.com", name: "Oravel Stays (OYO)", sector: "Hospitality", brand: "#EE2E24", initial: "O", price: 21.85, iv: "1", tag: "trend" },
+  { domain: "sterlitepower.com", name: "Sterlite Electrical", sector: "Energy", brand: "#e96228", initial: "S", price: 472, iv: "2", tag: "avail" },
+  { domain: "esds.co.in", name: "ESDS Software Solutions", sector: "IT Services", brand: "#1e3d7a", initial: "E", price: 472, iv: "1", tag: "avail" },
+  { domain: "innov8.work", name: "Innov8 Workspaces India Limited", sector: "Real Estate", brand: "#f7b731", initial: "I", price: 49.50, iv: "1", tag: "avail" },
+  { domain: "nseindia.com", name: "National Stock Exchange of India (NSE)", sector: "Exchange", brand: "#F58220", initial: "N", price: 2025, iv: "1", tag: "trend" },
+  { domain: "goodluckdefence.com", name: "Goodluck Defence and Aerospace", sector: "Defence", brand: "#272a2e", initial: "G", price: 383.00, iv: "10", tag: "lim" }
 ];
 
 const PRODUCTS = [

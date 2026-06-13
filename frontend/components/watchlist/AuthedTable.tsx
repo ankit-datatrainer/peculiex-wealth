@@ -130,7 +130,7 @@ export default function AuthedTable({
                     <path
                       d={sparkPath(vals, 100, 30)}
                       fill="none"
-                      stroke={up ? "#01696f" : "#dc2626"}
+                      stroke={up ? "var(--color-primary, #01696f)" : "var(--color-danger, #dc2626)"}
                       strokeWidth="1.8"
                     />
                   </svg>
@@ -163,13 +163,13 @@ export default function AuthedTable({
 
       <style jsx>{`
         .t-wrap {
-          background: #ffffff;
-          border: 1px solid rgba(26, 25, 23, 0.1);
+          background: var(--color-surface-2, #ffffff);
+          border: 1px solid var(--color-divider, rgba(26, 25, 23, 0.1));
           border-radius: 12px;
           overflow: hidden;
           margin-top: 1rem;
           width: 100%;
-          color: #1e1c18;
+          color: var(--color-text, #1e1c18);
           font-family: var(--font-body, inherit);
         }
 
@@ -180,10 +180,10 @@ export default function AuthedTable({
           display: flex;
           align-items: center;
           padding: 0.4rem 1rem;
-          border-bottom: 1px solid rgba(26, 25, 23, 0.08);
+          border-bottom: 1px solid var(--color-divider, rgba(26, 25, 23, 0.08));
           font-size: 0.75rem;
           font-weight: 600;
-          color: #6b6964;
+          color: var(--color-text-muted, #6b6964);
           text-transform: uppercase;
           letter-spacing: 0.05em;
         }
@@ -192,12 +192,12 @@ export default function AuthedTable({
           display: flex;
           align-items: center;
           padding: 0.4rem 1rem;
-          border-bottom: 1px solid rgba(26, 25, 23, 0.06);
+          border-bottom: 1px solid var(--color-divider, rgba(26, 25, 23, 0.06));
           transition: background 0.2s;
           cursor: pointer;
         }
         .t-row:hover {
-          background: #fdfdfc;
+          background: var(--color-surface-offset, #fdfdfc);
         }
         .t-row:last-child {
           border-bottom: none;
@@ -211,7 +211,7 @@ export default function AuthedTable({
           align-items: center;
         }
 
-        .t-col-hash { width: 40px; color: #6b6964; font-variant-numeric: tabular-nums; }
+        .t-col-hash { width: 40px; color: var(--color-text-muted, #6b6964); font-variant-numeric: tabular-nums; }
         .t-col-asset { flex: 2; min-width: 150px; }
         .t-col-num { flex: 1; justify-content: flex-end; text-align: right; font-variant-numeric: tabular-nums; }
         .t-col-chart { flex: 1; justify-content: center; }
@@ -228,7 +228,7 @@ export default function AuthedTable({
           height: 28px;
           border-radius: 50%;
           overflow: hidden;
-          background: #fff;
+          background: var(--color-surface-2, #fff);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -257,11 +257,11 @@ export default function AuthedTable({
           font-family: var(--font-display, inherit);
           font-weight: 700;
           font-size: 0.95rem;
-          color: #1e1c18;
+          color: var(--color-text, #1e1c18);
         }
         .t-asset-sub {
           font-size: 0.75rem;
-          color: #6b6964;
+          color: var(--color-text-muted, #6b6964);
           margin-top: 2px;
         }
 
@@ -274,7 +274,7 @@ export default function AuthedTable({
           font-family: var(--font-display, inherit);
           font-weight: 600;
           font-size: 0.95rem;
-          color: #1e1c18;
+          color: var(--color-text, #1e1c18);
         }
         .t-chg-abs {
           font-weight: 600;
@@ -287,13 +287,13 @@ export default function AuthedTable({
         }
         .t-vol-sub {
           font-size: 0.75rem;
-          color: #6b6964;
+          color: var(--color-text-muted, #6b6964);
           margin-top: 2px;
         }
         
-        .up { color: #01696f; }
-        .dn { color: #dc2626; }
-        .t-muted { color: #6b6964; }
+        .up { color: var(--color-success, #01696f); }
+        .dn { color: var(--color-danger, #dc2626); }
+        .t-muted { color: var(--color-text-muted, #6b6964); }
 
         .t-spark {
           width: 70px;
@@ -303,7 +303,7 @@ export default function AuthedTable({
         .t-remove {
           background: transparent;
           border: none;
-          color: #555;
+          color: var(--color-text-faint, #555);
           cursor: pointer;
           padding: 6px;
           display: flex;
@@ -311,11 +311,11 @@ export default function AuthedTable({
           justify-content: center;
         }
         .t-remove:hover {
-          color: #1e1c18;
+          color: var(--color-text, #1e1c18);
         }
 
         .t-sortable { cursor: pointer; user-select: none; }
-        .t-sortable:hover { color: #1e1c18; }
+        .t-sortable:hover { color: var(--color-text, #1e1c18); }
 
         /* MOBILE LAYOUT matching Moneycontrol */
         @media (max-width: 768px) {

@@ -589,11 +589,11 @@ export default function AuthedView() {
 
       <style jsx>{`
         .a-hero {
-          background: #ffffff;
+          background: var(--color-surface-2, #ffffff);
           padding: 120px 32px 2rem;
           margin: 0 -32px 1rem;
-          color: #1e1c18;
-          border-bottom: 1px solid rgba(26, 25, 23, 0.08);
+          color: var(--color-text, #1e1c18);
+          border-bottom: 1px solid var(--color-divider, rgba(26, 25, 23, 0.08));
         }
         .a-hero-content {
           display: flex;
@@ -605,14 +605,14 @@ export default function AuthedView() {
           font-size: 1.8rem;
           font-weight: 700;
           margin: 0 0 0.4rem;
-          color: #1e1c18;
+          color: var(--color-text, #1e1c18);
           display: flex;
           align-items: center;
           gap: 12px;
         }
         .sdesc {
           font-size: 0.9rem;
-          color: #6b6964;
+          color: var(--color-text-muted, #6b6964);
           margin: 0;
         }
         
@@ -625,7 +625,7 @@ export default function AuthedView() {
         
         .stat-label {
           font-size: 0.75rem;
-          color: #6b6964;
+          color: var(--color-text-muted, #6b6964);
           text-transform: uppercase;
           letter-spacing: 0.05em;
           margin-bottom: 0.4rem;
@@ -634,7 +634,7 @@ export default function AuthedView() {
           font-family: var(--font-display, inherit);
           font-size: 2.2rem;
           font-weight: 700;
-          color: #1e1c18;
+          color: var(--color-text, #1e1c18);
           display: flex;
           align-items: baseline;
           gap: 1rem;
@@ -643,13 +643,13 @@ export default function AuthedView() {
           font-size: 1rem;
           font-weight: 600;
         }
-        .stat-chg-large.up { color: #01696f; }
-        .stat-chg-large.dn { color: #dc2626; }
+        .stat-chg-large.up { color: var(--color-success, #01696f); }
+        .stat-chg-large.dn { color: var(--color-danger, #dc2626); }
         
         .stat-divider {
           width: 1px;
           height: 40px;
-          background: rgba(26, 25, 23, 0.1);
+          background: var(--color-divider, rgba(26, 25, 23, 0.1));
         }
         
         .stat-group {
@@ -664,7 +664,7 @@ export default function AuthedView() {
           font-family: var(--font-display, inherit);
           font-size: 1.2rem;
           font-weight: 600;
-          color: #1e1c18;
+          color: var(--color-text, #1e1c18);
         }
 
         @media (max-width: 768px) {
@@ -801,8 +801,8 @@ function Stat({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        background: "#ffffff",
-        border: hovered ? "1px solid rgba(1, 105, 111, 0.2)" : "1px solid rgba(26, 25, 23, 0.07)",
+        background: "var(--color-surface-2, #ffffff)",
+        border: hovered ? "1px solid var(--color-primary, rgba(1, 105, 111, 0.2))" : "1px solid var(--color-divider, rgba(26, 25, 23, 0.07))",
         borderRadius: 20,
         padding: compact ? "0.8rem 1rem" : "1rem 1.25rem",
         minWidth: 112,
@@ -816,7 +816,7 @@ function Stat({
       <div
         style={{
           fontSize: "0.7rem",
-          color: "#6b6964",
+          color: "var(--color-text-muted, #6b6964)",
           letterSpacing: "0.08em",
           textTransform: "uppercase",
           fontWeight: 600,
@@ -857,8 +857,8 @@ function GridSkeleton() {
         <div
           key={i}
           style={{
-            background: "#ffffff",
-            border: "1px solid rgba(26, 25, 23, 0.07)",
+            background: "var(--color-surface-2, #ffffff)",
+            border: "1px solid var(--color-divider, rgba(26, 25, 23, 0.07))",
             borderRadius: 20,
             padding: "1.5rem",
             height: 200,
@@ -872,7 +872,7 @@ function GridSkeleton() {
               position: "absolute",
               inset: 0,
               background:
-                "linear-gradient(90deg, rgba(26,25,23,0) 0%, rgba(26,25,23,0.03) 50%, rgba(26,25,23,0) 100%)",
+                "linear-gradient(90deg, var(--color-surface-offset, rgba(26,25,23,0)) 0%, var(--color-divider, rgba(26,25,23,0.03)) 50%, var(--color-surface-offset, rgba(26,25,23,0)) 100%)",
               animation: "wlpulse 1.4s infinite"
             }}
           />
@@ -886,8 +886,8 @@ function EmptyState() {
   return (
     <div
       style={{
-        background: "#ffffff",
-        border: "1px dashed rgba(26, 25, 23, 0.15)",
+        background: "var(--color-surface-2, #ffffff)",
+        border: "1px dashed var(--color-border, rgba(26, 25, 23, 0.15))",
         borderRadius: 24,
         padding: "4.5rem 2rem",
         textAlign: "center",
@@ -901,11 +901,11 @@ function EmptyState() {
           height: 80,
           margin: "0 auto 1.5rem",
           borderRadius: "50%",
-          background: "rgba(1, 105, 111, 0.06)",
-          border: "1px solid rgba(1, 105, 111, 0.1)",
+          background: "var(--color-primary-highlight, rgba(1, 105, 111, 0.06))",
+          border: "1px solid var(--color-border, rgba(1, 105, 111, 0.1))",
           display: "grid",
           placeItems: "center",
-          color: "#01696f",
+          color: "var(--color-primary, #01696f)",
           boxShadow: "0 4px 12px rgba(1, 105, 111, 0.03)"
         }}
       >
@@ -918,7 +918,7 @@ function EmptyState() {
           fontFamily: "var(--font-display, 'Barlow', sans-serif)",
           fontSize: "1.8rem",
           fontWeight: 600,
-          color: "#1e1c18",
+          color: "var(--color-text, #1e1c18)",
           margin: "0 0 0.6rem",
           letterSpacing: "-0.02em"
         }}
@@ -927,7 +927,7 @@ function EmptyState() {
       </h3>
       <p
         style={{
-          color: "#6b6964",
+          color: "var(--color-text-muted, #6b6964)",
           maxWidth: 480,
           margin: "0 auto 2rem",
           fontSize: "0.98rem",
@@ -941,8 +941,8 @@ function EmptyState() {
           href="/unlisted"
           style={{
             background: "transparent",
-            color: "#01696f",
-            border: "1px solid rgba(1, 105, 111, 0.2)",
+            color: "var(--color-primary, #01696f)",
+            border: "1px solid var(--color-border, rgba(1, 105, 111, 0.2))",
             borderRadius: 12,
             padding: "0.8rem 1.6rem",
             fontWeight: 600,
@@ -954,13 +954,13 @@ function EmptyState() {
             fontFamily: "var(--font-display, 'Barlow', sans-serif)"
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(1, 105, 111, 0.04)";
-            e.currentTarget.style.borderColor = "#01696f";
+            e.currentTarget.style.background = "var(--color-primary-highlight, rgba(1, 105, 111, 0.04))";
+            e.currentTarget.style.borderColor = "var(--color-primary, #01696f)";
             e.currentTarget.style.transform = "translateY(-1px)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = "transparent";
-            e.currentTarget.style.borderColor = "rgba(1, 105, 111, 0.2)";
+            e.currentTarget.style.borderColor = "var(--color-border, rgba(1, 105, 111, 0.2))";
             e.currentTarget.style.transform = "translateY(0)";
           }}
         >

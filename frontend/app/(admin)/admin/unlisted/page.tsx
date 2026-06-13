@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { getCompanyLogo } from "@/lib/util";
 import {
   fetchUnlisted,
   createUnlisted,
@@ -30,7 +31,7 @@ const blank = (): FormState => ({
   brand: "#01696f",
   initial: "",
   price: "",
-  iv: "+0.0%",
+  iv: "10",
   tag: "avail",
   logo_url: ""
 });
@@ -218,7 +219,7 @@ export default function AdminUnlistedPage() {
                 <th>Domain</th>
                 <th>Tag</th>
                 <th style={{ textAlign: "right" }}>Price</th>
-                <th>1Y IV</th>
+                <th>Face Value</th>
                 <th />
               </tr>
             </thead>
@@ -256,7 +257,7 @@ export default function AdminUnlistedPage() {
                   <td style={{ textAlign: "right" }}>
                     ₹{u.price.toLocaleString("en-IN")}
                   </td>
-                  <td>{u.iv}</td>
+                  <td>₹{u.iv}</td>
                   <td className="admin-row-actions">
                     <button
                       className="admin-icon-btn"
@@ -356,12 +357,12 @@ export default function AdminUnlistedPage() {
               </label>
 
               <label className="admin-field">
-                <span>1Y IV</span>
+                <span>Face Value (₹)</span>
                 <input
                   type="text"
                   value={form.iv}
                   onChange={(e) => setForm({ ...form, iv: e.target.value })}
-                  placeholder="+12.5%"
+                  placeholder="10"
                 />
               </label>
 
@@ -483,12 +484,12 @@ export default function AdminUnlistedPage() {
 
 function UnlistedLogo({ item }: { item: AdminUnlisted }) {
   const [src, setSrc] = useState(
-    item.logo_url || `https://logo.clearbit.com/${item.domain}`
+    item.logo_url || getCompanyLogo(item.domain)
   );
   const [errored, setErrored] = useState(false);
 
   useEffect(() => {
-    setSrc(item.logo_url || `https://logo.clearbit.com/${item.domain}`);
+    setSrc(item.logo_url || getCompanyLogo(item.domain));
     setErrored(false);
   }, [item.id, item.logo_url, item.domain]);
 
@@ -504,7 +505,7 @@ function UnlistedLogo({ item }: { item: AdminUnlisted }) {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={src} alt={item.name} onError={() => {
         if (!src.includes('google.com')) {
-          setSrc(`https://logo.clearbit.com/${item.domain}`);
+          setSrc(getCompanyLogo(item.domain));
         } else {
           setErrored(true);
         }

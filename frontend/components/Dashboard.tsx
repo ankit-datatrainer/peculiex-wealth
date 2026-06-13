@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/lib/auth-context";
 import { apiFetch } from "@/lib/api";
-import { fmtINR2, sparkPath, randomSpark, getCompanyDomain } from "@/lib/util";
+import { fmtINR2, sparkPath, randomSpark, getCompanyDomain, getCompanyLogo } from "@/lib/util";
 import { fetchQuotes, type LiveQuote, fmtPrice, fmtPct, fmtCompactINR, isIndex } from "@/lib/markets";
 
 /* ─── Types ─── */
@@ -416,7 +416,7 @@ export default function Dashboard() {
                             <span className="ud-wl-stock">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <Image
-                                src={`https://logo.clearbit.com/${getCompanyDomain(w.symbol, w.name || w.symbol)}`}
+                                src={getCompanyLogo(getCompanyDomain(w.symbol, w.name || w.symbol))}
                                 alt=""
                                 className="ud-wl-logo"
                                 width={32}
@@ -424,7 +424,7 @@ export default function Dashboard() {
                                 onError={(e) => {
                                   const t = e.currentTarget as HTMLImageElement;
                                   if (!t.src.includes("google.com")) {
-                                    t.src = `https://logo.clearbit.com/${getCompanyDomain(w.symbol, w.name || w.symbol)}`;
+                                    t.src = getCompanyLogo(getCompanyDomain(w.symbol, w.name || w.symbol));
                                   } else {
                                     t.style.display = "none";
                                     const fb = t.nextElementSibling as HTMLElement | null;
@@ -536,7 +536,7 @@ export default function Dashboard() {
                             <span className="ud-wl-stock">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <Image
-                                src={`https://logo.clearbit.com/${getCompanyDomain(w.symbol, w.name || w.symbol)}`}
+                                src={getCompanyLogo(getCompanyDomain(w.symbol, w.name || w.symbol))}
                                 alt=""
                                 className="ud-wl-logo"
                                 width={32}
@@ -544,7 +544,7 @@ export default function Dashboard() {
                                 onError={(e) => {
                                   const t = e.currentTarget as HTMLImageElement;
                                   if (!t.src.includes("google.com")) {
-                                    t.src = `https://logo.clearbit.com/${getCompanyDomain(w.symbol, w.name || w.symbol)}`;
+                                    t.src = getCompanyLogo(getCompanyDomain(w.symbol, w.name || w.symbol));
                                   }
                                 }}
                               />
@@ -642,7 +642,7 @@ export default function Dashboard() {
                             <span className="ud-wl-stock">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <Image
-                                src={`https://logo.clearbit.com/${getCompanyDomain(w.symbol, w.name || w.symbol)}`}
+                                src={getCompanyLogo(getCompanyDomain(w.symbol, w.name || w.symbol))}
                                 alt=""
                                 className="ud-wl-logo"
                                 width={32}
@@ -650,7 +650,7 @@ export default function Dashboard() {
                                 onError={(e) => {
                                   const t = e.currentTarget as HTMLImageElement;
                                   if (!t.src.includes("google.com")) {
-                                    t.src = `https://logo.clearbit.com/${getCompanyDomain(w.symbol, w.name || w.symbol)}`;
+                                    t.src = getCompanyLogo(getCompanyDomain(w.symbol, w.name || w.symbol));
                                   }
                                 }}
                               />

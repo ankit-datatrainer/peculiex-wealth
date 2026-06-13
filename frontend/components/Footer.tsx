@@ -117,25 +117,28 @@ export default function Footer() {
           <h4>Products</h4>
           <ul>
             <li>
-              <a href="/products/equities">Listed Equity</a>
-            </li>
-            <li>
-              <a href="/products/unlisted-shares">Unlisted Shares</a>
+              <a href="/products/equities">Equities</a>
             </li>
             <li>
               <a href="/products/mutual-funds">Mutual Funds</a>
             </li>
             <li>
-              <a href="/products/pms-aif">PMS &amp; AIF</a>
+              <a href="/products/pms">PMS</a>
             </li>
             <li>
-              <a href="/products/bonds">Bonds &amp; G-Sec</a>
+              <a href="/products/aif">AIF</a>
+            </li>
+            <li>
+              <a href="/products/fixed-deposits">FDs</a>
+            </li>
+            <li>
+              <a href="/products/bonds">Bonds</a>
             </li>
             <li>
               <a href="/products/insurance">Insurance</a>
             </li>
             <li>
-              <a href="/products/fixed-deposits">Fixed Deposits</a>
+              <a href="/products/unlisted-shares">Unlisted</a>
             </li>
           </ul>
         </div>

@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetcher } from "@/lib/api";
-import { fmtINR2, randomSpark, sparkPath, getCompanyDomain } from "@/lib/util";
+import { fmtINR2, randomSpark, sparkPath, sparkLastPoint, getCompanyDomain, getCompanyLogo } from "@/lib/util";
 import WatchlistButton from "./WatchlistButton";
 
 type SymbolEntry = { symbol: string; name: string; currency: string };
@@ -205,7 +205,7 @@ export default function Markets() {
                           <div className="stock-head" style={{ alignItems: "center" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                               <Image
-                                src={`https://logo.clearbit.com/${getCompanyDomain(q.symbol, q.name)}`}
+                                src={getCompanyLogo(getCompanyDomain(q.symbol, q.name))}
                                 alt=""
                                 width={32}
                                 height={32}
@@ -234,7 +234,7 @@ export default function Markets() {
                             <b>₹{q.price != null ? fmtINR2(q.price) : "—"}</b>
                           </div>
                           <svg className="stock-spark" viewBox="0 0 100 50" preserveAspectRatio="none">
-                            <path d={sparkPath(vals)} fill="none" stroke={up ? "#16a34a" : "#dc2626"} strokeWidth="1.6" />
+                            <path d={sparkPath(vals)} fill="none" stroke={up ? "#16a34a" : "#dc2626"} strokeWidth="1.0" strokeLinejoin="round" />
                           </svg>
                           {q.volume != null && (
                             <div className="stock-meta">
@@ -295,7 +295,7 @@ export default function Markets() {
                         <div className="stock-head" style={{ alignItems: "center" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                             <Image
-                              src={`https://logo.clearbit.com/${getCompanyDomain(q.symbol, q.name)}`}
+                              src={getCompanyLogo(getCompanyDomain(q.symbol, q.name))}
                               alt=""
                               width={32}
                               height={32}
@@ -324,7 +324,7 @@ export default function Markets() {
                           <b>₹{q.price != null ? fmtINR2(q.price) : "—"}</b>
                         </div>
                         <svg className="stock-spark" viewBox="0 0 100 50" preserveAspectRatio="none">
-                          <path d={sparkPath(vals)} fill="none" stroke={up ? "#16a34a" : "#dc2626"} strokeWidth="1.6" />
+                          <path d={sparkPath(vals)} fill="none" stroke={up ? "#16a34a" : "#dc2626"} strokeWidth="1.0" strokeLinejoin="round" />
                         </svg>
                         {q.volume != null && (
                           <div className="stock-meta">

@@ -30,17 +30,37 @@ export const sparkPath = (vals: number[], w = 100, h = 50) => {
   return vals
     .map((v, i) => {
       const x = (i / (vals.length - 1)) * w;
-      const y = h - ((v - min) / range) * h;
-      return (i === 0 ? "M" : "L") + x.toFixed(1) + "," + y.toFixed(1);
+      const y = h * 0.05 + (1 - (v - min) / range) * (h * 0.9);
+      return (i === 0 ? "M" : "L") + x.toFixed(2) + "," + y.toFixed(2);
     })
     .join(" ");
 };
 
-export const randomSpark = (seed = 0, n = 26) => {
+/** Returns the last point { x, y } for a dot at the end of the sparkline */
+export const sparkLastPoint = (vals: number[], w = 100, h = 50) => {
+  const min = Math.min(...vals);
+  const max = Math.max(...vals);
+  const range = max - min || 1;
+  const i = vals.length - 1;
+  return {
+    x: (i / (vals.length - 1)) * w,
+    y: h * 0.05 + (1 - (vals[i] - min) / range) * (h * 0.9),
+  };
+};
+
+export const randomSpark = (seed = 0, n = 150) => {
   const arr: number[] = [];
-  let v = 50 + seed;
+  // Seeded pseudo-random for deterministic-looking but unique charts
+  let s = (seed * 9301 + 49297) % 233280;
+  const rng = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+  let v = 40 + (seed % 30);
   for (let i = 0; i < n; i++) {
-    v += (Math.random() - 0.5) * 12;
+    // Realistic micro-movements: small jitter + occasional bigger moves
+    const jitter = (rng() - 0.48) * 2.5;
+    const trend = Math.sin(i * 0.04 + seed) * 0.3;
+    const spike = rng() > 0.92 ? (rng() - 0.5) * 8 : 0;
+    v += jitter + trend + spike;
+    v = Math.max(10, Math.min(90, v));
     arr.push(v);
   }
   return arr;
@@ -71,3 +91,6 @@ export const getCompanyDomain = (sym: string, name: string): string => {
   if (clean.length > 2) return `${clean}.com`;
   return `${sym.toLowerCase()}.com`;
 };
+
+export const getCompanyLogo = (domain: string) =>
+  `https://icon.horse/icon/${domain}`;
