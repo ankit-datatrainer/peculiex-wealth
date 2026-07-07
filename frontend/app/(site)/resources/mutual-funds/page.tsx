@@ -11,6 +11,7 @@ export default function MutualFundsResourcesPage() {
   return (
     <main>
       <PageHero
+        label="Resources"
         title="Mutual Fund Resources"
         subtitle="Explore past performance, latest NAVs, scheme comparisons, and a suite of tools designed to help you invest smarter."
       />
