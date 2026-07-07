@@ -12,7 +12,7 @@ export default function MutualFundsResourcesPage() {
     <main>
       <PageHero
         title="Mutual Fund Resources"
-        desc="Explore past performance, latest NAVs, scheme comparisons, and a suite of tools designed to help you invest smarter."
+        subtitle="Explore past performance, latest NAVs, scheme comparisons, and a suite of tools designed to help you invest smarter."
       />
       <MFResources />
     </main>
