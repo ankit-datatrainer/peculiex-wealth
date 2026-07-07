@@ -40,7 +40,7 @@ export default function CustomCursor() {
     raf = requestAnimationFrame(tick);
 
     const sel =
-      "a, button, .product, .stock, .unl-card, .insight, .kpi, .chip, [data-magnetic], input, select, textarea, .dash-menu li";
+      "a, button, .product, .stock, .unl-card, .insight, .kpi, .chip, [data-magnetic], input, select, textarea, .dash-menu li, .why-card";
     const handleEnter = () => {
       ring.classList.add("hover");
       dot.classList.add("hover");

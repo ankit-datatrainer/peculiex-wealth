@@ -5,11 +5,49 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth, isAdminUser } from "@/lib/auth-context";
 import { ThemeToggle } from "./ThemeToggle";
 
-const NAV_ITEMS: { href: string; label: string }[] = [
+type NavItem = {
+  href: string;
+  label: string;
+  children?: { href: string; label: string }[];
+};
+
+const NAV_ITEMS: NavItem[] = [
   { href: "/watchlist", label: "Watchlist" },
   { href: "/unlisted", label: "Unlisted" },
-  { href: "/products", label: "Products" },
-  { href: "/calculator", label: "SIP Calculator" },
+  {
+    href: "/products",
+    label: "Products",
+    children: [
+      { href: "/products/mutual-funds", label: "Mutual Funds" },
+      { href: "/products/pms", label: "Portfolio Management (PMS)" },
+      { href: "/products/aif", label: "Alternative Investments (AIF)" },
+      { href: "/products/bonds", label: "Bonds & G-Sec" },
+      { href: "/products/insurance", label: "Insurance" },
+      { href: "/products/fixed-deposits", label: "Fixed Deposits" },
+      { href: "/products/unlisted-shares", label: "Unlisted Shares" },
+      { href: "/products/gift-city", label: "Gift City" }
+    ]
+  },
+  {
+    href: "/nri",
+    label: "NRI",
+    children: [
+      { href: "/products/mutual-funds", label: "Mutual Funds" },
+      { href: "/nri/services", label: "Services" }
+    ]
+  },
+  { href: "/investor-zone", label: "InvestorZone" },
+  {
+    href: "/calculator",
+    label: "Calculators",
+    children: [
+      { href: "/calculator", label: "SIP Calculator" },
+      { href: "/calculator/lumpsum", label: "Lumpsum Calculator" },
+      { href: "/calculator/retirement", label: "Retirement Calculator" },
+      { href: "/calculator/goal-planner", label: "Goal Planner" },
+      { href: "/resources/mutual-funds", label: "Mutual Fund Resources" }
+    ]
+  },
   { href: "/news", label: "News" }
 ];
 
@@ -95,6 +133,118 @@ export default function MainNav() {
                 !it.href.includes("#") &&
                 (pathname === it.href ||
                   (it.href !== "/" && pathname.startsWith(it.href)));
+              if (it.children) {
+                if (it.label === "NRI") {
+                  return (
+                    <li key={it.href} className="nav-has-dropdown nri-mega-menu-container">
+                      <Link
+                        href={it.href}
+                        className={`nav-link nav-link-parent${isActive ? " active" : ""}`}
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        {it.label}
+                        <svg className="nav-caret" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </Link>
+                      <div className="nav-dropdown nri-mega-dropdown">
+                        <div className="nri-dropdown-inner">
+                          {/* Left Column: Investment */}
+                          <div className="nri-column nri-left-col">
+                            <span className="nri-col-label">Investment</span>
+                            <ul className="nri-links">
+                              <li><Link href="/products/mutual-funds" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Mutual Funds</Link></li>
+                              <li><Link href="/products/pms" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Portfolio Management (PMS)</Link></li>
+                              <li><Link href="/products/aif" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Alternative Investments (AIF)</Link></li>
+                              <li><Link href="/products/unlisted-shares" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Unlisted Shares</Link></li>
+                              <li><Link href="/products/gift-city" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Gift City Offshore</Link></li>
+                              <li><Link href="/products/bonds" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Bonds & G-Sec</Link></li>
+                            </ul>
+                          </div>
+                          {/* Right Column: Services */}
+                          <div className="nri-column nri-right-col">
+                            <span className="nri-col-label">NRI Services</span>
+                            <div className="nri-services-grid">
+                              <Link href="/get-started?ref=india-tax" className="nri-service-card" onClick={() => setMobileOpen(false)}>
+                                <div className="nri-icon-wrapper">
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="19" y1="5" x2="5" y2="19"/><circle cx="9" cy="9" r="2"/><circle cx="15" cy="15" r="2"/></svg>
+                                </div>
+                                <div className="nri-service-text">
+                                  <h4>India Tax Filing</h4>
+                                  <p>File your income tax in India with expert support</p>
+                                </div>
+                              </Link>
+                              <Link href="/get-started?ref=us-tax" className="nri-service-card" onClick={() => setMobileOpen(false)}>
+                                <div className="nri-icon-wrapper">
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 8H10.5a2.5 2.5 0 0 0 0 5H13.5a2.5 2.5 0 0 1 0 5H9"/></svg>
+                                </div>
+                                <div className="nri-service-text">
+                                  <h4>US Tax Filing</h4>
+                                  <p>Stay compliant with US tax regulations stress-free</p>
+                                </div>
+                              </Link>
+                              <Link href="/get-started?ref=pan" className="nri-service-card" onClick={() => setMobileOpen(false)}>
+                                <div className="nri-icon-wrapper">
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                                </div>
+                                <div className="nri-service-text">
+                                  <h4>Apply for PAN</h4>
+                                  <p>Get your PAN card quickly and hassle-free</p>
+                                </div>
+                              </Link>
+                              <Link href="/get-started?ref=citizenship" className="nri-service-card" onClick={() => setMobileOpen(false)}>
+                                <div className="nri-icon-wrapper">
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="16"/><line x1="15" y1="22" x2="15" y2="16"/><line x1="9" y1="16" x2="15" y2="16"/><path d="M8 6h2v2H8V6zm6 0h2v2h-2V6zm-6 4h2v2H8v-2zm6 0h2v2h-2v-2zm-6 4h2v2H8v-2zm6 0h2v2h-2v-2z"/></svg>
+                                </div>
+                                <div className="nri-service-text">
+                                  <h4>Update Citizenship</h4>
+                                  <p>Keep your records accurate across financial systems</p>
+                                </div>
+                              </Link>
+                              <Link href="/get-started?ref=nro-nre" className="nri-service-card" onClick={() => setMobileOpen(false)}>
+                                <div className="nri-icon-wrapper">
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M3 11l9-9 9 9M5 22v-4h14v4"/></svg>
+                                </div>
+                                <div className="nri-service-text">
+                                  <h4>NRO-NRE Transfer</h4>
+                                  <p>Transfer funds seamlessly between your accounts</p>
+                                </div>
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                }
+                return (
+                  <li key={it.href} className="nav-has-dropdown">
+                    <Link
+                      href={it.href}
+                      className={`nav-link nav-link-parent${isActive ? " active" : ""}`}
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {it.label}
+                      <svg className="nav-caret" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </Link>
+                    <ul className="nav-dropdown">
+                      {it.children.map((c) => (
+                        <li key={c.href}>
+                          <Link
+                            href={c.href}
+                            className="nav-dropdown-link"
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            {c.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                );
+              }
               return (
                 <li key={it.href}>
                   <Link

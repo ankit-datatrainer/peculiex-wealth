@@ -41,39 +41,67 @@ export const PRODUCTS: Record<string, ProductContent> = {
     closing:
       "Whether you're starting your first SIP or rebalancing a ₹5 Cr portfolio, our advisors map your fund mix to your goals — not to ours.",
     cta: { label: "Start a SIP →", href: "/calculator" },
-    related: ["pms-aif", "bonds", "insurance"]
+    related: ["pms", "aif", "bonds", "insurance"]
   },
 
-  "pms-aif": {
-    slug: "pms-aif",
-    label: "PMS & AIF",
+  "pms": {
+    slug: "pms",
+    label: "Portfolio Management (PMS)",
     title: <>Portfolio management for <em>serious capital.</em></>,
     subtitle:
-      "Discretionary PMS strategies and SEBI-regulated Alternative Investment Funds, hand-picked for HNI and UHNI investors. Bespoke mandates, transparent reporting, no hidden trails.",
+      "Discretionary PMS strategies hand-picked for HNI investors. Bespoke mandates, transparent reporting, no hidden trails.",
     highlights: [
       { title: "Curated PMS strategies", body: "We onboard fewer than 1 in 8 PMS strategies we evaluate. Multi-cap, focused, sectoral, contra — only the ones with auditable track records survive." },
-      { title: "Category I, II & III AIFs", body: "Venture capital, real estate, private credit, long-short equity, structured credit. Direct access to fund managers, no aggregator markups." },
-      { title: "Statutory minimums", body: "PMS from ₹50L (SEBI mandated). AIFs from ₹1Cr. We help you decide which structure fits your tax position and liquidity needs." },
+      { title: "Statutory minimums", body: "PMS from ₹50L (SEBI mandated). We help you decide which structure fits your tax position and liquidity needs." },
       { title: "Quarterly reviews with the manager", body: "Direct calls with the fund manager — not a relationship sales rep. You hear the thesis from the source." },
-      { title: "Consolidated tax reporting", body: "Capital gains, LTCG/STCG, K-1 equivalents — all consolidated across PMS and AIF investments." },
+      { title: "Consolidated tax reporting", body: "Capital gains, LTCG/STCG — all consolidated across PMS investments." },
       { title: "Estate-aware structuring", body: "Trust, HUF, family-office structures — we coordinate with your CA and lawyer to keep the wrapper tax-efficient." }
     ],
     howItWorks: [
       { step: "01", title: "Risk profiling", body: "A 30-minute call with our advisor to understand your liquidity, time horizon, and existing portfolio gaps." },
-      { step: "02", title: "Strategy shortlist", body: "We present 3–5 PMS / AIF strategies with full track-record disclosure and direct access to the fund team." },
+      { step: "02", title: "Strategy shortlist", body: "We present 3–5 PMS strategies with full track-record disclosure and direct access to the fund team." },
       { step: "03", title: "Onboarding & funding", body: "Documentation, demat-linked execution, and regulatory disclosures handled end-to-end by our compliance team." },
       { step: "04", title: "Quarterly oversight", body: "Performance reviews, attribution analysis, and rebalancing — we sit with you, not the manufacturer." }
     ],
     metrics: [
       { value: "₹50L",   label: "PMS minimum" },
-      { value: "₹1 Cr",  label: "AIF minimum" },
       { value: "20+",    label: "Curated strategies" },
       { value: "1 in 8", label: "Onboarding ratio" }
     ],
     closing:
-      "PMS and AIF are not retail products. The right strategy at the wrong moment can lock up capital for years. We help you avoid that.",
+      "PMS is not a retail product. The right strategy at the wrong moment can lock up capital for years. We help you avoid that.",
     cta: { label: "Talk to a private-client advisor →", href: "/get-started" },
-    related: ["mutual-funds", "unlisted-shares", "bonds"]
+    related: ["aif", "mutual-funds", "unlisted-shares"]
+  },
+
+  "aif": {
+    slug: "aif",
+    label: "Alternative Investments (AIF)",
+    title: <>Access sophisticated <em>private market funds.</em></>,
+    subtitle:
+      "SEBI-regulated Alternative Investment Funds for UHNI investors. Private equity, venture capital, and hedge funds with direct access.",
+    highlights: [
+      { title: "Category I, II & III AIFs", body: "Venture capital, real estate, private credit, long-short equity, structured credit. Direct access to fund managers, no aggregator markups." },
+      { title: "Statutory minimums", body: "AIFs from ₹1Cr. We help you evaluate the illiquidity premium and risk profile." },
+      { title: "Quarterly reviews with the manager", body: "Direct calls with the fund manager — hear the thesis straight from the source." },
+      { title: "Consolidated tax reporting", body: "Capital gains and K-1 equivalents — all consolidated across AIF investments." },
+      { title: "Estate-aware structuring", body: "Trust, HUF, family-office structures — coordinated with your CA and lawyer." }
+    ],
+    howItWorks: [
+      { step: "01", title: "Risk profiling", body: "A 30-minute call with our advisor to understand your liquidity, time horizon, and existing portfolio gaps." },
+      { step: "02", title: "Strategy shortlist", body: "We present 3–5 AIF strategies with full track-record disclosure and direct access to the fund team." },
+      { step: "03", title: "Onboarding & funding", body: "Documentation, execution, and regulatory disclosures handled end-to-end by our compliance team." },
+      { step: "04", title: "Quarterly oversight", body: "Performance reviews, attribution analysis, and rebalancing — we sit with you, not the manufacturer." }
+    ],
+    metrics: [
+      { value: "₹1 Cr",  label: "AIF minimum" },
+      { value: "15+",    label: "Curated strategies" },
+      { value: "1 in 8", label: "Onboarding ratio" }
+    ],
+    closing:
+      "AIFs provide non-correlated returns but come with illiquidity and complexity. We guide you to the right structures.",
+    cta: { label: "Talk to a private-client advisor →", href: "/get-started" },
+    related: ["pms", "mutual-funds", "unlisted-shares"]
   },
 
   "bonds": {
@@ -233,6 +261,70 @@ export const PRODUCTS: Record<string, ProductContent> = {
     closing:
       "The biggest equity wealth in India over the last decade came before listing — Zomato, Nykaa, Mamaearth investors got there early. We bring you the same access, with full disclosure.",
     cta: { label: "See live inventory →", href: "/unlisted" },
-    related: ["pms-aif", "equities", "mutual-funds"]
+    related: ["pms", "aif", "equities", "mutual-funds"]
+  },
+
+  "loan-against-mutual-funds": {
+    slug: "loan-against-mutual-funds",
+    label: "Loan Against Mutual Funds",
+    title: <>Unlock liquidity <em>without selling.</em></>,
+    subtitle:
+      "Pledge your mutual fund units and get an instant overdraft at interest rates far below a personal loan — while your investments stay invested and keep compounding.",
+    highlights: [
+      { title: "Stay invested", body: "Your units are only pledged, never sold. You keep the upside, dividends, and long-term compounding while borrowing against them." },
+      { title: "Rates from ~9% p.a.", body: "Interest is charged only on the amount you use, not the full sanctioned limit — dramatically cheaper than personal loans or credit cards." },
+      { title: "Instant digital pledge", body: "Pledge equity or debt funds online via CAMS/KFintech in minutes. No paperwork, no branch visit, no income proof for most limits." },
+      { title: "Overdraft, not EMI", body: "Draw and repay any amount, any time. Interest accrues only on the outstanding balance — ideal for short-term cash-flow gaps." },
+      { title: "Loan-to-value up to 50–80%", body: "Borrow up to 80% against debt funds and up to 50% against equity funds, subject to lender norms and scheme eligibility." },
+      { title: "No prepayment penalty", body: "Repay whenever you like without charges. Unpledge your units the moment the outstanding is cleared." }
+    ],
+    howItWorks: [
+      { step: "01", title: "Check eligibility", body: "Share your mutual fund holdings. We compute your sanctioned limit across eligible equity and debt schemes instantly." },
+      { step: "02", title: "Pledge online", body: "Authorise the lien digitally through CAMS/KFintech with an OTP. Your units are marked as pledged — you still own them." },
+      { step: "03", title: "Draw funds", body: "The overdraft limit is activated in your account. Withdraw part or all of it whenever you need liquidity." },
+      { step: "04", title: "Repay flexibly", body: "Pay interest only on what you use. Clear the balance any time and release the pledge on your units." }
+    ],
+    metrics: [
+      { value: "~9%",   label: "Interest from (p.a.)" },
+      { value: "80%",   label: "Max loan-to-value" },
+      { value: "₹1 Cr+", label: "Sanction limits" },
+      { value: "24 hrs", label: "Typical disbursal" }
+    ],
+    closing:
+      "Selling good funds to raise cash is a decision you often regret at the next market high. A loan against mutual funds keeps you invested and liquid at the same time.",
+    cta: { label: "Check my LAMF limit →", href: "/get-started" },
+    related: ["mutual-funds", "pms", "bonds"]
+  },
+
+  "gift-city": {
+    slug: "gift-city",
+    label: "Gift City (IFSC)",
+    title: <>Invest offshore, <em>from onshore India.</em></>,
+    subtitle:
+      "Access global markets, USD-denominated funds, and IFSC-regulated structures through GIFT City — India's International Financial Services Centre — with resident and NRI-friendly routing.",
+    highlights: [
+      { title: "USD-denominated investing", body: "Invest in global equities, US-listed ETFs, and offshore funds in dollars through IFSC units at GIFT City — a clean, regulated route out of INR." },
+      { title: "IFSCA-regulated", body: "Every structure sits under the International Financial Services Centres Authority — a dedicated unified regulator, not a grey-market workaround." },
+      { title: "Tax-efficient wrappers", body: "GIFT City funds and structures enjoy specific exemptions and concessional rates designed to make offshore access competitive with Singapore or Dubai." },
+      { title: "LRS & NRI routing", body: "Residents can route via the Liberalised Remittance Scheme; NRIs and foreign investors get a familiar, English-law-adjacent framework." },
+      { title: "Global diversification", body: "Hold assets outside the rupee and the Indian cycle — US tech, global bonds, and multi-currency portfolios in one IFSC account." },
+      { title: "Institutional custody", body: "Assets are held with IFSC-registered custodians and administrators, with reporting built for HNI and family-office needs." }
+    ],
+    howItWorks: [
+      { step: "01", title: "Eligibility & structure", body: "We assess whether an LRS remittance, an NRI route, or a fund structure fits your residency and objective." },
+      { step: "02", title: "Open an IFSC account", body: "KYC and onboarding with an IFSC-registered intermediary at GIFT City — handled end-to-end by our desk." },
+      { step: "03", title: "Fund & allocate", body: "Remit in USD and allocate across global funds, ETFs, or bespoke offshore mandates." },
+      { step: "04", title: "Consolidated reporting", body: "Track your onshore and GIFT City holdings together, with tax-ready statements across jurisdictions." }
+    ],
+    metrics: [
+      { value: "USD",     label: "Base currency" },
+      { value: "IFSCA",   label: "Regulator" },
+      { value: "Global",  label: "Market access" },
+      { value: "NRI +",   label: "Resident routing" }
+    ],
+    closing:
+      "GIFT City turns offshore investing from a compliance headache into a regulated, tax-aware decision — the same global access, without leaving the Indian framework.",
+    cta: { label: "Explore Gift City options →", href: "/get-started" },
+    related: ["pms", "aif", "mutual-funds", "bonds"]
   }
 };

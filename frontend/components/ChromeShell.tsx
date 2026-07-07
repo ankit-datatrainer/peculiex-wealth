@@ -10,6 +10,8 @@ import Footer from "./Footer";
 import ScrollProgress from "./ScrollProgress";
 import BackToTop from "./BackToTop";
 import WhatsAppButton from "./WhatsAppButton";
+import SupportTicket from "./SupportTicket";
+import SiteModals from "./SiteModals";
 import GlobalUX from "./GlobalUX";
 
 export default function ChromeShell({
@@ -36,6 +38,8 @@ export default function ChromeShell({
       <ScrollProgress />
       <BackToTop />
       <WhatsAppButton />
+      <SupportTicket />
+      <SiteModals />
       <GlobalUX />
     </>
   );

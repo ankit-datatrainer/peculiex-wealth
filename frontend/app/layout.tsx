@@ -12,12 +12,12 @@ export const metadata: Metadata = {
     template: "%s · Peculiex"
   },
   description:
-    "Peculiex: Listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds & insurance — all in one premium platform.",
+    "Peculiex offers listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, and insurance in a single premium platform.",
   openGraph: {
     type: "website",
     title: "Peculiex — India's Investment Marketplace",
     description:
-      "Listed, unlisted, mutual funds, PMS, AIF, bonds, insurance — curated by experts, executed in seconds.",
+      "Listed and unlisted shares, mutual funds, PMS, AIF, bonds, and insurance. Curated by experts and executed in seconds.",
     siteName: "Peculiex",
     locale: "en_IN"
   },

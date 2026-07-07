@@ -24,7 +24,7 @@ export type AdminUser = {
   email: string;
   name: string;
   mobile: string | null;
-  role: "user" | "admin" | "superadmin";
+  role: "user" | "manager" | "admin" | "superadmin";
   created_at: string;
 };
 
@@ -98,7 +98,7 @@ export const updateUser = (
   patch: Partial<{
     name: string;
     mobile: string | null;
-    role: "user" | "admin" | "superadmin";
+    role: "user" | "manager" | "admin" | "superadmin";
     password: string;
   }>
 ) =>

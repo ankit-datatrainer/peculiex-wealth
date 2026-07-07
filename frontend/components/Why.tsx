@@ -61,7 +61,7 @@ export default function Why() {
 
         <div className="why-grid">
           {CARDS.map((c) => (
-            <article className="why-card reveal" data-tilt key={c.title}>
+            <article className="why-card why-card-static reveal" key={c.title}>
               <div className="why-icon">
                 <svg>
                   <use href={`#${c.icon}`} />

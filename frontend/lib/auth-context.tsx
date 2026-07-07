@@ -11,7 +11,7 @@ import {
 } from "react";
 import { apiFetch, apiPostJSON, tokenStore } from "./api";
 
-export type UserRole = "user" | "admin" | "superadmin";
+export type UserRole = "user" | "manager" | "admin" | "superadmin";
 
 export type User = {
   id: string;
@@ -22,9 +22,17 @@ export type User = {
   email_verified?: boolean;
 };
 
-/** Convenience: does this user have access to the admin panel at all? */
+/** Convenience: does this user have full admin-panel access? */
 export const isAdminUser = (u: User | null | undefined): boolean =>
   !!u && (u.role === "admin" || u.role === "superadmin");
+
+/** Managers have access ONLY to the Unlisted Shares admin page. */
+export const isManagerUser = (u: User | null | undefined): boolean =>
+  !!u && u.role === "manager";
+
+/** Anyone allowed to reach the admin shell (admins, super-admins, managers). */
+export const canAccessAdmin = (u: User | null | undefined): boolean =>
+  isAdminUser(u) || isManagerUser(u);
 
 type AuthState = {
   user: User | null;

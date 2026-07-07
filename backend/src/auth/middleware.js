@@ -39,6 +39,8 @@ async function requireAuth(req, res, next) {
 function requireAdmin(req, res, next) {
   const role = req.user && req.user.role;
   if (role === "superadmin" || role === "admin") return next();
+  // `manager` is a limited role scoped to the Unlisted Shares admin only.
+  if (role === "manager" && /^\/unlisted(\/|$)/.test(req.path)) return next();
   return res
     .status(403)
     .json({ error: "Admin privileges required for this action." });

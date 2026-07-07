@@ -100,7 +100,7 @@ export default function Calculator() {
         "/api/sip/share",
         { amount: amt, rate, years: yr }
       );
-      setShareUrl(r.url);
+      setShareUrl(window.location.origin + "/sip/" + r.id);
     } catch (e: any) {
       setShareErr(e?.message || "Could not create share link.");
     }

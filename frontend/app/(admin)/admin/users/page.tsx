@@ -19,6 +19,7 @@ type EditState = {
 
 const ROLE_LABEL: Record<AdminUser["role"], string> = {
   user: "User",
+  manager: "Manager",
   admin: "Admin",
   superadmin: "Super-admin"
 };
@@ -271,6 +272,7 @@ export default function AdminUsersPage() {
                   }
                 >
                   <option value="user">User</option>
+                  <option value="manager">Manager (Unlisted only)</option>
                   <option value="admin">Admin</option>
                   <option value="superadmin">Super-admin</option>
                 </select>

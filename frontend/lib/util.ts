@@ -94,3 +94,11 @@ export const getCompanyDomain = (sym: string, name: string): string => {
 
 export const getCompanyLogo = (domain: string) =>
   `https://icon.horse/icon/${domain}`;
+
+// URL-safe slug for an unlisted company name, used for /unlisted/[slug] detail pages.
+export const unlistedSlug = (name: string) =>
+  name
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");

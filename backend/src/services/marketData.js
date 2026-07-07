@@ -768,6 +768,66 @@ async function getNews(symbol) {
 
 let globalNewsArchive = [];
 
+/* ---------- Yahoo India Finance RSS ---------- */
+
+// Pull India-focused market headlines from Yahoo Finance's RSS feed and map
+// them into the same shape as our NewsData items so they merge seamlessly.
+async function getYahooIndiaNews() {
+  const key = "yahoo_india_news";
+  const cached = cacheGet(key);
+  if (cached) return cached;
+
+  const feeds = [
+    "https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5ENSEI&region=IN&lang=en-IN",
+    "https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EBSESN&region=IN&lang=en-IN"
+  ];
+
+  const items = [];
+  for (const feed of feeds) {
+    try {
+      const r = await fetch(feed, {
+        headers: { "User-Agent": UA }
+      });
+      if (!r.ok) continue;
+      const xml = await r.text();
+      const blocks = xml.split(/<item>/i).slice(1);
+      for (const block of blocks) {
+        const pick = (tag) => {
+          const m = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "i").exec(block);
+          if (!m) return "";
+          return m[1]
+            .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+            .replace(/<[^>]+>/g, "")
+            .trim();
+        };
+        const title = pick("title");
+        const link = pick("link");
+        if (!title || !link) continue;
+        const slug = generateSlug(title);
+        cacheSet(`news_slug:${slug}`, link, 24 * 60 * 60_000);
+        const pub = pick("pubDate");
+        const publishedAt = pub ? new Date(pub).getTime() : Date.now();
+        items.push({
+          id: link,
+          slug,
+          headline: title,
+          summary: pick("description"),
+          source: "Yahoo Finance",
+          url: link,
+          image: "",
+          publishedAt: isNaN(publishedAt) ? Date.now() : publishedAt
+        });
+      }
+    } catch (e) {
+      console.warn("[markets] Yahoo India news failed:", e.message);
+    }
+  }
+
+  // Cache for 30 minutes to be gentle on the feed.
+  cacheSet(key, items, 30 * 60_000);
+  return items;
+}
+
 /* ---------- public: getGeneralNews (NewsData.io -> JSON) ---------- */
 
 async function getGeneralNews() {
@@ -806,8 +866,16 @@ async function getGeneralNews() {
     console.warn("[markets] general news failed:", e.message);
   }
   
+  // Pull in Yahoo India Finance headlines and merge them alongside NewsData.
+  let yahooItems = [];
+  try {
+    yahooItems = await getYahooIndiaNews();
+  } catch (e) {
+    console.warn("[markets] Yahoo India news merge failed:", e.message);
+  }
+
   // Merge new items into global archive
-  const combined = [...newItems, ...globalNewsArchive];
+  const combined = [...newItems, ...yahooItems, ...globalNewsArchive];
   
   // Deduplicate by id
   const unique = new Map();

@@ -45,7 +45,8 @@ export default function NewsPage() {
         <header className="news-header section-header">
           <h1>Indian Market News</h1>
           <p className="subtitle">
-            The latest financial updates, stock market trends, and economic news.
+            The latest financial updates, stock market trends, and economic news —
+            aggregated from Yahoo India Finance and leading news wires.
           </p>
         </header>
 

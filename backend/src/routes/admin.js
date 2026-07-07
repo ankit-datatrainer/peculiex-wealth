@@ -45,7 +45,7 @@ router.get("/users", async (req, res, next) => {
 const UserPatchSchema = z.object({
   name: z.string().trim().min(2).max(80).optional(),
   mobile: z.string().trim().max(20).nullable().optional(),
-  role: z.enum(["user", "admin", "superadmin"]).optional(),
+  role: z.enum(["user", "manager", "admin", "superadmin"]).optional(),
   password: z.string().min(6).max(128).optional()
 });
 

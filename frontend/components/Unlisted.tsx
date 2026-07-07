@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getCompanyLogo } from "@/lib/util";
+import Link from "next/link";
+import { getCompanyLogo, unlistedSlug } from "@/lib/util";
 import { fetcher } from "@/lib/api";
 import WatchlistButton, { makeUnlistedSymbol } from "./WatchlistButton";
 
-type Unl = {
+export type Unl = {
   domain: string;
   name: string;
   sector: string;
@@ -16,7 +17,7 @@ type Unl = {
   logo_url?: string | null;
 };
 
-const FALLBACK: Unl[] = [
+export const UNLISTED_FALLBACK: Unl[] = [
   { domain: "sbimf.com", name: "SBI Funds Management Ltd.", sector: "Asset Management", brand: "#0066b3", initial: "S", price: 791, iv: "1", tag: "avail" },
   { domain: "amc.ppfas.com", name: "Parag Parikh Financial Advisory Services", sector: "Asset Management", brand: "#3a9e3a", initial: "P", price: 18050, iv: "10", tag: "lim" },
   { domain: "careinsurance.com", name: "Care Health Insurance Ltd.", sector: "Insurance", brand: "#f37021", initial: "C", price: 117.75, iv: "10", tag: "avail" },
@@ -42,7 +43,7 @@ const TAG_LABEL: Record<Unl["tag"], string> = {
 };
 
 export default function Unlisted() {
-  const [items, setItems] = useState<Unl[]>(FALLBACK);
+  const [items, setItems] = useState<Unl[]>(UNLISTED_FALLBACK);
   const [filter, setFilter] = useState<"all" | "trend" | "avail" | "lim">("all");
 
   useEffect(() => {
@@ -160,6 +161,13 @@ export default function Unlisted() {
                     <strong className="up">₹{u.iv}</strong>
                   </div>
                 </div>
+                <Link
+                  href={`/unlisted/${unlistedSlug(u.name)}`}
+                  className="unl-view-link"
+                  aria-label={`View details for ${u.name}`}
+                >
+                  View details →
+                </Link>
               </article>
             );
           })}

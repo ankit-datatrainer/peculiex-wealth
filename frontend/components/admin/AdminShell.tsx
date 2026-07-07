@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { isAdminUser, useAuth } from "@/lib/auth-context";
+import { isAdminUser, isManagerUser, canAccessAdmin, useAuth } from "@/lib/auth-context";
 
 /**
  * AdminShell — wraps every /admin page in a sidebar layout.
@@ -28,6 +28,17 @@ const ICON = {
         d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"
         fill="currentColor"
       />
+    </svg>
+  ),
+  factsheet: (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden>
+      <path
+        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path d="M14 2v6h6M8 13h8M8 17h8M8 9h2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
   unlisted: (
@@ -115,6 +126,7 @@ const ICON = {
 const NAV: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: ICON.dashboard },
   { href: "/admin/unlisted", label: "Unlisted Shares", icon: ICON.unlisted },
+  { href: "/admin/factsheets", label: "Factsheets", icon: ICON.factsheet },
   { href: "/admin/users", label: "Users", icon: ICON.users },
   { href: "/admin/leads", label: "Leads", icon: ICON.leads },
   { href: "/admin/newsletter", label: "Newsletter", icon: ICON.mail },
@@ -173,7 +185,22 @@ export default function AdminShell({
     );
   }
 
-  if (!isAdminUser(user)) {
+  // Managers may access ONLY the Unlisted Shares page. Redirect them there
+  // if they try to open any other admin route.
+  const managerOnly = isManagerUser(user);
+  const allowedForManager = (href: string) =>
+    href === "/admin/unlisted" || href.startsWith("/admin/unlisted");
+
+  if (managerOnly && pathname && !allowedForManager(pathname)) {
+    if (typeof window !== "undefined") router.replace("/admin/unlisted");
+    return (
+      <div className="admin-boot">
+        <div className="admin-spinner" />
+      </div>
+    );
+  }
+
+  if (!canAccessAdmin(user)) {
     return (
       <div className="admin-boot">
         <div className="admin-no-access">
@@ -214,12 +241,16 @@ export default function AdminShell({
             </span>
           </Link>
           <span className="admin-brand-tag">
-            {user.role === "superadmin" ? "Super Admin" : "Admin"}
+            {user.role === "superadmin"
+              ? "Super Admin"
+              : user.role === "manager"
+              ? "Manager"
+              : "Admin"}
           </span>
         </div>
 
         <nav className="admin-nav">
-          {NAV.map((it) => {
+          {(managerOnly ? NAV.filter((it) => allowedForManager(it.href)) : NAV).map((it) => {
             const active =
               it.href === "/admin"
                 ? pathname === "/admin"

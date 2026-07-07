@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { PRODUCTS } from "@/lib/productContent";
 import PageHero from "@/components/PageHero";
+import PartnerLogos from "@/components/PartnerLogos";
+import Factsheet from "@/components/Factsheet";
 
 export const dynamicParams = false;
 
@@ -81,6 +83,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         </div>
       </section>
 
+      {/* Factsheet / brochure PDF — dynamic (super-admin uploadable), with a
+          static fallback at /public/factsheets/<slug>.pdf */}
+      <Factsheet slug={p.slug} label={p.label} />
+
       {/* Highlights */}
       <section style={{ padding: "0 0 100px" }}>
         <div className="container">
@@ -158,6 +164,35 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </Link>
         </div>
       </section>
+
+      {/* Partner logos (mutual-funds & pms-aif) */}
+      <PartnerLogos productSlug={p.slug} />
+
+      {/* LAMF cross-sell — appears on every product page except LAMF itself */}
+      {p.slug !== "loan-against-mutual-funds" && (
+        <section style={{ padding: "0 0 110px" }}>
+          <div className="container">
+            <div className="lamf-band reveal">
+              <div className="lamf-band-text">
+                <div className="label">Loan Against Mutual Funds</div>
+                <h3>Need liquidity? Don’t sell — pledge.</h3>
+                <p>
+                  Pledge your mutual fund units and unlock an instant overdraft from ~9% p.a.
+                  while your investments stay invested. Interest only on what you use.
+                </p>
+              </div>
+              <div className="lamf-band-cta">
+                <Link href="/products/loan-against-mutual-funds" className="btn btn-primary" data-magnetic>
+                  Explore LAMF →
+                </Link>
+                <Link href="/get-started" className="btn btn-ghost" data-magnetic>
+                  Check my limit
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Related products */}
       {p.related && p.related.length > 0 && (

@@ -11,6 +11,7 @@ const PRODUCT_ICONS: Record<string, string> = {
   "mutual-funds": "i-bar-chart",
   "pms-aif": "i-gem",
   bonds: "i-building",
+  "fixed-deposits": "i-coin",
   insurance: "i-shield",
   "real-estate": "i-home",
   "gold-commodities": "i-coin"
