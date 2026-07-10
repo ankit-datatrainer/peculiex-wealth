@@ -18,6 +18,8 @@ const NAV_ITEMS: NavItem[] = [
     label: "Products",
     children: [
       { href: "/products/mutual-funds", label: "Mutual Funds" },
+      { href: "/products/pms", label: "Portfolio Management (PMS)" },
+      { href: "/products/aif", label: "Alternative Investments (AIF)" },
       { href: "/products/bonds", label: "Bonds & G-Sec" },
       { href: "/products/insurance", label: "Insurance" },
       { href: "/products/fixed-deposits", label: "Fixed Deposits" },
@@ -25,8 +27,6 @@ const NAV_ITEMS: NavItem[] = [
     ]
   },
   { href: "/unlisted", label: "Unlisted" },
-  { href: "/products/pms", label: "PMS" },
-  { href: "/products/aif", label: "AIF" },
   {
     href: "/nri",
     label: "NRI Corner",
