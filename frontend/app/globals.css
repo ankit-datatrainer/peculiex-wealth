@@ -5883,6 +5883,23 @@ section { padding: 110px 0; position: relative; }
 
 /* Premium Product Page Styling */
 .premium-product-page {
+  /* Override the shared color variables so EVERY component (not just the
+     hand-picked ones below) renders with readable colors on this page's
+     permanently-dark background, regardless of the site's light/dark toggle. */
+  --color-bg:               #0a0a0a;
+  --color-surface:          #14141a;
+  --color-surface-2:        #1c1c22;
+  --color-surface-offset:   #24242c;
+  --color-divider:          rgba(212, 175, 55, 0.25);
+  --color-border:           rgba(212, 175, 55, 0.3);
+  --color-text:             #ffffff;
+  --color-text-muted:       #d1d5db;
+  --color-text-faint:       #9ca3af;
+  --color-text-inverse:     #0a0a0a;
+  --color-primary:          #d4af37;
+  --color-primary-hover:    #f3c751;
+  --color-primary-highlight:rgba(212, 175, 55, 0.12);
+
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
   color: #fff;
   min-height: 100vh;

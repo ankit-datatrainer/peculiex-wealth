@@ -109,8 +109,14 @@ export default function Factsheet({ slug, label }: { slug: string; label: string
         </div>
 
         <div className="factsheet-card reveal">
-          <div className="factsheet-thumb" ref={thumbRef}>
+          <div className="factsheet-thumb">
             {status === "loading" && <div className="factsheet-thumb-skeleton" aria-hidden="true" />}
+            {/* Separate node from the skeleton above — pdf.js manages this
+                subtree imperatively (innerHTML/appendChild), so it must never
+                share a DOM node with anything React also renders into, or
+                React's reconciler and the manual DOM writes fight over the
+                same children and throw "not a child of this node". */}
+            <div ref={thumbRef} />
           </div>
           <div className="factsheet-card-body">
             <span className="factsheet-badge">PDF Document</span>
