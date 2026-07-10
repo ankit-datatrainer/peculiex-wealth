@@ -3,11 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { apiUrl } from "@/lib/api";
 
 /**
- * Renders a product's factsheet PDF as native-looking page content (rendered
- * with pdf.js to crisp images) rather than an embedded PDF viewer, so it blends
- * into the site. Prefers a super-admin-uploaded file (served from the backend)
- * and falls back to a static file at /public/factsheets/<slug>.pdf.
- * Non-technical admins replace the PDF from Admin → Factsheets, no code changes.
+ * Compact, premium "document card" for a product's factsheet PDF — a small
+ * thumbnail of the first page plus View/Download actions, rather than
+ * embedding the full PDF inline. Prefers a super-admin-uploaded file (served
+ * from the backend) and falls back to a static file at
+ * /public/factsheets/<slug>.pdf. Non-technical admins replace the PDF from
+ * Admin → Factsheets, no code changes.
  */
 type Status = "loading" | "ready" | "empty";
 
@@ -15,7 +16,8 @@ export default function Factsheet({ slug, label }: { slug: string; label: string
   const staticUrl = `/factsheets/${slug}.pdf`;
   const [url, setUrl] = useState<string | null>(null);
   const [status, setStatus] = useState<Status>("loading");
-  const pagesRef = useRef<HTMLDivElement | null>(null);
+  const [pageCount, setPageCount] = useState<number | null>(null);
+  const thumbRef = useRef<HTMLDivElement | null>(null);
 
   // 1. Resolve which PDF to show: uploaded (backend) → else static file.
   useEffect(() => {
@@ -38,14 +40,14 @@ export default function Factsheet({ slug, label }: { slug: string; label: string
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
-  // 2. Render the PDF pages to canvases once the URL is known.
+  // 2. Render only page 1 as a small thumbnail (not the full document).
   useEffect(() => {
     if (!url) return;
     let cancelled = false;
     let cleanup: (() => void) | undefined;
 
     (async () => {
-      const container = pagesRef.current;
+      const container = thumbRef.current;
       if (!container) return;
       try {
         const pdfjs: any = await import("pdfjs-dist");
@@ -58,31 +60,28 @@ export default function Factsheet({ slug, label }: { slug: string; label: string
           return;
         }
 
-        container.innerHTML = "";
+        const page = await pdf.getPage(1);
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        const width = container.clientWidth || 800;
+        const thumbWidth = 168;
+        const base = page.getViewport({ scale: 1 });
+        const scale = thumbWidth / base.width;
+        const viewport = page.getViewport({ scale: scale * dpr });
 
-        for (let i = 1; i <= pdf.numPages; i++) {
-          if (cancelled) break;
-          const page = await pdf.getPage(i);
-          const base = page.getViewport({ scale: 1 });
-          const scale = width / base.width;
-          const viewport = page.getViewport({ scale: scale * dpr });
-
-          const canvas = document.createElement("canvas");
-          canvas.className = "factsheet-page";
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
-          canvas.style.width = "100%";
-          canvas.style.height = "auto";
-          const ctx = canvas.getContext("2d");
-          if (!ctx) continue;
-          container.appendChild(canvas);
-          await page.render({ canvasContext: ctx, viewport }).promise;
-        }
+        const canvas = document.createElement("canvas");
+        canvas.className = "factsheet-thumb-canvas";
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        canvas.style.width = "100%";
+        canvas.style.height = "auto";
+        const ctx = canvas.getContext("2d");
+        if (!ctx) throw new Error("no context");
+        container.innerHTML = "";
+        container.appendChild(canvas);
+        await page.render({ canvasContext: ctx, viewport }).promise;
 
         if (!cancelled) {
-          setStatus(container.childElementCount > 0 ? "ready" : "empty");
+          setPageCount(pdf.numPages);
+          setStatus("ready");
           cleanup = () => pdf.destroy?.();
         }
       } catch {
@@ -100,7 +99,7 @@ export default function Factsheet({ slug, label }: { slug: string; label: string
   if (status === "empty") return null;
 
   return (
-    <section style={{ padding: "0 0 100px" }}>
+    <section style={{ padding: "0 0 90px" }}>
       <div className="container">
         <div className="sec-head reveal">
           <div className="label">Documents</div>
@@ -109,22 +108,28 @@ export default function Factsheet({ slug, label }: { slug: string; label: string
           </h2>
         </div>
 
-        <div className="factsheet-doc reveal">
-          {status === "loading" && (
-            <div className="factsheet-skeleton" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </div>
-          )}
-          <div className="factsheet-pages" ref={pagesRef} />
-          {url && status === "ready" && (
-            <div className="factsheet-actions">
-              <a href={url} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
-                Download PDF ↓
-              </a>
-            </div>
-          )}
+        <div className="factsheet-card reveal">
+          <div className="factsheet-thumb" ref={thumbRef}>
+            {status === "loading" && <div className="factsheet-thumb-skeleton" aria-hidden="true" />}
+          </div>
+          <div className="factsheet-card-body">
+            <span className="factsheet-badge">PDF Document</span>
+            <h3>{label} Factsheet</h3>
+            <p>
+              The latest {label.toLowerCase()} factsheet, curated by our research desk
+              {pageCount ? ` · ${pageCount} page${pageCount > 1 ? "s" : ""}` : ""}.
+            </p>
+            {url && status === "ready" && (
+              <div className="factsheet-card-actions">
+                <a href={url} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+                  View factsheet
+                </a>
+                <a href={url} download className="btn btn-ghost">
+                  Download ↓
+                </a>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </section>
