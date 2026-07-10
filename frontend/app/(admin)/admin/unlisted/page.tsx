@@ -7,6 +7,7 @@ import {
   createUnlisted,
   updateUnlisted,
   deleteUnlisted,
+  uploadUnlistedLogo,
   type AdminUnlisted
 } from "@/lib/admin-api";
 
@@ -55,6 +56,9 @@ export default function AdminUnlistedPage() {
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const reload = async () => {
     setLoading(true);
@@ -88,6 +92,8 @@ export default function AdminUnlistedPage() {
 
   const startCreate = () => {
     setForm(blank());
+    setLogoFile(null);
+    setLogoPreview(null);
     setShowForm(true);
     setFormError(null);
   };
@@ -108,6 +114,8 @@ export default function AdminUnlistedPage() {
       market_cap: u.market_cap || "",
       pe: u.pe || "N/A"
     });
+    setLogoFile(null);
+    setLogoPreview(null);
     setShowForm(true);
     setFormError(null);
   };
@@ -115,6 +123,33 @@ export default function AdminUnlistedPage() {
   const closeForm = () => {
     setShowForm(false);
     setFormError(null);
+    setLogoFile(null);
+    setLogoPreview(null);
+  };
+
+  const onLogoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setLogoFile(file);
+    if (!file) {
+      setLogoPreview(null);
+      return;
+    }
+    if (!["image/png", "image/jpeg", "image/gif", "image/webp"].includes(file.type)) {
+      setFormError("Please choose a PNG, JPG, GIF or WEBP image.");
+      setLogoFile(null);
+      setLogoPreview(null);
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setFormError("Image is too large (max 5 MB).");
+      setLogoFile(null);
+      setLogoPreview(null);
+      return;
+    }
+    setFormError(null);
+    const reader = new FileReader();
+    reader.onload = () => setLogoPreview(String(reader.result));
+    reader.readAsDataURL(file);
   };
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -147,10 +182,22 @@ export default function AdminUnlistedPage() {
 
     setSubmitting(true);
     try {
-      if (form.id) {
-        await updateUnlisted(form.id, payload);
+      let id = form.id;
+      if (id) {
+        await updateUnlisted(id, payload);
       } else {
-        await createUnlisted(payload);
+        const created = await createUnlisted(payload);
+        id = created.id;
+      }
+      // If a logo file was picked, upload it now — this persists logo_url
+      // on the item server-side and overrides whatever URL was typed above.
+      if (logoFile && id) {
+        setUploadingLogo(true);
+        try {
+          await uploadUnlistedLogo(id, logoFile);
+        } finally {
+          setUploadingLogo(false);
+        }
       }
       closeForm();
       await reload();
@@ -456,7 +503,21 @@ export default function AdminUnlistedPage() {
               </label>
 
               <label className="admin-field admin-field-wide">
-                <span>Logo URL (optional)</span>
+                <span>Upload logo (PNG, JPG, GIF or WEBP — max 5 MB)</span>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/gif,image/webp"
+                  onChange={onLogoFileChange}
+                />
+                <small className="admin-field-hint">
+                  {form.id
+                    ? "Uploading a new file replaces the current logo when you save."
+                    : "The logo uploads once the share is created (saving happens in one click)."}
+                </small>
+              </label>
+
+              <label className="admin-field admin-field-wide">
+                <span>Or paste a logo URL instead (optional)</span>
                 <input
                   type="text"
                   value={form.logo_url}
@@ -464,20 +525,21 @@ export default function AdminUnlistedPage() {
                     setForm({ ...form, logo_url: e.target.value })
                   }
                   placeholder="https://example.com/logo.png — leave empty to use Clearbit fallback"
+                  disabled={!!logoFile}
                 />
                 <small className="admin-field-hint">
-                  When set, this image is used instead of the auto-fetched
-                  Clearbit logo on the public site.
+                  Ignored if you upload a file above. When neither is set, the
+                  public site auto-fetches a logo from the company&apos;s domain.
                 </small>
               </label>
 
-              {form.logo_url && (
+              {(logoPreview || form.logo_url) && (
                 <div className="admin-field admin-field-wide">
                   <span>Logo preview</span>
                   <div className="admin-logo-preview">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={form.logo_url}
+                      src={logoPreview || form.logo_url}
                       alt="Logo preview"
                       onError={(e) => {
                         (e.target as HTMLImageElement).style.opacity = "0.2";
@@ -502,7 +564,9 @@ export default function AdminUnlistedPage() {
                 disabled={submitting}
               >
                 {submitting
-                  ? "Saving…"
+                  ? uploadingLogo
+                    ? "Uploading logo…"
+                    : "Saving…"
                   : form.id
                   ? "Save changes"
                   : "Add share"}

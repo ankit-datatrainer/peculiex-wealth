@@ -136,6 +136,24 @@ export const updateUnlisted = (
 export const deleteUnlisted = (id: string) =>
   apiFetch<{ ok: boolean }>(`/api/admin/unlisted/${id}`, { method: "DELETE" });
 
+// Upload an actual logo image file (not a URL) for an unlisted share.
+// Reads the file as base64 and posts it; the server saves it to disk and
+// returns the new logo_url (already persisted on the item).
+export const uploadUnlistedLogo = (id: string, file: File) =>
+  new Promise<{ item: AdminUnlisted; logo_url: string }>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Could not read the selected file."));
+    reader.onload = () => {
+      apiPostJSON<{ ok: boolean; item: AdminUnlisted; logo_url: string }>(
+        `/api/unlisted-logos/${id}`,
+        { dataBase64: String(reader.result) }
+      )
+        .then(resolve)
+        .catch(reject);
+    };
+    reader.readAsDataURL(file);
+  });
+
 // ---------- stocks ----------
 export const fetchStocks = () =>
   apiFetch<{ items: AdminStock[] }>("/api/admin/stocks").then((r) => r.items);

@@ -30,9 +30,11 @@ const PORT = Number(process.env.PORT || 4000);
 const ORIGIN = process.env.CORS_ORIGIN || "http://127.0.0.1:3000";
 
 app.disable("x-powered-by");
-// Factsheets are mounted BEFORE the global 200kb JSON parser so the upload
-// route can apply its own larger limit for base64 PDF payloads.
+// Factsheets and unlisted-share logos are mounted BEFORE the global 200kb
+// JSON parser so their upload routes can apply their own larger limits for
+// base64 file payloads.
 app.use("/api/factsheets", require("./routes/factsheets"));
+app.use("/api/unlisted-logos", require("./routes/unlistedLogos"));
 app.use(express.json({ limit: "200kb" }));
 app.use(morgan("dev"));
 app.use(
