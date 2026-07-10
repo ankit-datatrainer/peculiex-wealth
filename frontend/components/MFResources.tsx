@@ -1,6 +1,13 @@
 "use client";
 import { useState } from "react";
 import PastSipPerformance from "./mf-tools/PastSipPerformance";
+import CurrentNfos from "./mf-tools/CurrentNfos";
+import LatestNav from "./mf-tools/LatestNav";
+import FundFactsheets from "./mf-tools/FundFactsheets";
+import MfPerformanceTool from "./mf-tools/MfPerformanceTool";
+import SchemeComparison from "./mf-tools/SchemeComparison";
+import RecentDividends from "./mf-tools/RecentDividends";
+import SwpCalculator from "./mf-tools/SwpCalculator";
 
 const MENU_ITEMS = [
   { id: "past-sip", label: "Past SIP Performance" },
@@ -20,14 +27,22 @@ export default function MFResources() {
     switch (activeTab) {
       case "past-sip":
         return <PastSipPerformance />;
+      case "current-nfo":
+        return <CurrentNfos />;
+      case "latest-nav":
+        return <LatestNav />;
+      case "fund-factsheets":
+        return <FundFactsheets />;
+      case "mf-performance":
+        return <MfPerformanceTool />;
+      case "scheme-comparison":
+        return <SchemeComparison />;
+      case "recent-dividends":
+        return <RecentDividends />;
+      case "swp-calculator":
+        return <SwpCalculator />;
       default:
-        return (
-          <div className="mf-tool-placeholder">
-            <div className="icon">⏳</div>
-            <h3>Coming Soon</h3>
-            <p>This tool is currently under development. Please check back later.</p>
-          </div>
-        );
+        return null;
     }
   };
 

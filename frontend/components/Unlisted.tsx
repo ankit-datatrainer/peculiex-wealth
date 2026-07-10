@@ -1,9 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { getCompanyLogo, unlistedSlug } from "@/lib/util";
+import { useEffect, useState, useMemo } from "react";
 import { fetcher } from "@/lib/api";
-import WatchlistButton, { makeUnlistedSymbol } from "./WatchlistButton";
+import InvestModal from "./InvestModal";
 
 export type Unl = {
   domain: string;
@@ -15,36 +13,15 @@ export type Unl = {
   iv: string;
   tag: "trend" | "avail" | "lim";
   logo_url?: string | null;
-};
-
-export const UNLISTED_FALLBACK: Unl[] = [
-  { domain: "sbimf.com", name: "SBI Funds Management Ltd.", sector: "Asset Management", brand: "#0066b3", initial: "S", price: 791, iv: "1", tag: "avail" },
-  { domain: "amc.ppfas.com", name: "Parag Parikh Financial Advisory Services", sector: "Asset Management", brand: "#3a9e3a", initial: "P", price: 18050, iv: "10", tag: "lim" },
-  { domain: "careinsurance.com", name: "Care Health Insurance Ltd.", sector: "Insurance", brand: "#f37021", initial: "C", price: 117.75, iv: "10", tag: "avail" },
-  { domain: "orbisfinancial.in", name: "Orbis Financial Corporation", sector: "Financial Services", brand: "#173a72", initial: "O", price: 394, iv: "10", tag: "trend" },
-  { domain: "chennaisuperkings.com", name: "CSK", sector: "Sports", brand: "#FFCD00", initial: "C", price: 254, iv: "0.1", tag: "trend" },
-  { domain: "herofincorp.com", name: "Hero Fincorp", sector: "Financial Services", brand: "#e02020", initial: "H", price: 1030, iv: "10", tag: "avail" },
-  { domain: "cial.aero", name: "CIAL", sector: "Aviation", brand: "#005a8f", initial: "C", price: 435, iv: "2", tag: "avail" },
-  { domain: "incred.com", name: "Incred Holdings", sector: "Financial Services", brand: "#0a2f4d", initial: "I", price: 146, iv: "10", tag: "avail" },
-  { domain: "vivriticapital.com", name: "Vivriti Capital", sector: "Financial Services", brand: "#353272", initial: "V", price: 802, iv: "10", tag: "lim" },
-  { domain: "veedacr.com", name: "Veeda Clinical Research", sector: "Clinical Research", brand: "#2f9c4d", initial: "V", price: 457, iv: "2", tag: "avail" },
-  { domain: "oyorooms.com", name: "Oravel Stays (OYO)", sector: "Hospitality", brand: "#EE2E24", initial: "O", price: 21.85, iv: "1", tag: "trend" },
-  { domain: "sterlitepower.com", name: "Sterlite Electrical", sector: "Energy", brand: "#e96228", initial: "S", price: 472, iv: "2", tag: "avail" },
-  { domain: "esds.co.in", name: "ESDS Software Solutions", sector: "IT Services", brand: "#1e3d7a", initial: "E", price: 472, iv: "1", tag: "avail" },
-  { domain: "innov8.work", name: "Innov8 Workspaces India Limited", sector: "Real Estate", brand: "#f7b731", initial: "I", price: 49.50, iv: "1", tag: "avail" },
-  { domain: "nseindia.com", name: "National Stock Exchange of India (NSE)", sector: "Exchange", brand: "#F58220", initial: "N", price: 2025, iv: "1", tag: "trend" },
-  { domain: "goodluckdefence.com", name: "Goodluck Defence and Aerospace", sector: "Defence", brand: "#272a2e", initial: "G", price: 383.00, iv: "10", tag: "lim" }
-];
-
-const TAG_LABEL: Record<Unl["tag"], string> = {
-  trend: "Trending",
-  avail: "Available",
-  lim: "Limited"
+  min_units: number;
+  market_cap: string;
+  pe: string;
 };
 
 export default function Unlisted() {
-  const [items, setItems] = useState<Unl[]>(UNLISTED_FALLBACK);
-  const [filter, setFilter] = useState<"all" | "trend" | "avail" | "lim">("all");
+  const [items, setItems] = useState<Unl[]>([]);
+  const [search, setSearch] = useState("");
+  const [modalItem, setModalItem] = useState<Unl | null>(null);
 
   useEffect(() => {
     let killed = false;
@@ -58,122 +35,151 @@ export default function Unlisted() {
     };
   }, []);
 
-  const visible = items.filter((u) => filter === "all" || u.tag === filter);
+  const visible = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(
+      (u) =>
+        u.name.toLowerCase().includes(q) ||
+        u.sector.toLowerCase().includes(q)
+    );
+  }, [items, search]);
+
+  useEffect(() => {
+    // Re-observe dynamic cards so they fade in instead of staying invisible
+    const io = (window as any).__peculiexReveal;
+    if (io) {
+      document
+        .querySelectorAll(".unlisted-grid-v2 .reveal:not(.visible)")
+        .forEach((el) => io.observe(el));
+    }
+  }, [visible]);
+
+  const fmtINR = (n: number) =>
+    "₹ " + n.toLocaleString("en-IN", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
 
   return (
-    <section id="unlisted" className="unlisted">
-      <div className="container">
-        <div className="sec-head reveal">
-          <div className="label">Unlisted Shares</div>
-          <h2 className="stitle">
-            Private market <em>opportunities</em>
-          </h2>
-          <p className="sdesc">
-            Curated pre-IPO and unlisted share inventory with transparent
-            pricing and advisor-assisted purchase flows. Tap the star to add
-            any to your watchlist.
-          </p>
-        </div>
+    <>
+      <section id="unlisted" className="unlisted-v2">
+        <div className="container">
+          <div className="sec-head reveal">
+            <div className="label">Unlisted Shares</div>
+            <h2 className="stitle">
+              Private market <em>opportunities</em>
+            </h2>
+            <p className="sdesc">
+              Curated pre-IPO and unlisted share inventory with transparent
+              pricing. Click &quot;Invest Now&quot; on any company to submit an inquiry.
+            </p>
+          </div>
 
-        <div className="filter-bar reveal">
-          {(["all", "trend", "avail", "lim"] as const).map((f) => (
-            <button
-              key={f}
-              className={`chip${filter === f ? " active" : ""}`}
-              type="button"
-              onClick={() => setFilter(f)}
-            >
-              {f === "all"
-                ? "All"
-                : f === "trend"
-                ? "Trending"
-                : f === "avail"
-                ? "Available"
-                : "Limited"}
-            </button>
-          ))}
-        </div>
-
-        <div className="unlisted-grid" id="unlistedGrid">
-          {visible.map((u) => {
-            const sym = makeUnlistedSymbol(u.name);
-            return (
-              <article
-                className="unl-card reveal visible"
-                data-cat={u.tag}
-                key={u.name}
-                style={{ position: "relative" }}
+          {/* Search Bar */}
+          <div className="unlisted-search reveal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search by company name or sector..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="unlisted-search__input"
+            />
+            {search && (
+              <button
+                className="unlisted-search__clear"
+                onClick={() => setSearch("")}
+                aria-label="Clear search"
               >
-                <span
-                  className={`unl-tag ${u.tag}`}
-                  style={{ left: 12, right: "auto", top: 18 }}
-                >
-                  {TAG_LABEL[u.tag]}
-                </span>
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 12,
-                    right: 12,
-                    zIndex: 1
-                  }}
-                >
-                  <WatchlistButton
-                    symbol={sym}
-                    name={u.name}
-                    price={u.price}
-                    kind="unlisted"
-                  />
-                </div>
-                <div className="unl-logo">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={
-                        u.logo_url
-                          ? u.logo_url
-                          : getCompanyLogo(u.domain)
-                    }
-                    alt={`${u.name} logo`}
-                    loading="lazy"
-                    onError={(e) => {
-                      const target = e.currentTarget as HTMLImageElement;
-                      target.style.display = "none";
-                      const fb = target.nextElementSibling as HTMLElement | null;
-                      if (fb) fb.style.display = "flex";
-                    }}
-                  />
+                ✕
+              </button>
+            )}
+          </div>
+
+          <div className="unlisted-count reveal">
+            Showing <strong>{visible.length}</strong> of {items.length} companies
+          </div>
+
+          {/* Card Grid */}
+          <div className="unlisted-grid-v2" id="unlistedGrid">
+            {visible.map((u, i) => (
+              <article className="ulv2-card reveal" key={`${u.name}-${i}`}>
+                {/* Logo */}
+                <div className="ulv2-card__logo">
+                  {u.logo_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={u.logo_url}
+                      alt={`${u.name} logo`}
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).style.display = "none";
+                        const fb = e.currentTarget.nextElementSibling as HTMLElement | null;
+                        if (fb) fb.style.display = "flex";
+                      }}
+                    />
+                  ) : null}
                   <span
-                    className="unl-logo-fallback"
-                    style={{ background: u.brand }}
+                    className="ulv2-card__logo-fb"
+                    style={{ background: u.brand, display: u.logo_url ? "none" : "flex" }}
                   >
                     {u.initial}
                   </span>
                 </div>
-                <h4>{u.name}</h4>
-                <div className="sector">{u.sector}</div>
-                <div className="unl-stats">
-                  <div className="unl-stat">
-                    <span>Price / Share</span>
-                    <strong>₹{u.price.toLocaleString("en-IN")}</strong>
+
+                {/* Company name */}
+                <h4 className="ulv2-card__name">{u.name}</h4>
+
+                {/* Stats */}
+                <div className="ulv2-card__stats">
+                  <div className="ulv2-card__stat">
+                    <span>Price per share</span>
+                    <strong>{fmtINR(u.price)}</strong>
                   </div>
-                  <div className="unl-stat">
-                    <span>Face Value</span>
-                    <strong className="up">₹{u.iv}</strong>
+                  <div className="ulv2-card__stat">
+                    <span>Sector</span>
+                    <strong>{u.sector}</strong>
+                  </div>
+                  <div className="ulv2-card__stat">
+                    <span>Minimum Units</span>
+                    <strong>{u.min_units || "—"}</strong>
+                  </div>
+                  <div className="ulv2-card__stat">
+                    <span>Market Cap</span>
+                    <strong>₹ {u.market_cap || "—"}</strong>
+                  </div>
+                  <div className="ulv2-card__stat">
+                    <span>P/E(x)</span>
+                    <strong>{u.pe || "N/A"}</strong>
                   </div>
                 </div>
-                <Link
-                  href={`/unlisted/${unlistedSlug(u.name)}`}
-                  className="unl-view-link"
-                  aria-label={`View details for ${u.name}`}
+
+                {/* Invest Now Button */}
+                <button
+                  className="ulv2-card__invest"
+                  onClick={() => setModalItem(u)}
                 >
-                  View details →
-                </Link>
+                  Invest Now
+                </button>
               </article>
-            );
-          })}
+            ))}
+          </div>
+
+          {visible.length === 0 && items.length > 0 && (
+            <div className="unlisted-empty reveal">
+              <p>No companies match &quot;{search}&quot;. Try a different search.</p>
+            </div>
+          )}
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Invest Modal */}
+      <InvestModal
+        open={!!modalItem}
+        onClose={() => setModalItem(null)}
+        company={modalItem || { name: "", price: 0, min_units: 0, sector: "" }}
+      />
+    </>
   );
 }
-

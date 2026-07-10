@@ -3,17 +3,11 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { getCompanyLogo, unlistedSlug } from "@/lib/util";
 import { fetcher } from "@/lib/api";
-import { UNLISTED_FALLBACK, type Unl } from "./Unlisted";
+import { type Unl } from "./Unlisted";
 import WatchlistButton, { makeUnlistedSymbol } from "./WatchlistButton";
 
-const TAG_LABEL: Record<Unl["tag"], string> = {
-  trend: "Trending",
-  avail: "Available",
-  lim: "Limited"
-};
-
 export default function UnlistedDetail({ slug }: { slug: string }) {
-  const [items, setItems] = useState<Unl[]>(UNLISTED_FALLBACK);
+  const [items, setItems] = useState<Unl[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -79,9 +73,6 @@ export default function UnlistedDetail({ slug }: { slug: string }) {
             </span>
           </div>
           <div className="unl-detail-title">
-            <span className={`unl-tag ${item.tag}`} style={{ position: "static" }}>
-              {TAG_LABEL[item.tag]}
-            </span>
             <h1>{item.name}</h1>
             <div className="sector">{item.sector}</div>
           </div>
@@ -96,16 +87,20 @@ export default function UnlistedDetail({ slug }: { slug: string }) {
             <strong>₹{item.price.toLocaleString("en-IN")}</strong>
           </div>
           <div className="unl-stat">
-            <span>Face Value</span>
-            <strong>₹{item.iv}</strong>
+            <span>Minimum Units</span>
+            <strong>{item.min_units || "—"}</strong>
           </div>
           <div className="unl-stat">
             <span>Sector</span>
             <strong>{item.sector}</strong>
           </div>
           <div className="unl-stat">
-            <span>Availability</span>
-            <strong>{TAG_LABEL[item.tag]}</strong>
+            <span>Market Cap</span>
+            <strong>{item.market_cap ? `₹ ${item.market_cap}` : "—"}</strong>
+          </div>
+          <div className="unl-stat">
+            <span>P/E (x)</span>
+            <strong>{item.pe || "N/A"}</strong>
           </div>
         </section>
 

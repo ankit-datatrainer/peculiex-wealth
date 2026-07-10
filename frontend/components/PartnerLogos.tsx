@@ -59,7 +59,7 @@ export default function PartnerLogos({ productSlug }: { productSlug: string }) {
   if (!set) return null;
 
   return (
-    <section style={{ padding: "0 0 100px" }}>
+    <section className="partner-logos-sec">
       <div className="container">
         <div className="sec-head reveal">
           <div className="label">Partners</div>

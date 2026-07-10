@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Featured mutual fund scheme names that rotate in the corner popup every 5s (#12).
+// Featured mutual fund scheme names that rotate in the corner popup
 const FEATURED_FUNDS = [
   "HDFC Flexi Cap Fund",
   "Parag Parikh Flexi Cap Fund",
@@ -16,6 +16,8 @@ const FEATURED_FUNDS = [
   "Axis Midcap Fund",
   "Motilal Oswal Midcap Fund"
 ];
+
+
 
 const ENTRY_KEY = "peculiex-entry-popup-seen";
 
@@ -44,22 +46,29 @@ export default function SiteModals() {
     } catch {}
   };
 
-  // Rotating featured-fund popup — cycles every 5 seconds.
+  // Rotating featured-fund popup — cycles every 2 minutes starting at 2 minutes
   useEffect(() => {
     if (pathname?.startsWith("/admin")) return;
-    const start = setTimeout(() => setFundShown(true), 6000);
-    const rotate = setInterval(() => {
-      setFundShown(false);
-      setTimeout(() => {
+    
+    let rotate: ReturnType<typeof setInterval>;
+    const start = setTimeout(() => {
+      setFundShown(true);
+      setTimeout(() => setFundShown(false), 5000); // Hide after 5 seconds
+      
+      rotate = setInterval(() => {
         setFundIdx((i) => (i + 1) % FEATURED_FUNDS.length);
         setFundShown(true);
-      }, 500);
-    }, 5000);
+        setTimeout(() => setFundShown(false), 5000);
+      }, 120000); // Repeat every 2 minutes
+    }, 120000); // Start at 2 minutes
+
     return () => {
       clearTimeout(start);
-      clearInterval(rotate);
+      if (rotate) clearInterval(rotate);
     };
   }, [pathname]);
+
+
 
   return (
     <>
@@ -149,6 +158,8 @@ export default function SiteModals() {
           Explore →
         </Link>
       </div>
+
+
     </>
   );
 }

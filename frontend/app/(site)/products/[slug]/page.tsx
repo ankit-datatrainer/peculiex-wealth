@@ -28,15 +28,19 @@ export function generateMetadata({
 export default function ProductPage({ params }: { params: { slug: string } }) {
   const p = PRODUCTS[params.slug];
   if (!p) notFound();
+  
+  const isPremium = p.slug === "pms" || p.slug === "aif";
 
   return (
-    <>
+    <div className={isPremium ? "premium-product-page" : ""}>
       <PageHero label={p.label} title={p.title} subtitle={p.subtitle} />
+
 
       {/* Metrics row */}
       <section style={{ padding: "0 0 80px" }}>
         <div className="container">
           <div
+            className="premium-metrics-grid"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
@@ -50,6 +54,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
             {p.metrics.map((m) => (
               <div
                 key={m.label}
+                className="premium-metric-card"
                 style={{
                   background: "var(--color-surface-2)",
                   padding: "28px 24px",
@@ -57,6 +62,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                 }}
               >
                 <div
+                  className="premium-metric-value"
                   style={{
                     fontFamily: "var(--font-display)",
                     fontSize: "2rem",
@@ -67,6 +73,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   {m.value}
                 </div>
                 <div
+                  className="premium-metric-label"
                   style={{
                     fontSize: "0.78rem",
                     letterSpacing: "0.06em",
@@ -82,6 +89,9 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </div>
         </div>
       </section>
+
+      {/* Partner logos */}
+      <PartnerLogos productSlug={p.slug} />
 
       {/* Factsheet / brochure PDF — dynamic (super-admin uploadable), with a
           static fallback at /public/factsheets/<slug>.pdf */}
@@ -148,6 +158,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       <section style={{ padding: "0 0 140px" }}>
         <div className="container" style={{ textAlign: "center", maxWidth: 760, margin: "0 auto" }}>
           <h2
+            className="premium-closing-title"
             style={{
               fontFamily: "var(--font-display)",
               fontSize: "clamp(1.6rem, 3vw, 2.4rem)",
@@ -164,9 +175,6 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </Link>
         </div>
       </section>
-
-      {/* Partner logos (mutual-funds & pms-aif) */}
-      <PartnerLogos productSlug={p.slug} />
 
       {/* LAMF cross-sell — appears on every product page except LAMF itself */}
       {p.slug !== "loan-against-mutual-funds" && (
@@ -213,6 +221,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   <Link
                     href={`/products/${r.slug}`}
                     key={r.slug}
+                    className="premium-related-card"
                     style={{
                       background: "var(--color-surface-2)",
                       border: "1px solid var(--color-divider)",
@@ -223,11 +232,11 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                       gap: 6
                     }}
                   >
-                    <strong style={{ color: "var(--color-text)" }}>{r.label}</strong>
-                    <span style={{ color: "var(--color-text-muted)", fontSize: "0.92rem" }}>
+                    <strong className="premium-related-title" style={{ color: "var(--color-text)" }}>{r.label}</strong>
+                    <span className="premium-related-desc" style={{ color: "var(--color-text-muted)", fontSize: "0.92rem" }}>
                       {r.subtitle.split(".")[0]}.
                     </span>
-                    <span style={{ color: "var(--color-primary)", fontWeight: 600, marginTop: 6 }}>
+                    <span className="premium-related-link" style={{ color: "var(--color-primary)", fontWeight: 600, marginTop: 6 }}>
                       Learn more →
                     </span>
                   </Link>
@@ -237,6 +246,6 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </div>
         </section>
       )}
-    </>
+    </div>
   );
 }

@@ -20,7 +20,7 @@ export const PRODUCTS: Record<string, ProductContent> = {
       "Invest across 40+ AMCs and 1,500+ schemes — equity, debt, hybrid, ELSS — all on a single platform with goal-based planning and SEBI-registered advisor support.",
     highlights: [
       { title: "Direct plans only", body: "Zero commission. We charge a flat advisory fee, never a cut from the AMC. You keep the full alpha." },
-      { title: "SIP & lump sum", body: "Start a SIP from ₹1,000 a month or invest a lump sum from ₹500. Set up auto-debits in seconds via UPI or NACH." },
+      { title: "SIP & lump sum", body: "Start a SIP from ₹500 a month or invest a lump sum from ₹500. Set up auto-debits in seconds via UPI or NACH." },
       { title: "Goal-based portfolios", body: "Tell us your goal — retirement, a home, your child's education — and our advisors map the right scheme mix and review it quarterly." },
       { title: "ELSS for tax saving", body: "Section 80C deductions up to ₹1.5L, with the shortest 3-year lock-in among tax-saving instruments." },
       { title: "Direct AMC integration", body: "Orders settle directly with the AMC — your folios are in your name from day one. We never hold custody." },
@@ -35,7 +35,7 @@ export const PRODUCTS: Record<string, ProductContent> = {
     metrics: [
       { value: "1,500+", label: "Schemes available" },
       { value: "40+",    label: "Asset management cos." },
-      { value: "₹1,000", label: "Minimum SIP" },
+      { value: "₹500", label: "Minimum SIP" },
       { value: "0%",     label: "Commission" }
     ],
     closing:
@@ -71,7 +71,7 @@ export const PRODUCTS: Record<string, ProductContent> = {
     closing:
       "PMS is not a retail product. The right strategy at the wrong moment can lock up capital for years. We help you avoid that.",
     cta: { label: "Talk to a private-client advisor →", href: "/get-started" },
-    related: ["aif", "mutual-funds", "unlisted-shares"]
+    related: ["aif", "mutual-funds"]
   },
 
   "aif": {
@@ -101,7 +101,7 @@ export const PRODUCTS: Record<string, ProductContent> = {
     closing:
       "AIFs provide non-correlated returns but come with illiquidity and complexity. We guide you to the right structures.",
     cta: { label: "Talk to a private-client advisor →", href: "/get-started" },
-    related: ["pms", "mutual-funds", "unlisted-shares"]
+    related: ["pms", "mutual-funds"]
   },
 
   "bonds": {
@@ -229,39 +229,7 @@ export const PRODUCTS: Record<string, ProductContent> = {
     closing:
       "Direct equity is the highest-return asset class over long periods, and the easiest one to ruin with bad behaviour. Our role is to keep you on the right side of the data.",
     cta: { label: "Browse the markets →", href: "/markets" },
-    related: ["mutual-funds", "unlisted-shares", "bonds"]
-  },
-
-  "unlisted-shares": {
-    slug: "unlisted-shares",
-    label: "Unlisted Shares",
-    title: <>Get in before the <em>IPO bell rings.</em></>,
-    subtitle:
-      "Curated pre-IPO and unlisted opportunities — Oyo, NSE India, Tata Capital, Swiggy, BOAT and more — with transparent pricing and advisor-assisted execution.",
-    highlights: [
-      { title: "Pre-IPO inventory", body: "Access shares of late-stage private companies, typically 1–4 years away from a public listing. No promises, full diligence." },
-      { title: "Transparent pricing", body: "Price-per-share, lot size, and recent transaction history disclosed upfront. No 'call for price' games." },
-      { title: "Reg-grade compliance", body: "Trades settle through demat in your name. Stamp duty, GST, and capital gains computed and declared per SEBI norms." },
-      { title: "Lock-in disclosures", body: "Most unlisted shares carry a 6-month post-IPO lock-in. Every commitment is disclosed in writing before purchase." },
-      { title: "Founder & cap-table data", body: "Latest funding round, valuation, key investors, and dilution history — the same data a Series-D fund would diligence." },
-      { title: "Liquidity windows", body: "Quarterly buyback windows for select issuers, plus secondary trades through our matched-book where available." }
-    ],
-    howItWorks: [
-      { step: "01", title: "Browse", body: "Live inventory across 30+ pre-IPO names, sorted by sector, recent volume, or implied valuation discount." },
-      { step: "02", title: "Diligence call", body: "30-min call with our private-markets desk. Cap table, recent rounds, IPO timeline, and risk disclosures." },
-      { step: "03", title: "Execute", body: "Settled via Off-Market Transfer with a CDSL/NSDL slip. Shares land directly into your demat in 5–7 business days." },
-      { step: "04", title: "Hold to IPO or buyback", body: "When the company lists, your shares go on the exchange. Until then, dividends (if any) and updates flow to you directly." }
-    ],
-    metrics: [
-      { value: "30+",     label: "Companies in inventory" },
-      { value: "₹25,000", label: "Typical min. ticket" },
-      { value: "T+5",     label: "Settlement to demat" },
-      { value: "Quarterly", label: "Liquidity windows" }
-    ],
-    closing:
-      "The biggest equity wealth in India over the last decade came before listing — Zomato, Nykaa, Mamaearth investors got there early. We bring you the same access, with full disclosure.",
-    cta: { label: "See live inventory →", href: "/unlisted" },
-    related: ["pms", "aif", "equities", "mutual-funds"]
+    related: ["mutual-funds", "bonds"]
   },
 
   "loan-against-mutual-funds": {

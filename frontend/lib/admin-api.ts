@@ -39,6 +39,9 @@ export type AdminUnlisted = {
   iv: string;
   tag: "trend" | "avail" | "lim";
   logo_url: string | null;
+  min_units: number;
+  market_cap: string;
+  pe: string;
   created_at?: string;
   updated_at?: string;
 };

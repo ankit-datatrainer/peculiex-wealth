@@ -14,9 +14,6 @@ const WA_ICON = (
 );
 
 export default function WhatsAppButton() {
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement | null>(null);
-
   const number = (
     process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || DEFAULT_NUMBER
   ).replace(/\D/g, "");
@@ -24,72 +21,23 @@ export default function WhatsAppButton() {
     process.env.NEXT_PUBLIC_WHATSAPP_MESSAGE || DEFAULT_MESSAGE
   );
   const chatHref = `https://wa.me/${number}?text=${message}`;
-  const communityHref =
-    process.env.NEXT_PUBLIC_WHATSAPP_COMMUNITY || DEFAULT_COMMUNITY;
-
-  useEffect(() => {
-    if (!open) return;
-    const onDoc = (e: MouseEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
-    };
-    const onEsc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    document.addEventListener("click", onDoc);
-    document.addEventListener("keydown", onEsc);
-    return () => {
-      document.removeEventListener("click", onDoc);
-      document.removeEventListener("keydown", onEsc);
-    };
-  }, [open]);
 
   return (
-    <div className="whatsapp-root" ref={rootRef}>
-      {open && (
-        <div className="whatsapp-menu" role="menu">
-          <div className="whatsapp-menu-head">
-            <span className="whatsapp-menu-title">Peculiex on WhatsApp</span>
-            <span className="whatsapp-menu-sub">Talk to an advisor or join the community</span>
-          </div>
-          <a
-            href={chatHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="whatsapp-menu-item"
-            role="menuitem"
-          >
-            <span className="whatsapp-menu-ico" aria-hidden="true">{WA_ICON}</span>
-            <span>
-              <strong>Chat with us</strong>
-              <em>Get a reply in minutes</em>
-            </span>
-          </a>
-          <a
-            href={communityHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="whatsapp-menu-item"
-            role="menuitem"
-          >
-            <span className="whatsapp-menu-ico" aria-hidden="true">{WA_ICON}</span>
-            <span>
-              <strong>Join our WhatsApp Community</strong>
-              <em>Market updates &amp; ideas</em>
-            </span>
-          </a>
-        </div>
-      )}
-      <button
-        type="button"
-        aria-label="WhatsApp options"
-        aria-expanded={open}
+    <div className="whatsapp-root">
+      <a
+        href={chatHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat with us on WhatsApp"
         className="whatsapp-btn"
-        onClick={() => setOpen((v) => !v)}
+        style={{ textDecoration: 'none' }}
       >
         <span aria-hidden="true" className="whatsapp-btn-icon-wrap">
           <span className="whatsapp-pulse" />
           <span style={{ position: "relative", display: "grid", placeItems: "center" }}>{WA_ICON}</span>
         </span>
         <span className="whatsapp-btn-text">Chat with us</span>
-      </button>
+      </a>
     </div>
   );
 }

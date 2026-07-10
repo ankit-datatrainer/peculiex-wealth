@@ -138,7 +138,7 @@ export default function Footer() {
               <a href="/products/insurance">Insurance</a>
             </li>
             <li>
-              <a href="/products/unlisted-shares">Unlisted</a>
+              <a href="/unlisted">Unlisted</a>
             </li>
           </ul>
         </div>

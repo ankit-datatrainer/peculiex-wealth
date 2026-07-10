@@ -7,7 +7,6 @@ import "./products.css";
 // Maps to the icons used in Marketplace.tsx
 const PRODUCT_ICONS: Record<string, string> = {
   equities: "i-trending-up",
-  "unlisted-shares": "i-lock",
   "mutual-funds": "i-bar-chart",
   "pms-aif": "i-gem",
   bonds: "i-building",

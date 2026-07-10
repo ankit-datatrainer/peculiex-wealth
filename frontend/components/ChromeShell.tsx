@@ -13,6 +13,7 @@ import WhatsAppButton from "./WhatsAppButton";
 import SupportTicket from "./SupportTicket";
 import SiteModals from "./SiteModals";
 import GlobalUX from "./GlobalUX";
+import Chatbot from "./Chatbot";
 
 export default function ChromeShell({
   children
@@ -40,6 +41,7 @@ export default function ChromeShell({
       <WhatsAppButton />
       <SupportTicket />
       <SiteModals />
+      <Chatbot />
       <GlobalUX />
     </>
   );

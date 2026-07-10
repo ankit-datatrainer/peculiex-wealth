@@ -21,6 +21,9 @@ type FormState = {
   iv: string;
   tag: "trend" | "avail" | "lim";
   logo_url: string;
+  min_units: number;
+  market_cap: string;
+  pe: string;
 };
 
 const blank = (): FormState => ({
@@ -33,7 +36,10 @@ const blank = (): FormState => ({
   price: "",
   iv: "10",
   tag: "avail",
-  logo_url: ""
+  logo_url: "",
+  min_units: 0,
+  market_cap: "",
+  pe: "N/A"
 });
 
 const TAG_LABEL = { trend: "Trending", avail: "Available", lim: "Limited" };
@@ -97,7 +103,10 @@ export default function AdminUnlistedPage() {
       price: String(u.price),
       iv: u.iv,
       tag: u.tag,
-      logo_url: u.logo_url || ""
+      logo_url: u.logo_url || "",
+      min_units: u.min_units || 0,
+      market_cap: u.market_cap || "",
+      pe: u.pe || "N/A"
     });
     setShowForm(true);
     setFormError(null);
@@ -130,7 +139,10 @@ export default function AdminUnlistedPage() {
       price: priceNum,
       iv: form.iv.trim(),
       tag: form.tag,
-      logo_url: form.logo_url.trim() || null
+      logo_url: form.logo_url.trim() || null,
+      min_units: Number(form.min_units) || 0,
+      market_cap: form.market_cap.trim(),
+      pe: form.pe.trim()
     };
 
     setSubmitting(true);
@@ -219,7 +231,7 @@ export default function AdminUnlistedPage() {
                 <th>Domain</th>
                 <th>Tag</th>
                 <th style={{ textAlign: "right" }}>Price</th>
-                <th>Face Value</th>
+                <th style={{ textAlign: "right" }}>Min Units</th>
                 <th />
               </tr>
             </thead>
@@ -257,7 +269,7 @@ export default function AdminUnlistedPage() {
                   <td style={{ textAlign: "right" }}>
                     ₹{u.price.toLocaleString("en-IN")}
                   </td>
-                  <td>₹{u.iv}</td>
+                  <td style={{ textAlign: "right" }}>{u.min_units || "—"}</td>
                   <td className="admin-row-actions">
                     <button
                       className="admin-icon-btn"
@@ -357,12 +369,33 @@ export default function AdminUnlistedPage() {
               </label>
 
               <label className="admin-field">
-                <span>Face Value (₹)</span>
+                <span>Min Units</span>
+                <input
+                  type="number"
+                  min="0"
+                  value={form.min_units}
+                  onChange={(e) => setForm({ ...form, min_units: parseInt(e.target.value) || 0 })}
+                  placeholder="100"
+                />
+              </label>
+
+              <label className="admin-field">
+                <span>Market Cap</span>
                 <input
                   type="text"
-                  value={form.iv}
-                  onChange={(e) => setForm({ ...form, iv: e.target.value })}
-                  placeholder="10"
+                  value={form.market_cap}
+                  onChange={(e) => setForm({ ...form, market_cap: e.target.value })}
+                  placeholder="1000 Cr"
+                />
+              </label>
+
+              <label className="admin-field">
+                <span>P/E Ratio</span>
+                <input
+                  type="text"
+                  value={form.pe}
+                  onChange={(e) => setForm({ ...form, pe: e.target.value })}
+                  placeholder="25.5"
                 />
               </label>
 

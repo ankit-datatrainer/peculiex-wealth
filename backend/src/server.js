@@ -80,6 +80,7 @@ app.get("/", (_req, res) => {
 app.use("/api/health", health);
 app.use("/api", catalog);
 app.use("/api/markets", markets);
+app.use("/api/mf", require("./routes/mf"));
 app.use("/api/auth/fyers", fyersAuth);
 app.use("/api/auth", authLimiter, auth);
 app.use("/api/watchlist", watchlist);

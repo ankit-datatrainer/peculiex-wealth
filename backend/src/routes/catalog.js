@@ -118,7 +118,8 @@ router.get("/stocks", async (_req, res) => {
 
 /* ---------- everything below is unchanged: static catalog ---------- */
 router.get("/unlisted", async (_req, res) => {
-  const items = await fromTable("unlisted_shares", seed.UNLISTED);
+  const adminStore = require("../admin/store");
+  const items = await adminStore.listUnlisted();
   res.json({ items });
 });
 

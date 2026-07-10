@@ -59,7 +59,7 @@ export default function Calculator() {
     const gains = FV - invested;
 
     animateText(oInv.current, lastVals.current.inv || invested, invested, fmtINR);
-    animateText(oRet.current, lastVals.current.ret || gains, gains, fmtINR);
+    animateText(oRet.current, lastVals.current.ret || gains, gains, (v) => "+" + fmtINR(v));
     animateText(oTot.current, lastVals.current.tot || FV, FV, fmtINR);
     animateText(dTot.current, lastVals.current.tot || FV, FV, fmtINR);
     lastVals.current = { inv: invested, ret: gains, tot: FV };
@@ -290,7 +290,7 @@ export default function Calculator() {
             <div className="cs-row">
               <span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>Est. returns
               <strong id="sipReturns" ref={oRet as any}>
-                ₹0
+                +₹0
               </strong>
             </div>
             <div className="cs-row total">

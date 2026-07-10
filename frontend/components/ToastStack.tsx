@@ -57,11 +57,11 @@ export default function ToastStack() {
       }, 4200);
     };
 
-    // Show the first toast shortly after load, then a new one every 5 seconds.
+    // Show the first toast after 1 minute, then a new one every 2 minutes.
     kickoff = setTimeout(() => {
       showToast();
-      timer = setInterval(showToast, 5000);
-    }, 5000);
+      timer = setInterval(showToast, 120000);
+    }, 60000);
 
     return () => {
       if (kickoff) clearTimeout(kickoff);

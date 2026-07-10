@@ -48,7 +48,10 @@ function seedUnlistedMem() {
       price: Number(u.price),
       iv: u.iv,
       tag: u.tag,
-      logo_url: null,
+      logo_url: u.logo_url || null,
+      min_units: u.min_units || 0,
+      market_cap: u.market_cap || "",
+      pe: u.pe || "N/A",
       created_at: now(),
       updated_at: now()
     });
@@ -93,7 +96,10 @@ function coerceUnlistedInput(input, { partial = false } = {}) {
     "price",
     "iv",
     "tag",
-    "logo_url"
+    "logo_url",
+    "min_units",
+    "market_cap",
+    "pe"
   ];
   for (const k of keys) {
     if (input[k] === undefined) continue;
@@ -115,6 +121,11 @@ function coerceUnlistedInput(input, { partial = false } = {}) {
       out.domain = String(v).trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
     } else if (k === "logo_url") {
       out.logo_url = v ? String(v).trim().slice(0, 500) : null;
+    } else if (k === "min_units") {
+      const n = Number(v);
+      out.min_units = Number.isFinite(n) && n >= 0 ? n : 0;
+    } else if (k === "market_cap" || k === "pe") {
+      out[k] = String(v).trim().slice(0, 50);
     } else {
       // name, sector, iv — plain string fields
       out[k] = String(v).trim().slice(0, 200);
@@ -181,7 +192,20 @@ async function listUnlisted() {
     .select("*")
     .order("name", { ascending: true });
   if (error) throw new Error(error.message);
-  return data || [];
+  
+  const seedUnlisted = require("../seed").UNLISTED;
+  const seedByName = new Map(seedUnlisted.map(u => [u.name, u]));
+  return (data || []).map(item => {
+    const s = seedByName.get(item.name);
+    if (!s) return item;
+    return {
+      ...item,
+      min_units: item.min_units ?? s.min_units ?? 0,
+      market_cap: item.market_cap ?? s.market_cap ?? "",
+      pe: item.pe ?? s.pe ?? "N/A",
+      logo_url: item.logo_url ?? s.logo_url ?? null
+    };
+  });
 }
 
 async function getUnlistedById(id) {
@@ -193,7 +217,16 @@ async function getUnlistedById(id) {
     .eq("id", id)
     .maybeSingle();
   if (error) throw new Error(error.message);
-  return data || null;
+  if (!data) return null;
+  const s = require("../seed").UNLISTED.find(u => u.name === data.name);
+  if (!s) return data;
+  return {
+    ...data,
+    min_units: data.min_units ?? s.min_units ?? 0,
+    market_cap: data.market_cap ?? s.market_cap ?? "",
+    pe: data.pe ?? s.pe ?? "N/A",
+    logo_url: data.logo_url ?? s.logo_url ?? null
+  };
 }
 
 async function createUnlisted(input) {
@@ -217,9 +250,13 @@ async function createUnlisted(input) {
     map.set(row.id, row);
     return row;
   }
+  const dbRow = { ...row };
+  delete dbRow.min_units;
+  delete dbRow.market_cap;
+  delete dbRow.pe;
   const { data, error } = await client
     .from(UNLISTED_TABLE)
-    .insert(row)
+    .insert(dbRow)
     .select("*")
     .single();
   if (error) {
@@ -230,7 +267,14 @@ async function createUnlisted(input) {
     }
     throw new Error(error.message);
   }
-  return data;
+  const s = require("../seed").UNLISTED.find(u => u.name === data.name);
+  return s ? {
+    ...data,
+    min_units: data.min_units ?? s.min_units ?? 0,
+    market_cap: data.market_cap ?? s.market_cap ?? "",
+    pe: data.pe ?? s.pe ?? "N/A",
+    logo_url: data.logo_url ?? s.logo_url ?? null
+  } : data;
 }
 
 async function updateUnlisted(id, patch) {
@@ -255,9 +299,13 @@ async function updateUnlisted(id, patch) {
     map.set(id, next);
     return next;
   }
+  const dbFields = { ...fields };
+  delete dbFields.min_units;
+  delete dbFields.market_cap;
+  delete dbFields.pe;
   const { data, error } = await client
     .from(UNLISTED_TABLE)
-    .update(fields)
+    .update(dbFields)
     .eq("id", id)
     .select("*")
     .maybeSingle();
@@ -269,7 +317,15 @@ async function updateUnlisted(id, patch) {
     }
     throw new Error(error.message);
   }
-  return data || null;
+  if (!data) return null;
+  const s = require("../seed").UNLISTED.find(u => u.name === data.name);
+  return s ? {
+    ...data,
+    min_units: data.min_units ?? s.min_units ?? 0,
+    market_cap: data.market_cap ?? s.market_cap ?? "",
+    pe: data.pe ?? s.pe ?? "N/A",
+    logo_url: data.logo_url ?? s.logo_url ?? null
+  } : data;
 }
 
 async function deleteUnlisted(id) {

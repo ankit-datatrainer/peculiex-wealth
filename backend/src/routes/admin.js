@@ -139,7 +139,10 @@ const UnlistedCreateSchema = z.object({
     .max(500)
     .optional()
     .or(z.literal(""))
-    .nullable()
+    .nullable(),
+  min_units: z.coerce.number().nonnegative().optional().default(0),
+  market_cap: z.string().trim().max(50).optional().default(""),
+  pe: z.string().trim().max(50).optional().default("N/A")
 });
 
 const UnlistedPatchSchema = UnlistedCreateSchema.partial();

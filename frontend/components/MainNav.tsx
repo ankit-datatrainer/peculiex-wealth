@@ -13,30 +13,29 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/watchlist", label: "Watchlist" },
-  { href: "/unlisted", label: "Unlisted" },
   {
     href: "/products",
     label: "Products",
     children: [
       { href: "/products/mutual-funds", label: "Mutual Funds" },
-      { href: "/products/pms", label: "Portfolio Management (PMS)" },
-      { href: "/products/aif", label: "Alternative Investments (AIF)" },
       { href: "/products/bonds", label: "Bonds & G-Sec" },
       { href: "/products/insurance", label: "Insurance" },
       { href: "/products/fixed-deposits", label: "Fixed Deposits" },
-      { href: "/products/unlisted-shares", label: "Unlisted Shares" },
       { href: "/products/gift-city", label: "Gift City" }
     ]
   },
+  { href: "/unlisted", label: "Unlisted" },
+  { href: "/products/pms", label: "PMS" },
+  { href: "/products/aif", label: "AIF" },
   {
     href: "/nri",
-    label: "NRI",
+    label: "NRI Corner",
     children: [
       { href: "/products/mutual-funds", label: "Mutual Funds" },
       { href: "/nri/services", label: "Services" }
     ]
   },
-  { href: "/investor-zone", label: "InvestorZone" },
+
   {
     href: "/calculator",
     label: "Calculators",
@@ -59,6 +58,7 @@ export default function MainNav() {
   const { user, ready, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -75,7 +75,19 @@ export default function MainNav() {
   useEffect(() => {
     setMobileOpen(false);
     setMenuOpen(false);
+    setOpenGroup(null);
   }, [pathname]);
+
+  // Collapse any expanded accordion group when the mobile menu closes.
+  useEffect(() => {
+    if (!mobileOpen) setOpenGroup(null);
+  }, [mobileOpen]);
+
+  const toggleGroup = (href: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpenGroup((g) => (g === href ? null : href));
+  };
 
   // Close account menu when clicking outside
   useEffect(() => {
@@ -134,19 +146,34 @@ export default function MainNav() {
                 (pathname === it.href ||
                   (it.href !== "/" && pathname.startsWith(it.href)));
               if (it.children) {
-                if (it.label === "NRI") {
+                if (it.label === "NRI Corner") {
                   return (
-                    <li key={it.href} className="nav-has-dropdown nri-mega-menu-container">
-                      <Link
-                        href={it.href}
-                        className={`nav-link nav-link-parent${isActive ? " active" : ""}`}
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        {it.label}
-                        <svg className="nav-caret" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </Link>
+                    <li
+                      key={it.href}
+                      className={`nav-has-dropdown nri-mega-menu-container${
+                        openGroup === it.href ? " open" : ""
+                      }`}
+                    >
+                      <div className="nav-parent-row">
+                        <Link
+                          href={it.href}
+                          className={`nav-link nav-link-parent${isActive ? " active" : ""}`}
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          {it.label}
+                        </Link>
+                        <button
+                          type="button"
+                          className="nav-caret-btn"
+                          aria-label={`Toggle ${it.label} menu`}
+                          aria-expanded={openGroup === it.href}
+                          onClick={toggleGroup(it.href)}
+                        >
+                          <svg className="nav-caret" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </button>
+                      </div>
                       <div className="nav-dropdown nri-mega-dropdown">
                         <div className="nri-dropdown-inner">
                           {/* Left Column: Investment */}
@@ -156,7 +183,7 @@ export default function MainNav() {
                               <li><Link href="/products/mutual-funds" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Mutual Funds</Link></li>
                               <li><Link href="/products/pms" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Portfolio Management (PMS)</Link></li>
                               <li><Link href="/products/aif" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Alternative Investments (AIF)</Link></li>
-                              <li><Link href="/products/unlisted-shares" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Unlisted Shares</Link></li>
+                              <li><Link href="/unlisted" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Unlisted Shares</Link></li>
                               <li><Link href="/products/gift-city" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Gift City Offshore</Link></li>
                               <li><Link href="/products/bonds" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Bonds & G-Sec</Link></li>
                             </ul>
@@ -174,15 +201,7 @@ export default function MainNav() {
                                   <p>File your income tax in India with expert support</p>
                                 </div>
                               </Link>
-                              <Link href="/get-started?ref=us-tax" className="nri-service-card" onClick={() => setMobileOpen(false)}>
-                                <div className="nri-icon-wrapper">
-                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 8H10.5a2.5 2.5 0 0 0 0 5H13.5a2.5 2.5 0 0 1 0 5H9"/></svg>
-                                </div>
-                                <div className="nri-service-text">
-                                  <h4>US Tax Filing</h4>
-                                  <p>Stay compliant with US tax regulations stress-free</p>
-                                </div>
-                              </Link>
+
                               <Link href="/get-started?ref=pan" className="nri-service-card" onClick={() => setMobileOpen(false)}>
                                 <div className="nri-icon-wrapper">
                                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
@@ -201,15 +220,7 @@ export default function MainNav() {
                                   <p>Keep your records accurate across financial systems</p>
                                 </div>
                               </Link>
-                              <Link href="/get-started?ref=nro-nre" className="nri-service-card" onClick={() => setMobileOpen(false)}>
-                                <div className="nri-icon-wrapper">
-                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M3 11l9-9 9 9M5 22v-4h14v4"/></svg>
-                                </div>
-                                <div className="nri-service-text">
-                                  <h4>NRO-NRE Transfer</h4>
-                                  <p>Transfer funds seamlessly between your accounts</p>
-                                </div>
-                              </Link>
+
                             </div>
                           </div>
                         </div>
@@ -218,17 +229,30 @@ export default function MainNav() {
                   );
                 }
                 return (
-                  <li key={it.href} className="nav-has-dropdown">
-                    <Link
-                      href={it.href}
-                      className={`nav-link nav-link-parent${isActive ? " active" : ""}`}
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      {it.label}
-                      <svg className="nav-caret" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </Link>
+                  <li
+                    key={it.href}
+                    className={`nav-has-dropdown${openGroup === it.href ? " open" : ""}`}
+                  >
+                    <div className="nav-parent-row">
+                      <Link
+                        href={it.href}
+                        className={`nav-link nav-link-parent${isActive ? " active" : ""}`}
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        {it.label}
+                      </Link>
+                      <button
+                        type="button"
+                        className="nav-caret-btn"
+                        aria-label={`Toggle ${it.label} menu`}
+                        aria-expanded={openGroup === it.href}
+                        onClick={toggleGroup(it.href)}
+                      >
+                        <svg className="nav-caret" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </button>
+                    </div>
                     <ul className="nav-dropdown">
                       {it.children.map((c) => (
                         <li key={c.href}>
