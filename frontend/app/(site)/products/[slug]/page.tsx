@@ -20,7 +20,7 @@ export function generateMetadata({
   const p = PRODUCTS[params.slug];
   if (!p) return { title: "Not found" };
   return {
-    title: `${p.label} — Peculiex`,
+    title: `${p.label} — Finvoq`,
     description: p.subtitle
   };
 }

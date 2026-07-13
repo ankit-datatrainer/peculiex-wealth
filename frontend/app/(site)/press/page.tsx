@@ -4,7 +4,7 @@ import ContentBody from "@/components/ContentBody";
 
 export const metadata: Metadata = {
   title: "Press & Brand Kit",
-  description: "Press contact, company facts, brand assets, and media coverage of Peculiex."
+  description: "Press contact, company facts, brand assets, and media coverage of Finvoq."
 };
 
 export default function PressPage() {
@@ -13,20 +13,20 @@ export default function PressPage() {
       <PageHero
         label="Press"
         title={<>Press <em>resources</em></>}
-        subtitle="Company facts, brand assets, and media contact for journalists writing about Peculiex."
+        subtitle="Company facts, brand assets, and media contact for journalists writing about Finvoq."
       />
 
       <ContentBody>
         <h2>Press contact</h2>
         <p>
           For media enquiries, please email{" "}
-          <a href="mailto:press@peculiex.example.com">press@peculiex.example.com</a>. We aim to
+          <a href="mailto:press@finvoq.example.com">press@finvoq.example.com</a>. We aim to
           respond to journalists within four business hours during India trading days.
         </p>
 
         <h2>Company facts</h2>
         <ul>
-          <li><strong>Legal name:</strong> Peculiex Wealth Pvt. Ltd.</li>
+          <li><strong>Legal name:</strong> Finvoq Wealth Pvt. Ltd.</li>
           <li><strong>Founded:</strong> 2024</li>
           <li><strong>Headquarters:</strong> Mumbai, India</li>
           <li><strong>SEBI Registered Investment Adviser:</strong> INA000099999</li>
@@ -38,17 +38,17 @@ export default function PressPage() {
 
         <h2>Boilerplate</h2>
         <blockquote>
-          Peculiex is India's premium investment marketplace. We unify eight asset classes —
+          Finvoq is India's premium investment marketplace. We unify eight asset classes —
           listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, insurance,
           and gold &amp; commodities — into a single advisor-led platform. As a SEBI Registered
-          Investment Adviser, Peculiex earns a flat fee from investors and accepts no
+          Investment Adviser, Finvoq earns a flat fee from investors and accepts no
           commissions from product manufacturers. Founded in 2024, headquartered in Mumbai.
         </blockquote>
 
         <h2>Brand assets</h2>
         <p>
           Logos, wordmarks, and approved colour palettes are available on request to
-          <a href="mailto:press@peculiex.example.com"> press@peculiex.example.com</a>. Please
+          <a href="mailto:press@finvoq.example.com"> press@finvoq.example.com</a>. Please
           do not modify the wordmark or apply colour treatments not in the brand kit.
         </p>
 

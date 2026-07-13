@@ -47,7 +47,7 @@ export default function Unlisted() {
 
   useEffect(() => {
     // Re-observe dynamic cards so they fade in instead of staying invisible
-    const io = (window as any).__peculiexReveal;
+    const io = (window as any).__finvoqReveal;
     if (io) {
       document
         .querySelectorAll(".unlisted-grid-v2 .reveal:not(.visible)")

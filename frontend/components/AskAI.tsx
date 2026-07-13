@@ -1,10 +1,10 @@
-// "Ask AI about Peculiex" — three AI logos that open the assistant with a
-// pre-filled prompt about Peculiex. Deep-link params:
+// "Ask AI about Finvoq" — three AI logos that open the assistant with a
+// pre-filled prompt about Finvoq. Deep-link params:
 //   ChatGPT: https://chatgpt.com/?prompt=<text>
 //   Claude:  https://claude.ai/new?q=<text>
 //   Gemini:  https://www.google.com/search?udm=50&q=<text>  (Google AI Mode)
 const PROMPT =
-  "I'm exploring investing in India across mutual funds, PMS, AIF, unlisted shares, bonds and insurance. How can Peculiex help me invest digitally with expert, SEBI-registered guidance and manage my entire portfolio in one place?";
+  "I'm exploring investing in India across mutual funds, PMS, AIF, unlisted shares, bonds and insurance. How can Finvoq help me invest digitally with expert, SEBI-registered guidance and manage my entire portfolio in one place?";
 
 const ENC = encodeURIComponent(PROMPT);
 
@@ -59,8 +59,8 @@ export default function AskAI() {
             target="_blank"
             rel="noopener noreferrer"
             className="ask-ai-btn"
-            aria-label={`Ask ${l.name} about Peculiex`}
-            title={`Ask ${l.name} about Peculiex`}
+            aria-label={`Ask ${l.name} about Finvoq`}
+            title={`Ask ${l.name} about Finvoq`}
           >
             {l.logo}
           </a>
@@ -68,7 +68,7 @@ export default function AskAI() {
       </div>
       <div className="ask-ai-label">
         <span>Ask AI</span>
-        <em>about Peculiex</em>
+        <em>about Finvoq</em>
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 
 const DEFAULT_NUMBER = "919999999999"; // Replace via NEXT_PUBLIC_WHATSAPP_NUMBER in .env.local
 const DEFAULT_MESSAGE =
-  "Hi Peculiex team! I'd like to know more about investing through your platform.";
+  "Hi Finvoq team! I'd like to know more about investing through your platform.";
 // Replace via NEXT_PUBLIC_WHATSAPP_COMMUNITY in .env.local (the group/community invite link)
 const DEFAULT_COMMUNITY = "https://chat.whatsapp.com/";
 

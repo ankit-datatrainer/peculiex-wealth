@@ -49,7 +49,7 @@ export default function Why() {
     <section id="why" className="why-sec">
       <div className="container">
         <div className="sec-head sec-head-center reveal">
-          <div className="label">Why Peculiex</div>
+          <div className="label">Why Finvoq</div>
           <h2 className="stitle">
             Built for investors who <em>refuse to compromise.</em>
           </h2>

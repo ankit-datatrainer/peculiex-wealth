@@ -43,14 +43,12 @@ export default function Preloader() {
     <div className="preloader" id="preloader" ref={ref}>
       <div className="pre-inner">
         <div className="pre-logo">
-          <span className="pre-letter">P</span>
-          <span className="pre-letter">E</span>
-          <span className="pre-letter">C</span>
-          <span className="pre-letter">U</span>
-          <span className="pre-letter">L</span>
-          <span className="pre-letter">I</span>
-          <span className="pre-letter pre-em">E</span>
-          <span className="pre-letter pre-em">X</span>
+          <span className="pre-letter">f</span>
+          <span className="pre-letter">i</span>
+          <span className="pre-letter">n</span>
+          <span className="pre-letter">v</span>
+          <span className="pre-letter">o</span>
+          <span className="pre-letter pre-em">q</span>
         </div>
         <div className="pre-bar">
           <span style={{ width: `${pct}%` }}></span>

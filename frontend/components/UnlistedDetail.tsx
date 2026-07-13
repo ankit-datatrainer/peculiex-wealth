@@ -107,7 +107,7 @@ export default function UnlistedDetail({ slug }: { slug: string }) {
         <section className="unl-detail-body">
           <h2>About the opportunity</h2>
           <p>
-            {item.name} is available as an unlisted / pre-IPO holding through Peculiex’s private-markets desk.
+            {item.name} is available as an unlisted / pre-IPO holding through Finvoq’s private-markets desk.
             Shares settle via off-market transfer directly into your demat account, with transparent pricing,
             recent transaction history, and full compliance disclosures shared before purchase.
           </p>

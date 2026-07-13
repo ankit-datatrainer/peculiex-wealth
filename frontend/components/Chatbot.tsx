@@ -21,7 +21,7 @@ const KNOWLEDGE_BASE = [
 
 const INITIAL_MESSAGE: Message = { 
   id: 1, 
-  text: "Hi! I am the Peculiex AI Assistant. Ask me about our investment products like Mutual Funds, Unlisted Shares, Bonds, or PMS.", 
+  text: "Hi! I am the Finvoq AI Assistant. Ask me about our investment products like Mutual Funds, Unlisted Shares, Bonds, or PMS.", 
   sender: "bot" 
 };
 
@@ -34,7 +34,7 @@ export default function Chatbot() {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("peculiex_chatbot_messages");
+      const saved = localStorage.getItem("finvoq_chatbot_messages");
       if (saved) {
         setMessages(JSON.parse(saved));
       }
@@ -45,7 +45,7 @@ export default function Chatbot() {
 
   useEffect(() => {
     try {
-      localStorage.setItem("peculiex_chatbot_messages", JSON.stringify(messages));
+      localStorage.setItem("finvoq_chatbot_messages", JSON.stringify(messages));
     } catch (e) {
       console.error("Failed to save chat history", e);
     }
@@ -100,7 +100,7 @@ export default function Chatbot() {
       {open && (
         <div className="chatbot-window">
           <div className="chatbot-header">
-            <h4>Peculiex AI</h4>
+            <h4>Finvoq AI</h4>
             <div style={{ display: "flex", gap: "8px" }}>
               <button 
                 className="chatbot-clear-btn" 

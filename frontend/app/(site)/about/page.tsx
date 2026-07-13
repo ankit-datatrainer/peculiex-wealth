@@ -4,9 +4,9 @@ import PageHero from "@/components/PageHero";
 import ContentBody from "@/components/ContentBody";
 
 export const metadata: Metadata = {
-  title: "About Peculiex",
+  title: "About Finvoq",
   description:
-    "Peculiex is India's premium investment marketplace — eight asset classes, one platform, advisory-led. Learn about our mission, values, and the team behind the platform."
+    "Finvoq is India's premium investment marketplace — eight asset classes, one platform, advisory-led. Learn about our mission, values, and the team behind the platform."
 };
 
 export default function AboutPage() {
@@ -15,7 +15,7 @@ export default function AboutPage() {
       <PageHero
         label="About"
         title={<>Wealth management, <em>without the markup.</em></>}
-        subtitle="We started Peculiex because India's investing experience was broken in two predictable ways: too many platforms, and too many incentives that point away from the investor."
+        subtitle="We started Finvoq because India's investing experience was broken in two predictable ways: too many platforms, and too many incentives that point away from the investor."
       />
 
       <ContentBody>
@@ -27,7 +27,7 @@ export default function AboutPage() {
           commission. None of it was bought as part of a plan.
         </p>
         <p>
-          Peculiex unifies the investing surface — eight asset classes, one dashboard — and
+          Finvoq unifies the investing surface — eight asset classes, one dashboard — and
           changes the business model. We earn a flat advisory fee from <em>you</em>, and
           nothing from product manufacturers. Ever. Our incentives match yours, by design.
         </p>

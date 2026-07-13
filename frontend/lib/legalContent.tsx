@@ -13,13 +13,13 @@ export const LEGAL: Record<string, LegalDoc> = {
     label: "Legal",
     title: "Terms of Service",
     subtitle:
-      "The agreement between you and Peculiex Wealth Pvt. Ltd. when you use any of our services.",
+      "The agreement between you and Finvoq Wealth Pvt. Ltd. when you use any of our services.",
     updated: "Last updated: 1 May 2026",
     body: (
       <>
         <h2>1. Acceptance of terms</h2>
         <p>
-          By creating an account on Peculiex or using any feature of this website or its
+          By creating an account on Finvoq or using any feature of this website or its
           mobile app (the "Platform"), you agree to be bound by these Terms of Service
           ("Terms"). If you do not agree, do not use the Platform.
         </p>
@@ -34,9 +34,9 @@ export const LEGAL: Record<string, LegalDoc> = {
 
         <h2>3. Nature of services</h2>
         <p>
-          Peculiex is a SEBI Registered Investment Adviser (RIA: INA000099999). We provide
+          Finvoq is a SEBI Registered Investment Adviser (RIA: INA000099999). We provide
           investment advisory services and an execution interface to SEBI-registered partner
-          brokers, AMCs, and IRDAI-licensed insurers. Peculiex itself does not hold custody
+          brokers, AMCs, and IRDAI-licensed insurers. Finvoq itself does not hold custody
           of your money or securities — every trade settles into your own demat or insurance
           policy.
         </p>
@@ -55,7 +55,7 @@ export const LEGAL: Record<string, LegalDoc> = {
             Investments in securities markets are subject to market risks. Read all related
             documents carefully before investing.
           </strong>{" "}
-          Past performance is not indicative of future returns. Peculiex does not guarantee
+          Past performance is not indicative of future returns. Finvoq does not guarantee
           any specific return on any investment.
         </p>
 
@@ -63,21 +63,21 @@ export const LEGAL: Record<string, LegalDoc> = {
         <ul>
           <li>Keep your login credentials confidential and notify us immediately of any unauthorised access.</li>
           <li>Provide accurate, current, and complete information during onboarding and update it when material facts change.</li>
-          <li>Comply with all applicable tax laws on your investments — Peculiex provides reports but does not file taxes for you.</li>
+          <li>Comply with all applicable tax laws on your investments — Finvoq provides reports but does not file taxes for you.</li>
           <li>Use the Platform only for lawful, personal investment purposes.</li>
         </ul>
 
         <h2>7. Intellectual property</h2>
         <p>
           All content on the Platform — design, text, logos, research notes — is owned by
-          Peculiex Wealth Pvt. Ltd. or licensed to us. You may use the content for your own
+          Finvoq Wealth Pvt. Ltd. or licensed to us. You may use the content for your own
           investment decisions but may not redistribute, scrape, or commercially exploit it
           without written consent.
         </p>
 
         <h2>8. Limitation of liability</h2>
         <p>
-          To the maximum extent permitted by law, Peculiex's aggregate liability for any
+          To the maximum extent permitted by law, Finvoq's aggregate liability for any
           claim relating to the Platform is limited to the advisory fees you have paid us in
           the twelve months preceding the claim. We are not liable for indirect, incidental,
           consequential, or speculative losses.
@@ -85,7 +85,7 @@ export const LEGAL: Record<string, LegalDoc> = {
 
         <h2>9. Termination</h2>
         <p>
-          You may terminate your relationship with Peculiex at any time by giving 30 days'
+          You may terminate your relationship with Finvoq at any time by giving 30 days'
           written notice. We may terminate or suspend your account for breach of these
           Terms, suspected fraud, or regulatory requirement. Termination does not relieve
           either party of obligations accrued before the termination date.
@@ -101,7 +101,7 @@ export const LEGAL: Record<string, LegalDoc> = {
         <h2>11. Contact</h2>
         <p>
           Questions about these Terms? Email{" "}
-          <a href="mailto:legal@peculiex.example.com">legal@peculiex.example.com</a>.
+          <a href="mailto:legal@finvoq.example.com">legal@finvoq.example.com</a>.
         </p>
       </>
     )
@@ -171,7 +171,7 @@ export const LEGAL: Record<string, LegalDoc> = {
           <li><strong>Withdrawal:</strong> revoke consent for non-essential processing.</li>
         </ul>
         <p>
-          Email <a href="mailto:privacy@peculiex.example.com">privacy@peculiex.example.com</a>
+          Email <a href="mailto:privacy@finvoq.example.com">privacy@finvoq.example.com</a>
           {" "}to exercise any of these rights. We respond within 30 days.
         </p>
 
@@ -196,7 +196,7 @@ export const LEGAL: Record<string, LegalDoc> = {
     label: "Legal",
     title: "Risk Disclosure",
     subtitle:
-      "A frank disclosure of the risks you take when investing through Peculiex.",
+      "A frank disclosure of the risks you take when investing through Finvoq.",
     updated: "Last updated: 1 May 2026",
     body: (
       <>
@@ -261,7 +261,7 @@ export const LEGAL: Record<string, LegalDoc> = {
 
         <h2>5. Advice is not a guarantee</h2>
         <p>
-          Peculiex's research and recommendations are based on information available at the
+          Finvoq's research and recommendations are based on information available at the
           time and reasonable assumptions about future conditions. They are not predictions
           and should not be treated as such. The final investment decision is yours.
         </p>
@@ -278,7 +278,7 @@ export const LEGAL: Record<string, LegalDoc> = {
 
         <p>
           Questions? Reach our advisory desk at{" "}
-          <a href="mailto:advisory@peculiex.example.com">advisory@peculiex.example.com</a>.
+          <a href="mailto:advisory@finvoq.example.com">advisory@finvoq.example.com</a>.
         </p>
       </>
     )
@@ -289,7 +289,7 @@ export const LEGAL: Record<string, LegalDoc> = {
     label: "Legal",
     title: "Grievance Redressal",
     subtitle:
-      "How to raise a complaint with Peculiex, and how we resolve it — within SEBI-mandated timelines.",
+      "How to raise a complaint with Finvoq, and how we resolve it — within SEBI-mandated timelines.",
     updated: "Last updated: 1 May 2026",
     body: (
       <>
@@ -298,7 +298,7 @@ export const LEGAL: Record<string, LegalDoc> = {
         <h3>Stage 1 — Customer support</h3>
         <p>
           Email{" "}
-          <a href="mailto:support@peculiex.example.com">support@peculiex.example.com</a> or
+          <a href="mailto:support@finvoq.example.com">support@finvoq.example.com</a> or
           message us through the in-app chat. Our team responds within{" "}
           <strong>one business day</strong> and aims to resolve straightforward issues within{" "}
           <strong>three business days</strong>.
@@ -314,13 +314,13 @@ export const LEGAL: Record<string, LegalDoc> = {
           </li>
           <li>
             <strong>Email:</strong>{" "}
-            <a href="mailto:compliance@peculiex.example.com">compliance@peculiex.example.com</a>
+            <a href="mailto:compliance@finvoq.example.com">compliance@finvoq.example.com</a>
           </li>
           <li>
             <strong>Phone:</strong> +91 22 4900 0000 · Mon–Fri 10am–6pm IST
           </li>
           <li>
-            <strong>Address:</strong> Peculiex Wealth Pvt. Ltd., 12th floor, Phoenix Building,
+            <strong>Address:</strong> Finvoq Wealth Pvt. Ltd., 12th floor, Phoenix Building,
             Lower Parel, Mumbai 400013
           </li>
         </ul>
@@ -414,7 +414,7 @@ export const LEGAL: Record<string, LegalDoc> = {
           <li>The right to know exactly what fees you pay and to whom.</li>
           <li>The right to be informed of any conflict of interest, before the recommendation.</li>
           <li>The right to confidentiality of your financial and personal data.</li>
-          <li>The right to seek redressal through Peculiex's grievance process and SEBI SCORES.</li>
+          <li>The right to seek redressal through Finvoq's grievance process and SEBI SCORES.</li>
         </ol>
 
         <h2>Investor responsibilities</h2>

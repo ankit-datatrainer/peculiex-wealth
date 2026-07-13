@@ -559,7 +559,7 @@ async function bootstrapSuperAdmin({ hashPassword }) {
 
 async function bootstrapTestUser({ hashPassword }) {
   const email = norm(
-    process.env.TEST_USER_EMAIL || "tester@peculiex.local"
+    process.env.TEST_USER_EMAIL || "tester@finvoq.local"
   );
   const password = process.env.TEST_USER_PASSWORD || "Test@1234";
   const name = (process.env.TEST_USER_NAME || "Test Investor").trim();

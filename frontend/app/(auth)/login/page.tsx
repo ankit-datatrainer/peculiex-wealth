@@ -142,10 +142,10 @@ function LoginInner() {
       <aside className="auth-aside">
         <Link href="/" className="logo" data-magnetic>
           <span className="logo-mark">
-            <span>P</span>
+            <span>f</span>
           </span>
           <span className="logo-text">
-            PECULI<em>EX</em>
+            finvo<em>q</em>
           </span>
         </Link>
         <div>
@@ -159,7 +159,7 @@ function LoginInner() {
           </ul>
         </div>
         <div className="auth-foot">
-          © {new Date().getFullYear()} Peculiex Wealth Pvt. Ltd.
+          © {new Date().getFullYear()} Finvoq Wealth Pvt. Ltd.
         </div>
       </aside>
 
@@ -169,7 +169,7 @@ function LoginInner() {
             <>
               <h1>Login to your account</h1>
               <p className="auth-sub">
-                New to Peculiex?{" "}
+                New to Finvoq?{" "}
                 <Link href="/signup">Open a free account →</Link>
               </p>
               {shownError && <div className="auth-error">{shownError}</div>}

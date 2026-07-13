@@ -3,7 +3,7 @@ import IconSprite from "@/components/IconSprite";
 import AdminShell from "@/components/admin/AdminShell";
 
 export const metadata = {
-  title: "Admin · Peculiex"
+  title: "Admin · Finvoq"
 };
 
 export default function AdminLayoutRoot({

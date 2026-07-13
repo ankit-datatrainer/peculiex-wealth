@@ -76,7 +76,7 @@ const adminLimiter = rateLimit({
 });
 
 app.get("/", (_req, res) => {
-  res.type("text/plain").send("Peculiex API · see /api/health");
+  res.type("text/plain").send("Finvoq API · see /api/health");
 });
 
 app.use("/api/health", health);
@@ -111,7 +111,7 @@ if (!process.env.VERCEL) {
   startTickLoop();
 
   server.listen(PORT, async () => {
-    console.log(`[server] Peculiex API listening on http://localhost:${PORT}`);
+    console.log(`[server] Finvoq API listening on http://localhost:${PORT}`);
     console.log(`[server] CORS allowed: ${ORIGIN}`);
     // Best-effort super-admin bootstrap — never crash the boot if this fails.
     try {

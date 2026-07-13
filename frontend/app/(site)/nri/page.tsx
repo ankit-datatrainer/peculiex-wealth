@@ -3,7 +3,7 @@ import Link from "next/link";
 import PageHero from "@/components/PageHero";
 
 export const metadata: Metadata = {
-  title: "NRI Investing — Peculiex",
+  title: "NRI Investing — Finvoq",
   description:
     "Invest in India as an NRI — mutual funds, PMS, AIF, unlisted shares, bonds, and Gift City (IFSC) offshore access, with repatriation-aware, FEMA-compliant routing."
 };

@@ -98,10 +98,10 @@ export default function Footer() {
         <div className="foot-col foot-brand">
           <div className="logo">
             <span className="logo-mark">
-              <span>P</span>
+              <span>f</span>
             </span>
             <span className="logo-text">
-              PECULI<em>EX</em>
+              finvo<em>q</em>
             </span>
           </div>
           <p>
@@ -220,7 +220,7 @@ export default function Footer() {
               Investments in securities markets are subject to market risks.
             </strong>{" "}
             Read all related documents carefully before investing. Past
-            performance does not guarantee future returns. Peculiex Wealth Pvt.
+            performance does not guarantee future returns. Finvoq Wealth Pvt.
             Ltd. is a SEBI Registered Investment Adviser. Demat services are
             provided by SEBI-registered partner brokers.
           </p>
@@ -300,7 +300,7 @@ export default function Footer() {
 
       <div className="container foot-base">
         <span>
-          © <span id="year">{year ?? ""}</span> Peculiex Wealth Pvt. Ltd. — All
+          © <span id="year">{year ?? ""}</span> Finvoq Wealth Pvt. Ltd. — All
           rights reserved.
         </span>
         <span>Crafted with care · Mumbai, India</span>

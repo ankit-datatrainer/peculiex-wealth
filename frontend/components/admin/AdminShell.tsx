@@ -169,7 +169,7 @@ export default function AdminShell({
         <div className="admin-no-access">
           <h1>Sign in required</h1>
           <p>
-            You need to sign in with an admin account to view the Peculiex
+            You need to sign in with an admin account to view the Finvoq
             admin panel.
           </p>
           <div className="admin-no-access-actions">
@@ -235,9 +235,9 @@ export default function AdminShell({
       <aside className="admin-side">
         <div className="admin-brand">
           <Link href="/" className="admin-logo">
-            <span className="admin-logo-mark">P</span>
+            <span className="admin-logo-mark">f</span>
             <span className="admin-logo-text">
-              PECULI<em>EX</em>
+              finvo<em>q</em>
             </span>
           </Link>
           <span className="admin-brand-tag">

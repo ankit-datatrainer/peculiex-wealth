@@ -52,7 +52,7 @@ export default function AdminNewsletterPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `peculiex-newsletter-${Date.now()}.csv`;
+    a.download = `finvoq-newsletter-${Date.now()}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };

@@ -172,7 +172,7 @@ export default function Dashboard() {
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
             </div>
-            <h2>Welcome to Peculiex</h2>
+            <h2>Welcome to Finvoq</h2>
             <p>Please sign in to access your personalized dashboard with live portfolio tracking, watchlist management, and market insights.</p>
             <div className="ud-prompt-actions">
               <Link href="/login" className="btn btn-primary">Sign In</Link>
@@ -214,7 +214,7 @@ export default function Dashboard() {
           {/* ─── Sidebar ─── */}
           <aside className="ud-sidebar">
             <div className="ud-sidebar-brand">
-              <Link href="/">PECULI<em>EX</em></Link>
+              <Link href="/">finvo<em>q</em></Link>
               <span>Dashboard</span>
             </div>
 

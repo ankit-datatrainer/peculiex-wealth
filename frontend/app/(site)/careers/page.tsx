@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 
 export const metadata: Metadata = {
-  title: "Careers at Peculiex",
+  title: "Careers at Finvoq",
   description:
     "We're building India's premium investment marketplace. If you care about what you build and how it's sold, we'd love to hear from you."
 };
@@ -72,15 +72,15 @@ export default function CareersPage() {
                 <div className="role-meta">
                   <span style={{ color: "var(--color-primary)" }}>{r.type}</span>
                 </div>
-                <a href="mailto:careers@peculiex.example.com">Apply →</a>
+                <a href="mailto:careers@finvoq.example.com">Apply →</a>
               </div>
             ))}
           </div>
 
           <p style={{ color: "var(--color-text-muted)", marginTop: 40, fontSize: "0.95rem" }}>
             Don't see a fit but think you'd add value? Email{" "}
-            <a href="mailto:careers@peculiex.example.com" style={{ color: "var(--color-primary)" }}>
-              careers@peculiex.example.com
+            <a href="mailto:careers@finvoq.example.com" style={{ color: "var(--color-primary)" }}>
+              careers@finvoq.example.com
             </a>{" "}
             with what you'd want to build, and a link to your best work.
           </p>

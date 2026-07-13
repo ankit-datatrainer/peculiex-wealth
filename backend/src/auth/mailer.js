@@ -15,7 +15,7 @@
  * SMTP_PORT=587
  * SMTP_USER=...
  * SMTP_PASS=...
- * SMTP_FROM="Peculiex <no-reply@peculiex.local>"
+ * SMTP_FROM="Finvoq <no-reply@finvoq.local>"
  */
 
 const SMTP_HOST = process.env.SMTP_HOST || "";
@@ -23,7 +23,7 @@ const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
 const SMTP_USER = process.env.SMTP_USER || "";
 const SMTP_PASS = process.env.SMTP_PASS || "";
 const SMTP_FROM =
-  process.env.SMTP_FROM || "Peculiex <no-reply@peculiex.local>";
+  process.env.SMTP_FROM || "Finvoq <no-reply@finvoq.local>";
 
 const smtpConfigured = !!SMTP_HOST;
 
@@ -86,8 +86,8 @@ async function sendOtpEmail({ to, name, otp, isReset = false }) {
   rememberDevOtp(to, otp);
 
   const subject = isReset 
-    ? `Your Peculiex password reset code: ${otp}`
-    : `Your Peculiex verification code: ${otp}`;
+    ? `Your Finvoq password reset code: ${otp}`
+    : `Your Finvoq verification code: ${otp}`;
   const text = renderText({ name, otp, isReset });
   const html = renderHtml({ name, otp, isReset });
 
@@ -125,14 +125,14 @@ function renderText({ name, otp, isReset }) {
     "",
     isReset 
       ? "We received a request to reset or change your password. Your verification code is:"
-      : "Welcome to Peculiex. Your one-time verification code is:",
+      : "Welcome to Finvoq. Your one-time verification code is:",
     "",
     `    ${otp}`,
     "",
     "This code expires in 10 minutes. If you didn't request it, you can",
     "safely ignore this email — your account stays untouched.",
     "",
-    "— The Peculiex team"
+    "— The Finvoq team"
   ].join("\n");
 }
 
@@ -142,7 +142,7 @@ function renderHtml({ name, otp, isReset }) {
     : `Verify your email, ${escapeHtml(name || "investor")}`;
   const subtitle = isReset
     ? `Use the code below to securely reset or change your password.`
-    : `Use the code below to finish creating your Peculiex account.`;
+    : `Use the code below to finish creating your Finvoq account.`;
 
   return `<!doctype html>
 <html><body style="margin:0;padding:0;background:#f4f7f6;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#131313">
@@ -150,7 +150,7 @@ function renderHtml({ name, otp, isReset }) {
     <div style="background:#ffffff;border-radius:24px;padding:40px 36px;box-shadow:0 8px 32px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)">
       <div style="display:flex;align-items:center;margin-bottom:32px;">
         <div style="font-weight:800;letter-spacing:0.06em;color:#01696f;font-size:16px;">
-          PECULI<span style="font-style:italic;color:#0c4a4f">EX</span>
+          finvo<span style="font-style:italic;color:#0c4a4f">q</span>
         </div>
       </div>
       
@@ -176,12 +176,12 @@ function renderHtml({ name, otp, isReset }) {
       </p>
       
       <div style="border-top:1px solid #edf1f0;padding-top:24px;margin-top:8px;">
-        <p style="margin:0;color:#5b5e63;font-size:14px;font-weight:500;">The Peculiex Team</p>
+        <p style="margin:0;color:#5b5e63;font-size:14px;font-weight:500;">The Finvoq Team</p>
       </div>
     </div>
     
     <div style="text-align:center;font-size:12px;color:#9aa0a6;margin-top:24px;line-height:1.5;">
-      © ${new Date().getFullYear()} Peculiex Wealth Pvt. Ltd.<br/>
+      © ${new Date().getFullYear()} Finvoq Wealth Pvt. Ltd.<br/>
       SEBI Registered Investment Adviser
     </div>
   </div>
@@ -195,7 +195,7 @@ function escapeHtml(s) {
 }
 
 async function sendWelcomeEmail({ to, name }) {
-  const subject = `Welcome to Peculiex, ${name}!`;
+  const subject = `Welcome to Finvoq, ${name}!`;
   const text = renderWelcomeText({ name });
   const html = renderWelcomeHtml({ name });
 
@@ -229,13 +229,13 @@ function renderWelcomeText({ name }) {
   return [
     `Hi ${name || "there"},`,
     "",
-    "Welcome to Peculiex! Your account has been successfully verified.",
+    "Welcome to Finvoq! Your account has been successfully verified.",
     "",
     "We're thrilled to have you onboard as you begin your wealth creation journey. You now have access to India's smartest investment marketplace, curated products across multiple asset classes, and a dedicated relationship manager.",
     "",
     "Log in now to explore your dashboard and build your watchlist.",
     "",
-    "— The Peculiex team"
+    "— The Finvoq team"
   ].join("\n");
 }
 
@@ -246,7 +246,7 @@ function renderWelcomeHtml({ name }) {
     <div style="background:#ffffff;border-radius:24px;padding:40px 36px;box-shadow:0 8px 32px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)">
       <div style="display:flex;align-items:center;margin-bottom:32px;">
         <div style="font-weight:800;letter-spacing:0.06em;color:#01696f;font-size:16px;">
-          PECULI<span style="font-style:italic;color:#0c4a4f">EX</span>
+          finvo<span style="font-style:italic;color:#0c4a4f">q</span>
         </div>
       </div>
       
@@ -255,7 +255,7 @@ function renderWelcomeHtml({ name }) {
       </div>
 
       <h1 style="font-size:24px;line-height:1.3;margin:0 0 16px;font-weight:700;color:#0b2730;">
-        Welcome to Peculiex, ${escapeHtml(name || "Investor")}!
+        Welcome to Finvoq, ${escapeHtml(name || "Investor")}!
       </h1>
       
       <p style="margin:0 0 20px;color:#5b5e63;line-height:1.6;font-size:16px">
@@ -263,7 +263,7 @@ function renderWelcomeHtml({ name }) {
       </p>
       
       <p style="margin:0 0 28px;color:#5b5e63;line-height:1.6;font-size:16px">
-        With Peculiex, you now have access to India's smartest investment marketplace, curated products across multiple asset classes, and an advisor-led approach to building your portfolio.
+        With Finvoq, you now have access to India's smartest investment marketplace, curated products across multiple asset classes, and an advisor-led approach to building your portfolio.
       </p>
 
       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:32px;">
@@ -277,12 +277,12 @@ function renderWelcomeHtml({ name }) {
       </table>
       
       <div style="border-top:1px solid #edf1f0;padding-top:24px;">
-        <p style="margin:0;color:#5b5e63;font-size:14px;font-weight:500;">To your financial success,<br/>The Peculiex Team</p>
+        <p style="margin:0;color:#5b5e63;font-size:14px;font-weight:500;">To your financial success,<br/>The Finvoq Team</p>
       </div>
     </div>
     
     <div style="text-align:center;font-size:12px;color:#9aa0a6;margin-top:24px;line-height:1.5;">
-      © ${new Date().getFullYear()} Peculiex Wealth Pvt. Ltd.<br/>
+      © ${new Date().getFullYear()} Finvoq Wealth Pvt. Ltd.<br/>
       SEBI Registered Investment Adviser
     </div>
   </div>

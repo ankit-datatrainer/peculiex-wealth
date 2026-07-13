@@ -3,38 +3,38 @@ import "./globals.css";
 import "./dashboard.css";
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://peculiex.example.com";
+  process.env.NEXT_PUBLIC_SITE_URL || "https://finvoq.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Peculiex — India's Investment Marketplace",
-    template: "%s · Peculiex"
+    default: "Finvoq — India's Investment Marketplace",
+    template: "%s · Finvoq"
   },
   description:
-    "Peculiex offers listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, and insurance in a single premium platform.",
+    "Finvoq offers listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, and insurance in a single premium platform.",
   openGraph: {
     type: "website",
-    title: "Peculiex — India's Investment Marketplace",
+    title: "Finvoq — India's Investment Marketplace",
     description:
       "Listed and unlisted shares, mutual funds, PMS, AIF, bonds, and insurance. Curated by experts and executed in seconds.",
-    siteName: "Peculiex",
+    siteName: "Finvoq",
     locale: "en_IN"
   },
   twitter: {
     card: "summary_large_image",
-    title: "Peculiex — India's Investment Marketplace",
+    title: "Finvoq — India's Investment Marketplace",
     description:
       "Listed, unlisted, mutual funds, PMS, AIF, bonds, insurance — curated by experts, executed in seconds."
   },
   icons: {
     icon: {
       url:
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5' fill='%2301696f'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-size='52' font-family='Georgia,serif' font-weight='600' fill='white'%3EP%3C/text%3E%3C/svg%3E",
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2301696f'/%3E%3Ctext x='50' y='73' text-anchor='middle' font-size='66' font-family='Georgia,serif' font-weight='700' fill='white'%3Ef%3C/text%3E%3C/svg%3E",
       type: "image/svg+xml"
     },
     apple:
-      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2301696f'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-size='52' font-family='Georgia,serif' font-weight='600' fill='white'%3EP%3C/text%3E%3C/svg%3E"
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2301696f'/%3E%3Ctext x='50' y='73' text-anchor='middle' font-size='66' font-family='Georgia,serif' font-weight='700' fill='white'%3Ef%3C/text%3E%3C/svg%3E"
   },
   robots: { index: true, follow: true }
 };

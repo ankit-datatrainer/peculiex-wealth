@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import InvestorZone from "@/components/InvestorZone";
 
 export const metadata: Metadata = {
-  title: "InvestorZone — Your Investing Command Center | Peculiex",
+  title: "InvestorZone — Your Investing Command Center | Finvoq",
   description:
     "InvestorZone brings live markets, SIP and reverse-SIP calculators, mutual fund performance, unlisted shares, research and news together in one place."
 };

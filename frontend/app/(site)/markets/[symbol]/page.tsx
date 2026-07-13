@@ -9,7 +9,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const sym = decodeURIComponent(params.symbol).toUpperCase();
   return {
     title: `${sym} — Live Price, Chart & Stats`,
-    description: `Live ${sym} price, intraday chart, key statistics, financials and news on Peculiex.`
+    description: `Live ${sym} price, intraday chart, key statistics, financials and news on Finvoq.`
   };
 }
 

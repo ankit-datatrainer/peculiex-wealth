@@ -309,7 +309,7 @@ export default function GuestView() {
         <div className="gv-testi-grid">
           {[
             { quote: "The only watchlist that shows both listed and unlisted names in one place. It's become my morning ritual.", name: "Arjun Mehta", role: "Angel Investor, Mumbai" },
-            { quote: "Clean, fast, and beautifully designed. I check Peculiex before I check WhatsApp every morning.", name: "Priya Sharma", role: "Portfolio Manager, Delhi" },
+            { quote: "Clean, fast, and beautifully designed. I check Finvoq before I check WhatsApp every morning.", name: "Priya Sharma", role: "Portfolio Manager, Delhi" },
             { quote: "Love the live price updates without refreshing. The sparklines help me spot trends in seconds.", name: "Rohan Kapoor", role: "Retail Investor, Bangalore" },
           ].map((t) => (
             <div className="gv-testi-card" key={t.name}>
@@ -339,7 +339,7 @@ export default function GuestView() {
               Your markets cockpit<br /><em>awaits.</em>
             </h2>
             <p className="gv-cta-sub">
-              Join 4,000+ investors tracking their favorite stocks on Peculiex.
+              Join 4,000+ investors tracking their favorite stocks on Finvoq.
               Free forever. No credit card required.
             </p>
             <div className="gv-cta-btns">

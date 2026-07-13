@@ -107,15 +107,15 @@ function ForgotPasswordInner() {
       <aside className="auth-aside">
         <Link href="/" className="logo" data-magnetic>
           <span className="logo-mark">
-            <span>P</span>
+            <span>f</span>
           </span>
           <span className="logo-text">
-            PECULI<em>EX</em>
+            finvo<em>q</em>
           </span>
         </Link>
         <div>
           <h2>
-            Secure your <em>Peculiex</em> account.
+            Secure your <em>Finvoq</em> account.
           </h2>
           <ul className="auth-points">
             <li>Email OTP verification ensures your security</li>
@@ -123,7 +123,7 @@ function ForgotPasswordInner() {
           </ul>
         </div>
         <div className="auth-foot">
-          © {new Date().getFullYear()} Peculiex Wealth Pvt. Ltd.
+          © {new Date().getFullYear()} Finvoq Wealth Pvt. Ltd.
         </div>
       </aside>
 

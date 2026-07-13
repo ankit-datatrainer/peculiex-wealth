@@ -5,7 +5,7 @@ import PageHero from "@/components/PageHero";
 export const metadata: Metadata = {
   title: "Frequently Asked Questions",
   description:
-    "Straight answers to the questions investors ask before getting started with Peculiex — security, minimums, fees, withdrawals, and more."
+    "Straight answers to the questions investors ask before getting started with Finvoq — security, minimums, fees, withdrawals, and more."
 };
 
 export default function FAQPage() {

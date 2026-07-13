@@ -4,7 +4,7 @@ import PageHero from "@/components/PageHero";
 export const metadata: Metadata = {
   title: "Market Insights",
   description:
-    "Curated weekly research from the Peculiex desk — what we're watching across Indian equities, debt, unlisted, and global markets."
+    "Curated weekly research from the Finvoq desk — what we're watching across Indian equities, debt, unlisted, and global markets."
 };
 
 const POSTS = [

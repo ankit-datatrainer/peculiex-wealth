@@ -3,7 +3,7 @@ import Reckoner from "@/components/Reckoner";
 import PageHero from "@/components/PageHero";
 
 export const metadata: Metadata = {
-  title: "Marcom & Centricity Reckoner — Peculiex",
+  title: "Marcom & Centricity Reckoner — Finvoq",
   description:
     "Score your marketing communication and client-centricity across eight levers and get a single readiness score with a breakdown of where to improve."
 };

@@ -119,10 +119,10 @@ export default function MainNav() {
       <div className="nav-inner">
         <Link href="/" className="logo" data-magnetic>
           <span className="logo-mark">
-            <span>P</span>
+            <span>f</span>
           </span>
           <span className="logo-text">
-            PECULI<em>EX</em>
+            finvo<em>q</em>
           </span>
         </Link>
         <nav>

@@ -1,5 +1,5 @@
 /* =========================================================
-   PECULIEX — Light theme · warm off-white · teal accent
+   FINVOQ — Light theme · warm off-white · teal accent
    ========================================================= */
 @import "./unlisted-v2.css";
 
@@ -1680,7 +1680,7 @@ section { padding: 110px 0; position: relative; }
 }
 .sec-head-center .sdesc { margin-left: auto; margin-right: auto; }
 
-/* â”€â”€â”€ Why Peculiex grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* â”€â”€â”€ Why Finvoq grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .why-sec { background: transparent; }
 .why-grid {
   display: grid; grid-template-columns: repeat(3, 1fr);
@@ -5282,7 +5282,7 @@ section { padding: 110px 0; position: relative; }
 }
 @media (prefers-reduced-motion: reduce) { .hero-bg::before { animation: none; } }
 
-/* ─── Ask AI about Peculiex (hero) ─────────────────── */
+/* ─── Ask AI about Finvoq (hero) ─────────────────── */
 .ask-ai {
   display: flex; align-items: center; gap: 16px;
   margin-top: 26px;

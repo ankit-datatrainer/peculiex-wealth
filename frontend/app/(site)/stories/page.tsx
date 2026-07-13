@@ -5,7 +5,7 @@ import PageHero from "@/components/PageHero";
 export const metadata: Metadata = {
   title: "Investor Stories",
   description:
-    "Real Peculiex investors on what changed for them — from first-time SIP to private-client mandates."
+    "Real Finvoq investors on what changed for them — from first-time SIP to private-client mandates."
 };
 
 const STORIES = [
@@ -16,7 +16,7 @@ const STORIES = [
     role: "Founder, Lumen Studios",
     headline: "From scattered demats to one ledger.",
     quote:
-      "I had four demat accounts, two LIC policies I'd forgotten about, and ₹40L sitting in a savings account because I didn't know what to do with it. The Peculiex team consolidated everything inside two weeks and built me a 60-30-10 portfolio that actually fits my horizon.",
+      "I had four demat accounts, two LIC policies I'd forgotten about, and ₹40L sitting in a savings account because I didn't know what to do with it. The Finvoq team consolidated everything inside two weeks and built me a 60-30-10 portfolio that actually fits my horizon.",
     metric: "₹2.1 Cr consolidated · 12 months"
   },
   {
@@ -26,7 +26,7 @@ const STORIES = [
     role: "Director, MIT-K Capital",
     headline: "Finally got into the funds I'd been refused before.",
     quote:
-      "As an HNI you get pitched a thousand AIFs, and almost none of them are worth the lock-up. Peculiex's research desk turned down two of the three I was leaning toward — for very specific reasons. The one we did go with is up 19% IRR after fees.",
+      "As an HNI you get pitched a thousand AIFs, and almost none of them are worth the lock-up. Finvoq's research desk turned down two of the three I was leaning toward — for very specific reasons. The one we did go with is up 19% IRR after fees.",
     metric: "₹1.4 Cr deployed across two AIFs"
   },
   {
@@ -36,7 +36,7 @@ const STORIES = [
     role: "Managing Partner, Iyer Family Office",
     headline: "Family-office service without family-office overheads.",
     quote:
-      "We were quoted ₹12L/year by a private bank for what is essentially a quarterly review and a curated product list. Peculiex does the same for a fraction, and they take regulatory compliance seriously — every meeting is documented, every recommendation is auditable.",
+      "We were quoted ₹12L/year by a private bank for what is essentially a quarterly review and a curated product list. Finvoq does the same for a fraction, and they take regulatory compliance seriously — every meeting is documented, every recommendation is auditable.",
     metric: "₹4.8 Cr managed · zero commissions"
   },
   {
@@ -56,7 +56,7 @@ const STORIES = [
     role: "Retd. Senior Banker, 25-yr investor",
     headline: "First platform that actually serves the investor.",
     quote:
-      "I've been investing through public-sector banks, private banks, three different brokers, and two robo-advisors. Peculiex is the first one where I felt like I was the customer, not the product. It shouldn't be a rare thing — but it is.",
+      "I've been investing through public-sector banks, private banks, three different brokers, and two robo-advisors. Finvoq is the first one where I felt like I was the customer, not the product. It shouldn't be a rare thing — but it is.",
     metric: "₹3.2 Cr portfolio, post-retirement"
   },
   {
@@ -66,7 +66,7 @@ const STORIES = [
     role: "Founder, Stride Ventures",
     headline: "Got into a PMS that's beaten the index for 7 years.",
     quote:
-      "The PMS I'd been wanting was closed to new HNI investors. Peculiex got me in via a partner allocation, with full disclosure of fees, exit terms, and historical drawdowns. No 'best returns' marketing — just the data and a recommendation I could pressure-test.",
+      "The PMS I'd been wanting was closed to new HNI investors. Finvoq got me in via a partner allocation, with full disclosure of fees, exit terms, and historical drawdowns. No 'best returns' marketing — just the data and a recommendation I could pressure-test.",
     metric: "PMS · ₹75L · onboarded in 11 days"
   }
 ];
@@ -77,7 +77,7 @@ export default function StoriesPage() {
       <PageHero
         label="Investor stories"
         title={<>Investors who chose <em>process over noise.</em></>}
-        subtitle="No paid testimonials. These are real Peculiex clients, with the headline change in their portfolio in their own words."
+        subtitle="No paid testimonials. These are real Finvoq clients, with the headline change in their portfolio in their own words."
       />
 
       <section style={{ padding: "0 0 120px" }}>

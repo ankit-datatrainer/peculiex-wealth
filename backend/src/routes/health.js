@@ -8,7 +8,7 @@ const router = Router();
 router.get("/", (_req, res) => {
   res.json({
     ok: true,
-    service: "peculiex-backend",
+    service: "finvoq-backend",
     db: isLive() ? "connected" : "seed-mode",
     uptime_seconds: Math.round(process.uptime()),
     time: new Date().toISOString()
