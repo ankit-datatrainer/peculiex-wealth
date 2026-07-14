@@ -6,13 +6,13 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  /* Backgrounds & Surfaces */
-  --color-bg:               #f7f6f2;
-  --color-surface:          #f9f8f5;
+  /* Backgrounds & Surfaces — crisp premium white, not warm-grey */
+  --color-bg:               #fdfdfc;
+  --color-surface:          #ffffff;
   --color-surface-2:        #ffffff;
-  --color-surface-offset:   #f0eeea;
-  --color-divider:          #e0ddd8;
-  --color-border:           #d4d1ca;
+  --color-surface-offset:   #f6f6f4;
+  --color-divider:          #eceae5;
+  --color-border:           #e3e1da;
 
   /* Text */
   --color-text:             #1e1c18;
@@ -23,7 +23,7 @@
   /* Primary Accent â€” Teal */
   --color-primary:          #01696f;
   --color-primary-hover:    #0c4e54;
-  --color-primary-highlight:#cedcd8;
+  --color-primary-highlight:#e2eeec;
 
   /* Status / data */
   --color-success:          #16a34a;
@@ -213,11 +213,11 @@ img, svg { display: block; max-width: 100%; }
 .aurora { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
 .aurora-blob {
   position: absolute; border-radius: 50%;
-  filter: blur(140px); opacity: .35;
+  filter: blur(140px); opacity: .18;
 }
-.a1 { width: 600px; height: 600px; background: rgba(1, 105, 111, .10);  top: -10%; left: -10%; animation: drift1 28s ease-in-out infinite; }
-.a2 { width: 540px; height: 540px; background: rgba(206, 220, 216, .55); bottom: -15%; right: -12%; animation: drift2 32s ease-in-out infinite; }
-.a3 { width: 480px; height: 480px; background: rgba(240, 238, 234, .8); top: 60%; left: 40%; animation: drift3 36s ease-in-out infinite; }
+.a1 { width: 600px; height: 600px; background: rgba(1, 105, 111, .10);   top: -10%; left: -10%; animation: drift1 28s ease-in-out infinite; }
+.a2 { width: 540px; height: 540px; background: rgba(46, 162, 168, .16);  bottom: -15%; right: -12%; animation: drift2 32s ease-in-out infinite; }
+.a3 { width: 480px; height: 480px; background: rgba(250, 249, 247, .9);  top: 60%; left: 40%; animation: drift3 36s ease-in-out infinite; }
 @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(120px,80px) scale(1.15)} }
 @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-100px,-60px) scale(1.1)} }
 @keyframes drift3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(60px,-90px) scale(.9)} }
@@ -5253,20 +5253,21 @@ section { padding: 110px 0; position: relative; }
 .izone-card p { color: var(--color-text-muted); line-height: 1.55; flex: 1; font-size: .92rem; }
 .izone-cta { margin-top: 16px; font-weight: 600; color: var(--color-primary); font-size: .9rem; }
 
-/* ─── Hero background enhancement (#2) ─────────────── */
+/* ─── Hero background — crisp premium white with a soft teal glow ─── */
 .hero-bg {
+  background: #ffffff;
   background:
-    radial-gradient(ellipse 60% 50% at 78% 30%, rgba(1, 105, 111, .12) 0%, transparent 62%),
-    radial-gradient(ellipse 46% 44% at 15% 74%, rgba(46, 162, 168, .10) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 60% at 50% -10%, rgba(206, 220, 216, .40) 0%, transparent 70%);
+    radial-gradient(ellipse 55% 45% at 80% 25%, rgba(1, 105, 111, .07) 0%, transparent 62%),
+    radial-gradient(ellipse 42% 40% at 14% 78%, rgba(46, 162, 168, .055) 0%, transparent 60%),
+    #ffffff;
 }
 .hero-bg::before {
   content: ''; position: absolute; inset: -20% -10% auto -10%; height: 130%;
   background:
     conic-gradient(from 200deg at 72% 30%,
-      rgba(1,105,111,.10), rgba(46,162,168,.06), rgba(1,105,111,.02), rgba(1,105,111,.10));
-  filter: blur(70px);
-  opacity: .8;
+      rgba(1,105,111,.05), rgba(46,162,168,.03), rgba(1,105,111,.01), rgba(1,105,111,.05));
+  filter: blur(80px);
+  opacity: .6;
   animation: heroAurora 18s ease-in-out infinite alternate;
 }
 @keyframes heroAurora {
