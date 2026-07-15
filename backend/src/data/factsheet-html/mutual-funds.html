@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<!--
+  ─────────────────────────────────────────────────────────────────────────
+  FINVOQ · SIP RETURNS FACTSHEET  (embeddable module)
+  Data as on 31st May 2026 · 45 funds · 10 categories
+
+  This file is the bundled DEFAULT factsheet for the Mutual Funds product,
+  and doubles as the reference template offered in the admin panel prompt.
+  A super-admin can override it at any time by pasting new HTML in
+  Admin → HTML Factsheets; the override is stored separately and this file
+  is never modified.
+  ─────────────────────────────────────────────────────────────────────────
+-->
+<html lang="en-IN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>SIP Returns — Fund Factsheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════ FINVOQ DESIGN TOKENS ══════════════════ */
+:root{
+  --fv-page:#f7f6f2;            /* warm paper — set to transparent for inline embeds */
+  --fv-card:#ffffff;
+  --fv-ink:#0c2f33;             /* petrol ink */
+  --fv-ink-soft:#4c6669;
+  --fv-ink-faint:#7e9295;
+  --fv-teal:#01696f;            /* Finvoq brand */
+  --fv-teal-deep:#014a4f;
+  --fv-teal-mid:#2c8b8a;
+  --fv-teal-wash:#e7f0ef;
+  --fv-gold:#b0862c;            /* since-inception metal */
+  --fv-gold-soft:#cda04b;
+  --fv-gold-wash:#f6efdd;
+  --fv-neg:#c25a4a;             /* terracotta, negatives only */
+  --fv-neg-wash:#f7e9e6;
+  --fv-line:#e6e3da;
+  --fv-line-card:#edebe4;
+  --fv-shadow:0 1px 2px rgba(12,47,51,.05),0 10px 28px -18px rgba(12,47,51,.22);
+  --fv-shadow-lift:0 2px 4px rgba(12,47,51,.06),0 20px 44px -20px rgba(12,47,51,.30);
+  --fv-radius:16px;
+  --fv-font-display:"Fraunces",Georgia,"Times New Roman",serif;
+  --fv-font-ui:"Inter",-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--fv-page);
+  color:var(--fv-ink);
+  font-family:var(--fv-font-ui);
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* ══════════════════ SHELL ══════════════════ */
+.fv-sheet{max-width:1180px;margin:0 auto;padding:clamp(40px,6vw,72px) clamp(18px,4vw,40px) clamp(48px,6vw,80px)}
+
+/* ══════════════════ HEADER ══════════════════ */
+.fv-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px 32px;margin-bottom:clamp(26px,4vw,40px)}
+.fv-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--fv-teal);margin:0 0 14px;
+}
+.fv-eyebrow::before{content:"";width:22px;height:1.5px;background:var(--fv-teal);opacity:.75}
+.fv-title{
+  font-family:var(--fv-font-display);font-weight:600;font-optical-sizing:auto;
+  font-size:clamp(34px,4.6vw,52px);line-height:1.06;letter-spacing:-.015em;margin:0;
+}
+.fv-title em{font-style:italic;font-weight:500;color:var(--fv-teal)}
+.fv-sub{margin:14px 0 0;max-width:560px;color:var(--fv-ink-soft);font-size:clamp(14.5px,1.5vw,16px)}
+.fv-asof{
+  display:inline-flex;align-items:center;gap:9px;white-space:nowrap;
+  background:var(--fv-card);border:1px solid var(--fv-line);border-radius:999px;
+  padding:9px 16px;font-size:13px;font-weight:600;color:var(--fv-ink-soft);
+  box-shadow:var(--fv-shadow);
+}
+.fv-asof .dot{width:7px;height:7px;border-radius:50%;background:var(--fv-teal);box-shadow:0 0 0 3px var(--fv-teal-wash)}
+
+/* ══════════════════ KPI STRIP ══════════════════ */
+.fv-kpis{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--fv-line);border:1px solid var(--fv-line);border-radius:var(--fv-radius);
+  overflow:hidden;box-shadow:var(--fv-shadow);margin-bottom:clamp(26px,4vw,38px);
+}
+.fv-kpi{background:var(--fv-card);padding:20px 22px 18px;position:relative}
+.fv-kpi-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--fv-ink-faint);margin:0 0 7px}
+.fv-kpi-value{
+  font-family:var(--fv-font-display);font-weight:600;font-size:clamp(24px,2.6vw,31px);
+  line-height:1.1;letter-spacing:-.01em;font-variant-numeric:tabular-nums;
+}
+.fv-kpi-value .unit{font-family:var(--fv-font-ui);font-size:.52em;font-weight:600;color:var(--fv-ink-faint);letter-spacing:.02em;margin-left:2px}
+.fv-kpi-note{margin:5px 0 0;font-size:12px;color:var(--fv-ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fv-kpi--hero .fv-kpi-value{color:var(--fv-teal)}
+.fv-kpi--gold .fv-kpi-value{color:var(--fv-gold)}
+
+/* ══════════════════ CONTROLS ══════════════════ */
+.fv-controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:18px}
+.fv-search{position:relative;flex:1 1 240px;min-width:200px;max-width:340px}
+.fv-search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--fv-ink-faint);pointer-events:none}
+.fv-search input{
+  width:100%;border:1px solid var(--fv-line);border-radius:999px;background:var(--fv-card);
+  padding:10px 16px 10px 38px;font:500 13.5px/1 var(--fv-font-ui);color:var(--fv-ink);
+  outline:none;transition:border-color .18s,box-shadow .18s;
+}
+.fv-search input::placeholder{color:var(--fv-ink-faint)}
+.fv-search input:focus{border-color:var(--fv-teal);box-shadow:0 0 0 3px var(--fv-teal-wash)}
+.fv-select-wrap{position:relative}
+.fv-select-wrap::after{
+  content:"";position:absolute;right:14px;top:50%;width:7px;height:7px;pointer-events:none;
+  border-right:1.6px solid var(--fv-ink-soft);border-bottom:1.6px solid var(--fv-ink-soft);
+  transform:translateY(-70%) rotate(45deg);
+}
+.fv-select{
+  appearance:none;-webkit-appearance:none;border:1px solid var(--fv-line);border-radius:999px;
+  background:var(--fv-card);padding:10px 36px 10px 16px;font:600 13px/1 var(--fv-font-ui);
+  color:var(--fv-ink);cursor:pointer;outline:none;transition:border-color .18s,box-shadow .18s;
+}
+.fv-select:focus-visible{border-color:var(--fv-teal);box-shadow:0 0 0 3px var(--fv-teal-wash)}
+.fv-viewtoggle{display:inline-flex;background:var(--fv-card);border:1px solid var(--fv-line);border-radius:999px;padding:3px;margin-left:auto}
+.fv-viewtoggle button{
+  border:0;background:transparent;border-radius:999px;padding:7px 15px;cursor:pointer;
+  font:600 12.5px/1 var(--fv-font-ui);color:var(--fv-ink-soft);display:inline-flex;align-items:center;gap:6px;
+  transition:background .18s,color .18s;
+}
+.fv-viewtoggle button svg{width:13px;height:13px;stroke:currentColor}
+.fv-viewtoggle button.active{background:var(--fv-teal);color:#fff}
+.fv-viewtoggle button:focus-visible{outline:2px solid var(--fv-teal);outline-offset:2px}
+
+/* category pills */
+.fv-pills{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;margin:0 -2px 14px;scrollbar-width:none}
+.fv-pills::-webkit-scrollbar{display:none}
+.fv-pill{
+  flex:0 0 auto;border:1px solid var(--fv-line);background:var(--fv-card);border-radius:999px;
+  padding:8px 15px;font:600 12.5px/1 var(--fv-font-ui);color:var(--fv-ink-soft);cursor:pointer;
+  white-space:nowrap;transition:all .18s;display:inline-flex;align-items:center;gap:7px;
+}
+.fv-pill .n{font-size:10.5px;font-weight:700;color:var(--fv-ink-faint);background:var(--fv-page);border-radius:999px;padding:2.5px 7px;transition:all .18s}
+.fv-pill:hover{border-color:var(--fv-teal-mid);color:var(--fv-teal-deep)}
+.fv-pill.active{background:var(--fv-teal);border-color:var(--fv-teal);color:#fff}
+.fv-pill.active .n{background:rgba(255,255,255,.18);color:#fff}
+.fv-pill:focus-visible{outline:2px solid var(--fv-teal);outline-offset:2px}
+
+/* legend */
+.fv-legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;margin:0 0 22px;font-size:12.5px;color:var(--fv-ink-soft)}
+.fv-legend .sw{display:inline-flex;align-items:center;gap:7px;font-weight:500}
+.fv-legend .sw i{width:11px;height:11px;border-radius:3.5px;display:inline-block}
+.fv-legend .sw--pos i{background:linear-gradient(180deg,var(--fv-teal-mid),var(--fv-teal))}
+.fv-legend .sw--si i{background:linear-gradient(180deg,var(--fv-gold-soft),var(--fv-gold))}
+.fv-legend .sw--neg i{background:var(--fv-neg)}
+.fv-legend .note{color:var(--fv-ink-faint)}
+
+/* ══════════════════ CATEGORY BANDS + CARD GRID ══════════════════ */
+.fv-cat{margin:0 0 34px}
+.fv-cat-head{display:flex;align-items:baseline;gap:14px;margin:0 0 16px}
+.fv-cat-title{font-family:var(--fv-font-display);font-style:italic;font-weight:500;font-size:clamp(19px,2.2vw,23px);letter-spacing:.002em;color:var(--fv-teal-deep);margin:0;white-space:nowrap}
+.fv-cat-count{font-size:12px;font-weight:600;color:var(--fv-ink-faint);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.fv-cat-rule{flex:1;height:1px;background:var(--fv-line)}
+.fv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:16px}
+
+/* card */
+.fv-card{
+  background:var(--fv-card);border:1px solid var(--fv-line-card);border-radius:var(--fv-radius);
+  padding:18px 18px 14px;box-shadow:var(--fv-shadow);
+  transition:transform .22s cubic-bezier(.2,.7,.3,1),box-shadow .22s,border-color .22s;
+  opacity:0;transform:translateY(14px);
+}
+.fv-card.in{opacity:1;transform:none}
+.fv-card:hover{transform:translateY(-3px);box-shadow:var(--fv-shadow-lift);border-color:#dcd9cf}
+.fv-card-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:6px}
+.fv-mono{
+  flex:0 0 auto;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+  background:var(--fv-teal-wash);color:var(--fv-teal-deep);
+  font:700 12.5px/1 var(--fv-font-ui);letter-spacing:.03em;
+}
+.fv-card-name{font-size:14.5px;font-weight:600;line-height:1.32;margin:1px 0 3px;letter-spacing:-.005em}
+.fv-card-meta{font-size:11.5px;color:var(--fv-ink-faint);font-weight:500}
+.fv-card-meta b{color:var(--fv-ink-soft);font-weight:600;font-variant-numeric:tabular-nums}
+.fv-card-cat{display:none;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--fv-teal);margin-top:3px}
+.fv-grid.flat .fv-card-cat{display:block}
+
+/* horizon bar chart */
+.fv-chart{display:flex;justify-content:space-between;gap:5px;padding:12px 4px 0;margin-top:6px}
+.fv-slot{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0}
+.fv-val{font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.01em;color:var(--fv-ink);height:16px;line-height:16px}
+.fv-val.neg{color:var(--fv-neg)}
+.fv-val.na{color:var(--fv-ink-faint);font-weight:500}
+.fv-zone-pos{height:76px;width:100%;display:flex;align-items:flex-end;justify-content:center}
+.fv-zone-neg{height:34px;width:100%;display:flex;align-items:flex-start;justify-content:center}
+.fv-bar{
+  width:min(40px,88%);border-radius:5px 5px 2px 2px;height:0;
+  background:linear-gradient(180deg,var(--fv-teal-mid),var(--fv-teal));
+  transition:height .8s cubic-bezier(.2,.75,.25,1);
+}
+.fv-bar.si{background:linear-gradient(180deg,var(--fv-gold-soft),var(--fv-gold))}
+.fv-bar.neg{border-radius:2px 2px 5px 5px;background:linear-gradient(180deg,var(--fv-neg),#d3796b)}
+.fv-bar.na{height:3px !important;border-radius:2px;background:none;border-top:2px dashed var(--fv-line);width:min(34px,80%)}
+.fv-baseline{height:1.5px;width:100%;background:var(--fv-line);position:relative}
+.fv-hlabels{display:flex;justify-content:space-between;gap:5px;padding:7px 4px 0}
+.fv-hlabels span{flex:1;text-align:center;font-size:10.5px;font-weight:600;letter-spacing:.1em;color:var(--fv-ink-faint)}
+
+/* ══════════════════ TABLE VIEW ══════════════════ */
+.fv-tablewrap{
+  background:var(--fv-card);border:1px solid var(--fv-line-card);border-radius:var(--fv-radius);
+  box-shadow:var(--fv-shadow);overflow:auto;
+}
+.fv-table{width:100%;border-collapse:collapse;min-width:640px;font-size:13.5px}
+.fv-table thead th{
+  position:sticky;top:0;background:var(--fv-card);z-index:2;
+  font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--fv-ink-faint);
+  text-align:right;padding:14px 18px;border-bottom:1px solid var(--fv-line);
+}
+.fv-table thead th:first-child{text-align:left}
+.fv-table td{padding:11.5px 18px;border-bottom:1px solid var(--fv-line-card);text-align:right;font-variant-numeric:tabular-nums;font-weight:500;color:var(--fv-ink)}
+.fv-table td:first-child{text-align:left;font-weight:600}
+.fv-table tr.cat th{
+  text-align:left;padding:13px 18px 9px;border-bottom:1px solid var(--fv-line-card);
+  background:linear-gradient(0deg,var(--fv-teal-wash),var(--fv-card));
+  font-family:var(--fv-font-display);font-style:italic;font-weight:500;font-size:15.5px;color:var(--fv-teal-deep);
+}
+.fv-table td.neg{color:var(--fv-neg)}
+.fv-table td.na{color:var(--fv-ink-faint)}
+.fv-table td.si{color:var(--fv-gold);font-weight:600}
+.fv-table tbody tr:not(.cat):hover td{background:#fbfaf7}
+.fv-table tbody tr:last-child td{border-bottom:0}
+
+/* empty state */
+.fv-empty{
+  text-align:center;padding:56px 20px;background:var(--fv-card);
+  border:1px dashed var(--fv-line);border-radius:var(--fv-radius);color:var(--fv-ink-soft);
+}
+.fv-empty p{margin:0 0 14px;font-size:15px}
+.fv-empty button{
+  border:1px solid var(--fv-teal);background:var(--fv-teal);color:#fff;border-radius:999px;
+  padding:9px 20px;font:600 13px/1 var(--fv-font-ui);cursor:pointer;
+}
+.fv-empty button:hover{background:var(--fv-teal-deep)}
+
+/* ══════════════════ FOOTNOTES ══════════════════ */
+.fv-foot{margin-top:clamp(30px,4vw,44px);padding-top:22px;border-top:1px solid var(--fv-line)}
+.fv-foot .asof{font-size:13px;font-weight:600;color:var(--fv-ink-soft);margin:0 0 10px}
+.fv-foot .disc{font-size:12.5px;line-height:1.65;color:var(--fv-ink-faint);margin:0;max-width:880px}
+.fv-foot .disc b{color:var(--fv-ink-soft);font-weight:600}
+
+/* ══════════════════ RESPONSIVE ══════════════════ */
+@media (max-width:900px){
+  .fv-kpis{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:560px){
+  .fv-head{flex-direction:column;align-items:flex-start}
+  .fv-grid{grid-template-columns:1fr 1fr;gap:11px}
+  .fv-card{padding:14px 13px 11px}
+  .fv-mono{width:32px;height:32px;border-radius:9px;font-size:11px}
+  .fv-card-name{font-size:12.5px}
+  .fv-zone-pos{height:64px}
+  .fv-zone-neg{height:30px}
+  .fv-val{font-size:10px}
+  .fv-viewtoggle{margin-left:0;width:100%;justify-content:stretch}
+  .fv-viewtoggle button{flex:1;justify-content:center}
+}
+@media (max-width:400px){
+  .fv-grid{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms !important;animation-duration:.01ms !important}
+  .fv-card{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<section class="fv-sheet" id="fvSheet">
+
+  <!-- ── Header ── -->
+  <header class="fv-head">
+    <div>
+      <p class="fv-eyebrow">Fund Factsheet</p>
+      <h2 class="fv-title">SIP <em>Returns.</em></h2>
+      <p class="fv-sub">How systematic investments across 45 curated schemes have compounded — over one, three and five years, and since inception.</p>
+    </div>
+    <span class="fv-asof"><span class="dot"></span>Performance as on 31st May 2026</span>
+  </header>
+
+  <!-- ── KPI strip (computed live from the data) ── -->
+  <div class="fv-kpis" id="fvKpis" aria-label="Factsheet snapshot"></div>
+
+  <!-- ── Controls ── -->
+  <div class="fv-controls">
+    <label class="fv-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input type="search" id="fvSearch" placeholder="Search funds…" aria-label="Search funds">
+    </label>
+    <div class="fv-select-wrap">
+      <select class="fv-select" id="fvSort" aria-label="Sort funds">
+        <option value="sheet">Factsheet order</option>
+        <option value="r3">3Y return · high to low</option>
+        <option value="r5">5Y return · high to low</option>
+        <option value="r1">1Y return · high to low</option>
+        <option value="si">Since inception · high to low</option>
+        <option value="aum">AUM · high to low</option>
+        <option value="name">Name · A to Z</option>
+      </select>
+    </div>
+    <div class="fv-viewtoggle" role="tablist" aria-label="View">
+      <button id="fvViewCards" class="active" role="tab" aria-selected="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="3.5" width="7.4" height="7.4" rx="1.6"/><rect x="13.1" y="3.5" width="7.4" height="7.4" rx="1.6"/><rect x="3.5" y="13.1" width="7.4" height="7.4" rx="1.6"/><rect x="13.1" y="13.1" width="7.4" height="7.4" rx="1.6"/></svg>
+        Cards
+      </button>
+      <button id="fvViewTable" role="tab" aria-selected="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        Table
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Category pills ── -->
+  <nav class="fv-pills" id="fvPills" aria-label="Fund categories"></nav>
+
+  <!-- ── Legend ── -->
+  <p class="fv-legend">
+    <span class="sw sw--pos"><i></i>1Y · 3Y · 5Y</span>
+    <span class="sw sw--si"><i></i>SI — Since inception</span>
+    <span class="sw sw--neg"><i></i>Negative return</span>
+    <span class="note">All bars share one scale · figures in % · AUM in ₹ Cr</span>
+  </p>
+
+  <!-- ── Content ── -->
+  <div id="fvContent" aria-live="polite"></div>
+
+  <!-- ── Footnotes (verbatim from source factsheet) ── -->
+  <footer class="fv-foot">
+    <p class="asof">*Performance as on 31st May 2026.</p>
+    <p class="disc"><b>Disclaimer :</b> The above information should not be relied upon for personal or financial decisions, and you should consult an appropriate financial professional for specific advice. The information presented under our newsletter and blogs is solely for informational purpose.</p>
+  </footer>
+
+</section>
+
+<script>
+/* ═══════════════════ DATA — transcribed 1:1 from the source factsheet ═══════════════════
+   [name, AUM ₹Cr, 1Y%, 3Y%, 5Y%, SI%]  ·  null = not published (–)                        */
+const FV_CATEGORIES = [
+  ["Large Cap Funds", [
+    ["Edelweiss Large Cap Fund",            1421.67, -3.00, 10.89, 10.89, 13.03],
+    ["HDFC Large Cap Fund",                37808.30, -3.81, 11.07, 12.00, 17.85],
+    ["ICICI Pru Large Cap Fund",           76296.98, -3.09, 13.77, 13.29, 13.96],
+    ["Nippon India Large Cap Fund",        51660.30, -1.78, 14.14, 15.25, 12.23],
+    ["TATA Large Cap Fund",                 2681.70, -0.43, 11.87, 11.21, 18.16]
+  ]],
+  ["Large & Mid Cap Fund", [
+    ["Bandhan Large & Mid Cap Fund",       17460.93,  5.91, 21.73, 17.53, 13.43],
+    ["Motilal Oswal Large & Mid Cap Fund", 17420.43,  4.69, 23.84, 20.19, 20.75]
+  ]],
+  ["Flexi Cap Fund", [
+    ["Bajaj Finserv Flexi Cap Fund",        7195.30,  4.03,  null,  null, 14.92],
+    ["Franklin India Flexi Cap Fund",      18796.71, -4.74, 14.56, 13.63, 17.25],
+    ["Whiteoak Capital Flexi Cap Fund",     8136.50,  0.25, 15.81,  null, 14.78]
+  ]],
+  ["Multi Cap Fund", [
+    ["ICICI Pru Multi Cap Fund",           17675.80,  6.60, 19.73, 16.64, 15.01],
+    ["Nippon India Multi Cap Fund",        53410.99,  0.69, 18.35, 19.88, 17.35]
+  ]],
+  ["Focused Fund", [
+    ["HDFC Focused Fund",                  26082.42, -2.54, 16.65, 18.32, 15.31],
+    ["Invesco India Focused Fund",          5272.68, -5.92, 20.57, 14.98, 18.68],
+    ["SBI Focused Fund",                   46623.39, 12.42, 17.22, 13.82, 18.39]
+  ]],
+  ["Mid Cap Fund", [
+    ["Edelweiss Mid Cap Fund",             16848.60,  7.57, 23.92, 20.01, 13.63],
+    ["Invesco India Midcap Fund",          12396.75,  8.96, 24.68, 20.08, 16.42],
+    ["HDFC Mid Cap Fund",                  97350.48,  6.01, 22.41, 20.35, 17.13],
+    ["Motilal Oswal Mid Cap Fund",         36458.21, -7.98, 18.46, 22.09, 19.85],
+    ["WhiteOak Mid Cap Fund",               5732.44, 12.28, 24.68,  null, 21.57]
+  ]],
+  ["Small Cap Fund", [
+    ["Bandhan Small Cap Fund",             27219.13,  5.24, 28.59, 21.25, 28.42],
+    ["DSP Small Cap Fund",                 18358.18,  7.01, 19.38, 18.37, 17.29],
+    ["Franklin India Small Cap Fund",      13847.34, -0.54, 17.19, 17.95, 14.91],
+    ["Nippon India Small Cap Fund",        74604.07,  4.78, 19.67, 20.85, 19.91],
+    ["Tata Small Cap Fund",                11645.00, -8.81, 11.73, 15.18, 18.26]
+  ]],
+  ["Thematic / Sectoral Funds", [
+    ["Bandhan Infrastructure Fund",         1495.06, -3.60, 20.43, 18.68, 10.94],
+    ["Franklin India Opp Fund",             8723.81,  1.40, 24.19, 18.87, 13.01],
+    ["ICICI Pru Energy Opp Fund",           8581.10, 15.43,  null,  null,  8.70],
+    ["ICICI Pru India Opp Fund",           36478.25,  0.57, 19.09, 19.45, 18.77],
+    ["ICICI Pru Manufacturing Fund",        6782.23, 10.91, 24.16, 20.40, 19.07],
+    ["Mirae Asset Great Consumer Fund",     4388.86, -3.34, 11.20, 13.00, 15.32],
+    ["Motilal Oswal Business Cycle Fund",   1494.31, -8.71,  null,  null,  6.27],
+    ["Franklin India Technology Fund",      1645.16,-10.38, 13.20,  9.66, 17.57],
+    ["Invesco India Financial Services Fund",1701.02, 5.73, 17.86, 14.30, 15.97],
+    ["Mirae Asset Healthcare Fund",         3090.51, 13.61, 25.36, 14.47, 19.81],
+    ["Nippon India Pharma Fund",            8635.75,  5.39, 22.78, 12.80, 19.82],
+    ["Tata Banking Financial Services Fund",3036.02, -0.58, 12.51, 11.36, 14.78],
+    ["Tata Digital India Fund",             9660.02,-17.00,  6.44,  7.04, 14.00]
+  ]],
+  ["Balanced Advantage Funds", [
+    ["ICICI Pru Balanced Advantage Fund",  70569.60,  3.46, 11.43, 10.51, 10.96],
+    ["Tata Balanced Advantage Fund",        8770.14,  1.47,  8.92,  8.86, 10.32],
+    ["WhiteOak Balanced Advantage Fund",    2155.59, -0.06, 10.69,  null, 11.04]
+  ]],
+  ["Multi Asset Allocation Fund", [
+    ["HDFC Multi Asset Allocation Fund",    5887.61,  4.27, 12.42, 11.22, 10.07],
+    ["ICICI Pru Multi Asset Fund",         84165.18,  6.85, 16.85, 17.46, 20.40],
+    ["Nippon India Multi Asset Allocation Fund",15481.06,15.95,19.88,15.67,16.85],
+    ["WOC Multi Asset Allocation Fund",     7498.48, 11.67, 15.58,  null, 15.67]
+  ]]
+];
+
+/* ═══════════════════ ENGINE ═══════════════════ */
+(function(){
+  "use strict";
+
+  /* flatten */
+  const FUNDS = [];
+  FV_CATEGORIES.forEach(([cat, rows], ci) => rows.forEach((r, ri) => FUNDS.push({
+    cat, ci, order: ci * 100 + ri,
+    name: r[0], aum: r[1], r1: r[2], r3: r[3], r5: r[4], si: r[5]
+  })));
+
+  /* global bar scale (shared across every card) */
+  const allVals = FUNDS.flatMap(f => [f.r1, f.r3, f.r5, f.si]).filter(v => v !== null);
+  const POS_MAX = Math.max(...allVals, 1);          /* 28.59 */
+  const NEG_MIN = Math.min(...allVals, 0);          /* -17.00 */
+  const POS_PX = 76, NEG_PX = 34;
+  const hPos = v => Math.max(3, Math.round(v / POS_MAX * POS_PX));
+  const hNeg = v => Math.max(3, Math.round(Math.abs(v) / Math.abs(NEG_MIN || 1) * NEG_PX));
+
+  /* formatting */
+  const inr  = new Intl.NumberFormat("en-IN", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  const inr0 = new Intl.NumberFormat("en-IN");
+  const pct = v => v === null ? "–" : v.toFixed(2) + "%";
+  const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+  /* AMC monogram — first letters of the first two words */
+  const mono = name => name.split(/\s+/).slice(0,2).map(w => w[0]).join("").toUpperCase();
+
+  /* state */
+  const state = { view: "cards", cat: "All", sort: "sheet", q: "" };
+  const $ = id => document.getElementById(id);
+  const content = $("fvContent");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ── KPIs (computed, never hand-typed) ── */
+  function renderKpis(){
+    const n = FUNDS.length;
+    const cats = FV_CATEGORIES.length;
+    const best3 = FUNDS.filter(f => f.r3 !== null).reduce((a,b) => b.r3 > a.r3 ? b : a);
+    const bestSi = FUNDS.reduce((a,b) => b.si > a.si ? b : a);
+    const totalAum = FUNDS.reduce((s,f) => s + f.aum, 0);          // ₹ Cr
+    const lakhCr = totalAum / 100000;                              // ₹ Lakh Cr
+    $("fvKpis").innerHTML = `
+      <div class="fv-kpi">
+        <p class="fv-kpi-label">Funds tracked</p>
+        <div class="fv-kpi-value" data-count="${n}">0</div>
+        <p class="fv-kpi-note">across ${cats} categories</p>
+      </div>
+      <div class="fv-kpi">
+        <p class="fv-kpi-label">Combined AUM</p>
+        <div class="fv-kpi-value"><span data-count="${lakhCr.toFixed(2)}" data-dec="2">0</span><span class="unit">₹ Lakh Cr</span></div>
+        <p class="fv-kpi-note">₹${inr0.format(Math.round(totalAum))} Cr in total</p>
+      </div>
+      <div class="fv-kpi fv-kpi--hero">
+        <p class="fv-kpi-label">Best 3Y SIP return</p>
+        <div class="fv-kpi-value"><span data-count="${best3.r3}" data-dec="2">0</span><span class="unit">%</span></div>
+        <p class="fv-kpi-note">${esc(best3.name)}</p>
+      </div>
+      <div class="fv-kpi fv-kpi--gold">
+        <p class="fv-kpi-label">Best since inception</p>
+        <div class="fv-kpi-value"><span data-count="${bestSi.si}" data-dec="2">0</span><span class="unit">%</span></div>
+        <p class="fv-kpi-note">${esc(bestSi.name)}</p>
+      </div>`;
+    countUp();
+  }
+
+  function countUp(){
+    document.querySelectorAll("[data-count]").forEach(el => {
+      const target = parseFloat(el.dataset.count);
+      const dec = parseInt(el.dataset.dec || "0", 10);
+      if (reduced) { el.textContent = target.toFixed(dec); return; }
+      const t0 = performance.now(), dur = 900;
+      (function tick(t){
+        const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+        el.textContent = (target * e).toFixed(dec);
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+    });
+  }
+
+  /* ── pills ── */
+  function renderPills(){
+    const counts = { All: FUNDS.length };
+    FV_CATEGORIES.forEach(([c, rows]) => counts[c] = rows.length);
+    $("fvPills").innerHTML = ["All", ...FV_CATEGORIES.map(c => c[0])].map(c => `
+      <button class="fv-pill${state.cat === c ? " active" : ""}" data-cat="${esc(c)}">
+        ${esc(c === "All" ? "All funds" : c.replace(/ Funds?$/,""))}<span class="n">${counts[c]}</span>
+      </button>`).join("");
+  }
+
+  /* ── filtering + sorting ── */
+  function visibleFunds(){
+    let list = FUNDS.filter(f =>
+      (state.cat === "All" || f.cat === state.cat) &&
+      (!state.q || f.name.toLowerCase().includes(state.q))
+    );
+    const by = {
+      sheet: (a,b) => a.order - b.order,
+      r1:  (a,b) => (b.r1 ?? -1e9) - (a.r1 ?? -1e9),
+      r3:  (a,b) => (b.r3 ?? -1e9) - (a.r3 ?? -1e9),
+      r5:  (a,b) => (b.r5 ?? -1e9) - (a.r5 ?? -1e9),
+      si:  (a,b) => (b.si ?? -1e9) - (a.si ?? -1e9),
+      aum: (a,b) => b.aum - a.aum,
+      name:(a,b) => a.name.localeCompare(b.name)
+    };
+    return list.sort(by[state.sort] || by.sheet);
+  }
+
+  /* ── card builders ── */
+  function slot(label, v, isSi){
+    const na = v === null;
+    const neg = !na && v < 0;
+    const valCls = na ? "na" : neg ? "neg" : "";
+    const barCls = na ? "na" : neg ? "neg" : (isSi ? "si" : "");
+    const h = na ? 0 : neg ? hNeg(v) : hPos(v);
+    return { label, html: `
+      <div class="fv-slot">
+        <span class="fv-val ${valCls}">${na ? "–" : (neg ? "" : "") + v.toFixed(2)}</span>
+        <div class="fv-zone-pos">${(!neg) ? `<div class="fv-bar ${barCls}" data-h="${h}"></div>` : ""}</div>
+      </div>` , negHtml: `
+      <div class="fv-slot">
+        <div class="fv-zone-neg">${neg ? `<div class="fv-bar neg" data-h="${h}"></div>` : (na ? `<div class="fv-bar na"></div>` : "")}</div>
+      </div>` };
+  }
+
+  function cardHtml(f){
+    const slots = [["1Y", f.r1, false], ["3Y", f.r3, false], ["5Y", f.r5, false], ["SI", f.si, true]]
+      .map(([l, v, s]) => slot(l, v, s));
+    return `
+    <article class="fv-card" role="group" aria-label="${esc(f.name)}">
+      <div class="fv-card-top">
+        <span class="fv-mono" aria-hidden="true">${mono(f.name)}</span>
+        <div style="min-width:0">
+          <h3 class="fv-card-name">${esc(f.name)}</h3>
+          <p class="fv-card-meta">AUM <b>₹${inr.format(f.aum)} Cr</b></p>
+          <p class="fv-card-cat">${esc(f.cat)}</p>
+        </div>
+      </div>
+      <div class="fv-chart" aria-hidden="true">${slots.map(s => s.html).join("")}</div>
+      <div class="fv-baseline" aria-hidden="true"></div>
+      <div class="fv-chart" style="padding-top:0" aria-hidden="true">${slots.map(s => s.negHtml).join("")}</div>
+      <div class="fv-hlabels" aria-hidden="true"><span>1Y</span><span>3Y</span><span>5Y</span><span>SI</span></div>
+      <p class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">
+        1 year ${pct(f.r1)}, 3 years ${pct(f.r3)}, 5 years ${pct(f.r5)}, since inception ${pct(f.si)}
+      </p>
+    </article>`;
+  }
+
+  /* ── views ── */
+  function renderCards(list){
+    const grouped = state.sort === "sheet" && !state.q;
+    if (grouped && state.cat === "All"){
+      content.innerHTML = FV_CATEGORIES.map(([cat]) => {
+        const rows = list.filter(f => f.cat === cat);
+        if (!rows.length) return "";
+        return `
+        <section class="fv-cat">
+          <div class="fv-cat-head">
+            <h3 class="fv-cat-title">${esc(cat)}</h3>
+            <span class="fv-cat-rule"></span>
+            <span class="fv-cat-count">${rows.length} fund${rows.length > 1 ? "s" : ""}</span>
+          </div>
+          <div class="fv-grid">${rows.map(cardHtml).join("")}</div>
+        </section>`;
+      }).join("");
+    } else {
+      const flat = state.cat === "All" ? " flat" : "";
+      content.innerHTML = `<section class="fv-cat"><div class="fv-grid${flat}">${list.map(cardHtml).join("")}</div></section>`;
+    }
+    animateIn();
+  }
+
+  function renderTable(list){
+    const cols = `<thead><tr>
+      <th>Fund</th><th>AUM (₹ Cr)</th><th>1Y</th><th>3Y</th><th>5Y</th><th>SI</th>
+    </tr></thead>`;
+    const cell = (v, si) => `<td class="${v === null ? "na" : v < 0 ? "neg" : si ? "si" : ""}">${pct(v)}</td>`;
+    const row = f => `<tr>
+      <td>${esc(f.name)}</td><td>${inr.format(f.aum)}</td>
+      ${cell(f.r1)}${cell(f.r3)}${cell(f.r5)}${cell(f.si, true)}
+    </tr>`;
+    let body;
+    if (state.sort === "sheet" && state.cat === "All" && !state.q){
+      body = FV_CATEGORIES.map(([cat]) => {
+        const rows = list.filter(f => f.cat === cat);
+        return rows.length ? `<tr class="cat"><th colspan="6">${esc(cat)}</th></tr>` + rows.map(row).join("") : "";
+      }).join("");
+    } else {
+      body = list.map(row).join("");
+    }
+    content.innerHTML = `<div class="fv-tablewrap"><table class="fv-table" aria-label="SIP returns table">${cols}<tbody>${body}</tbody></table></div>`;
+  }
+
+  function render(){
+    const list = visibleFunds();
+    if (!list.length){
+      content.innerHTML = `<div class="fv-empty">
+        <p>No funds match “${esc(state.q)}”.</p>
+        <button id="fvClear">Clear search</button>
+      </div>`;
+      const c = $("fvClear");
+      if (c) c.addEventListener("click", () => { $("fvSearch").value = ""; state.q = ""; render(); });
+      return;
+    }
+    state.view === "cards" ? renderCards(list) : renderTable(list);
+  }
+
+  /* ── reveal animation ── */
+  function animateIn(){
+    const cards = content.querySelectorAll(".fv-card");
+    if (reduced){
+      cards.forEach(c => { c.classList.add("in"); c.querySelectorAll(".fv-bar[data-h]").forEach(b => b.style.height = b.dataset.h + "px"); });
+      return;
+    }
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        const card = en.target;
+        card.classList.add("in");
+        card.querySelectorAll(".fv-bar[data-h]").forEach((b, i) => {
+          b.style.transitionDelay = (i * 70 + 120) + "ms";
+          requestAnimationFrame(() => b.style.height = b.dataset.h + "px");
+        });
+        io.unobserve(card);
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: .08 });
+    cards.forEach((c, i) => { c.style.transitionDelay = Math.min(i % 8, 6) * 45 + "ms"; io.observe(c); });
+  }
+
+  /* ── events ── */
+  $("fvPills").addEventListener("click", e => {
+    const btn = e.target.closest(".fv-pill");
+    if (!btn) return;
+    state.cat = btn.dataset.cat;
+    renderPills(); render();
+  });
+  $("fvSearch").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
+  $("fvSort").addEventListener("change", e => { state.sort = e.target.value; render(); });
+  $("fvViewCards").addEventListener("click", () => setView("cards"));
+  $("fvViewTable").addEventListener("click", () => setView("table"));
+  function setView(v){
+    state.view = v;
+    $("fvViewCards").classList.toggle("active", v === "cards");
+    $("fvViewTable").classList.toggle("active", v === "table");
+    $("fvViewCards").setAttribute("aria-selected", v === "cards");
+    $("fvViewTable").setAttribute("aria-selected", v === "table");
+    render();
+  }
+
+  /* ── boot ── */
+  renderKpis();
+  renderPills();
+  render();
+})();
+</script>
+</body>
+</html>

@@ -34,6 +34,7 @@ app.disable("x-powered-by");
 // JSON parser so their upload routes can apply their own larger limits for
 // base64 file payloads.
 app.use("/api/factsheets", require("./routes/factsheets"));
+app.use("/api/factsheet-html", require("./routes/factsheetHtml"));
 app.use("/api/unlisted-logos", require("./routes/unlistedLogos"));
 app.use(express.json({ limit: "200kb" }));
 app.use(morgan("dev"));

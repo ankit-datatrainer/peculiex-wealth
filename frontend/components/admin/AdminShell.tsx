@@ -126,7 +126,7 @@ const ICON = {
 const NAV: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: ICON.dashboard },
   { href: "/admin/unlisted", label: "Unlisted Shares", icon: ICON.unlisted },
-  { href: "/admin/factsheets", label: "Factsheets", icon: ICON.factsheet },
+  { href: "/admin/factsheet-html", label: "Factsheets", icon: ICON.factsheet },
   { href: "/admin/users", label: "Users", icon: ICON.users },
   { href: "/admin/leads", label: "Leads", icon: ICON.leads },
   { href: "/admin/newsletter", label: "Newsletter", icon: ICON.mail },

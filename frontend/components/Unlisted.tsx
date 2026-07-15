@@ -134,10 +134,6 @@ export default function Unlisted() {
                 {/* Stats */}
                 <div className="ulv2-card__stats">
                   <div className="ulv2-card__stat">
-                    <span>Price per share</span>
-                    <strong>{fmtINR(u.price)}</strong>
-                  </div>
-                  <div className="ulv2-card__stat">
                     <span>Sector</span>
                     <strong>{u.sector}</strong>
                   </div>

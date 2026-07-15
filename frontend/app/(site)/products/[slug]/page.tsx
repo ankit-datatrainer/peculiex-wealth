@@ -5,6 +5,7 @@ import { PRODUCTS } from "@/lib/productContent";
 import PageHero from "@/components/PageHero";
 import PartnerLogos from "@/components/PartnerLogos";
 import Factsheet from "@/components/Factsheet";
+import FactsheetEmbed from "@/components/FactsheetEmbed";
 import PremiumThemeSync from "@/components/PremiumThemeSync";
 
 export const dynamicParams = false;
@@ -111,7 +112,12 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
       {/* Factsheet / brochure PDF — dynamic (super-admin uploadable), with a
           static fallback at /public/factsheets/<slug>.pdf */}
-      <Factsheet slug={p.slug} label={p.label} />
+      {p.slug !== "pms" && <Factsheet slug={p.slug} label={p.label} />}
+
+      {/* HTML factsheet — pasted by a super-admin in the admin panel and
+          rendered in a sandboxed frame. Available on every product, including
+          PMS and AIF; renders nothing until a factsheet is saved for the slug. */}
+      <FactsheetEmbed slug={p.slug} label={p.label} />
 
       {/* Highlights */}
       <section style={{ padding: "0 0 100px" }}>
