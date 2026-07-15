@@ -192,7 +192,7 @@ export default function MainNav() {
                           <div className="nri-column nri-right-col">
                             <span className="nri-col-label">NRI Services</span>
                             <div className="nri-services-grid">
-                              <Link href="/get-started?ref=india-tax" className="nri-service-card" onClick={() => setMobileOpen(false)}>
+                              <Link href="/nri/tax-filing" className="nri-service-card" onClick={() => setMobileOpen(false)}>
                                 <div className="nri-icon-wrapper">
                                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="19" y1="5" x2="5" y2="19"/><circle cx="9" cy="9" r="2"/><circle cx="15" cy="15" r="2"/></svg>
                                 </div>
@@ -202,7 +202,7 @@ export default function MainNav() {
                                 </div>
                               </Link>
 
-                              <Link href="/get-started?ref=pan" className="nri-service-card" onClick={() => setMobileOpen(false)}>
+                              <Link href="/nri/pan-application" className="nri-service-card" onClick={() => setMobileOpen(false)}>
                                 <div className="nri-icon-wrapper">
                                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                                 </div>
@@ -211,7 +211,7 @@ export default function MainNav() {
                                   <p>Get your PAN card quickly and hassle-free</p>
                                 </div>
                               </Link>
-                              <Link href="/get-started?ref=citizenship" className="nri-service-card" onClick={() => setMobileOpen(false)}>
+                              <Link href="/nri/update-citizenship" className="nri-service-card" onClick={() => setMobileOpen(false)}>
                                 <div className="nri-icon-wrapper">
                                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="16"/><line x1="15" y1="22" x2="15" y2="16"/><line x1="9" y1="16" x2="15" y2="16"/><path d="M8 6h2v2H8V6zm6 0h2v2h-2V6zm-6 4h2v2H8v-2zm6 0h2v2h-2v-2zm-6 4h2v2H8v-2zm6 0h2v2h-2v-2z"/></svg>
                                 </div>
