@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { lerp } from "@/lib/util";
 import AskAI from "./AskAI";
 
+
 export default function Hero() {
   const titleRef = useRef<HTMLHeadingElement | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
@@ -353,7 +354,7 @@ export default function Hero() {
                 <div className="hc-dot dot-r"></div>
                 <div className="hc-dot dot-y"></div>
                 <div className="hc-dot dot-g"></div>
-                <span className="hc-title">Live Portfolio</span>
+                <span className="hc-title">Live Equity Portfolio</span>
                 <span className="hc-live">
                   <span className="pulse-dot"></span>LIVE
                 </span>
@@ -475,37 +476,29 @@ export default function Hero() {
           <span className="trust-label">Regulated &amp; Trusted by</span>
           <div className="trust-track">
             <div className="trust-row">
-              <span>SEBI</span>
+              <img src="/logos/sebi.png" alt="SEBI" className="regulated-logo" />
               <i></i>
-              <span>RBI</span>
+              <img src="/logos/rbi.png" alt="RBI" className="regulated-logo" />
               <i></i>
-              <span>NSE</span>
+              <img src="/logos/nse.png" alt="NSE" className="regulated-logo" />
               <i></i>
-              <span>BSE</span>
+              <img src="/logos/bse.png" alt="BSE" className="regulated-logo" />
               <i></i>
-              <span>NSDL</span>
+              <img src="/logos/nsdl.png" alt="NSDL" className="regulated-logo" />
               <i></i>
-              <span>CDSL</span>
+              <img src="/logos/cdsl.png" alt="CDSL" className="regulated-logo" />
               <i></i>
-              <span>AMFI</span>
+              <img src="/logos/sebi.png" alt="SEBI" className="regulated-logo" />
               <i></i>
-              <span>NPCI</span>
+              <img src="/logos/rbi.png" alt="RBI" className="regulated-logo" />
               <i></i>
-              <span>SEBI</span>
+              <img src="/logos/nse.png" alt="NSE" className="regulated-logo" />
               <i></i>
-              <span>RBI</span>
+              <img src="/logos/bse.png" alt="BSE" className="regulated-logo" />
               <i></i>
-              <span>NSE</span>
+              <img src="/logos/nsdl.png" alt="NSDL" className="regulated-logo" />
               <i></i>
-              <span>BSE</span>
-              <i></i>
-              <span>NSDL</span>
-              <i></i>
-              <span>CDSL</span>
-              <i></i>
-              <span>AMFI</span>
-              <i></i>
-              <span>NPCI</span>
+              <img src="/logos/cdsl.png" alt="CDSL" className="regulated-logo" />
               <i></i>
             </div>
           </div>

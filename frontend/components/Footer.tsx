@@ -109,7 +109,7 @@ export default function Footer() {
             platform, advisory-led.
           </p>
           <div className="foot-reg">
-            <span className="status-dot"></span>SEBI Registered Investment Adviser
+            <span className="status-dot"></span>SEBI Registered Investment Distributor
           </div>
         </div>
 
@@ -221,7 +221,7 @@ export default function Footer() {
             </strong>{" "}
             Read all related documents carefully before investing. Past
             performance does not guarantee future returns. Finvoq Wealth Pvt.
-            Ltd. is a SEBI Registered Investment Adviser. Demat services are
+            Ltd. is a SEBI Registered Investment Distributor. Demat services are
             provided by SEBI-registered partner brokers.
           </p>
           <p className="foot-codes">

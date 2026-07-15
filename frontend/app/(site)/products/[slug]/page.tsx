@@ -5,6 +5,7 @@ import { PRODUCTS } from "@/lib/productContent";
 import PageHero from "@/components/PageHero";
 import PartnerLogos from "@/components/PartnerLogos";
 import Factsheet from "@/components/Factsheet";
+import PremiumThemeSync from "@/components/PremiumThemeSync";
 
 export const dynamicParams = false;
 
@@ -33,6 +34,21 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   return (
     <div className={isPremium ? "premium-product-page" : ""}>
+      {isPremium && (
+        <>
+          {/* Applies the dark class during HTML parse, before first paint, so a
+              direct load of this page never flashes light before the theme
+              effect below runs. */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html:
+                "try{localStorage.setItem('theme','dark');var e=document.documentElement;e.classList.add('dark');e.classList.remove('light');e.style.colorScheme='dark';}catch(_){}"
+            }}
+          />
+          <PremiumThemeSync />
+        </>
+      )}
+
       <PageHero label={p.label} title={p.title} subtitle={p.subtitle} />
 
 
@@ -176,8 +192,8 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         </div>
       </section>
 
-      {/* LAMF cross-sell — appears on every product page except LAMF itself */}
-      {p.slug !== "loan-against-mutual-funds" && (
+      {/* LAMF cross-sell — appears only on mutual funds page */}
+      {p.slug === "mutual-funds" && (
         <section style={{ padding: "0 0 110px" }}>
           <div className="container">
             <div className="lamf-band reveal">

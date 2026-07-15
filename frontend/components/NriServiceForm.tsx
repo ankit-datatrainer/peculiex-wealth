@@ -59,22 +59,36 @@ export default function NriServiceForm({
   return (
     <form className="nri-svc-form-card" onSubmit={onSubmit}>
       <h3>{ctaLabel}</h3>
-      <p className="nri-svc-form-sub">
-        Share a few details and our team will get in touch to take this forward.
-      </p>
+      <p className="nri-svc-form-sub">Share a few details and our team will get in touch.</p>
 
       <div className="nri-svc-form-grid">
         <label className="nri-svc-field">
           <span>Full name *</span>
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" required />
+          <input autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" required />
         </label>
         <label className="nri-svc-field">
           <span>Email *</span>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" required />
+          <input
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@email.com"
+            required
+          />
         </label>
         <label className="nri-svc-field">
           <span>Phone / WhatsApp *</span>
-          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 555 123 4567" required />
+          <input
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="+91 98765 43210"
+            required
+          />
         </label>
         <label className="nri-svc-field">
           <span>Country of residence *</span>
@@ -85,7 +99,7 @@ export default function NriServiceForm({
       <label className="nri-svc-field nri-svc-field-wide">
         <span>Anything specific we should know? (optional)</span>
         <textarea
-          rows={3}
+          rows={2}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Tell us a bit about your situation…"
@@ -94,11 +108,11 @@ export default function NriServiceForm({
 
       {error && <p className="nri-svc-error">{error}</p>}
 
-      <button type="submit" className="btn btn-primary btn-lg" disabled={submitting} style={{ width: "100%", justifyContent: "center" }}>
+      <button type="submit" className="btn btn-primary" disabled={submitting} style={{ width: "100%", justifyContent: "center" }}>
         {submitting ? "Submitting…" : ctaLabel}
       </button>
       <p className="nri-svc-form-fine">
-        By submitting, you authorise us to contact you by call, email or WhatsApp regarding this request.
+        By submitting, you authorise us to contact you by call, email or WhatsApp.
       </p>
     </form>
   );

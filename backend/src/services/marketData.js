@@ -66,14 +66,12 @@ function getFyersToken() {
 }
 
 const FINNHUB_KEY = process.env.FINNHUB_API_KEY || "";
-const NEWSDATA_KEY = process.env.NEWSDATA_API_KEY || "pub_3a794af7ae564aea9a6602aa49403d20";
 const GROWW_API_KEY = process.env.GROWW_API_KEY || "";
 const GROWW_API_SECRET = process.env.GROWW_API_SECRET || "";
 
 const YAHOO_BASE = "https://query1.finance.yahoo.com";
 const YAHOO_BASE_ALT = "https://query2.finance.yahoo.com";
 const FINNHUB_BASE = "https://finnhub.io/api/v1";
-const NEWSDATA_BASE = "https://newsdata.io/api/1";
 const GROWW_BASE = "https://api.groww.in/v1";
 
 // Browser-like UA — Yahoo blocks default node fetch UA on some endpoints.
@@ -828,45 +826,138 @@ async function getYahooIndiaNews() {
   return items;
 }
 
-/* ---------- public: getGeneralNews (NewsData.io -> JSON) ---------- */
+/* ---------- Zerodha Pulse (free, official RSS) ---------- */
+
+/**
+ * Pulse aggregates Indian financial headlines from the major publishers and
+ * publishes them as a public RSS feed. Each <item>'s <link> points at the
+ * ORIGINAL publisher (Mint, ET, The Hindu…), not at Pulse — so items are
+ * attributed and linked to whoever actually wrote them.
+ */
+const PULSE_FEED = "https://pulse.zerodha.com/feed.xml";
+
+// Hostname -> publisher display name. Anything not listed falls back to a
+// name derived from the domain, so a new publisher still shows sensibly.
+const PULSE_SOURCES = {
+  "livemint.com": "Mint",
+  "economictimes.indiatimes.com": "Economic Times",
+  "moneycontrol.com": "Moneycontrol",
+  "business-standard.com": "Business Standard",
+  "financialexpress.com": "Financial Express",
+  "thehindubusinessline.com": "BusinessLine",
+  "thehindu.com": "The Hindu",
+  "reuters.com": "Reuters",
+  "cnbctv18.com": "CNBC-TV18",
+  "ndtvprofit.com": "NDTV Profit",
+  "zeebiz.com": "Zee Business",
+  "businesstoday.in": "Business Today",
+  "bloombergquint.com": "BQ Prime",
+  "timesofindia.indiatimes.com": "Times of India",
+  "indianexpress.com": "Indian Express",
+  "hindustantimes.com": "Hindustan Times",
+  "forbesindia.com": "Forbes India",
+  "outlookbusiness.com": "Outlook Business",
+  "capitalmind.in": "Capitalmind",
+  "zerodha.com": "Zerodha"
+};
+
+function sourceFromUrl(link) {
+  try {
+    const host = new URL(link).hostname.toLowerCase().replace(/^www\./, "");
+    if (PULSE_SOURCES[host]) return PULSE_SOURCES[host];
+    const known = Object.keys(PULSE_SOURCES).find((d) => host.endsWith(d));
+    if (known) return PULSE_SOURCES[known];
+    // Derive: "some-outlet.co.in" -> "Some Outlet"
+    const base = host.split(".")[0].replace(/-/g, " ");
+    return base.replace(/\b\w/g, (c) => c.toUpperCase());
+  } catch {
+    return "Pulse";
+  }
+}
+
+function decodeXmlEntities(s) {
+  return s
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&");
+}
+
+async function getPulseNews() {
+  const key = "pulse_news";
+  const cached = cacheGet(key);
+  if (cached) return cached;
+
+  const items = [];
+  try {
+    const r = await fetch(PULSE_FEED, { headers: { "User-Agent": UA } });
+    if (!r.ok) throw new Error(`Pulse feed HTTP ${r.status}`);
+    const xml = await r.text();
+
+    const blocks = xml.split(/<item>/i).slice(1);
+    for (const block of blocks) {
+      const pick = (tag) => {
+        const m = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "i").exec(block);
+        if (!m) return "";
+        return decodeXmlEntities(
+          m[1]
+            .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+            .replace(/<[^>]+>/g, "")
+        ).trim();
+      };
+
+      const headline = pick("title");
+      const link = pick("link") || pick("guid");
+      if (!headline || !link) continue;
+
+      const slug = generateSlug(headline);
+      cacheSet(`news_slug:${slug}`, link, 24 * 60 * 60_000);
+
+      const pub = pick("pubDate");
+      const publishedAt = pub ? new Date(pub).getTime() : Date.now();
+
+      items.push({
+        id: pick("guid") || link,
+        slug,
+        headline,
+        summary: pick("description"),
+        source: sourceFromUrl(link),
+        url: link,
+        image: "",
+        publishedAt: isNaN(publishedAt) ? Date.now() : publishedAt
+      });
+    }
+  } catch (e) {
+    console.warn("[markets] Pulse news failed:", e.message);
+  }
+
+  // 10 minutes: the feed updates continuously, but this keeps us light on it.
+  cacheSet(key, items, 10 * 60_000);
+  return items;
+}
+
+/* ---------- public: getGeneralNews (Zerodha Pulse RSS -> JSON) ---------- */
 
 async function getGeneralNews() {
   const key = "markets_general_news";
   const cached = cacheGet(key);
   if (cached) return cached;
 
+  // Primary source: Zerodha Pulse's free public RSS feed. It already
+  // aggregates every major Indian financial publisher, so it replaces the
+  // metered NewsData.io plan we used to depend on.
   let newItems = [];
   try {
-    const url = `${NEWSDATA_BASE}/latest?apikey=${NEWSDATA_KEY}&category=business&country=in&language=en`;
-    const data = await getJSON(url);
-
-    if (data.status === "success" && data.results) {
-      newItems = data.results.map((n) => {
-        const title = n.title || "";
-        const slug = generateSlug(title);
-        cacheSet(`news_slug:${slug}`, n.link, 24 * 60 * 60_000);
-        
-        const publishedAt = n.pubDate ? new Date(n.pubDate).getTime() : Date.now();
-
-        return {
-          id: n.article_id || n.link || slug,
-          slug,
-          headline: title,
-          summary: n.description || "",
-          source: n.source_id || "NewsData",
-          url: n.link,
-          image: n.image_url || "",
-          publishedAt: isNaN(publishedAt) ? Date.now() : publishedAt
-        };
-      });
-    } else {
-      console.warn("[markets] NewsData API error or missing results:", data);
-    }
+    newItems = await getPulseNews();
   } catch (e) {
-    console.warn("[markets] general news failed:", e.message);
+    console.warn("[markets] Pulse general news failed:", e.message);
   }
-  
-  // Pull in Yahoo India Finance headlines and merge them alongside NewsData.
+
+  // Yahoo India stays as a secondary feed so the page still has content if
+  // Pulse is ever unreachable.
   let yahooItems = [];
   try {
     yahooItems = await getYahooIndiaNews();
@@ -876,23 +967,28 @@ async function getGeneralNews() {
 
   // Merge new items into global archive
   const combined = [...newItems, ...yahooItems, ...globalNewsArchive];
-  
-  // Deduplicate by id
+
+  // Deduplicate on the article URL, then on the headline — the same story
+  // reaches us from both feeds under different ids, and de-duping by id
+  // alone would let it show twice.
   const unique = new Map();
-  combined.forEach(item => {
-    if (!unique.has(item.id)) {
-      unique.set(item.id, item);
-    }
+  const seenHeadlines = new Set();
+  combined.forEach((item) => {
+    const urlKey = (item.url || item.id || "").split("?")[0];
+    const headlineKey = (item.headline || "").toLowerCase().trim();
+    if (unique.has(urlKey) || seenHeadlines.has(headlineKey)) return;
+    unique.set(urlKey, item);
+    seenHeadlines.add(headlineKey);
   });
 
   // Sort and limit to top 500
   globalNewsArchive = Array.from(unique.values())
     .sort((a, b) => b.publishedAt - a.publishedAt)
     .slice(0, 500);
-  
-  // Cache for 30 minutes to guarantee we stay well under the 200 req/day limit 
-  // 30 mins = 2 reqs/hr = 48 reqs/day
-  cacheSet(key, globalNewsArchive, 30 * 60_000); 
+
+  // Pulse is a free public feed, so this is only about being a polite
+  // consumer rather than staying inside a paid quota.
+  cacheSet(key, globalNewsArchive, 10 * 60_000);
   return globalNewsArchive;
 }
 

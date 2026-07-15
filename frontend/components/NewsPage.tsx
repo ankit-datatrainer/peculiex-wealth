@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import useSWR from "swr";
-import { fetcher } from "@/lib/api";
 import Link from "next/link";
-import "./news.css"; 
+import { fetcher } from "@/lib/api";
+import "./news-portal.css";
 
 interface NewsItem {
   id: string;
@@ -12,14 +12,37 @@ interface NewsItem {
   headline: string;
   summary: string;
   source: string;
+  url: string;
   image: string;
   publishedAt: number;
 }
 
+const PAGE_SIZE = 30;
+
+function relativeTime(ts: number) {
+  const mins = Math.floor((Date.now() - ts) / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(ts).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+}
+
+function absoluteTime(ts: number) {
+  return new Date(ts).toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
 export default function NewsPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 24;
-  const FALLBACK_IMG = "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=1200&auto=format&fit=crop";
+  const [visible, setVisible] = useState(PAGE_SIZE);
+  const [query, setQuery] = useState("");
+  const [source, setSource] = useState("All");
 
   const { data, error, isLoading } = useSWR<{ items: NewsItem[] }>(
     "/api/markets/news/general",
@@ -27,117 +50,183 @@ export default function NewsPage() {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      dedupingInterval: 600000 // 10 mins
+      refreshInterval: 5 * 60_000,
+      dedupingInterval: 5 * 60_000
     }
   );
 
-  const totalItems = data?.items?.length || 0;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const items = data?.items ?? [];
 
-  const paginatedItems = data?.items?.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  ) || [];
+  // Source chips, ordered by how much each publisher actually contributes.
+  const sources = useMemo(() => {
+    const counts = new Map<string, number>();
+    items.forEach((i) => counts.set(i.source, (counts.get(i.source) ?? 0) + 1));
+    return ["All", ...Array.from(counts.entries()).sort((a, b) => b[1] - a[1]).map(([s]) => s)];
+  }, [items]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return items.filter((i) => {
+      if (source !== "All" && i.source !== source) return false;
+      if (!q) return true;
+      return (
+        i.headline.toLowerCase().includes(q) ||
+        (i.summary ?? "").toLowerCase().includes(q)
+      );
+    });
+  }, [items, query, source]);
+
+  const [lead, ...rest] = filtered;
+  const shown = rest.slice(0, visible);
+
+  const resetTo = (fn: () => void) => {
+    fn();
+    setVisible(PAGE_SIZE);
+  };
 
   return (
-    <main className="news-page-container">
+    <main className="np">
       <div className="container">
-        <header className="news-header section-header">
-          <h1>Indian Market News</h1>
-          <p className="subtitle">
-            The latest financial updates, stock market trends, and economic news —
-            aggregated from Yahoo India Finance and leading news wires.
+        <header className="np-head">
+          <div className="np-eyebrow">
+            <span className="np-live" aria-hidden="true" />
+            Market News
+          </div>
+          <h1 className="np-title">
+            Every headline that <em>moves the market.</em>
+          </h1>
+          <p className="np-sub">
+            Financial and market news from India&apos;s leading publishers, aggregated
+            in one place and refreshed through the day.
           </p>
         </header>
 
+        {!isLoading && !error && items.length > 0 && (
+          <div className="np-controls">
+            <div className="np-search">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3.5-3.5" />
+              </svg>
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => resetTo(() => setQuery(e.target.value))}
+                placeholder="Search headlines…"
+                aria-label="Search headlines"
+              />
+            </div>
+            <div className="np-chips" role="group" aria-label="Filter by source">
+              {sources.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  className="np-chip"
+                  data-active={source === s}
+                  onClick={() => resetTo(() => setSource(s))}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {isLoading && (
-          <div className="news-grid">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="news-card" style={{ pointerEvents: "none" }}>
-                <div className="news-card-image" style={{ background: "var(--color-border)", animation: "pulse 1.5s infinite ease-in-out" }}></div>
-                <div className="news-card-content">
-                  <div style={{ width: "40%", height: 12, background: "var(--color-border)", borderRadius: 4, marginBottom: 12, animation: "pulse 1.5s infinite ease-in-out" }} />
-                  <div style={{ width: "90%", height: 20, background: "var(--color-border)", borderRadius: 4, marginBottom: 8, animation: "pulse 1.5s infinite ease-in-out" }} />
-                  <div style={{ width: "75%", height: 20, background: "var(--color-border)", borderRadius: 4, marginBottom: 16, animation: "pulse 1.5s infinite ease-in-out" }} />
-                  <div style={{ width: "100%", height: 14, background: "var(--color-border)", borderRadius: 4, marginBottom: 6, opacity: 0.5, animation: "pulse 1.5s infinite ease-in-out" }} />
-                  <div style={{ width: "80%", height: 14, background: "var(--color-border)", borderRadius: 4, opacity: 0.5, animation: "pulse 1.5s infinite ease-in-out" }} />
-                </div>
+          <div className="np-grid">
+            {Array.from({ length: 9 }).map((_, i) => (
+              <div className="np-card np-skel" key={i}>
+                <div className="np-skel-line" style={{ width: "30%", height: 11 }} />
+                <div className="np-skel-line" style={{ width: "95%", height: 18 }} />
+                <div className="np-skel-line" style={{ width: "70%", height: 18 }} />
+                <div className="np-skel-line" style={{ width: "100%", height: 12, opacity: 0.5 }} />
+                <div className="np-skel-line" style={{ width: "85%", height: 12, opacity: 0.5 }} />
               </div>
             ))}
-            <style jsx>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
           </div>
         )}
 
         {error && (
-          <div className="news-error">
-            <p>Failed to load news. Please try again later.</p>
+          <div className="np-state">
+            <h3>Couldn&apos;t load the news feed</h3>
+            <p>The feed is temporarily unreachable. Please try again shortly.</p>
           </div>
         )}
 
-        {!isLoading && !error && totalItems === 0 && (
-          <div className="news-empty">
-            <p>No recent news found at the moment.</p>
+        {!isLoading && !error && filtered.length === 0 && (
+          <div className="np-state">
+            <h3>No stories match your filters</h3>
+            <p>Try a different search term or clear the source filter.</p>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => resetTo(() => { setQuery(""); setSource("All"); })}
+            >
+              Clear filters
+            </button>
           </div>
         )}
 
-        {!isLoading && !error && totalItems > 0 && (
-          <>
-            <div className="news-grid">
-              {paginatedItems.map((item, i) => {
-                // If it's the first item on the first page, make it featured
-                const isFeatured = currentPage === 1 && i === 0;
-                return (
-                  <Link
-                    key={item.id}
-                    href={`/news/${item.slug}`}
-                    className={`news-card ${isFeatured ? "featured-news" : ""}`}
-                  >
-                    <div className="news-card-image">
-                      <img src={item.image || FALLBACK_IMG} alt="" loading="lazy" />
-                    </div>
-                    <div className="news-card-content">
-                      <div className="news-meta">
-
-                        <span className="news-date">
-                          {new Date(item.publishedAt).toLocaleDateString("en-IN", {
-                            day: "numeric",
-                            month: "short",
-                            hour: "2-digit",
-                            minute: "2-digit"
-                          })}
-                        </span>
-                      </div>
-                      <h3 className="news-headline">{item.headline}</h3>
-                      {item.summary && <p className="news-summary">{item.summary}</p>}
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* Pagination Controls */}
-            {totalPages > 1 && (
-              <div className="news-pagination">
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  className="pagination-btn"
-                >
-                  Previous
-                </button>
-                <span className="pagination-info">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <button
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  className="pagination-btn"
-                >
-                  Next
-                </button>
+        {!isLoading && !error && lead && (
+          <Link className="np-lead" href={`/news/${lead.slug}`}>
+            <div className="np-lead-body">
+              <div className="np-meta">
+                <span className="np-source">{lead.source}</span>
+                <span className="np-dot" />
+                <time dateTime={new Date(lead.publishedAt).toISOString()} title={absoluteTime(lead.publishedAt)}>
+                  {relativeTime(lead.publishedAt)}
+                </time>
               </div>
-            )}
-          </>
+              <h2 className="np-lead-title">{lead.headline}</h2>
+              {lead.summary && <p className="np-lead-sum">{lead.summary}</p>}
+              <span className="np-read">Read story →</span>
+            </div>
+          </Link>
+        )}
+
+        {!isLoading && !error && shown.length > 0 && (
+          <div className="np-grid">
+            {shown.map((item) => (
+              <Link className="np-card" key={item.id} href={`/news/${item.slug}`}>
+                <div className="np-meta">
+                  <span className="np-source">{item.source}</span>
+                  <span className="np-dot" />
+                  <time dateTime={new Date(item.publishedAt).toISOString()} title={absoluteTime(item.publishedAt)}>
+                    {relativeTime(item.publishedAt)}
+                  </time>
+                </div>
+                <h3 className="np-card-title">{item.headline}</h3>
+                {item.summary && <p className="np-card-sum">{item.summary}</p>}
+                <span className="np-read">Read story →</span>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {!isLoading && !error && rest.length > visible && (
+          <div className="np-more">
+            <button
+              type="button"
+              className="btn btn-outline btn-lg"
+              onClick={() => setVisible((v) => v + PAGE_SIZE)}
+            >
+              Load more stories
+            </button>
+            <span className="np-count">
+              Showing {shown.length} of {rest.length}
+            </span>
+          </div>
+        )}
+
+        {!isLoading && !error && items.length > 0 && (
+          <p className="np-attrib">
+            Headlines aggregated from{" "}
+            <a href="https://pulse.zerodha.com/" target="_blank" rel="noopener noreferrer">
+              Zerodha Pulse
+            </a>
+            . Every story links to the publisher that reported it, and all rights
+            remain with them. Finvoq does not author or edit this coverage.
+          </p>
         )}
       </div>
     </main>

@@ -49,6 +49,8 @@ app.use(
   })
 );
 
+// Restart trigger: 2
+
 // Rate-limit only the write endpoints — catalog reads stay snappy
 const writeLimiter = rateLimit({
   windowMs: 60 * 1000,

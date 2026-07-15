@@ -1,156 +1,157 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import useSWR from "swr";
-import { fetcher } from "@/lib/api";
 import Link from "next/link";
-import "./news.css";
 import { ArrowLeft } from "lucide-react";
+import { fetcher } from "@/lib/api";
+import "./news-portal.css";
 
-interface ArticleData {
-  title: string;
-  image: string;
-  paragraphs: string[];
-  source: string;
-  url: string;
-}
-
-interface SidebarNewsItem {
+interface NewsItem {
   id: string;
   slug: string;
   headline: string;
+  summary: string;
   source: string;
   url: string;
   image: string;
   publishedAt: number;
 }
 
+function relativeTime(ts: number) {
+  const mins = Math.floor((Date.now() - ts) / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(ts).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+}
+
+function fullTime(ts: number) {
+  return new Date(ts).toLocaleString("en-IN", {
+    weekday: "short",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
 export default function ArticlePage({ params }: { params: { slug: string } }) {
-  const [mounted, setMounted] = useState(false);
-  const FALLBACK_IMG = "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=1200&auto=format&fit=crop";
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Fetch the article content using the clean slug
-  const { data, error, isLoading } = useSWR<{ article: ArticleData }>(
-    params?.slug ? `/api/markets/news/article?slug=${encodeURIComponent(params.slug)}` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false, // Don't re-fetch while reading
-      dedupingInterval: 600000 // 10 minutes
-    }
-  );
-
-  // Fetch some trending news for the sidebar
-  const { data: trendingData } = useSWR<{ items: SidebarNewsItem[] }>(
+  // The feed is already cached by SWR for the index page, so resolving the
+  // story from it keeps this page instant and avoids a second round trip.
+  const { data, error, isLoading } = useSWR<{ items: NewsItem[] }>(
     "/api/markets/news/general",
     fetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      dedupingInterval: 600000 // 10 mins
-    }
+    { revalidateOnFocus: false, dedupingInterval: 5 * 60_000 }
   );
 
-  if (!mounted) return null;
+  const items = data?.items ?? [];
+  const item = items.find((i) => i.slug === params.slug);
+  const related = items.filter((i) => i.slug !== params.slug).slice(0, 6);
 
   return (
-    <main className="article-view-container">
+    <main className="np np-article">
       <div className="container">
-        
-        {/* Navigation Header */}
-        <div className="article-nav-header">
-          <Link href="/news" className="article-back-btn">
-            <ArrowLeft className="back-arrow-icon" />
+        <div className="np-back">
+          <Link href="/news">
+            <ArrowLeft size={15} />
             Back to Market News
           </Link>
         </div>
 
-        <div className="article-layout-grid">
-          {/* Main Reading Area */}
-          <article className="article-main-content">
-            {isLoading && (
-              <div className="article-skeleton">
-                <div className="skeleton-badge"></div>
-                <div className="skeleton-title"></div>
-                <div className="skeleton-title short"></div>
-                <div className="skeleton-meta"></div>
-                <div className="skeleton-image"></div>
-                <div className="skeleton-text"></div>
-                <div className="skeleton-text"></div>
-                <div className="skeleton-text"></div>
-                <div className="skeleton-text short"></div>
-              </div>
-            )}
-
-            {error && (
-              <div className="article-error-state">
-                <div className="error-icon">⚠️</div>
-                <h2>Unable to load article</h2>
-                <p>We could not fetch this article directly. The link might be expired or unsupported.</p>
-                <Link href="/news" className="original-fallback-btn">
-                  Return to News
-                </Link>
-              </div>
-            )}
-
-            {data?.article && (
-              <>
-                <div className="article-meta-wrapper">
-                  {data.article.paragraphs && data.article.paragraphs.length > 0 && (
-
-                    <span className="article-reading-time">
-                      ⏱️ {Math.max(1, Math.ceil((data.article.paragraphs.join(" ").length) / 1000))} min read
-                    </span>
-                  )}
-                </div>
-                
-                <h1 className="article-title-header">{data.article.title}</h1>
-
-                <div className="article-hero-image">
-                  <img src={data.article.image || FALLBACK_IMG} alt={data.article.title} />
-                </div>
-
-                <div className="article-body-text">
-                  {data.article.paragraphs?.map((p, i) => (
-                    <p key={i} className="article-para">{p}</p>
-                  ))}
-                </div>
-
-                <div className="article-reading-footer">
-                  {data.article.url && (
-                    <p>
-                      Read the original article on{" "}
-                      <a href={data.article.url} target="_blank" rel="noopener noreferrer" className="read-original-anchor">
-                        the source website
-                      </a>
-                    </p>
-                  )}
-                  <p>Content parsed for distraction-free reading.</p>
-                </div>
-              </>
-            )}
-          </article>
-
-          {/* Sidebar Area */}
-          <aside className="article-sidebar">
-            <h3 className="sidebar-section-title">Trending Market Updates</h3>
-            <div className="sidebar-list">
-              {trendingData?.items?.slice(0, 5).map((item) => (
-                <Link key={item.id} href={`/news/${item.slug}`} className="sidebar-news-card">
-                  <div className="sidebar-img-wrapper">
-                    <img src={item.image || FALLBACK_IMG} alt="" loading="lazy" />
-                  </div>
-                  <div className="sidebar-card-content">
-                    <h4 className="sidebar-card-headline">{item.headline}</h4>
-                  </div>
-                </Link>
-              ))}
+        {isLoading && (
+          <div className="np-art-grid">
+            <div>
+              <div className="np-skel-line" style={{ width: "25%", height: 12, marginBottom: 18 }} />
+              <div className="np-skel-line" style={{ width: "95%", height: 34, marginBottom: 10 }} />
+              <div className="np-skel-line" style={{ width: "70%", height: 34, marginBottom: 26 }} />
+              <div className="np-skel-line" style={{ width: "100%", height: 14, marginBottom: 8 }} />
+              <div className="np-skel-line" style={{ width: "92%", height: 14, marginBottom: 8 }} />
+              <div className="np-skel-line" style={{ width: "80%", height: 14 }} />
             </div>
-          </aside>
-        </div>
+          </div>
+        )}
+
+        {!isLoading && (error || !item) && (
+          <div className="np-state">
+            <h3>Story not available</h3>
+            <p>
+              This story is no longer in the current feed — headlines roll off as
+              newer ones arrive.
+            </p>
+            <Link href="/news" className="btn btn-primary">
+              Browse latest news
+            </Link>
+          </div>
+        )}
+
+        {!isLoading && item && (
+          <div className="np-art-grid">
+            <article className="np-art-main">
+              <div className="np-meta">
+                <span className="np-source">{item.source}</span>
+                <span className="np-dot" />
+                <time dateTime={new Date(item.publishedAt).toISOString()}>
+                  {relativeTime(item.publishedAt)}
+                </time>
+              </div>
+
+              <h1 className="np-art-title">{item.headline}</h1>
+
+              <p className="np-art-date">{fullTime(item.publishedAt)}</p>
+
+              {item.summary && <p className="np-art-lead">{item.summary}</p>}
+
+              {/* The feed syndicates the headline and this summary. The full
+                  article text belongs to the publisher, so we hand off to them
+                  for the rest rather than reproducing it here. */}
+              <a
+                className="np-art-cta"
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <div>
+                  <strong>Continue reading at {item.source}</strong>
+                  <span>
+                    This story was reported by {item.source}. Open the full
+                    article on their site.
+                  </span>
+                </div>
+                <span className="np-art-cta-arrow" aria-hidden="true">
+                  →
+                </span>
+              </a>
+
+              <p className="np-art-note">
+                Finvoq aggregates headlines from India&apos;s leading financial
+                publishers. We don&apos;t author or edit this coverage, and all
+                rights remain with {item.source}.
+              </p>
+            </article>
+
+            <aside className="np-art-side">
+              <h3 className="np-side-title">Latest stories</h3>
+              <div className="np-side-list">
+                {related.map((r) => (
+                  <Link key={r.id} href={`/news/${r.slug}`} className="np-side-card">
+                    <div className="np-meta">
+                      <span className="np-source">{r.source}</span>
+                      <span className="np-dot" />
+                      <time dateTime={new Date(r.publishedAt).toISOString()}>
+                        {relativeTime(r.publishedAt)}
+                      </time>
+                    </div>
+                    <h4>{r.headline}</h4>
+                  </Link>
+                ))}
+              </div>
+            </aside>
+          </div>
+        )}
       </div>
     </main>
   );

@@ -58,10 +58,13 @@ function LoginInner() {
   const [verifying, setVerifying] = useState(false);
   const [resendIn, setResendIn] = useState(0);
 
-  const next = search.get("next") || "/watchlist";
+  const next = search.get("next");
 
   useEffect(() => {
-    if (ready && user) router.replace(next);
+    if (ready && user) {
+      const defaultNext = (user.role === "superadmin" || user.role === "admin") ? "/admin" : "/watchlist";
+      router.replace(next || defaultNext);
+    }
   }, [ready, user, router, next]);
 
   // Pretty resend countdown
@@ -84,7 +87,10 @@ function LoginInner() {
       const r = await login(email, password);
       if (r.ok) {
         setStep("done");
-        setTimeout(() => router.replace(next), 400);
+        setTimeout(() => {
+          const defaultNext = (r.user?.role === "superadmin" || r.user?.role === "admin") ? "/admin" : "/watchlist";
+          router.replace(next || defaultNext);
+        }, 400);
       } else if (r.needsVerification) {
         // Pivot to OTP step. The backend already pushed a fresh code.
         setPendingEmail(r.pendingEmail);
@@ -104,9 +110,12 @@ function LoginInner() {
     clearError();
     setVerifying(true);
     try {
-      await verifyOtp(pendingEmail, code);
+      const u = await verifyOtp(pendingEmail, code);
       setStep("done");
-      setTimeout(() => router.replace(next), 400);
+      setTimeout(() => {
+        const defaultNext = (u?.role === "superadmin" || u?.role === "admin") ? "/admin" : "/watchlist";
+        router.replace(next || defaultNext);
+      }, 400);
     } catch (e: any) {
       setOtpError(e?.message || "Could not verify your code.");
       setOtpDigits(["", "", "", "", "", ""]);

@@ -257,7 +257,7 @@ img, svg { display: block; max-width: 100%; }
   backdrop-filter: blur(22px) saturate(140%);
   -webkit-backdrop-filter: blur(22px) saturate(140%);
   border-bottom: 1px solid var(--color-divider);
-  top: 0;
+  top: 37px;
 }
 .dark .main-nav.scrolled {
   background: rgba(11, 18, 27, 0.85);
@@ -869,15 +869,16 @@ section { padding: 110px 0; position: relative; }
   animation: trustScroll 35s linear infinite;
   padding-right: 32px;
 }
-.trust-row span {
-  font-family: var(--font-display);
-  font-size: 22px; font-weight: 500;
-  color: var(--color-text-muted);
-  letter-spacing: .04em;
-  opacity: .7;
-  transition: opacity .25s, color .25s;
+.trust-row img {
+  height: 52px;
+  width: auto;
+  opacity: 1;
+  transition: opacity .25s, filter .25s, transform .25s;
+  object-fit: contain;
 }
-.trust-row span:hover { opacity: 1; color: var(--color-primary); }
+.trust-row img:hover {
+  transform: scale(1.06);
+}
 .trust-row i {
   width: 4px; height: 4px; border-radius: 50%;
   background: var(--color-text-faint); opacity: .5;
@@ -2996,10 +2997,10 @@ section { padding: 110px 0; position: relative; }
   .nav-links { gap: 18px; }
 }
 
-/* Hide ticker on mobile â€” it blocks the nav and adds clutter */
+/* Keep ticker visible and fixed on mobile, positioning navbar below it */
 @media (max-width: 760px) {
-  .ticker-bar { display: none !important; }
-  .main-nav   { top: 0 !important; }
+  .ticker-bar { display: block !important; }
+  .main-nav   { top: 37px !important; }
 }
 
 /* â”€â”€â”€ Full-screen mobile menu overlay (scrollable accordion) â”€â”€â”€ */
@@ -5313,7 +5314,8 @@ section { padding: 110px 0; position: relative; }
   font-style: normal; font-size: .72rem; font-weight: 700; letter-spacing: .12em;
   text-transform: uppercase; color: var(--color-text-muted);
 }
-:root[data-theme="dark"] .ask-ai-btn { color: #fff; }
+.dark .ask-ai-btn { color: #fff; background: var(--color-surface-2); }
+.dark .ask-ai-btn:hover { border-color: var(--color-primary); box-shadow: 0 10px 24px rgba(14,211,223,.14); }
 @media (max-width: 480px) {
   .ask-ai { gap: 12px; }
   .ask-ai-btn { width: 42px; height: 42px; }
@@ -5859,33 +5861,38 @@ section { padding: 110px 0; position: relative; }
   box-shadow: var(--shadow-lg);
 }
 
-/* Premium (PMS/AIF) pages: the header is transparent until scrolled, and
-   this page's hero is permanently dark, so the header's normal dark text
-   is invisible against it pre-scroll. Force light header text/logo while
-   unscrolled on these pages; once .scrolled adds its own light background
-   the header reverts to normal styling automatically. */
-body:has(.premium-product-page) .main-nav:not(.scrolled) .nav-links a {
+/* ─── Premium (PMS/AIF) product pages ─────────────────────────────────────
+   These pages follow the site's light/dark theme like every other page.
+   In light mode they inherit the normal palette and need no overrides at
+   all; the gold "premium" treatment below applies only once the user has
+   actually switched the site to dark mode. Nothing here may force a theme. */
+.premium-product-page section {
+  position: relative;
+  z-index: 2;
+}
+
+/* Dark mode only: the header is transparent until scrolled and this page's
+   hero is dark, so the header's normal text would be invisible pre-scroll.
+   Once .scrolled adds its own background the header reverts automatically. */
+.dark body:has(.premium-product-page) .main-nav:not(.scrolled) .nav-links a {
   color: rgba(255, 255, 255, 0.88);
 }
-body:has(.premium-product-page) .main-nav:not(.scrolled) .nav-links a:hover,
-body:has(.premium-product-page) .main-nav:not(.scrolled) .nav-links a.active {
+.dark body:has(.premium-product-page) .main-nav:not(.scrolled) .nav-links a:hover,
+.dark body:has(.premium-product-page) .main-nav:not(.scrolled) .nav-links a.active {
   color: #d4af37;
 }
-body:has(.premium-product-page) .main-nav:not(.scrolled) .logo-text {
+.dark body:has(.premium-product-page) .main-nav:not(.scrolled) .logo-text {
   color: #fff;
 }
-body:has(.premium-product-page) .main-nav:not(.scrolled) .nav-caret-btn {
+.dark body:has(.premium-product-page) .main-nav:not(.scrolled) .nav-caret-btn {
   color: rgba(255, 255, 255, 0.7);
 }
-body:has(.premium-product-page) .main-nav:not(.scrolled) .mobile-toggle span {
+.dark body:has(.premium-product-page) .main-nav:not(.scrolled) .mobile-toggle span {
   background: #fff;
 }
 
-/* Premium Product Page Styling */
-.premium-product-page {
-  /* Override the shared color variables so EVERY component (not just the
-     hand-picked ones below) renders with readable colors on this page's
-     permanently-dark background, regardless of the site's light/dark toggle. */
+/* Premium gold treatment — dark mode only */
+.dark .premium-product-page {
   --color-bg:               #0a0a0a;
   --color-surface:          #14141a;
   --color-surface-2:        #1c1c22;
@@ -5904,93 +5911,89 @@ body:has(.premium-product-page) .main-nav:not(.scrolled) .mobile-toggle span {
   color: #fff;
   min-height: 100vh;
 }
-.premium-product-page section {
-  position: relative;
-  z-index: 2;
-}
-.premium-product-page .stitle {
+.dark .premium-product-page .stitle {
   color: #d4af37 !important;
 }
-.premium-product-page .sdesc {
+.dark .premium-product-page .sdesc {
   color: #e5e7eb !important;
 }
-.premium-product-page .label {
+.dark .premium-product-page .label {
   color: #d4af37 !important;
   border-color: #d4af37 !important;
   background: rgba(212, 175, 55, 0.1) !important;
 }
-.premium-product-page .premium-metrics-grid {
+.dark .premium-product-page .premium-metrics-grid {
   background: rgba(255, 255, 255, 0.05) !important;
   border-color: #d4af37 !important;
 }
-.premium-product-page .premium-metric-card {
+.dark .premium-product-page .premium-metric-card {
   background: rgba(20, 20, 20, 0.8) !important;
 }
-.premium-product-page .premium-metric-value {
+.dark .premium-product-page .premium-metric-value {
   color: #d4af37 !important;
 }
-.premium-product-page .premium-metric-label {
+.dark .premium-product-page .premium-metric-label {
   color: #9ca3af !important;
 }
-.premium-product-page .why-card {
+.dark .premium-product-page .why-card {
   background: rgba(255, 255, 255, 0.05) !important;
   border: 1px solid rgba(212, 175, 55, 0.3) !important;
   color: #fff;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
-.premium-product-page .why-card:hover {
+.dark .premium-product-page .why-card:hover {
   border-color: #d4af37 !important;
   transform: translateY(-5px);
 }
-.premium-product-page .why-card p {
+.dark .premium-product-page .why-card p {
   color: #d1d5db !important;
 }
-.premium-product-page .btn-primary {
+.dark .premium-product-page .btn-primary {
   background: linear-gradient(90deg, #b8860b, #d4af37) !important;
   color: #000 !important;
   border: none !important;
 }
-.premium-product-page .btn-primary:hover {
+.dark .premium-product-page .btn-primary:hover {
   background: linear-gradient(90deg, #d4af37, #f3c751) !important;
   box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
 }
-.premium-product-page .step-no {
+.dark .premium-product-page .step-no {
   color: #d4af37 !important;
   border-color: #d4af37 !important;
 }
-.premium-product-page .steps h4 {
+.dark .premium-product-page .steps h4 {
   color: #fff !important;
 }
-.premium-product-page .steps p {
+.dark .premium-product-page .steps p {
   color: #9ca3af !important;
 }
-.premium-product-page .premium-closing-title {
+.dark .premium-product-page .premium-closing-title {
   color: #d4af37 !important;
 }
-.premium-product-page .lamf-band {
+.dark .premium-product-page .lamf-band {
   background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(0, 0, 0, 0.8)) !important;
   border: 1px solid rgba(212, 175, 55, 0.3) !important;
 }
-.premium-product-page .lamf-band h3 {
+.dark .premium-product-page .lamf-band h3 {
   color: #fff !important;
 }
-.premium-product-page .lamf-band p {
+.dark .premium-product-page .lamf-band p {
   color: #d1d5db !important;
 }
-.premium-product-page .premium-related-card {
+.dark .premium-product-page .premium-related-card {
   background: rgba(20, 20, 20, 0.8) !important;
   border-color: rgba(212, 175, 55, 0.3) !important;
 }
-.premium-product-page .premium-related-card:hover {
+.dark .premium-product-page .premium-related-card:hover {
   border-color: #d4af37 !important;
 }
-.premium-product-page .premium-related-title {
+.dark .premium-product-page .premium-related-title {
   color: #fff !important;
 }
-.premium-product-page .premium-related-desc {
+.dark .premium-product-page .premium-related-desc {
   color: #9ca3af !important;
 }
-.premium-product-page .premium-related-link {
+.dark .premium-product-page .premium-related-link {
   color: #d4af37 !important;
 }
 
@@ -6088,6 +6091,63 @@ body:has(.premium-product-page) .main-nav:not(.scrolled) .mobile-toggle span {
   .mf-form-row > label, .mf-form-col > label { width: auto; }
   .mf-compare-cols { grid-template-columns: 1fr; gap: 24px; }
 }
+
+/* =========================================================
+   GOLDEN HEADINGS IN DARK MODE
+   ========================================================= */
+.dark .hero-title,
+.dark .stitle,
+.dark .products-hero h1,
+.dark .gv-title,
+.dark .news-header h1,
+.dark .article-title-header,
+.dark .unl-detail-title h1,
+.dark .stock-page-name,
+.dark .izone-hero h1,
+.dark .a-title,
+.dark .ud-greeting,
+.dark .ud-login-prompt h2,
+.dark .news-page-container h1,
+.dark .products-page h1,
+.dark .unlisted-v2 h2,
+.dark .watchlist-page h1 {
+  color: #d4af37 !important;
+}
+
+/* Ensure the accent elements inside these headings keep their primary (teal/cyan) color */
+.dark .hero-title em,
+.dark .hero-title .seg-em,
+.dark .stitle em,
+.dark .products-hero h1 em,
+.dark .gv-title em,
+.dark .news-header h1 em,
+.dark .article-title-header em,
+.dark .unl-detail-title h1 em,
+.dark .stock-page-name em,
+.dark .izone-hero h1 em,
+.dark .a-title em,
+.dark .ud-greeting em,
+.dark .ud-login-prompt h2 em,
+.dark .news-page-container h1 em,
+.dark .products-page h1 em,
+.dark .unlisted-v2 h2 em,
+.dark .watchlist-page h1 em {
+  color: var(--color-primary) !important;
+  -webkit-text-fill-color: var(--color-primary) !important;
+}
+
+/* Regulator marks (SEBI/RBI/NSE/BSE/NSDL/CDSL) must render identically in
+   both themes — they're official logos, and inverting them would flip every
+   brand colour. So instead of transforming the artwork for dark mode, the
+   band keeps a constant light backing and the logos are left untouched. */
+.dark .hero-trust {
+  background: #ffffff;
+  border-top-color: rgba(255, 255, 255, 0.14);
+  border-bottom-color: rgba(255, 255, 255, 0.14);
+}
+.dark .trust-label { color: #555555; }
+.dark .trust-row i { background: #555555; }
+
 /* ─── NRI service pages (tax filing / PAN application / citizenship) ─── */
 .nri-svc-intro {
   max-width: 760px;
@@ -6129,62 +6189,73 @@ body:has(.premium-product-page) .main-nav:not(.scrolled) .mobile-toggle span {
   font-weight: 700;
 }
 
-.nri-svc-sidebar { position: sticky; top: 100px; }
+.nri-svc-sidebar { position: sticky; top: 88px; min-width: 0; }
+/* Kept compact deliberately: the whole card must fit within the viewport
+   alongside its sticky offset, or the submit button is never reachable. */
 .nri-svc-form-card {
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg, 18px);
-  padding: 28px;
+  padding: 22px;
   box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 .nri-svc-form-card h3 {
   font-family: var(--font-display);
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 500;
   color: var(--color-text);
+  line-height: 1.3;
 }
 .nri-svc-form-sub {
-  margin-top: -12px;
+  margin-top: -8px;
   color: var(--color-text-muted);
-  font-size: 0.88rem;
-  line-height: 1.5;
+  font-size: 0.82rem;
+  line-height: 1.45;
 }
+/* Single column by default: the sidebar is only 380px wide, so two columns
+   leave ~154px per field — too narrow to read a value in. */
 .nri-svc-form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  grid-template-columns: 1fr;
+  gap: 10px;
 }
-.nri-svc-field { display: flex; flex-direction: column; gap: 6px; }
+/* min-width:0 is required — grid items default to min-width:auto, which
+   refuses to shrink below an input's intrinsic size and overflows the card. */
+.nri-svc-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .nri-svc-field-wide { grid-column: 1 / -1; }
 .nri-svc-field span {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--color-text-muted);
 }
 .nri-svc-field input,
 .nri-svc-field textarea {
-  padding: 10px 12px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 8px 11px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);
   color: var(--color-text);
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-family: inherit;
   outline: none;
   transition: border-color 0.2s;
 }
 .nri-svc-field input:focus,
 .nri-svc-field textarea:focus { border-color: var(--color-primary); }
-.nri-svc-field textarea { resize: vertical; }
-.nri-svc-error { color: var(--color-danger); font-size: 0.85rem; margin: -6px 0 0; }
+.nri-svc-field textarea { resize: vertical; min-height: 62px; }
+.nri-svc-error { color: var(--color-danger); font-size: 0.82rem; margin: -4px 0 0; }
 .nri-svc-form-fine {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--color-text-faint);
   text-align: center;
-  line-height: 1.5;
+  line-height: 1.45;
+  margin-top: -2px;
 }
 .nri-svc-form-success {
   align-items: center;
@@ -6202,10 +6273,112 @@ body:has(.premium-product-page) .main-nav:not(.scrolled) .mobile-toggle span {
 }
 .nri-svc-form-success p { color: var(--color-text-muted); font-size: 0.92rem; line-height: 1.6; }
 
+/* Explicit dark-mode colors so the sidebar form card never falls back to a
+   stray white surface, regardless of custom-property cascade timing. */
+.dark .nri-svc-form-card {
+  background: #1c2533;
+  border-color: #334155;
+}
+.dark .nri-svc-field input,
+.dark .nri-svc-field textarea {
+  background: #131a24;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+.dark .nri-svc-field input::placeholder,
+.dark .nri-svc-field textarea::placeholder {
+  color: #64748b;
+}
+
+/* Short viewports: if the compact card still can't fit beside its sticky
+   offset, let it scroll internally rather than push the submit button
+   permanently below the fold. */
+@media (min-width: 961px) {
+  .nri-svc-form-card {
+    max-height: calc(100vh - 108px);
+    overflow-y: auto;
+  }
+}
+
 @media (max-width: 960px) {
-  .nri-svc-layout { grid-template-columns: 1fr; }
+  .nri-svc-layout { grid-template-columns: 1fr; gap: 40px; }
   .nri-svc-sidebar { position: static; }
+  .nri-svc-form-card { padding: 24px; }
+}
+/* Stacked layout: the card is now full-width, so two columns fit comfortably. */
+@media (max-width: 960px) and (min-width: 561px) {
+  .nri-svc-form-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 480px) {
-  .nri-svc-form-grid { grid-template-columns: 1fr; }
+  .nri-svc-form-card { padding: 20px; }
+  .nri-svc-highlights { grid-template-columns: 1fr; }
+}
+/* --- Admin Panel Dark Mode Overrides --- */
+.dark .admin-kpi {
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.dark .admin-kpi:hover {
+  background: var(--color-surface-offset);
+  border-color: var(--color-primary);
+}
+.dark .admin-card {
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.dark .admin-input {
+  background: var(--color-surface-offset);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+.dark .admin-chip {
+  background: var(--color-surface-offset);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+.dark .admin-chip:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.dark .admin-chip.active {
+  background: var(--color-primary);
+  color: var(--color-bg);
+  border-color: var(--color-primary);
+}
+.dark .admin-table thead th {
+  background: var(--color-surface-offset);
+  border-bottom-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+.dark .admin-table tbody td {
+  border-bottom-color: var(--color-divider);
+  color: var(--color-text);
+}
+.dark .admin-table tbody tr:hover {
+  background: var(--color-surface-offset);
+}
+.dark .admin-icon-btn {
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+.dark .admin-icon-btn:hover {
+  background: var(--color-surface-offset);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.dark .admin-logo-cell {
+  background: var(--color-surface-offset);
+}
+.dark .admin-status {
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
+}
+.dark .admin-msg-cell {
+  color: var(--color-text-muted);
+}
+.dark .admin-shell {
+  background: var(--color-bg);
 }
