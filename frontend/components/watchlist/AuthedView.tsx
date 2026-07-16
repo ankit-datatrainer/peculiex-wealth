@@ -195,6 +195,55 @@ export default function AuthedView() {
   const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  /* ---------- live listed-share search (full NSE/BSE universe) ----------
+     The curated /api/stocks list is only a handful of names. To let a user
+     add *any* listed share or ETF — the way Groww/Zerodha do — we also hit
+     the live search endpoint (debounced) and fold those hits into the
+     suggestion list below. Prices arrive from the live-quotes poll once the
+     share is added, so a hit needs only its symbol and name. */
+  const [liveHits, setLiveHits] = useState<Stock[]>([]);
+  const [searching, setSearching] = useState(false);
+
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < 2) {
+      setLiveHits([]);
+      setSearching(false);
+      return;
+    }
+    let killed = false;
+    setSearching(true);
+    const t = window.setTimeout(() => {
+      fetcher<{
+        items: Array<{ symbol: string; name: string; exchange: string; type: string }>;
+      }>(`/api/markets/search?q=${encodeURIComponent(q)}`)
+        .then((j) => {
+          if (killed) return;
+          setLiveHits(
+            (j?.items || []).map((x) => ({
+              name: x.name,
+              sym: x.symbol,
+              price: 0,
+              chg: 0,
+              vol: "",
+              cap: x.exchange || "",
+              cat: "stable" as const
+            }))
+          );
+        })
+        .catch(() => {
+          if (!killed) setLiveHits([]);
+        })
+        .finally(() => {
+          if (!killed) setSearching(false);
+        });
+    }, 250);
+    return () => {
+      killed = true;
+      window.clearTimeout(t);
+    };
+  }, [query]);
+
   const trackedSet = useMemo(
     () => new Set(items.map((i) => i.symbol)),
     [items]
@@ -298,26 +347,30 @@ export default function AuthedView() {
       | { kind: "listed"; data: Stock }
       | { kind: "unlisted"; data: Unl; symbol: string }
     > = [];
+    // Guards against showing the same symbol twice — once from the curated
+    // list and again from the live search.
+    const seen = new Set<string>();
+
+    // Curated matches first: they have live prices already and appear instantly.
     for (const s of allStocks) {
       if (
         !trackedSet.has(s.sym) &&
         (s.sym.includes(q) || s.name.toUpperCase().includes(q))
       ) {
         out.push({ kind: "listed", data: s });
+        seen.add(s.sym);
       }
     }
-    for (const u of allUnlisted) {
-      const sym = makeUnlistedSymbol(u.name);
-      if (
-        !trackedSet.has(sym) &&
-        (u.name.toUpperCase().includes(q) ||
-          u.sector.toUpperCase().includes(q))
-      ) {
-        out.push({ kind: "unlisted", data: u, symbol: sym });
+    // Then the full live NSE/BSE universe, minus anything already shown.
+    // Watchlist search is listed-shares only — unlisted names are excluded.
+    for (const s of liveHits) {
+      if (!trackedSet.has(s.sym) && !seen.has(s.sym)) {
+        out.push({ kind: "listed", data: s });
+        seen.add(s.sym);
       }
     }
-    return out.slice(0, 10);
-  }, [query, allStocks, allUnlisted, trackedSet]);
+    return out.slice(0, 12);
+  }, [query, allStocks, liveHits, trackedSet]);
 
   /* ---------- mutations ---------- */
   const addListed = useCallback(
@@ -325,12 +378,28 @@ export default function AuthedView() {
       if (trackedSet.has(s.sym)) return;
       setBusySym(s.sym);
       setError(null);
+
+      // Live-search hits arrive without a price. Fetch the current quote so
+      // the entry gets a real "since added" baseline; if it fails, we still
+      // add the share (added_price stays null and the delta simply hides).
+      let addPrice = s.price;
+      if (!addPrice) {
+        try {
+          const q = await apiFetch<{ quotes: Array<{ price?: number }> }>(
+            `/api/markets/quotes?symbols=${encodeURIComponent(s.sym)}`
+          );
+          addPrice = q?.quotes?.[0]?.price || 0;
+        } catch {
+          /* non-fatal: keep addPrice at 0 */
+        }
+      }
+
       const tempItem: WatchlistItem = {
         id: `tmp-${s.sym}-${Date.now()}`,
         user_id: user?.id || "",
         symbol: s.sym,
         name: s.name,
-        added_price: s.price,
+        added_price: addPrice || null,
         note: null,
         created_at: new Date().toISOString()
       };
@@ -340,7 +409,7 @@ export default function AuthedView() {
       try {
         const r = await apiPostJSON<{ item: WatchlistItem }>(
           "/api/watchlist",
-          { symbol: s.sym, name: s.name, price: s.price }
+          { symbol: s.sym, name: s.name, price: addPrice }
         );
         setItems((prev) =>
           prev.map((it) => (it.id === tempItem.id ? r.item : it))
@@ -517,6 +586,7 @@ export default function AuthedView() {
         showSuggestions={showSuggestions}
         setShowSuggestions={setShowSuggestions}
         suggestions={suggestions}
+        searching={searching}
         addListed={addListed}
         addUnlisted={addUnlisted}
         busySym={busySym}

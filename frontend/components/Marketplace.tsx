@@ -72,7 +72,7 @@ export default function Marketplace() {
             return slug ? (
               <Link
                 key={p.title}
-                href={`/products/${slug}`}
+                href={p.title === "Equities" ? "/watchlist" : `/products/${slug}`}
                 style={{ display: "contents" }}
               >
                 {card}

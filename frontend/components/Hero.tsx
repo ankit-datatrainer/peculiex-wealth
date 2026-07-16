@@ -476,29 +476,29 @@ export default function Hero() {
           <span className="trust-label">Regulated &amp; Trusted by</span>
           <div className="trust-track">
             <div className="trust-row">
-              <img src="/logos/sebi.png" alt="SEBI" className="regulated-logo" />
+              <a href="https://www.sebi.gov.in/" target="_blank" rel="noopener noreferrer"><img src="/logos/sebi.png" alt="SEBI" className="regulated-logo" /></a>
               <i></i>
-              <img src="/logos/rbi.png" alt="RBI" className="regulated-logo" />
+              <a href="https://www.rbi.org.in/" target="_blank" rel="noopener noreferrer"><img src="/logos/rbi.png" alt="RBI" className="regulated-logo" /></a>
               <i></i>
-              <img src="/logos/nse.png" alt="NSE" className="regulated-logo" />
+              <a href="https://www.nseindia.com/" target="_blank" rel="noopener noreferrer"><img src="/logos/nse.png" alt="NSE" className="regulated-logo" /></a>
               <i></i>
-              <img src="/logos/bse.png" alt="BSE" className="regulated-logo" />
+              <a href="https://www.bseindia.com/" target="_blank" rel="noopener noreferrer"><img src="/logos/bse.png" alt="BSE" className="regulated-logo" /></a>
               <i></i>
-              <img src="/logos/nsdl.png" alt="NSDL" className="regulated-logo" />
+              <a href="https://nsdl.co.in/" target="_blank" rel="noopener noreferrer"><img src="/logos/nsdl.png" alt="NSDL" className="regulated-logo" /></a>
               <i></i>
-              <img src="/logos/cdsl.png" alt="CDSL" className="regulated-logo" />
+              <a href="https://www.cdslindia.com/" target="_blank" rel="noopener noreferrer"><img src="/logos/cdsl.png" alt="CDSL" className="regulated-logo" /></a>
               <i></i>
-              <img src="/logos/sebi.png" alt="SEBI" className="regulated-logo" />
+              <a href="https://www.sebi.gov.in/" target="_blank" rel="noopener noreferrer"><img src="/logos/sebi.png" alt="SEBI" className="regulated-logo" /></a>
               <i></i>
-              <img src="/logos/rbi.png" alt="RBI" className="regulated-logo" />
+              <a href="https://www.rbi.org.in/" target="_blank" rel="noopener noreferrer"><img src="/logos/rbi.png" alt="RBI" className="regulated-logo" /></a>
               <i></i>
-              <img src="/logos/nse.png" alt="NSE" className="regulated-logo" />
+              <a href="https://www.nseindia.com/" target="_blank" rel="noopener noreferrer"><img src="/logos/nse.png" alt="NSE" className="regulated-logo" /></a>
               <i></i>
-              <img src="/logos/bse.png" alt="BSE" className="regulated-logo" />
+              <a href="https://www.bseindia.com/" target="_blank" rel="noopener noreferrer"><img src="/logos/bse.png" alt="BSE" className="regulated-logo" /></a>
               <i></i>
-              <img src="/logos/nsdl.png" alt="NSDL" className="regulated-logo" />
+              <a href="https://nsdl.co.in/" target="_blank" rel="noopener noreferrer"><img src="/logos/nsdl.png" alt="NSDL" className="regulated-logo" /></a>
               <i></i>
-              <img src="/logos/cdsl.png" alt="CDSL" className="regulated-logo" />
+              <a href="https://www.cdslindia.com/" target="_blank" rel="noopener noreferrer"><img src="/logos/cdsl.png" alt="CDSL" className="regulated-logo" /></a>
               <i></i>
             </div>
           </div>

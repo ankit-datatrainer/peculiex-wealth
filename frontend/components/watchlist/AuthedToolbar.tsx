@@ -13,6 +13,7 @@ export default function AuthedToolbar({
   showSuggestions,
   setShowSuggestions,
   suggestions,
+  searching,
   addListed,
   addUnlisted,
   busySym,
@@ -29,6 +30,7 @@ export default function AuthedToolbar({
   showSuggestions: boolean;
   setShowSuggestions: (b: boolean) => void;
   suggestions: Suggestion[];
+  searching?: boolean;
   addListed: (s: Stock) => void;
   addUnlisted: (u: Unl, sym: string) => void;
   busySym: string | null;
@@ -90,13 +92,17 @@ export default function AuthedToolbar({
           <div className="tb-suggest" role="listbox">
             {suggestions.length === 0 ? (
               <div className="tb-suggest-empty">
-                No matches found.
+                {searching ? "Searching all listed shares…" : "No matches found."}
               </div>
             ) : (
               suggestions.map((s) => {
                 if (s.kind === "listed") {
                   const st = s.data;
                   const up = st.chg >= 0;
+                  // A live-search hit carries no price yet (it fills in from
+                  // the quotes poll after it's added); show its exchange
+                  // instead of a fake ₹0.00.
+                  const isLive = !st.price;
                   return (
                     <button
                       key={"l-" + st.sym}
@@ -114,11 +120,17 @@ export default function AuthedToolbar({
                         <span className="tb-suggest-name">{st.name}</span>
                       </div>
                       <div className="tb-suggest-right">
-                        <span className="tb-suggest-px">₹{fmtINR2(st.price)}</span>
-                        <span className={up ? "tb-up" : "tb-dn"}>
-                          {up ? "+" : "−"}
-                          {Math.abs(st.chg).toFixed(2)}%
-                        </span>
+                        {isLive ? (
+                          <span className="tb-suggest-px">{st.cap || "NSE"}</span>
+                        ) : (
+                          <>
+                            <span className="tb-suggest-px">₹{fmtINR2(st.price)}</span>
+                            <span className={up ? "tb-up" : "tb-dn"}>
+                              {up ? "+" : "−"}
+                              {Math.abs(st.chg).toFixed(2)}%
+                            </span>
+                          </>
+                        )}
                       </div>
                       <span className="tb-suggest-add">Add</span>
                     </button>

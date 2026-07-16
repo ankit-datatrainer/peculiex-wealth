@@ -7,10 +7,10 @@
 
 :root {
   /* Backgrounds & Surfaces — crisp premium white, not warm-grey */
-  --color-bg:               #fdfdfc;
+  --color-bg:               #ffffff;
   --color-surface:          #ffffff;
   --color-surface-2:        #ffffff;
-  --color-surface-offset:   #f6f6f4;
+  --color-surface-offset:   #ffffff;
   --color-divider:          #eceae5;
   --color-border:           #e3e1da;
 
@@ -844,7 +844,7 @@ section { padding: 110px 0; position: relative; }
 .hero-trust {
   position: relative; z-index: 2;
   margin-top: 60px;
-  padding: 18px 0;
+  padding: 26px 0;
   border-top: 1px solid var(--color-divider);
   border-bottom: 1px solid var(--color-divider);
   display: flex; align-items: center; gap: 28px;
@@ -864,14 +864,15 @@ section { padding: 110px 0; position: relative; }
           mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
 }
 .trust-row {
-  display: inline-flex; align-items: center; gap: 32px;
+  display: inline-flex; align-items: center; gap: 40px;
   white-space: nowrap;
   animation: trustScroll 35s linear infinite;
-  padding-right: 32px;
+  padding-right: 40px;
 }
 .trust-row img {
-  height: 52px;
+  height: 84px;
   width: auto;
+  max-width: 150px;
   opacity: 1;
   transition: opacity .25s, filter .25s, transform .25s;
   object-fit: contain;
@@ -1723,7 +1724,7 @@ section { padding: 110px 0; position: relative; }
 }
 .why-card:hover .why-icon { transform: scale(1.08) rotate(-4deg); }
 /* Non-interactive Why cards — no click/hover lift (informational only) */
-.why-card-static { cursor: pointer; }
+.why-card-static { cursor: default; }
 .why-card-static:hover {
   border-color: var(--color-border);
   transform: none;
@@ -2762,7 +2763,8 @@ section { padding: 110px 0; position: relative; }
     gap: 10px; padding: 16px 0; margin-top: 40px;
   }
   .trust-label { padding-left: 18px; font-size: 10px; }
-  .trust-row { gap: 22px; }
+  .trust-row { gap: 24px; padding-right: 24px; }
+  .trust-row img { height: 56px; max-width: 110px; }
   .trust-row span { font-size: 18px; }
 
   /* Section heads */

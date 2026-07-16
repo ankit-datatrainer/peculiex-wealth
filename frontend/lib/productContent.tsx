@@ -7,7 +7,7 @@ export type ProductContent = {
   howItWorks: { step: string; title: string; body: string }[];
   metrics: { value: string; label: string }[];
   closing: string;
-  cta: { label: string; href: string };
+  cta?: { label: string; href: string };
   related?: string[];
 };
 
@@ -196,7 +196,6 @@ export const PRODUCTS: Record<string, ProductContent> = {
     ],
     closing:
       "Fixed deposits remain the bedrock of a conservative portfolio. By accessing corporate FDs, you can significantly enhance your yield without taking on equity market risk.",
-    cta: { label: "View live FD rates →", href: "/markets" },
     related: ["bonds", "mutual-funds", "insurance"]
   },
 

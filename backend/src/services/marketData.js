@@ -692,19 +692,44 @@ async function search(query) {
   const cached = cacheGet(key);
   if (cached) return cached;
 
-  const url = `${YAHOO_BASE}/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=10&newsCount=0`;
+  // Pull extra candidates because we filter heavily to Indian listings below.
+  const url = `${YAHOO_BASE}/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=25&newsCount=0`;
   let results = [];
   try {
     const j = await getJSON(url);
-    results = (j?.quotes || [])
-      .filter((x) => x.symbol && (x.shortname || x.longname))
-      .map((x) => ({
-        symbol: displaySymbol(x.symbol),
+    const raw = (j?.quotes || []).filter((x) => x.symbol && (x.shortname || x.longname));
+
+    // Keep only Indian listed equities and ETFs — anything on NSE/BSE, i.e.
+    // a Yahoo symbol ending in .NS or .BO. This drops US tickers, foreign
+    // exchanges and mutual funds (whose codes look like "0P0000NQJX.BO"),
+    // giving the same universe a user sees on Groww or Zerodha.
+    const isIndianListing = (x) => {
+      const sym = String(x.symbol || "");
+      if (!/\.(NS|BO)$/i.test(sym)) return false; // must be NSE/BSE listed
+      if (/^0P[0-9A-Z]+\./i.test(sym)) return false; // mutual-fund identifier
+      const type = String(x.quoteType || "").toUpperCase();
+      return type === "EQUITY" || type === "ETF";
+    };
+
+    // Same instrument dual-lists on NSE and BSE; prefer the NSE line and show
+    // each display symbol once.
+    const byDisplay = new Map();
+    for (const x of raw) {
+      if (!isIndianListing(x)) continue;
+      const disp = displaySymbol(x.symbol);
+      const isNse = /\.NS$/i.test(x.symbol);
+      const existing = byDisplay.get(disp);
+      if (existing && !(isNse && !existing._nse)) continue;
+      byDisplay.set(disp, {
+        symbol: disp,
         yahooSymbol: x.symbol,
         name: x.longname || x.shortname,
-        exchange: x.exchange || x.exchDisp || "",
-        type: x.quoteType || ""
-      }));
+        exchange: isNse ? "NSE" : "BSE",
+        type: String(x.quoteType || "").toUpperCase() === "ETF" ? "ETF" : "EQUITY",
+        _nse: isNse
+      });
+    }
+    results = Array.from(byDisplay.values()).map(({ _nse, ...rest }) => rest);
   } catch (e) {
     console.warn("[markets] search failed:", e.message);
   }

@@ -65,7 +65,7 @@ export default function ProductsPage() {
                   </ul>
 
                   <Link href={`/products/${slug}`} className="btn btn-primary">
-                    {product.cta.label}
+                    {product.cta?.label || "Learn more"}
                   </Link>
                 </div>
 

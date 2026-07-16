@@ -192,9 +192,11 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           >
             {p.closing}
           </h2>
-          <Link href={p.cta.href} className="btn btn-primary btn-lg" data-magnetic>
-            {p.cta.label}
-          </Link>
+          {p.cta && (
+            <Link href={p.cta.href} className="btn btn-primary btn-lg" data-magnetic>
+              {p.cta.label}
+            </Link>
+          )}
         </div>
       </section>
 

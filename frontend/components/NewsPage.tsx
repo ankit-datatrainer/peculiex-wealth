@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import useSWR from "swr";
-import Link from "next/link";
 import { fetcher } from "@/lib/api";
 import "./news-portal.css";
 
@@ -76,6 +75,16 @@ export default function NewsPage() {
     });
   }, [items, query, source]);
 
+  // Snapshot strip — computed from the feed, never hand-typed.
+  const stats = useMemo(() => {
+    const publishers = new Set(items.map((i) => i.source)).size;
+    const latest = items.reduce((m, i) => Math.max(m, i.publishedAt), 0);
+    const today = items.filter(
+      (i) => Date.now() - i.publishedAt < 24 * 60 * 60_000
+    ).length;
+    return { total: items.length, publishers, latest, today };
+  }, [items]);
+
   const [lead, ...rest] = filtered;
   const shown = rest.slice(0, visible);
 
@@ -87,19 +96,57 @@ export default function NewsPage() {
   return (
     <main className="np">
       <div className="container">
+        {/* Framed module — the whole feed reads as one embedded unit rather
+            than loose sections on the page, matching the factsheet embeds. */}
+        <div className="np-module">
         <header className="np-head">
-          <div className="np-eyebrow">
-            <span className="np-live" aria-hidden="true" />
-            Market News
+          <div>
+            <div className="np-eyebrow">
+              <span className="np-live" aria-hidden="true" />
+              Market News
+            </div>
+            <h1 className="np-title">
+              Every headline that <em>moves the market.</em>
+            </h1>
+            <p className="np-sub">
+              Financial and market news from India&apos;s leading publishers, aggregated
+              in one place and refreshed through the day.
+            </p>
           </div>
-          <h1 className="np-title">
-            Every headline that <em>moves the market.</em>
-          </h1>
-          <p className="np-sub">
-            Financial and market news from India&apos;s leading publishers, aggregated
-            in one place and refreshed through the day.
-          </p>
+          {!isLoading && !error && stats.latest > 0 && (
+            <span className="np-asof">
+              <span className="np-asof-dot" />
+              Updated {relativeTime(stats.latest)}
+            </span>
+          )}
         </header>
+
+        {!isLoading && !error && items.length > 0 && (
+          <div className="np-stats">
+            <div className="np-stat">
+              <p className="np-stat-label">Stories</p>
+              <div className="np-stat-value">{stats.total}</div>
+              <p className="np-stat-note">in the live feed</p>
+            </div>
+            <div className="np-stat">
+              <p className="np-stat-label">Publishers</p>
+              <div className="np-stat-value">{stats.publishers}</div>
+              <p className="np-stat-note">Indian financial media</p>
+            </div>
+            <div className="np-stat np-stat--hero">
+              <p className="np-stat-label">Last 24 hours</p>
+              <div className="np-stat-value">{stats.today}</div>
+              <p className="np-stat-note">new headlines</p>
+            </div>
+            <div className="np-stat">
+              <p className="np-stat-label">Refresh</p>
+              <div className="np-stat-value">
+                5<span className="np-stat-unit">min</span>
+              </div>
+              <p className="np-stat-note">automatic</p>
+            </div>
+          </div>
+        )}
 
         {!isLoading && !error && items.length > 0 && (
           <div className="np-controls">
@@ -168,7 +215,12 @@ export default function NewsPage() {
         )}
 
         {!isLoading && !error && lead && (
-          <Link className="np-lead" href={`/news/${lead.slug}`}>
+          <a
+            className="np-lead"
+            href={lead.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <div className="np-lead-body">
               <div className="np-meta">
                 <span className="np-source">{lead.source}</span>
@@ -179,15 +231,21 @@ export default function NewsPage() {
               </div>
               <h2 className="np-lead-title">{lead.headline}</h2>
               {lead.summary && <p className="np-lead-sum">{lead.summary}</p>}
-              <span className="np-read">Read story →</span>
+              <span className="np-read">Read on {lead.source} →</span>
             </div>
-          </Link>
+          </a>
         )}
 
         {!isLoading && !error && shown.length > 0 && (
           <div className="np-grid">
             {shown.map((item) => (
-              <Link className="np-card" key={item.id} href={`/news/${item.slug}`}>
+              <a
+                className="np-card"
+                key={item.id}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <div className="np-meta">
                   <span className="np-source">{item.source}</span>
                   <span className="np-dot" />
@@ -197,8 +255,8 @@ export default function NewsPage() {
                 </div>
                 <h3 className="np-card-title">{item.headline}</h3>
                 {item.summary && <p className="np-card-sum">{item.summary}</p>}
-                <span className="np-read">Read story →</span>
-              </Link>
+                <span className="np-read">Read on {item.source} →</span>
+              </a>
             ))}
           </div>
         )}
@@ -228,6 +286,7 @@ export default function NewsPage() {
             remain with them. Finvoq does not author or edit this coverage.
           </p>
         )}
+        </div>
       </div>
     </main>
   );
