@@ -224,10 +224,6 @@ export default function Footer() {
             Ltd. is a SEBI Registered Investment Distributor. Demat services are
             provided by SEBI-registered partner brokers.
           </p>
-          <p className="foot-codes">
-            SEBI RIA: INA000099999 · CIN: U67100MH2024PTC999999 · GST:
-            27ABCDE1234F1Z5
-          </p>
         </div>
         <div className="foot-social" aria-label="Social links">
           <a href="#" aria-label="LinkedIn">
