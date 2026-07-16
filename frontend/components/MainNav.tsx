@@ -8,7 +8,7 @@ import { ThemeToggle } from "./ThemeToggle";
 type NavItem = {
   href: string;
   label: string;
-  children?: { href: string; label: string }[];
+  children?: { href: string; label: string; disabled?: boolean }[];
 };
 
 const NAV_ITEMS: NavItem[] = [
@@ -23,7 +23,8 @@ const NAV_ITEMS: NavItem[] = [
       { href: "/products/bonds", label: "Bonds & G-Sec" },
       { href: "/products/insurance", label: "Insurance" },
       { href: "/products/fixed-deposits", label: "Fixed Deposits" },
-      { href: "/products/gift-city", label: "Gift City" }
+      { href: "/products/gift-city", label: "Gift City" },
+      { href: "#sif", label: "SIF (Coming Soon)", disabled: true }
     ]
   },
   { href: "/unlisted", label: "Unlisted" },
@@ -255,14 +256,23 @@ export default function MainNav() {
                     </div>
                     <ul className="nav-dropdown">
                       {it.children.map((c) => (
-                        <li key={c.href}>
-                          <Link
-                            href={c.href}
-                            className="nav-dropdown-link"
-                            onClick={() => setMobileOpen(false)}
-                          >
-                            {c.label}
-                          </Link>
+                        <li key={c.label}>
+                          {c.disabled ? (
+                            <span
+                              className="nav-dropdown-link"
+                              style={{ opacity: 0.5, cursor: "default" }}
+                            >
+                              {c.label}
+                            </span>
+                          ) : (
+                            <Link
+                              href={c.href}
+                              className="nav-dropdown-link"
+                              onClick={() => setMobileOpen(false)}
+                            >
+                              {c.label}
+                            </Link>
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -291,7 +301,7 @@ export default function MainNav() {
                         width: 44,
                         height: 44,
                         borderRadius: "50%",
-                        background: "var(--color-primary, #01696f)",
+                        background: "var(--color-primary, #0a7d64)",
                         color: "#fff",
                         display: "grid",
                         placeItems: "center",
@@ -358,7 +368,7 @@ export default function MainNav() {
                     width: 30,
                     height: 30,
                     borderRadius: "50%",
-                    background: "var(--color-primary, #01696f)",
+                    background: "var(--color-primary, #0a7d64)",
                     color: "#fff",
                     display: "grid",
                     placeItems: "center",
@@ -473,11 +483,11 @@ export default function MainNav() {
                         gap: 8,
                         padding: "0.7rem 1rem",
                         fontSize: "0.88rem",
-                        color: "var(--color-primary, #01696f)",
+                        color: "var(--color-primary, #0a7d64)",
                         textDecoration: "none",
                         fontWeight: 600,
                         background:
-                          "linear-gradient(90deg, rgba(1,105,111,0.06), transparent)"
+                          "linear-gradient(90deg, rgba(10, 160, 128,0.06), transparent)"
                       }}
                     >
                       <span>Admin Panel</span>
@@ -487,7 +497,7 @@ export default function MainNav() {
                           letterSpacing: "0.08em",
                           textTransform: "uppercase",
                           color: "#fff",
-                          background: "var(--color-primary, #01696f)",
+                          background: "var(--color-primary, #0a7d64)",
                           padding: "2px 7px",
                           borderRadius: 999
                         }}

@@ -149,17 +149,17 @@ const baseIcon: CSSProperties = {
 };
 
 const onIcon: CSSProperties = {
-  background: "rgba(1, 105, 111, 0.12)",
-  color: "#01696f",
-  borderColor: "rgba(1, 105, 111, 0.45)"
+  background: "rgba(10, 160, 128, 0.12)",
+  color: "#0a7d64",
+  borderColor: "rgba(10, 160, 128, 0.45)"
 };
 
 const hoverIcon: CSSProperties = {
-  color: "#01696f",
-  borderColor: "rgba(1, 105, 111, 0.45)",
-  background: "rgba(1, 105, 111, 0.08)",
+  color: "#0a7d64",
+  borderColor: "rgba(10, 160, 128, 0.45)",
+  background: "rgba(10, 160, 128, 0.08)",
   transform: "translateY(-1px)",
-  boxShadow: "0 4px 10px rgba(1,105,111,0.15)"
+  boxShadow: "0 4px 10px rgba(10, 160, 128,0.15)"
 };
 
 const basePill: CSSProperties = {
@@ -182,9 +182,9 @@ const basePill: CSSProperties = {
 };
 
 const onPill: CSSProperties = {
-  background: "rgba(1, 105, 111, 0.12)",
-  color: "#01696f",
-  borderColor: "rgba(1, 105, 111, 0.45)"
+  background: "rgba(10, 160, 128, 0.12)",
+  color: "#0a7d64",
+  borderColor: "rgba(10, 160, 128, 0.45)"
 };
 
 /* ---------------- component ---------------- */

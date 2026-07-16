@@ -290,8 +290,8 @@ export default function AuthedToolbar({
         }
         .tb-search:focus {
           outline: none;
-          border-color: var(--color-primary, #01696f);
-          box-shadow: 0 0 0 3px rgba(1, 105, 111, 0.1);
+          border-color: var(--color-primary, #0a7d64);
+          box-shadow: 0 0 0 3px rgba(10, 160, 128, 0.1);
         }
         .tb-search-ic {
           position: absolute;
@@ -390,20 +390,20 @@ export default function AuthedToolbar({
           align-items: flex-end;
           font-size: 0.85rem;
         }
-        .tb-up { color: var(--color-success, #01696f); font-size: 0.75rem; font-weight: 500; }
+        .tb-up { color: var(--color-success, #0a7d64); font-size: 0.75rem; font-weight: 500; }
         .tb-dn { color: var(--color-danger, #dc2626); font-size: 0.75rem; font-weight: 500; }
         
         .tb-suggest-add {
           font-size: 0.75rem;
           font-weight: 600;
-          color: var(--color-primary, #01696f);
+          color: var(--color-primary, #0a7d64);
           padding: 0.3rem 0.6rem;
           border-radius: 6px;
-          background: var(--color-primary-highlight, rgba(1, 105, 111, 0.1));
+          background: var(--color-primary-highlight, rgba(10, 160, 128, 0.1));
           transition: all 0.2s;
         }
         .tb-suggest-row:hover .tb-suggest-add {
-          background: var(--color-primary, #01696f);
+          background: var(--color-primary, #0a7d64);
           color: #fff;
         }
 
@@ -454,7 +454,7 @@ export default function AuthedToolbar({
         }
         .tb-chip.active {
           background: var(--color-surface-2, #ffffff);
-          color: var(--color-primary, #01696f);
+          color: var(--color-primary, #0a7d64);
           box-shadow: 0 1px 4px rgba(0,0,0,0.06);
         }
 
@@ -491,9 +491,9 @@ export default function AuthedToolbar({
           padding: 0 0.6rem;
         }
         .tb-view-btn.active {
-          background: var(--color-primary-highlight, rgba(1, 105, 111, 0.08));
-          color: var(--color-primary, #01696f);
-          border-color: var(--color-primary, rgba(1, 105, 111, 0.2));
+          background: var(--color-primary-highlight, rgba(10, 160, 128, 0.08));
+          color: var(--color-primary, #0a7d64);
+          border-color: var(--color-primary, rgba(10, 160, 128, 0.2));
         }
 
         @media (max-width: 860px) {

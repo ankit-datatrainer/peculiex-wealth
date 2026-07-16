@@ -102,7 +102,7 @@ export default function AuthedCards({
         
         .c-card.card-up {
           /* subtle top highlight instead of heavy left border */
-          box-shadow: inset 0 2px 0 0 rgba(1, 105, 111, 0.2);
+          box-shadow: inset 0 2px 0 0 rgba(10, 160, 128, 0.2);
         }
         .c-card.card-dn {
           box-shadow: inset 0 2px 0 0 rgba(220, 38, 38, 0.2);
@@ -144,7 +144,7 @@ export default function AuthedCards({
           font-variant-numeric: tabular-nums;
         }
         .c-chg.up {
-          color: var(--color-success, #01696f);
+          color: var(--color-success, #0a7d64);
         }
         .c-chg.dn {
           color: var(--color-danger, #dc2626);

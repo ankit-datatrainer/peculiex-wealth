@@ -713,7 +713,7 @@ export default function AuthedView() {
           font-size: 1rem;
           font-weight: 600;
         }
-        .stat-chg-large.up { color: var(--color-success, #01696f); }
+        .stat-chg-large.up { color: var(--color-success, #0a7d64); }
         .stat-chg-large.dn { color: var(--color-danger, #dc2626); }
         
         .stat-divider {
@@ -791,14 +791,14 @@ export default function AuthedView() {
           text-align: center;
           color: var(--color-text-muted, #333333);
           background: var(--color-surface-2, #ffffff);
-          border: 1px dashed rgba(1, 105, 111, 0.18);
+          border: 1px dashed rgba(10, 160, 128, 0.18);
           border-radius: 20px;
           font-size: 0.95rem;
           box-shadow: var(--shadow-sm);
           font-family: var(--font-body, 'Barlow', sans-serif);
         }
         .a-link {
-          color: var(--color-primary, #01696f);
+          color: var(--color-primary, #0a7d64);
           background: transparent;
           border: 0;
           padding: 0;
@@ -807,7 +807,7 @@ export default function AuthedView() {
           font-weight: 600;
           cursor: pointer;
           text-decoration: none;
-          border-bottom: 1.5px solid rgba(1, 105, 111, 0.25);
+          border-bottom: 1.5px solid rgba(10, 160, 128, 0.25);
           transition: all 0.2s;
         }
         .a-link:hover {
@@ -872,12 +872,12 @@ function Stat({
       onMouseLeave={() => setHovered(false)}
       style={{
         background: "var(--color-surface-2, #ffffff)",
-        border: hovered ? "1px solid var(--color-primary, rgba(1, 105, 111, 0.2))" : "1px solid var(--color-divider, rgba(26, 25, 23, 0.07))",
+        border: hovered ? "1px solid var(--color-primary, rgba(10, 160, 128, 0.2))" : "1px solid var(--color-divider, rgba(26, 25, 23, 0.07))",
         borderRadius: 20,
         padding: compact ? "0.8rem 1rem" : "1rem 1.25rem",
         minWidth: 112,
         boxShadow: hovered 
-          ? "0 14px 36px rgba(1, 105, 111, 0.03), 0 3px 8px rgba(1, 105, 111, 0.015)" 
+          ? "0 14px 36px rgba(10, 160, 128, 0.03), 0 3px 8px rgba(10, 160, 128, 0.015)" 
           : "0 10px 30px rgba(28, 27, 24, 0.02), 0 2px 6px rgba(28, 27, 24, 0.01)",
         transition: "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
         transform: hovered ? "translateY(-2px)" : "translateY(0)"
@@ -971,12 +971,12 @@ function EmptyState() {
           height: 80,
           margin: "0 auto 1.5rem",
           borderRadius: "50%",
-          background: "var(--color-primary-highlight, rgba(1, 105, 111, 0.06))",
-          border: "1px solid var(--color-border, rgba(1, 105, 111, 0.1))",
+          background: "var(--color-primary-highlight, rgba(10, 160, 128, 0.06))",
+          border: "1px solid var(--color-border, rgba(10, 160, 128, 0.1))",
           display: "grid",
           placeItems: "center",
-          color: "var(--color-primary, #01696f)",
-          boxShadow: "0 4px 12px rgba(1, 105, 111, 0.03)"
+          color: "var(--color-primary, #0a7d64)",
+          boxShadow: "0 4px 12px rgba(10, 160, 128, 0.03)"
         }}
       >
         <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1011,8 +1011,8 @@ function EmptyState() {
           href="/unlisted"
           style={{
             background: "transparent",
-            color: "var(--color-primary, #01696f)",
-            border: "1px solid var(--color-border, rgba(1, 105, 111, 0.2))",
+            color: "var(--color-primary, #0a7d64)",
+            border: "1px solid var(--color-border, rgba(10, 160, 128, 0.2))",
             borderRadius: 12,
             padding: "0.8rem 1.6rem",
             fontWeight: 600,
@@ -1024,13 +1024,13 @@ function EmptyState() {
             fontFamily: "var(--font-display, 'Barlow', sans-serif)"
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = "var(--color-primary-highlight, rgba(1, 105, 111, 0.04))";
-            e.currentTarget.style.borderColor = "var(--color-primary, #01696f)";
+            e.currentTarget.style.background = "var(--color-primary-highlight, rgba(10, 160, 128, 0.04))";
+            e.currentTarget.style.borderColor = "var(--color-primary, #0a7d64)";
             e.currentTarget.style.transform = "translateY(-1px)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = "transparent";
-            e.currentTarget.style.borderColor = "var(--color-border, rgba(1, 105, 111, 0.2))";
+            e.currentTarget.style.borderColor = "var(--color-border, rgba(10, 160, 128, 0.2))";
             e.currentTarget.style.transform = "translateY(0)";
           }}
         >

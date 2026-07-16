@@ -30,17 +30,17 @@ export const metadata: Metadata = {
   icons: {
     icon: {
       url:
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2301696f'/%3E%3Ctext x='50' y='73' text-anchor='middle' font-size='66' font-family='Georgia,serif' font-weight='700' fill='white'%3Ef%3C/text%3E%3C/svg%3E",
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%230a7d64'/%3E%3Ctext x='50' y='73' text-anchor='middle' font-size='66' font-family='Georgia,serif' font-weight='700' fill='white'%3Ef%3C/text%3E%3C/svg%3E",
       type: "image/svg+xml"
     },
     apple:
-      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2301696f'/%3E%3Ctext x='50' y='73' text-anchor='middle' font-size='66' font-family='Georgia,serif' font-weight='700' fill='white'%3Ef%3C/text%3E%3C/svg%3E"
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a7d64'/%3E%3Ctext x='50' y='73' text-anchor='middle' font-size='66' font-family='Georgia,serif' font-weight='700' fill='white'%3Ef%3C/text%3E%3C/svg%3E"
   },
   robots: { index: true, follow: true }
 };
 
 export const viewport: Viewport = {
-  themeColor: "#01696f",
+  themeColor: "#0a7d64",
   colorScheme: "light"
 };
 

@@ -31,7 +31,7 @@ const STORIES = [
   },
   {
     initials: "VI",
-    color: "#01696f",
+    color: "#0a7d64",
     name: "Vikram Iyer",
     role: "Managing Partner, Iyer Family Office",
     headline: "Family-office service without family-office overheads.",

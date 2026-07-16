@@ -464,8 +464,8 @@ function SignupInner() {
 
       <style jsx>{`
         .auth-info {
-          background: rgba(1, 105, 111, 0.08);
-          border: 1px solid rgba(1, 105, 111, 0.2);
+          background: rgba(10, 160, 128, 0.08);
+          border: 1px solid rgba(10, 160, 128, 0.2);
           border-radius: 12px;
           padding: 0.7rem 0.9rem;
           color: #0c4a4f;
@@ -484,7 +484,7 @@ function SignupInner() {
           border: 0;
           padding: 0;
           font: inherit;
-          color: var(--color-primary, #01696f);
+          color: var(--color-primary, #0a7d64);
           text-decoration: underline;
           cursor: pointer;
         }
@@ -612,9 +612,9 @@ function OtpBoxes({
             fontVariantNumeric: "tabular-nums"
           }}
           onFocus={(e) => {
-            e.currentTarget.style.borderColor = "var(--color-primary, #01696f)";
+            e.currentTarget.style.borderColor = "var(--color-primary, #0a7d64)";
             e.currentTarget.style.boxShadow =
-              "0 0 0 4px rgba(1, 105, 111, 0.12)";
+              "0 0 0 4px rgba(10, 160, 128, 0.12)";
             e.currentTarget.select();
           }}
           onBlur={(e) => {

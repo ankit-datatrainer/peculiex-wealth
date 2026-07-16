@@ -298,7 +298,7 @@ export default function Hero() {
                     cx="70"
                     cy="70"
                     r="58"
-                    stroke="#01696f"
+                    stroke="#0a7d64"
                     strokeWidth="9"
                     fill="none"
                     strokeLinecap="round"
@@ -334,7 +334,7 @@ export default function Hero() {
                 </svg>
                 <ul className="alloc-mini">
                   <li>
-                    <span style={{ background: "#01696f" }}></span>Equity{" "}
+                    <span style={{ background: "#0a7d64" }}></span>Equity{" "}
                     <i>42%</i>
                   </li>
                   <li>
@@ -381,12 +381,12 @@ export default function Hero() {
                     <linearGradient id="heroGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop
                         offset="0%"
-                        stopColor="#01696f"
+                        stopColor="#0a7d64"
                         stopOpacity=".25"
                       />
                       <stop
                         offset="100%"
-                        stopColor="#01696f"
+                        stopColor="#0a7d64"
                         stopOpacity="0"
                       />
                     </linearGradient>
@@ -401,7 +401,7 @@ export default function Hero() {
                     id="heroLine"
                     d=""
                     fill="none"
-                    stroke="#01696f"
+                    stroke="#0a7d64"
                     strokeWidth="1.8"
                     ref={heroLineRef as any}
                   ></path>

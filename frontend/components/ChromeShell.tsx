@@ -11,7 +11,6 @@ import ScrollProgress from "./ScrollProgress";
 import BackToTop from "./BackToTop";
 import WhatsAppButton from "./WhatsAppButton";
 import SupportTicket from "./SupportTicket";
-import SiteModals from "./SiteModals";
 import GlobalUX from "./GlobalUX";
 import Chatbot from "./Chatbot";
 
@@ -40,7 +39,6 @@ export default function ChromeShell({
       <BackToTop />
       <WhatsAppButton />
       <SupportTicket />
-      <SiteModals />
       <Chatbot />
       <GlobalUX />
     </>

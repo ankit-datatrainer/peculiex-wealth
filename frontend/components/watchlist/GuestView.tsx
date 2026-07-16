@@ -13,7 +13,7 @@ type Mock = {
 };
 
 const MOCKS: Mock[] = [
-  { sym: "RELIANCE", name: "Reliance Industries", price: 2840.55, chg: 1.42, brand: "#01696f", sector: "Energy" },
+  { sym: "RELIANCE", name: "Reliance Industries", price: 2840.55, chg: 1.42, brand: "#0a7d64", sector: "Energy" },
   { sym: "INFY", name: "Infosys Ltd", price: 1845.65, chg: 1.10, brand: "#2563eb", sector: "IT" },
   { sym: "HDFCBANK", name: "HDFC Bank", price: 1672.30, chg: -0.32, brand: "#a3262d", sector: "Banking" },
   { sym: "MARUTI", name: "Maruti Suzuki", price: 12480.0, chg: 1.62, brand: "#0ea5e9", sector: "Auto" },
@@ -199,7 +199,7 @@ export default function GuestView() {
         </div>
         <div className="gv-features-grid">
           <div className="gv-feat-card">
-            <div className="gv-feat-icon" style={{ background: "#01696f14", color: "#01696f" }}>
+            <div className="gv-feat-icon" style={{ background: "#0a7d6414", color: "#0a7d64" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12h4l2-7 4 14 2-7h6" /></svg>
             </div>
             <h3>Live Price Feed</h3>
@@ -374,13 +374,13 @@ export default function GuestView() {
           position: absolute; inset: 0; pointer-events: none;
           background:
             radial-gradient(ellipse 60% 50% at 78% 35%, rgba(206,220,216,.55) 0%, transparent 65%),
-            radial-gradient(ellipse 30% 40% at 12% 70%, rgba(1,105,111,.06) 0%, transparent 60%);
+            radial-gradient(ellipse 30% 40% at 12% 70%, rgba(10, 160, 128,.06) 0%, transparent 60%);
         }
         .gv-grid-pattern {
           position: absolute; inset: 0; pointer-events: none;
           background-image:
-            linear-gradient(rgba(1,105,111,.045) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(1,105,111,.045) 1px, transparent 1px);
+            linear-gradient(rgba(10, 160, 128,.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(10, 160, 128,.045) 1px, transparent 1px);
           background-size: 64px 64px;
           -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 45%, black 0%, transparent 100%);
           mask-image: radial-gradient(ellipse 70% 70% at 50% 45%, black 0%, transparent 100%);
@@ -388,21 +388,21 @@ export default function GuestView() {
         .gv-spotlight {
           position: absolute; inset: 0; pointer-events: none;
           background: radial-gradient(circle 480px at var(--sx, 70%) var(--sy, 40%),
-            rgba(1,105,111,.14) 0%, rgba(1,105,111,.04) 35%, transparent 60%);
+            rgba(10, 160, 128,.14) 0%, rgba(10, 160, 128,.04) 35%, transparent 60%);
           transition: background .15s linear;
           mix-blend-mode: multiply;
         }
         .gv-orb {
           position: absolute; right: -2%; top: 38%; transform: translateY(-50%);
           width: 520px; height: 520px; border-radius: 50%; pointer-events: none;
-          background: radial-gradient(ellipse, rgba(1,105,111,.07) 0%, transparent 70%);
-          border: 1px solid rgba(1,105,111,.10);
+          background: radial-gradient(ellipse, rgba(10, 160, 128,.07) 0%, transparent 70%);
+          border: 1px solid rgba(10, 160, 128,.10);
           animation: breathe 7s ease-in-out infinite;
         }
         .gv-orb-2 {
           position: absolute; right: 6%; top: 38%;
           width: 320px; height: 320px; border-radius: 50%; pointer-events: none;
-          border: 1px dashed rgba(1,105,111,.14);
+          border: 1px dashed rgba(10, 160, 128,.14);
           transform: translateY(-50%);
           animation: rotateSlow 50s linear infinite;
         }
@@ -429,11 +429,11 @@ export default function GuestView() {
         }
         .gv-title em {
           font-style: italic;
-          background: linear-gradient(120deg, #01696f 0%, #2ea2a8 45%, #01696f 100%);
+          background: linear-gradient(120deg, #0a7d64 0%, #2ea2a8 45%, #0a7d64 100%);
           background-size: 220% auto;
           -webkit-background-clip: text; background-clip: text;
-          -webkit-text-fill-color: var(--color-primary, #01696f);
-          color: var(--color-primary, #01696f);
+          -webkit-text-fill-color: var(--color-primary, #0a7d64);
+          color: var(--color-primary, #0a7d64);
           animation: shineText 5s linear infinite;
         }
         @keyframes shineText { to { background-position: -220% center; } }
@@ -531,7 +531,7 @@ export default function GuestView() {
           transition: background .15s;
         }
         .gv-stock-row:last-child { border-bottom: none; }
-        .gv-stock-row:hover { background: rgba(1,105,111,.03); }
+        .gv-stock-row:hover { background: rgba(10, 160, 128,.03); }
         .gv-stock-logo {
           width: 34px; height: 34px; border-radius: 8px;
           color: #fff; font-weight: 700; font-size: 0.72rem;
@@ -563,7 +563,7 @@ export default function GuestView() {
           font-family: var(--font-display, 'Barlow', sans-serif);
           font-size: clamp(20px, 2.2vw, 28px);
           font-weight: 500;
-          color: var(--color-primary, #01696f);
+          color: var(--color-primary, #0a7d64);
           letter-spacing: -0.01em;
           line-height: 1.1;
           margin-bottom: 4px;
@@ -604,8 +604,8 @@ export default function GuestView() {
         }
         .gv-feat-card:hover {
           transform: translateY(-6px);
-          box-shadow: 0 16px 32px rgba(1,105,111,.06), var(--shadow-md);
-          border-color: rgba(1,105,111,.2);
+          box-shadow: 0 16px 32px rgba(10, 160, 128,.06), var(--shadow-md);
+          border-color: rgba(10, 160, 128,.2);
         }
         .gv-feat-icon {
           width: 48px; height: 48px; border-radius: 12px;
@@ -650,7 +650,7 @@ export default function GuestView() {
         }
         .gv-unl-card:hover {
           transform: translateX(6px);
-          border-color: rgba(1,105,111,.2);
+          border-color: rgba(10, 160, 128,.2);
           box-shadow: var(--shadow-md);
         }
         .gv-unl-logo {
@@ -666,7 +666,7 @@ export default function GuestView() {
         .gv-unl-tag {
           font-size: 0.65rem; font-weight: 700; letter-spacing: .06em;
           text-transform: uppercase; padding: 2px 8px; border-radius: 4px;
-          background: rgba(1,105,111,.08); color: var(--color-primary, #01696f);
+          background: rgba(10, 160, 128,.08); color: var(--color-primary, #0a7d64);
         }
 
         /* ── HOW IT WORKS ── */
@@ -714,7 +714,7 @@ export default function GuestView() {
         .gv-testi-card:hover {
           transform: translateY(-5px);
           box-shadow: var(--shadow-lg);
-          border-color: rgba(1,105,111,.15);
+          border-color: rgba(10, 160, 128,.15);
         }
         .gv-testi-quote {
           font-size: 1rem; line-height: 1.6;
@@ -725,7 +725,7 @@ export default function GuestView() {
         .gv-testi-author { display: flex; align-items: center; gap: .75rem; }
         .gv-testi-avatar {
           width: 40px; height: 40px; border-radius: 50%;
-          background: var(--color-primary, #01696f);
+          background: var(--color-primary, #0a7d64);
           color: #fff; font-weight: 700; font-size: 1rem;
           display: flex; align-items: center; justify-content: center;
           flex: 0 0 auto;
@@ -744,7 +744,7 @@ export default function GuestView() {
         }
         .gv-cta-bg {
           position: absolute; inset: 0;
-          background: linear-gradient(135deg, #0b2730 0%, #01696f 100%);
+          background: linear-gradient(135deg, #0b2730 0%, #0a7d64 100%);
         }
         .gv-cta-grid {
           position: absolute; inset: 0; pointer-events: none;
@@ -770,7 +770,7 @@ export default function GuestView() {
         .gv-cta-primary {
           display: inline-flex; align-items: center; gap: 8px;
           padding: 14px 28px; font-size: 14px; font-weight: 600;
-          background: #fff; color: var(--color-primary, #01696f);
+          background: #fff; color: var(--color-primary, #0a7d64);
           border-radius: 999px;
           font-family: var(--font-display, 'Barlow', sans-serif);
           transition: all .25s var(--ease-out);

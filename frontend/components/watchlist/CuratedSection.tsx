@@ -87,7 +87,7 @@ export default function CuratedSection({
           font-weight: 700;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: var(--color-primary, #01696f);
+          color: var(--color-primary, #0a7d64);
           font-family: var(--font-display, "Barlow", sans-serif);
           margin-bottom: 0.3rem;
         }
@@ -101,12 +101,12 @@ export default function CuratedSection({
           letter-spacing: -0.018em;
         }
         .cur-head h2 em {
-          color: var(--color-primary, #01696f);
+          color: var(--color-primary, #0a7d64);
           font-style: italic;
-          background: linear-gradient(120deg, var(--color-primary, #01696f) 0%, #2ea2a8 45%, var(--color-primary, #01696f) 100%);
+          background: linear-gradient(120deg, var(--color-primary, #0a7d64) 0%, #2ea2a8 45%, var(--color-primary, #0a7d64) 100%);
           background-size: 220% auto;
           -webkit-background-clip: text; background-clip: text;
-          -webkit-text-fill-color: var(--color-primary, #01696f);
+          -webkit-text-fill-color: var(--color-primary, #0a7d64);
           animation: shineText 5s linear infinite;
         }
         @keyframes shineText { to { background-position: -220% center; } }
@@ -133,7 +133,7 @@ export default function CuratedSection({
         }
         .cur-card:hover {
           transform: translateY(-4px);
-          border-color: var(--color-primary, rgba(1, 105, 111, 0.2));
+          border-color: var(--color-primary, rgba(10, 160, 128, 0.2));
           box-shadow: var(--shadow-lg);
         }
         .cur-card-header {
@@ -161,8 +161,8 @@ export default function CuratedSection({
           font-family: var(--font-display, "Barlow", sans-serif);
         }
         .cur-badge.bluechip {
-          background: var(--color-primary-highlight, rgba(1, 105, 111, 0.08));
-          color: var(--color-primary, #01696f);
+          background: var(--color-primary-highlight, rgba(10, 160, 128, 0.08));
+          color: var(--color-primary, #0a7d64);
         }
         .cur-badge.movers {
           background: var(--color-danger-bg, rgba(220, 38, 38, 0.08));
@@ -198,8 +198,8 @@ export default function CuratedSection({
           transition: all 0.2s;
         }
         .cur-row:hover {
-          background: var(--color-surface-offset, rgba(1, 105, 111, 0.03));
-          border-color: var(--color-border, rgba(1, 105, 111, 0.1));
+          background: var(--color-surface-offset, rgba(10, 160, 128, 0.03));
+          border-color: var(--color-border, rgba(10, 160, 128, 0.1));
         }
         .cur-row strong {
           font-weight: 700;
@@ -233,7 +233,7 @@ export default function CuratedSection({
           font-family: var(--font-display, "Barlow", sans-serif);
           letter-spacing: 0.02em;
           border: 1px solid transparent;
-          background: var(--color-primary, #01696f);
+          background: var(--color-primary, #0a7d64);
           color: var(--color-text-inverse, #ffffff);
           cursor: pointer;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);

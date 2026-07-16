@@ -30,8 +30,8 @@ export default function Watchlist() {
             width: 36,
             height: 36,
             borderRadius: "50%",
-            border: "3px solid rgba(1,105,111,0.15)",
-            borderTopColor: "#01696f",
+            border: "3px solid rgba(10, 160, 128,0.15)",
+            borderTopColor: "#0a7d64",
             animation: "wlspin 0.9s linear infinite"
           }}
         />

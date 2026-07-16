@@ -219,7 +219,7 @@ export default function Dashboard() {
             </div>
 
             <div className="ud-user-card">
-              <div className="ud-avatar" style={{ background: "#01696f" }}>
+              <div className="ud-avatar" style={{ background: "#0a7d64" }}>
                 {initials}
               </div>
               <div className="ud-user-info">
@@ -329,14 +329,14 @@ export default function Dashboard() {
                     >
                       <defs>
                         <linearGradient id="udGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#01696f" stopOpacity=".25" />
-                          <stop offset="100%" stopColor="#01696f" stopOpacity="0" />
+                          <stop offset="0%" stopColor="#0a7d64" stopOpacity=".25" />
+                          <stop offset="100%" stopColor="#0a7d64" stopOpacity="0" />
                         </linearGradient>
                       </defs>
                       <path fill="url(#udGrad)" d="" ref={areaRef as any} />
                       <path
                         fill="none"
-                        stroke="#01696f"
+                        stroke="#0a7d64"
                         strokeWidth="2"
                         d=""
                         ref={chartRef as any}
@@ -351,7 +351,7 @@ export default function Dashboard() {
                     </div>
                     <div className="ud-quick-actions">
                       <Link href="/markets" className="ud-action-btn">
-                        <div className="ud-action-icon" style={{ background: "linear-gradient(135deg, #01696f, #0ea5e9)" }}>
+                        <div className="ud-action-icon" style={{ background: "linear-gradient(135deg, #0a7d64, #0ea5e9)" }}>
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                         </div>
                         <span>Live Markets</span>
@@ -459,7 +459,7 @@ export default function Dashboard() {
                 {/* Market Insights */}
                 <div className="ud-grid-3">
                   <div className="ud-card ud-insight-card">
-                    <div className="ud-insight-icon" style={{ background: "linear-gradient(135deg, #01696f, #0ea5e9)" }}>
+                    <div className="ud-insight-icon" style={{ background: "linear-gradient(135deg, #0a7d64, #0ea5e9)" }}>
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     </div>
                     <h4>Market Hours</h4>

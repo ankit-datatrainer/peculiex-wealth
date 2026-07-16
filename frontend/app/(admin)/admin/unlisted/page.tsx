@@ -32,7 +32,7 @@ const blank = (): FormState => ({
   name: "",
   domain: "",
   sector: "",
-  brand: "#01696f",
+  brand: "#0a7d64",
   initial: "",
   price: "",
   iv: "10",
@@ -485,7 +485,7 @@ export default function AdminUnlistedPage() {
                     value={
                       /^#[0-9a-fA-F]{6}$/.test(form.brand)
                         ? form.brand
-                        : "#01696f"
+                        : "#0a7d64"
                     }
                     onChange={(e) =>
                       setForm({ ...form, brand: e.target.value })
@@ -497,7 +497,7 @@ export default function AdminUnlistedPage() {
                     onChange={(e) =>
                       setForm({ ...form, brand: e.target.value })
                     }
-                    placeholder="#01696f"
+                    placeholder="#0a7d64"
                   />
                 </div>
               </label>

@@ -130,7 +130,7 @@ export default function AuthedTable({
                     <path
                       d={sparkPath(vals, 100, 30)}
                       fill="none"
-                      stroke={up ? "var(--color-primary, #01696f)" : "var(--color-danger, #dc2626)"}
+                      stroke={up ? "var(--color-primary, #0a7d64)" : "var(--color-danger, #dc2626)"}
                       strokeWidth="1.8"
                     />
                   </svg>
@@ -291,7 +291,7 @@ export default function AuthedTable({
           margin-top: 2px;
         }
         
-        .up { color: var(--color-success, #01696f); }
+        .up { color: var(--color-success, #0a7d64); }
         .dn { color: var(--color-danger, #dc2626); }
         .t-muted { color: var(--color-text-muted, #6b6964); }
 
@@ -368,7 +368,7 @@ function Caret({ down }: { down?: boolean }) {
   );
 }
 
-const PALETTE = ["#01696f", "#0ea5e9", "#3b82f6", "#5b21b6", "#a3262d", "#b45309", "#15803d", "#0f766e", "#7c3aed"];
+const PALETTE = ["#0a7d64", "#0ea5e9", "#3b82f6", "#5b21b6", "#a3262d", "#b45309", "#15803d", "#0f766e", "#7c3aed"];
 function pickColor(sym: string) {
   let h = 0;
   for (let i = 0; i < sym.length; i++) h = (h * 31 + sym.charCodeAt(i)) >>> 0;
