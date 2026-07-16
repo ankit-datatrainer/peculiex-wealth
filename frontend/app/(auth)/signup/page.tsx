@@ -468,7 +468,7 @@ function SignupInner() {
           border: 1px solid rgba(10, 160, 128, 0.2);
           border-radius: 12px;
           padding: 0.7rem 0.9rem;
-          color: #0c4a4f;
+          color: #075c4a;
           font-size: 0.82rem;
           margin-bottom: 1rem;
           line-height: 1.45;

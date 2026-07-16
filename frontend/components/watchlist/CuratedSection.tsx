@@ -239,7 +239,7 @@ export default function CuratedSection({
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .cur-btn:hover:not(:disabled) {
-          background: var(--color-primary-hover, #015257);
+          background: var(--color-primary-hover, #0a7d64);
           transform: translateY(-1px);
           box-shadow: var(--shadow-md);
         }

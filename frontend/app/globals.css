@@ -5720,7 +5720,7 @@ section { padding: 110px 0; position: relative; }
 
 /* Chatbot Styles */
 :root {
-  --chatbot-font-color: #1a4f2c;
+  --chatbot-font-color: #0a7d64;
 }
 .dark {
   --chatbot-font-color: #d4af37;

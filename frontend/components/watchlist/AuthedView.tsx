@@ -811,8 +811,8 @@ export default function AuthedView() {
           transition: all 0.2s;
         }
         .a-link:hover {
-          color: #015257;
-          border-bottom-color: #015257;
+          color: #0a7d64;
+          border-bottom-color: #0a7d64;
         }
         .a-foot {
           margin-top: 2.5rem;
