@@ -13,7 +13,7 @@ type Mock = {
 };
 
 const MOCKS: Mock[] = [
-  { sym: "RELIANCE", name: "Reliance Industries", price: 2840.55, chg: 1.42, brand: "#0a7d64", sector: "Energy" },
+  { sym: "RELIANCE", name: "Reliance Industries", price: 2840.55, chg: 1.42, brand: "#13735d", sector: "Energy" },
   { sym: "INFY", name: "Infosys Ltd", price: 1845.65, chg: 1.10, brand: "#2563eb", sector: "IT" },
   { sym: "HDFCBANK", name: "HDFC Bank", price: 1672.30, chg: -0.32, brand: "#a3262d", sector: "Banking" },
   { sym: "MARUTI", name: "Maruti Suzuki", price: 12480.0, chg: 1.62, brand: "#0ea5e9", sector: "Auto" },
@@ -169,37 +169,37 @@ export default function GuestView() {
         {/* Stats bar */}
         <div className="gv-stats-bar">
           <div className="gv-stat-item">
-            <div className="gv-snum">₹450 Cr+</div>
+            <div className="gv-snum">₹182 Cr</div>
             <div className="gv-slabel">Assets Managed</div>
           </div>
           <div className="gv-stat-divider" />
           <div className="gv-stat-item">
-            <div className="gv-snum">4,000+</div>
+            <div className="gv-snum">1200+</div>
             <div className="gv-slabel">Active Investors</div>
           </div>
           <div className="gv-stat-divider" />
           <div className="gv-stat-item">
-            <div className="gv-snum">500+</div>
-            <div className="gv-slabel">Listed Stocks</div>
+            <div className="gv-snum">10+</div>
+            <div className="gv-slabel">Product Categories</div>
           </div>
           <div className="gv-stat-divider" />
           <div className="gv-stat-item">
-            <div className="gv-snum">120+</div>
-            <div className="gv-slabel">Unlisted Names</div>
+            <div className="gv-snum">10 yrs +</div>
+            <div className="gv-slabel">Industry Experience</div>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════ FEATURES ═══════════════════════ */}
       <section className="gv-features">
-        <div className="gv-features-head sec-head">
+        <div className="gv-features-head sec-head reveal">
           <div className="label">Platform Features</div>
           <h2 className="stitle">Everything you need,<br /><em>nothing you don't.</em></h2>
           <p className="sdesc">Built for serious retail investors who want clarity over noise.</p>
         </div>
-        <div className="gv-features-grid">
+        <div className="gv-features-grid reveal-children">
           <div className="gv-feat-card">
-            <div className="gv-feat-icon" style={{ background: "#0a7d6414", color: "#0a7d64" }}>
+            <div className="gv-feat-icon" style={{ background: "#13735d14", color: "#13735d" }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12h4l2-7 4 14 2-7h6" /></svg>
             </div>
             <h3>Live Price Feed</h3>
@@ -257,7 +257,7 @@ export default function GuestView() {
               Explore Unlisted →
             </Link>
           </div>
-          <div className="gv-unlisted-cards">
+          <div className="gv-unlisted-cards reveal-children">
             {UNLIST_MOCKS.map((u) => (
               <div className="gv-unl-card" key={u.name}>
                 <div className="gv-unl-logo" style={{ background: u.brand }}>
@@ -279,11 +279,11 @@ export default function GuestView() {
 
       {/* ═══════════════════════ HOW IT WORKS ═══════════════════════ */}
       <section className="gv-how">
-        <div className="sec-head" style={{ textAlign: "center" }}>
+        <div className="sec-head reveal" style={{ textAlign: "center" }}>
           <div className="label" style={{ justifyContent: "center" }}>How It Works</div>
           <h2 className="stitle" style={{ textAlign: "center" }}>Up and running in<br /><em>30 seconds.</em></h2>
         </div>
-        <div className="gv-steps">
+        <div className="gv-steps reveal-children">
           {[
             { n: "01", title: "Create your account", desc: "Enter your email, verify with OTP — no credit card, no KYC for watchlist." },
             { n: "02", title: "Search any stock", desc: "Type a ticker or company name. Listed and unlisted results appear instantly." },
@@ -302,11 +302,11 @@ export default function GuestView() {
 
       {/* ═══════════════════════ TESTIMONIALS ═══════════════════════ */}
       <section className="gv-testi">
-        <div className="sec-head" style={{ textAlign: "center" }}>
+        <div className="sec-head reveal" style={{ textAlign: "center" }}>
           <div className="label" style={{ justifyContent: "center" }}>Trusted by Investors</div>
           <h2 className="stitle" style={{ textAlign: "center" }}>What our <em>investors</em> say.</h2>
         </div>
-        <div className="gv-testi-grid">
+        <div className="gv-testi-grid reveal-children">
           {[
             { quote: "The only watchlist that shows both listed and unlisted names in one place. It's become my morning ritual.", name: "Arjun Mehta", role: "Angel Investor, Mumbai" },
             { quote: "Clean, fast, and beautifully designed. I check Finvoq before I check WhatsApp every morning.", name: "Priya Sharma", role: "Portfolio Manager, Delhi" },
@@ -429,11 +429,11 @@ export default function GuestView() {
         }
         .gv-title em {
           font-style: italic;
-          background: linear-gradient(120deg, #0a7d64 0%, #2ea2a8 45%, #0a7d64 100%);
+          background: linear-gradient(120deg, #13735d 0%, #2ea2a8 45%, #13735d 100%);
           background-size: 220% auto;
           -webkit-background-clip: text; background-clip: text;
-          -webkit-text-fill-color: var(--color-primary, #0a7d64);
-          color: var(--color-primary, #0a7d64);
+          -webkit-text-fill-color: var(--color-primary, #13735d);
+          color: var(--color-primary, #13735d);
           animation: shineText 5s linear infinite;
         }
         @keyframes shineText { to { background-position: -220% center; } }
@@ -563,7 +563,7 @@ export default function GuestView() {
           font-family: var(--font-display, 'Barlow', sans-serif);
           font-size: clamp(20px, 2.2vw, 28px);
           font-weight: 500;
-          color: var(--color-primary, #0a7d64);
+          color: var(--color-primary, #13735d);
           letter-spacing: -0.01em;
           line-height: 1.1;
           margin-bottom: 4px;
@@ -666,7 +666,7 @@ export default function GuestView() {
         .gv-unl-tag {
           font-size: 0.65rem; font-weight: 700; letter-spacing: .06em;
           text-transform: uppercase; padding: 2px 8px; border-radius: 4px;
-          background: rgba(10, 160, 128,.08); color: var(--color-primary, #0a7d64);
+          background: rgba(10, 160, 128,.08); color: var(--color-primary, #13735d);
         }
 
         /* ── HOW IT WORKS ── */
@@ -725,7 +725,7 @@ export default function GuestView() {
         .gv-testi-author { display: flex; align-items: center; gap: .75rem; }
         .gv-testi-avatar {
           width: 40px; height: 40px; border-radius: 50%;
-          background: var(--color-primary, #0a7d64);
+          background: var(--color-primary, #13735d);
           color: #fff; font-weight: 700; font-size: 1rem;
           display: flex; align-items: center; justify-content: center;
           flex: 0 0 auto;
@@ -744,7 +744,7 @@ export default function GuestView() {
         }
         .gv-cta-bg {
           position: absolute; inset: 0;
-          background: linear-gradient(135deg, #0b2730 0%, #0a7d64 100%);
+          background: linear-gradient(135deg, #0b2730 0%, #13735d 100%);
         }
         .gv-cta-grid {
           position: absolute; inset: 0; pointer-events: none;
@@ -770,7 +770,7 @@ export default function GuestView() {
         .gv-cta-primary {
           display: inline-flex; align-items: center; gap: 8px;
           padding: 14px 28px; font-size: 14px; font-weight: 600;
-          background: #fff; color: var(--color-primary, #0a7d64);
+          background: #fff; color: var(--color-primary, #13735d);
           border-radius: 999px;
           font-family: var(--font-display, 'Barlow', sans-serif);
           transition: all .25s var(--ease-out);

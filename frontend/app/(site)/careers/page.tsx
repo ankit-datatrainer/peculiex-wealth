@@ -8,12 +8,9 @@ export const metadata: Metadata = {
 };
 
 const ROLES = [
-  { title: "Senior Frontend Engineer", team: "Product Engineering", location: "Mumbai · Hybrid", type: "Full-time" },
-  { title: "Backend Engineer (Node + Postgres)", team: "Platform", location: "Mumbai / Remote India", type: "Full-time" },
-  { title: "Investment Advisor (SEBI RIA)", team: "Advisory", location: "Mumbai · On-site", type: "Full-time" },
-  { title: "Equity Research Analyst", team: "Research", location: "Mumbai · On-site", type: "Full-time" },
-  { title: "Compliance & Risk Lead", team: "Compliance", location: "Mumbai · On-site", type: "Full-time" },
-  { title: "Senior Product Designer", team: "Design", location: "Mumbai / Remote India", type: "Full-time" }
+  { title: "Regional Manager", team: "Management", location: "On-site", type: "Full-time" },
+  { title: "Regional Manager", team: "Management", location: "Delhi, Mumbai, Bangalore, Hyderabad, Goa, Pune, Kolkata, Chandigarh", type: "Full-time" },
+  { title: "Commission Agent", team: "Sales", location: "Remote", type: "Full-time" }
 ];
 
 export default function CareersPage() {

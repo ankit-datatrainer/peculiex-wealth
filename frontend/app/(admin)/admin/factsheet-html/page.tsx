@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { PRODUCTS } from "@/lib/productContent";
 import { apiFetch } from "@/lib/api";
 
-type Entry = { size?: number; updatedAt?: string; updatedBy?: string };
+type VariantMeta = { size?: number; updatedAt?: string; updatedBy?: string };
+type Entry = { base?: VariantMeta; light?: VariantMeta; dark?: VariantMeta };
 type Manifest = Record<string, Entry>;
+type Variant = "light" | "dark";
 
 const PRODUCT_LIST = Object.values(PRODUCTS).map((p) => ({ slug: p.slug, label: p.label }));
 
@@ -50,6 +52,7 @@ export default function AdminFactsheetHtmlPage() {
   const [manifest, setManifest] = useState<Manifest>({});
   const [defaults, setDefaults] = useState<string[]>([]);
   const [slug, setSlug] = useState(PRODUCT_LIST[0]?.slug || "mutual-funds");
+  const [variant, setVariant] = useState<Variant>("light");
   const [html, setHtml] = useState("");
   const [template, setTemplate] = useState("");
   const [loading, setLoading] = useState(true);
@@ -80,12 +83,14 @@ export default function AdminFactsheetHtmlPage() {
       .catch(() => setTemplate(""));
   }, []);
 
-  // Load whatever is currently live for the selected product.
+  // Load what's currently live for the selected product + theme variant.
   useEffect(() => {
     let cancelled = false;
     setMsg(null);
     setError(null);
-    apiFetch<{ exists: boolean; html?: string }>(`/api/factsheet-html/${slug}`)
+    apiFetch<{ exists: boolean; html?: string; servedVariant?: string }>(
+      `/api/factsheet-html/${slug}?theme=${variant}`
+    )
       .then((d) => {
         if (!cancelled) setHtml(d.html || "");
       })
@@ -95,11 +100,14 @@ export default function AdminFactsheetHtmlPage() {
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [slug, variant]);
 
   const product = PRODUCT_LIST.find((p) => p.slug === slug);
   const entry = manifest[slug];
+  const variantMeta = entry?.[variant];
   const hasDefault = defaults.includes(slug);
+  // Does this product have ANY custom upload (base or either variant)?
+  const hasAnyCustom = !!entry && (!!entry.base || !!entry.light || !!entry.dark);
 
   const onCopyPrompt = async () => {
     try {
@@ -120,13 +128,18 @@ export default function AdminFactsheetHtmlPage() {
     }
     setBusy(true);
     try {
-      const res = await apiFetch<{ ok: boolean } & Entry>(`/api/factsheet-html/${slug}`, {
+      const res = await apiFetch<{ ok: boolean } & VariantMeta>(`/api/factsheet-html/${slug}`, {
         method: "POST",
-        body: JSON.stringify({ html }),
+        body: JSON.stringify({ html, variant }),
         headers: { "Content-Type": "application/json" }
       });
-      setManifest((m) => ({ ...m, [slug]: res }));
-      setMsg(`Saved. The ${product?.label} factsheet is now live on the website.`);
+      setManifest((m) => ({
+        ...m,
+        [slug]: { ...(m[slug] || {}), [variant]: res }
+      }));
+      setMsg(
+        `Saved the ${variant} factsheet for ${product?.label}. It's now live for visitors in ${variant} mode.`
+      );
     } catch (e: any) {
       setError(e?.message || "Save failed.");
     } finally {
@@ -135,25 +148,24 @@ export default function AdminFactsheetHtmlPage() {
   };
 
   const onRemove = async () => {
-    if (!confirm(`Remove the custom HTML factsheet for “${product?.label}”?`)) return;
+    if (!confirm(`Remove the ${variant} HTML factsheet for “${product?.label}”?`)) return;
     setBusy(true);
     setError(null);
     setMsg(null);
     try {
-      await apiFetch(`/api/factsheet-html/${slug}`, { method: "DELETE" });
+      await apiFetch(`/api/factsheet-html/${slug}?variant=${variant}`, { method: "DELETE" });
       setManifest((m) => {
         const next = { ...m };
-        delete next[slug];
+        const e = { ...(next[slug] || {}) };
+        delete e[variant];
+        if (Object.keys(e).length === 0) delete next[slug];
+        else next[slug] = e;
         return next;
       });
-      setMsg(
-        hasDefault
-          ? "Removed. The product has reverted to the built-in factsheet."
-          : "Removed. This product no longer shows a factsheet section."
-      );
-      const d = await apiFetch<{ exists: boolean; html?: string }>(`/api/factsheet-html/${slug}`).catch(
-        () => null
-      );
+      setMsg(`Removed the ${variant} factsheet. Visitors in ${variant} mode now see the fallback.`);
+      const d = await apiFetch<{ exists: boolean; html?: string }>(
+        `/api/factsheet-html/${slug}?theme=${variant}`
+      ).catch(() => null);
       setHtml(d?.html || "");
     } catch (e: any) {
       setError(e?.message || "Delete failed.");
@@ -268,26 +280,38 @@ export default function AdminFactsheetHtmlPage() {
                 fontSize: ".9rem"
               }}
             >
-              {PRODUCT_LIST.map((p) => (
-                <option key={p.slug} value={p.slug}>
-                  {p.label}
-                  {manifest[p.slug] ? "  ● custom" : defaults.includes(p.slug) ? "  ○ built-in" : ""}
-                </option>
-              ))}
+              {PRODUCT_LIST.map((p) => {
+                const e = manifest[p.slug];
+                const tags = e
+                  ? [e.light && "L", e.dark && "D", e.base && "•"].filter(Boolean).join("")
+                  : "";
+                return (
+                  <option key={p.slug} value={p.slug}>
+                    {p.label}
+                    {tags ? `  ● ${tags}` : defaults.includes(p.slug) ? "  ○ built-in" : ""}
+                  </option>
+                );
+              })}
             </select>
           </label>
 
-          <span style={{ fontSize: ".8rem", color: "var(--color-text-muted)" }}>
-            {loading
-              ? "Loading…"
-              : entry
-              ? `Custom · ${prettySize(entry.size)} · updated ${
-                  entry.updatedAt ? new Date(entry.updatedAt).toLocaleString() : "—"
-                }${entry.updatedBy ? ` by ${entry.updatedBy}` : ""}`
-              : hasDefault
-              ? "Using the built-in factsheet"
-              : "No factsheet yet — this section is hidden on the website"}
-          </span>
+          {/* Light / Dark variant tabs */}
+          <div className="fsv-tabs" role="tablist" aria-label="Theme variant">
+            {(["light", "dark"] as Variant[]).map((v) => (
+              <button
+                key={v}
+                type="button"
+                role="tab"
+                aria-selected={variant === v}
+                className="fsv-tab"
+                data-active={variant === v}
+                onClick={() => setVariant(v)}
+              >
+                {v === "light" ? "☀ Light" : "🌙 Dark"}
+                {entry?.[v] ? <span className="fsv-dot" title="uploaded" /> : null}
+              </button>
+            ))}
+          </div>
 
           <a
             href={`/products/${slug}`}
@@ -297,6 +321,20 @@ export default function AdminFactsheetHtmlPage() {
           >
             View product page ↗
           </a>
+        </div>
+
+        <div style={{ marginBottom: 12, fontSize: ".82rem", color: "var(--color-text-muted)" }}>
+          {loading
+            ? "Loading…"
+            : variantMeta
+            ? `${variant[0].toUpperCase() + variant.slice(1)} variant · ${prettySize(variantMeta.size)} · updated ${
+                variantMeta.updatedAt ? new Date(variantMeta.updatedAt).toLocaleString() : "—"
+              }${variantMeta.updatedBy ? ` by ${variantMeta.updatedBy}` : ""}`
+            : entry?.base
+            ? `No dedicated ${variant} version — visitors in ${variant} mode see the shared upload. Paste one here to override it.`
+            : hasDefault
+            ? `No ${variant} version — ${variant}-mode visitors see the built-in factsheet.`
+            : `No ${variant} factsheet yet — ${variant}-mode visitors see nothing until you add one.`}
         </div>
 
         <textarea
@@ -332,7 +370,7 @@ export default function AdminFactsheetHtmlPage() {
           }}
         >
           <button type="button" className="btn btn-primary" onClick={onSave} disabled={busy}>
-            {busy ? "Saving…" : "Save & publish"}
+            {busy ? "Saving…" : `Save & publish (${variant})`}
           </button>
           <button
             type="button"
@@ -342,7 +380,7 @@ export default function AdminFactsheetHtmlPage() {
           >
             Preview
           </button>
-          {entry && (
+          {variantMeta && (
             <button
               type="button"
               className="btn btn-outline"
@@ -350,7 +388,7 @@ export default function AdminFactsheetHtmlPage() {
               onClick={onRemove}
               disabled={busy}
             >
-              Remove custom HTML
+              Remove {variant} version
             </button>
           )}
           <span style={{ fontSize: ".78rem", color: "var(--color-text-muted)" }}>

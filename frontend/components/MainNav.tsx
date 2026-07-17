@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useAuth, isAdminUser } from "@/lib/auth-context";
 import { ThemeToggle } from "./ThemeToggle";
+import Logo from "./Logo";
 
 type NavItem = {
   href: string;
@@ -119,12 +120,7 @@ export default function MainNav() {
     <header className="main-nav" id="mainNav">
       <div className="nav-inner">
         <Link href="/" className="logo" data-magnetic>
-          <span className="logo-mark">
-            <span>f</span>
-          </span>
-          <span className="logo-text">
-            finvo<em>q</em>
-          </span>
+          <Logo width={140} height={56} />
         </Link>
         <nav>
           <ul className={`nav-links${mobileOpen ? " mobile-open" : ""}`} ref={linksRef}>
@@ -301,7 +297,7 @@ export default function MainNav() {
                         width: 44,
                         height: 44,
                         borderRadius: "50%",
-                        background: "var(--color-primary, #0a7d64)",
+                        background: "var(--color-primary, #13735d)",
                         color: "#fff",
                         display: "grid",
                         placeItems: "center",
@@ -368,7 +364,7 @@ export default function MainNav() {
                     width: 30,
                     height: 30,
                     borderRadius: "50%",
-                    background: "var(--color-primary, #0a7d64)",
+                    background: "var(--color-primary, #13735d)",
                     color: "#fff",
                     display: "grid",
                     placeItems: "center",
@@ -483,7 +479,7 @@ export default function MainNav() {
                         gap: 8,
                         padding: "0.7rem 1rem",
                         fontSize: "0.88rem",
-                        color: "var(--color-primary, #0a7d64)",
+                        color: "var(--color-primary, #13735d)",
                         textDecoration: "none",
                         fontWeight: 600,
                         background:
@@ -497,7 +493,7 @@ export default function MainNav() {
                           letterSpacing: "0.08em",
                           textTransform: "uppercase",
                           color: "#fff",
-                          background: "var(--color-primary, #0a7d64)",
+                          background: "var(--color-primary, #13735d)",
                           padding: "2px 7px",
                           borderRadius: 999
                         }}

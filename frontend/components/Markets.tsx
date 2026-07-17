@@ -217,7 +217,7 @@ export default function Markets() {
                                   if (fb) fb.style.display = "grid";
                                 }}
                               />
-                              <span className="unl-logo-fallback" style={{ display: "none", width: 32, height: 32, borderRadius: 999, background: "#0a7d64", color: "#fff", placeItems: "center", fontSize: "0.85rem", fontWeight: 600, letterSpacing: 1 }}>
+                              <span className="unl-logo-fallback" style={{ display: "none", width: 32, height: 32, borderRadius: 999, background: "#13735d", color: "#fff", placeItems: "center", fontSize: "0.85rem", fontWeight: 600, letterSpacing: 1 }}>
                                 {q.symbol.slice(0, 2)}
                               </span>
                               <div>
@@ -307,7 +307,7 @@ export default function Markets() {
                                 if (fb) fb.style.display = "grid";
                               }}
                             />
-                            <span className="unl-logo-fallback" style={{ display: "none", width: 32, height: 32, borderRadius: 999, background: "#0a7d64", color: "#fff", placeItems: "center", fontSize: "0.85rem", fontWeight: 600, letterSpacing: 1 }}>
+                            <span className="unl-logo-fallback" style={{ display: "none", width: 32, height: 32, borderRadius: 999, background: "#13735d", color: "#fff", placeItems: "center", fontSize: "0.85rem", fontWeight: 600, letterSpacing: 1 }}>
                               {q.symbol.slice(0, 2)}
                             </span>
                             <div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { fmtINR2 } from "@/lib/util";
+import { cleanSymbol } from "./types";
 import type { Filter, SortKey, Stock, Unl, ViewMode } from "./types";
 
 type Suggestion =
@@ -114,14 +115,16 @@ export default function AuthedToolbar({
                     >
                       <div className="tb-suggest-left">
                         <span className="tb-suggest-sym">
-                          {st.sym}
-                          <span className="tb-tag listed">Listed</span>
+                          {cleanSymbol(st.sym)}
+                          <span className="tb-tag listed">{st.cap || "Listed"}</span>
                         </span>
                         <span className="tb-suggest-name">{st.name}</span>
                       </div>
                       <div className="tb-suggest-right">
                         {isLive ? (
-                          <span className="tb-suggest-px">{st.cap || "NSE"}</span>
+                          <span className="tb-suggest-px" style={{ opacity: 0.55, fontSize: "0.72rem" }}>
+                            Add to track
+                          </span>
                         ) : (
                           <>
                             <span className="tb-suggest-px">₹{fmtINR2(st.price)}</span>
@@ -288,9 +291,16 @@ export default function AuthedToolbar({
         .tb-search::placeholder {
           color: var(--color-text-faint, #a3a19a);
         }
+        /* Hide the browser's native clear (×) that type="search" adds — we
+           render our own .tb-clear, so without this two crosses appear. */
+        .tb-search::-webkit-search-cancel-button,
+        .tb-search::-webkit-search-decoration {
+          -webkit-appearance: none;
+          appearance: none;
+        }
         .tb-search:focus {
           outline: none;
-          border-color: var(--color-primary, #0a7d64);
+          border-color: var(--color-primary, #13735d);
           box-shadow: 0 0 0 3px rgba(10, 160, 128, 0.1);
         }
         .tb-search-ic {
@@ -390,20 +400,20 @@ export default function AuthedToolbar({
           align-items: flex-end;
           font-size: 0.85rem;
         }
-        .tb-up { color: var(--color-success, #0a7d64); font-size: 0.75rem; font-weight: 500; }
+        .tb-up { color: var(--color-success, #13735d); font-size: 0.75rem; font-weight: 500; }
         .tb-dn { color: var(--color-danger, #dc2626); font-size: 0.75rem; font-weight: 500; }
         
         .tb-suggest-add {
           font-size: 0.75rem;
           font-weight: 600;
-          color: var(--color-primary, #0a7d64);
+          color: var(--color-primary, #13735d);
           padding: 0.3rem 0.6rem;
           border-radius: 6px;
           background: var(--color-primary-highlight, rgba(10, 160, 128, 0.1));
           transition: all 0.2s;
         }
         .tb-suggest-row:hover .tb-suggest-add {
-          background: var(--color-primary, #0a7d64);
+          background: var(--color-primary, #13735d);
           color: #fff;
         }
 
@@ -454,7 +464,7 @@ export default function AuthedToolbar({
         }
         .tb-chip.active {
           background: var(--color-surface-2, #ffffff);
-          color: var(--color-primary, #0a7d64);
+          color: var(--color-primary, #13735d);
           box-shadow: 0 1px 4px rgba(0,0,0,0.06);
         }
 
@@ -492,7 +502,7 @@ export default function AuthedToolbar({
         }
         .tb-view-btn.active {
           background: var(--color-primary-highlight, rgba(10, 160, 128, 0.08));
-          color: var(--color-primary, #0a7d64);
+          color: var(--color-primary, #13735d);
           border-color: var(--color-primary, rgba(10, 160, 128, 0.2));
         }
 

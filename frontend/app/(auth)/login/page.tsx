@@ -197,7 +197,7 @@ function LoginInner() {
                 <label>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
                     <span>Password</span>
-                    <Link href="/forgot-password" tabIndex={-1} style={{ fontSize: "0.85rem", color: "var(--color-primary, #0a7d64)", textDecoration: "none", fontWeight: 500 }}>
+                    <Link href="/forgot-password" tabIndex={-1} style={{ fontSize: "0.85rem", color: "var(--color-primary, #13735d)", textDecoration: "none", fontWeight: 500 }}>
                       Forgot Password?
                     </Link>
                   </div>
@@ -347,7 +347,7 @@ function LoginInner() {
           border: 0;
           padding: 0;
           font: inherit;
-          color: var(--color-primary, #0a7d64);
+          color: var(--color-primary, #13735d);
           text-decoration: underline;
           cursor: pointer;
         }
@@ -465,7 +465,7 @@ function OtpBoxes({
             fontVariantNumeric: "tabular-nums"
           }}
           onFocus={(e) => {
-            e.currentTarget.style.borderColor = "var(--color-primary, #0a7d64)";
+            e.currentTarget.style.borderColor = "var(--color-primary, #13735d)";
             e.currentTarget.style.boxShadow =
               "0 0 0 4px rgba(10, 160, 128, 0.12)";
             e.currentTarget.select();

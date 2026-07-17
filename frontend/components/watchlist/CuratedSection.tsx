@@ -87,7 +87,7 @@ export default function CuratedSection({
           font-weight: 700;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: var(--color-primary, #0a7d64);
+          color: var(--color-primary, #13735d);
           font-family: var(--font-display, "Barlow", sans-serif);
           margin-bottom: 0.3rem;
         }
@@ -101,12 +101,12 @@ export default function CuratedSection({
           letter-spacing: -0.018em;
         }
         .cur-head h2 em {
-          color: var(--color-primary, #0a7d64);
+          color: var(--color-primary, #13735d);
           font-style: italic;
-          background: linear-gradient(120deg, var(--color-primary, #0a7d64) 0%, #2ea2a8 45%, var(--color-primary, #0a7d64) 100%);
+          background: linear-gradient(120deg, var(--color-primary, #13735d) 0%, #2ea2a8 45%, var(--color-primary, #13735d) 100%);
           background-size: 220% auto;
           -webkit-background-clip: text; background-clip: text;
-          -webkit-text-fill-color: var(--color-primary, #0a7d64);
+          -webkit-text-fill-color: var(--color-primary, #13735d);
           animation: shineText 5s linear infinite;
         }
         @keyframes shineText { to { background-position: -220% center; } }
@@ -162,7 +162,7 @@ export default function CuratedSection({
         }
         .cur-badge.bluechip {
           background: var(--color-primary-highlight, rgba(10, 160, 128, 0.08));
-          color: var(--color-primary, #0a7d64);
+          color: var(--color-primary, #13735d);
         }
         .cur-badge.movers {
           background: var(--color-danger-bg, rgba(220, 38, 38, 0.08));
@@ -233,13 +233,13 @@ export default function CuratedSection({
           font-family: var(--font-display, "Barlow", sans-serif);
           letter-spacing: 0.02em;
           border: 1px solid transparent;
-          background: var(--color-primary, #0a7d64);
+          background: var(--color-primary, #13735d);
           color: var(--color-text-inverse, #ffffff);
           cursor: pointer;
           transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .cur-btn:hover:not(:disabled) {
-          background: var(--color-primary-hover, #0a7d64);
+          background: var(--color-primary-hover, #13735d);
           transform: translateY(-1px);
           box-shadow: var(--shadow-md);
         }

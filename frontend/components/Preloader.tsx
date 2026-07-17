@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Logo from "./Logo";
 
 export default function Preloader() {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -43,12 +44,7 @@ export default function Preloader() {
     <div className="preloader" id="preloader" ref={ref}>
       <div className="pre-inner">
         <div className="pre-logo">
-          <span className="pre-letter">f</span>
-          <span className="pre-letter">i</span>
-          <span className="pre-letter">n</span>
-          <span className="pre-letter">v</span>
-          <span className="pre-letter">o</span>
-          <span className="pre-letter pre-em">q</span>
+          <Logo width={180} height={72} />
         </div>
         <div className="pre-bar">
           <span style={{ width: `${pct}%` }}></span>

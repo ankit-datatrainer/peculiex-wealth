@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { fetchQuotes } from "@/lib/markets";
+import { fetchQuotes, wsBaseUrl } from "@/lib/markets";
 
 type Tick = { name: string; price: number; chg: number };
 
@@ -42,9 +42,8 @@ export default function TickerBar() {
 
   useEffect(() => {
     let ws: WebSocket | null = null;
-    const apiBaseStr = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:4000/api";
-    const wsUrl = apiBaseStr.replace(/^http/, "ws").replace(/\/api\/?$/, "");
-    
+    const wsUrl = wsBaseUrl();
+
     try {
       ws = new WebSocket(wsUrl);
       ws.onopen = () => {

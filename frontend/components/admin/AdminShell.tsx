@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { isAdminUser, isManagerUser, canAccessAdmin, useAuth } from "@/lib/auth-context";
+import Logo from "@/components/Logo";
 
 /**
  * AdminShell — wraps every /admin page in a sidebar layout.
@@ -235,10 +236,7 @@ export default function AdminShell({
       <aside className="admin-side">
         <div className="admin-brand">
           <Link href="/" className="admin-logo">
-            <span className="admin-logo-mark">f</span>
-            <span className="admin-logo-text">
-              finvo<em>q</em>
-            </span>
+            <Logo width={120} height={48} />
           </Link>
           <span className="admin-brand-tag">
             {user.role === "superadmin"

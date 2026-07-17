@@ -209,7 +209,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                 <div className="label">Loan Against Mutual Funds</div>
                 <h3>Need liquidity? Don’t sell — pledge.</h3>
                 <p>
-                  Pledge your mutual fund units and unlock an instant overdraft from ~9% p.a.
+                  Pledge your mutual fund units and unlock an instant overdraft from ~X% p.a.
                   while your investments stay invested. Interest only on what you use.
                 </p>
               </div>

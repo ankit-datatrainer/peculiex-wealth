@@ -20,13 +20,9 @@ export default function Pricing() {
           <h2 className="stitle">
             Transparent. <em>Always.</em>
           </h2>
-          <p className="sdesc">
-            Pay for advice, never for products. We earn nothing from
-            manufacturers, distributors, or anyone else — only from you.
-          </p>
         </div>
 
-        <div className="pricing-grid">
+        <div className="pricing-grid reveal-stagger">
           {/* Tier 1: Essentials */}
           <article className="price-card reveal" data-tilt>
             <div className="pc-head">
@@ -45,23 +41,11 @@ export default function Pricing() {
             <ul className="pc-feats">
               <li>
                 <Check />
-                Marketplace access · 8 asset classes
-              </li>
-              <li>
-                <Check />
                 Live market data &amp; sparklines
               </li>
               <li>
                 <Check />
                 Calculator suite (SIP, lumpsum, goal)
-              </li>
-              <li>
-                <Check />
-                Unified portfolio dashboard
-              </li>
-              <li>
-                <Check />
-                Email support
               </li>
             </ul>
             <a href="/get-started" className="btn btn-ghost btn-lg pc-cta" data-magnetic>
@@ -82,7 +66,7 @@ export default function Pricing() {
               <span className="pc-per">tailored mandates</span>
             </div>
             <p className="pc-summary">
-              Family-office-grade service for individuals, families, and
+              Private-banker grade service for individuals, families, and
               institutions managing wealth at scale.
             </p>
             <ul className="pc-feats">
@@ -92,7 +76,7 @@ export default function Pricing() {
               </li>
               <li>
                 <Check />
-                Dedicated family-office team
+                Dedicated private banking team
               </li>
               <li>
                 <Check />

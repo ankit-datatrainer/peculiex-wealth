@@ -59,7 +59,7 @@ export default function Why() {
           </p>
         </div>
 
-        <div className="why-grid">
+        <div className="why-grid reveal-stagger">
           {CARDS.map((c) => (
             <article className="why-card why-card-static reveal" key={c.title}>
               <div className="why-icon">

@@ -280,7 +280,7 @@ function ForgotPasswordInner() {
           border: 0;
           padding: 0;
           font: inherit;
-          color: var(--color-primary, #0a7d64);
+          color: var(--color-primary, #13735d);
           text-decoration: underline;
           cursor: pointer;
         }
@@ -388,7 +388,7 @@ function OtpBoxes({
             outline: "none"
           }}
           onFocus={(e) => {
-            e.currentTarget.style.borderColor = "var(--color-primary, #0a7d64)";
+            e.currentTarget.style.borderColor = "var(--color-primary, #13735d)";
             e.currentTarget.style.boxShadow = "0 0 0 4px rgba(10, 160, 128, 0.12)";
             e.currentTarget.select();
           }}

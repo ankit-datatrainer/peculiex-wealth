@@ -163,3 +163,30 @@ export const closeSeries = (series: CandleSeries): Array<[number, number]> =>
   series.candles
     .filter((c) => c.c != null)
     .map((c) => [c.t, c.c as number]);
+
+/**
+ * Browser WebSocket base URL for live price ticks.
+ *
+ * The old code derived this from NEXT_PUBLIC_API_BASE, which is not set (only
+ * the server-side API_BASE is), so it fell back to :4000 while the backend WS
+ * actually runs on :4001 — the socket never connected and prices only updated
+ * on a manual refresh. This resolves it correctly in every environment:
+ *   1. An explicit NEXT_PUBLIC_WS_URL wins (set per deploy).
+ *   2. On localhost dev, the backend WS is on :4001.
+ *   3. In production, the socket rides the same host over wss:// (nginx proxies
+ *      the upgrade to the backend).
+ */
+export function wsBaseUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_WS_URL;
+  if (explicit) return explicit;
+  if (typeof window !== "undefined") {
+    const secure = window.location.protocol === "https:";
+    const proto = secure ? "wss:" : "ws:";
+    const host = window.location.hostname;
+    if (host === "localhost" || host === "127.0.0.1") {
+      return `${proto}//${host}:4001`;
+    }
+    return `${proto}//${window.location.host}`;
+  }
+  return "ws://127.0.0.1:4001";
+}

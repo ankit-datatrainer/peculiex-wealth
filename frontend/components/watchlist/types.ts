@@ -64,6 +64,13 @@ export const CURATED_BASKETS: Basket[] = [
   }
 ];
 
+/** Strip an exchange suffix for display: "RTNINDIA.BO" -> "RTNINDIA". */
+export const cleanSymbol = (s: string) => (s || "").replace(/\.(BO|NS)$/i, "");
+
+/** Which exchange a stored symbol resolves to (a ".BO" suffix means BSE). */
+export const exchangeOf = (s: string): "NSE" | "BSE" =>
+  /\.BO$/i.test(s || "") ? "BSE" : "NSE";
+
 export function formatRelative(iso: string) {
   const dt = new Date(iso).getTime();
   if (!Number.isFinite(dt)) return "";

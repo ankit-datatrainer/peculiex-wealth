@@ -1,6 +1,7 @@
 "use client";
 
 import { fmtINR2 } from "@/lib/util";
+import { cleanSymbol, exchangeOf } from "./types";
 import { useRouter } from "next/navigation";
 
 type Row = {
@@ -43,7 +44,10 @@ export default function AuthedCards({
             onClick={() => router.push(`/markets/${w.item.symbol}`)}
           >
             <div className="c-sym">
-              {w.isUnlisted ? w.name || "Unlisted" : w.item.symbol}
+              {w.isUnlisted ? w.name || "Unlisted" : cleanSymbol(w.item.symbol)}
+              {!w.isUnlisted && (
+                <span className="c-exch">{exchangeOf(w.item.symbol)}</span>
+              )}
             </div>
             <div className="c-price">
               {w.price != null ? `${fmtINR2(w.price)}` : "—"}
@@ -115,6 +119,18 @@ export default function AuthedCards({
           border-color: var(--color-border, rgba(26, 25, 23, 0.15));
         }
 
+        .c-exch {
+          display: inline-block;
+          margin-left: 6px;
+          padding: 1px 5px;
+          border-radius: 4px;
+          font-size: 0.58rem;
+          font-weight: 700;
+          letter-spacing: 0.06em;
+          vertical-align: middle;
+          background: var(--color-primary-highlight);
+          color: var(--color-primary-ink);
+        }
         .c-sym {
           font-family: var(--font-display, inherit);
           font-weight: 600;
@@ -144,7 +160,7 @@ export default function AuthedCards({
           font-variant-numeric: tabular-nums;
         }
         .c-chg.up {
-          color: var(--color-success, #0a7d64);
+          color: var(--color-success, #13735d);
         }
         .c-chg.dn {
           color: var(--color-danger, #dc2626);

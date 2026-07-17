@@ -468,7 +468,7 @@ function SignupInner() {
           border: 1px solid rgba(10, 160, 128, 0.2);
           border-radius: 12px;
           padding: 0.7rem 0.9rem;
-          color: #075c4a;
+          color: #0f5c49;
           font-size: 0.82rem;
           margin-bottom: 1rem;
           line-height: 1.45;
@@ -484,7 +484,7 @@ function SignupInner() {
           border: 0;
           padding: 0;
           font: inherit;
-          color: var(--color-primary, #0a7d64);
+          color: var(--color-primary, #13735d);
           text-decoration: underline;
           cursor: pointer;
         }
@@ -612,7 +612,7 @@ function OtpBoxes({
             fontVariantNumeric: "tabular-nums"
           }}
           onFocus={(e) => {
-            e.currentTarget.style.borderColor = "var(--color-primary, #0a7d64)";
+            e.currentTarget.style.borderColor = "var(--color-primary, #13735d)";
             e.currentTarget.style.boxShadow =
               "0 0 0 4px rgba(10, 160, 128, 0.12)";
             e.currentTarget.select();

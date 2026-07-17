@@ -1,7 +1,7 @@
 "use client";
 
 import { fmtINR2, sparkPath, getCompanyDomain } from "@/lib/util";
-import { formatRelative, type SortKey } from "./types";
+import { formatRelative, cleanSymbol, exchangeOf, type SortKey } from "./types";
 import { useRouter } from "next/navigation";
 
 type Row = {
@@ -89,7 +89,10 @@ export default function AuthedTable({
 
                   <div className="t-asset-text">
                     <div className="t-asset-name">
-                      {w.isUnlisted ? w.name || "Unlisted" : w.item.symbol}
+                      {w.isUnlisted ? w.name || "Unlisted" : cleanSymbol(w.item.symbol)}
+                      {!w.isUnlisted && (
+                        <span className="t-exch">{exchangeOf(w.item.symbol)}</span>
+                      )}
                     </div>
                     <div className="t-asset-sub">
                       {w.isUnlisted ? w.sector || "Private Market" : w.name}
@@ -130,7 +133,7 @@ export default function AuthedTable({
                     <path
                       d={sparkPath(vals, 100, 30)}
                       fill="none"
-                      stroke={up ? "var(--color-primary, #0a7d64)" : "var(--color-danger, #dc2626)"}
+                      stroke={up ? "var(--color-primary, #13735d)" : "var(--color-danger, #dc2626)"}
                       strokeWidth="1.8"
                     />
                   </svg>
@@ -259,6 +262,18 @@ export default function AuthedTable({
           font-size: 0.95rem;
           color: var(--color-text, #1e1c18);
         }
+        .t-exch {
+          display: inline-block;
+          margin-left: 6px;
+          padding: 1px 5px;
+          border-radius: 4px;
+          font-size: 0.58rem;
+          font-weight: 700;
+          letter-spacing: 0.06em;
+          vertical-align: middle;
+          background: var(--color-primary-highlight);
+          color: var(--color-primary-ink);
+        }
         .t-asset-sub {
           font-size: 0.75rem;
           color: var(--color-text-muted, #6b6964);
@@ -291,7 +306,7 @@ export default function AuthedTable({
           margin-top: 2px;
         }
         
-        .up { color: var(--color-success, #0a7d64); }
+        .up { color: var(--color-success, #13735d); }
         .dn { color: var(--color-danger, #dc2626); }
         .t-muted { color: var(--color-text-muted, #6b6964); }
 
@@ -368,7 +383,7 @@ function Caret({ down }: { down?: boolean }) {
   );
 }
 
-const PALETTE = ["#0a7d64", "#0ea5e9", "#3b82f6", "#5b21b6", "#a3262d", "#b45309", "#15803d", "#0f766e", "#7c3aed"];
+const PALETTE = ["#13735d", "#0ea5e9", "#3b82f6", "#5b21b6", "#a3262d", "#b45309", "#15803d", "#0f766e", "#7c3aed"];
 function pickColor(sym: string) {
   let h = 0;
   for (let i = 0; i < sym.length; i++) h = (h * 31 + sym.charCodeAt(i)) >>> 0;

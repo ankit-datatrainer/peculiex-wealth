@@ -145,11 +145,15 @@ function toYahoo(symbol) {
   const raw = String(symbol).trim();
   const upper = raw.toUpperCase();
   if (INDEX_ALIASES[upper]) return INDEX_ALIASES[upper];
-  // Already a special / suffixed symbol
-  if (raw.startsWith("^") || raw.includes(".") || raw.includes("=") || raw.includes("-")) {
+  // Already exchange-qualified (has a .NS/.BO/etc.), an index (^), or a
+  // currency/commodity pair (=) — leave it as-is.
+  if (raw.startsWith("^") || raw.includes(".") || raw.includes("=")) {
     return raw;
   }
-  // Plain Indian ticker — assume NSE
+  // Plain Indian ticker — assume NSE. This includes hyphenated tickers like
+  // SME symbols ("GGBL-SM") and BSE series ("BOMOXY-B1"): a hyphen is NOT an
+  // exchange marker, so they still need a .NS suffix (the getQuote .NS→.BO
+  // fallback then covers the BSE-listed ones).
   return `${upper}.NS`;
 }
 
@@ -327,13 +331,40 @@ async function getQuote(symbol) {
   const cached = cacheGet(key);
   if (cached) return cached;
 
-  const chart = await fetchYahooChart(ys, { interval: "5m", range: "1d" });
-  const q = quoteFromChart(chart);
-  // Drop the heavy timestamp/closes arrays from the cached short-form quote.
-  // Detail page uses dedicated /candles endpoint instead.
-  const slim = { ...q };
-  delete slim.timestamps;
-  delete slim.closes;
+  const build = (chart) => {
+    const q = quoteFromChart(chart);
+    // Drop the heavy timestamp/closes arrays from the cached short-form quote.
+    // Detail page uses dedicated /candles endpoint instead.
+    const slim = { ...q };
+    delete slim.timestamps;
+    delete slim.closes;
+    return slim;
+  };
+
+  const fetchSlim = async (sym) => {
+    try {
+      const s = build(await fetchYahooChart(sym, { interval: "5m", range: "1d" }));
+      return s && s.price != null ? s : null;
+    } catch {
+      // A delisted / wrong-exchange symbol 404s here; treat as "no data" so the
+      // caller can try the other exchange rather than blowing up.
+      return null;
+    }
+  };
+
+  let slim = await fetchSlim(ys);
+
+  // BSE fallback: a plain ticker resolves to NSE (.NS), and hyphenated tickers
+  // (e.g. "BOMOXY-B1") pass through with no exchange at all. Many shares — SME
+  // and certain small-caps — trade ONLY on BSE, so those lookups 404. Retry on
+  // BSE (.BO) before giving up, so those shares still get a price.
+  if (!slim && !/\.BO$/i.test(ys)) {
+    const bo = /\.NS$/i.test(ys) ? ys.replace(/\.NS$/i, ".BO") : `${ys}.BO`;
+    slim = await fetchSlim(bo);
+    if (slim) cacheSet(`quote:${bo}`, slim, 30_000);
+  }
+
+  if (!slim) throw new Error(`No quote data for ${symbol}`);
   cacheSet(key, slim, 30_000); // 30s — feels live, kind to upstream
   return slim;
 }
@@ -480,30 +511,68 @@ async function getQuotes(symbols) {
   });
   const ysSymbols = Array.from(seen.keys());
 
+  // Preserve an explicit exchange suffix (.BO/.NS) the caller asked for, so a
+  // dual-listed BSE symbol like "RTNINDIA.BO" comes back labelled the same way
+  // it was requested. Without this the label is stripped to "RTNINDIA" and the
+  // caller's key — and its WebSocket subscription — no longer matches.
+  const echo = (quotes) =>
+    quotes.map((q) => {
+      if (!q) return q;
+      const ys = q.yahooSymbol || toYahoo(q.symbol);
+      const requested = seen.get(ys);
+      if (
+        requested &&
+        /\.(BO|NS)$/i.test(requested) &&
+        requested.toUpperCase() !== String(q.symbol).toUpperCase()
+      ) {
+        return { ...q, symbol: requested.toUpperCase() };
+      }
+      return q;
+    });
+
+  // Fill any symbols a batch provider couldn't return (e.g. BSE-only shares
+  // that Fyers/Groww don't cover) via the per-symbol Yahoo path, which also
+  // carries the .NS→.BO fallback. Without this, those symbols were silently
+  // dropped whenever a batch provider handled the request.
+  const gapFill = async (map) => {
+    const missing = ysSymbols.filter((ys) => !map.get(ys));
+    if (missing.length) {
+      const settled = await Promise.allSettled(missing.map((ys) => getQuote(ys)));
+      settled.forEach((r, i) => {
+        if (r.status === "fulfilled" && r.value && r.value.price != null) {
+          map.set(missing[i], r.value);
+        }
+      });
+    }
+    return echo(ysSymbols.map((ys) => map.get(ys) || null).filter(Boolean));
+  };
+
   // Attempt Groww first if configured
   if (GROWW_API_KEY) {
     const growwMap = await getQuotesBatchGroww(ysSymbols);
     if (growwMap && growwMap.size > 0) {
       console.log(`[markets] Served ${growwMap.size} quotes from Groww API`);
-      return ysSymbols.map((ys) => growwMap.get(ys) || null).filter(Boolean);
+      return gapFill(growwMap);
     }
   }
 
   // Fallback to Fyers
   const fyersMap = await getQuotesBatchFyers(ysSymbols);
   if (fyersMap) {
-    return ysSymbols.map((ys) => fyersMap.get(ys) || null).filter(Boolean);
+    return gapFill(fyersMap);
   }
 
   // Run in parallel; failures become null entries we filter later.
   const settled = await Promise.allSettled(ysSymbols.map((ys) => getQuote(ys)));
-  return settled
-    .map((r, i) => {
-      if (r.status === "fulfilled") return r.value;
-      console.warn(`[markets] quote failed for ${ysSymbols[i]}:`, r.reason?.message);
-      return null;
-    })
-    .filter(Boolean);
+  return echo(
+    settled
+      .map((r, i) => {
+        if (r.status === "fulfilled") return r.value;
+        console.warn(`[markets] quote failed for ${ysSymbols[i]}:`, r.reason?.message);
+        return null;
+      })
+      .filter(Boolean)
+  );
 }
 
 /* ---------- public: getCandles ---------- */
@@ -579,35 +648,37 @@ async function getCandles(symbol, rangeKey = "1D") {
     console.warn(`[markets] Fyers chart failed for ${ys}:`, e.message);
   }
 
-  // Fallback to Yahoo Finance
+  // Fallback to Yahoo Finance — with a BSE (.BO) retry so BSE-only shares
+  // (whose .NS lookup 404s) still get a chart, mirroring getQuote().
   const yahooPreset = RANGE_PRESETS_YAHOO[rk] || RANGE_PRESETS_YAHOO["1D"];
-  try {
-    const chart = await fetchYahooChart(ys, yahooPreset);
-    const ts = chart.timestamp || [];
-    const quote = chart.indicators?.quote?.[0] || {};
-    const o = quote.open || [];
-    const h = quote.high || [];
-    const l = quote.low || [];
-    const c = quote.close || [];
-    const v = quote.volume || [];
-
-    const candles = [];
-    for (let i = 0; i < ts.length; i++) {
-      if (c[i] != null) {
-        candles.push({
-          t: ts[i] * 1000,
-          o: o[i],
-          h: h[i],
-          l: l[i],
-          c: c[i],
-          v: v[i]
-        });
+  const candlesFrom = async (sym) => {
+    try {
+      const chart = await fetchYahooChart(sym, yahooPreset);
+      const ts = chart.timestamp || [];
+      const quote = chart.indicators?.quote?.[0] || {};
+      const o = quote.open || [], h = quote.high || [], l = quote.low || [];
+      const c = quote.close || [], v = quote.volume || [];
+      const candles = [];
+      for (let i = 0; i < ts.length; i++) {
+        if (c[i] != null) candles.push({ t: ts[i] * 1000, o: o[i], h: h[i], l: l[i], c: c[i], v: v[i] });
       }
+      return candles.length ? candles : null;
+    } catch {
+      return null;
     }
+  };
+  try {
+    let usedYs = ys;
+    let candles = await candlesFrom(ys);
+    if (!candles && !/\.BO$/i.test(ys)) {
+      usedYs = /\.NS$/i.test(ys) ? ys.replace(/\.NS$/i, ".BO") : `${ys}.BO`;
+      candles = await candlesFrom(usedYs);
+    }
+    if (!candles) throw new Error("no candle data on NSE or BSE");
 
     const out = {
-      symbol: displaySymbol(ys),
-      yahooSymbol: ys,
+      symbol: displaySymbol(usedYs),
+      yahooSymbol: usedYs,
       range: rk,
       interval: yahooPreset.interval,
       currency: "INR",
@@ -711,25 +782,31 @@ async function search(query) {
       return type === "EQUITY" || type === "ETF";
     };
 
-    // Same instrument dual-lists on NSE and BSE; prefer the NSE line and show
-    // each display symbol once.
-    const byDisplay = new Map();
+    // Show BOTH listings of a dual-listed instrument so a user can watch the
+    // NSE or the BSE line. The NSE row keeps the plain ticker ("RTNINDIA");
+    // the BSE row carries a ".BO" suffix ("RTNINDIA.BO") so its symbol — and
+    // therefore its quote and live-tick subscription — resolves to BSE and
+    // never collides with the NSE row. `display` is the clean label the UI shows.
+    const bySymbol = new Map();
     for (const x of raw) {
       if (!isIndianListing(x)) continue;
       const disp = displaySymbol(x.symbol);
       const isNse = /\.NS$/i.test(x.symbol);
-      const existing = byDisplay.get(disp);
-      if (existing && !(isNse && !existing._nse)) continue;
-      byDisplay.set(disp, {
-        symbol: disp,
+      const symbol = isNse ? disp : `${disp}.BO`;
+      if (bySymbol.has(symbol)) continue;
+      bySymbol.set(symbol, {
+        symbol,
+        display: disp,
         yahooSymbol: x.symbol,
         name: x.longname || x.shortname,
         exchange: isNse ? "NSE" : "BSE",
-        type: String(x.quoteType || "").toUpperCase() === "ETF" ? "ETF" : "EQUITY",
-        _nse: isNse
+        type: String(x.quoteType || "").toUpperCase() === "ETF" ? "ETF" : "EQUITY"
       });
     }
-    results = Array.from(byDisplay.values()).map(({ _nse, ...rest }) => rest);
+    // Order each instrument's NSE row just before its BSE row for a tidy list.
+    results = Array.from(bySymbol.values()).sort((a, b) =>
+      a.display === b.display ? b.exchange.localeCompare(a.exchange) : 0
+    );
   } catch (e) {
     console.warn("[markets] search failed:", e.message);
   }

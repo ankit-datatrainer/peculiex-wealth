@@ -150,12 +150,12 @@ const baseIcon: CSSProperties = {
 
 const onIcon: CSSProperties = {
   background: "rgba(10, 160, 128, 0.12)",
-  color: "#0a7d64",
+  color: "#13735d",
   borderColor: "rgba(10, 160, 128, 0.45)"
 };
 
 const hoverIcon: CSSProperties = {
-  color: "#0a7d64",
+  color: "#13735d",
   borderColor: "rgba(10, 160, 128, 0.45)",
   background: "rgba(10, 160, 128, 0.08)",
   transform: "translateY(-1px)",
@@ -183,7 +183,7 @@ const basePill: CSSProperties = {
 
 const onPill: CSSProperties = {
   background: "rgba(10, 160, 128, 0.12)",
-  color: "#0a7d64",
+  color: "#13735d",
   borderColor: "rgba(10, 160, 128, 0.45)"
 };
 

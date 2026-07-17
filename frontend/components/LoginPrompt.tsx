@@ -176,7 +176,7 @@ export default function LoginPrompt({
           margin: 0 auto 1rem;
           border-radius: 999px;
           background: rgba(10, 160, 128, 0.1);
-          color: var(--color-primary, #0a7d64);
+          color: var(--color-primary, #13735d);
           display: grid;
           place-items: center;
         }

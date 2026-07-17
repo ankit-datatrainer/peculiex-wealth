@@ -11,6 +11,7 @@ import {
 import { apiFetch, apiPostJSON, fetcher } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { fmtINR2, randomSpark, sparkPath, formatCompact, formatIndianCap } from "@/lib/util";
+import { wsBaseUrl } from "@/lib/markets";
 import { makeUnlistedSymbol } from "@/components/WatchlistButton";
 import {
   CURATED_BASKETS,
@@ -152,9 +153,8 @@ export default function AuthedView() {
         })
         .catch(console.error);
         
-      const apiBaseStr = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:4000/api";
-      const wsUrl = apiBaseStr.replace(/^http/, "ws").replace(/\/api\/?$/, "");
-      
+      const wsUrl = wsBaseUrl();
+
       try {
         ws = new WebSocket(wsUrl);
         ws.onopen = () => {
@@ -713,7 +713,7 @@ export default function AuthedView() {
           font-size: 1rem;
           font-weight: 600;
         }
-        .stat-chg-large.up { color: var(--color-success, #0a7d64); }
+        .stat-chg-large.up { color: var(--color-success, #13735d); }
         .stat-chg-large.dn { color: var(--color-danger, #dc2626); }
         
         .stat-divider {
@@ -775,7 +775,7 @@ export default function AuthedView() {
           justify-content: space-between;
           align-items: center;
           gap: 0.6rem;
-          font-family: var(--font-body, 'Barlow', sans-serif);
+          font-family: var(--font-body, 'Hanken Grotesk', sans-serif);
         }
         .a-error button {
           background: transparent;
@@ -795,15 +795,15 @@ export default function AuthedView() {
           border-radius: 20px;
           font-size: 0.95rem;
           box-shadow: var(--shadow-sm);
-          font-family: var(--font-body, 'Barlow', sans-serif);
+          font-family: var(--font-body, 'Hanken Grotesk', sans-serif);
         }
         .a-link {
-          color: var(--color-primary, #0a7d64);
+          color: var(--color-primary, #13735d);
           background: transparent;
           border: 0;
           padding: 0;
           font: inherit;
-          font-family: var(--font-body, 'Barlow', sans-serif);
+          font-family: var(--font-body, 'Hanken Grotesk', sans-serif);
           font-weight: 600;
           cursor: pointer;
           text-decoration: none;
@@ -811,8 +811,8 @@ export default function AuthedView() {
           transition: all 0.2s;
         }
         .a-link:hover {
-          color: #0a7d64;
-          border-bottom-color: #0a7d64;
+          color: #13735d;
+          border-bottom-color: #13735d;
         }
         .a-foot {
           margin-top: 2.5rem;
@@ -823,7 +823,7 @@ export default function AuthedView() {
           color: var(--color-text-muted, #333333);
           padding-top: 1.5rem;
           border-top: 1px solid var(--color-divider, #e0ddd8);
-          font-family: var(--font-body, 'Barlow', sans-serif);
+          font-family: var(--font-body, 'Hanken Grotesk', sans-serif);
         }
         .a-foot-actions {
           display: flex;
@@ -834,7 +834,7 @@ export default function AuthedView() {
           background: transparent;
           border: 0;
           font: inherit;
-          font-family: var(--font-body, 'Barlow', sans-serif);
+          font-family: var(--font-body, 'Hanken Grotesk', sans-serif);
           padding: 0;
           color: var(--color-danger, #dc2626);
           font-weight: 500;
@@ -890,7 +890,7 @@ function Stat({
           letterSpacing: "0.08em",
           textTransform: "uppercase",
           fontWeight: 600,
-          fontFamily: "var(--font-display, 'Barlow', sans-serif)"
+          fontFamily: "var(--font-display, 'Hanken Grotesk', sans-serif)"
         }}
       >
         {label}
@@ -904,7 +904,7 @@ function Stat({
           letterSpacing: "-0.01em",
           lineHeight: 1.1,
           fontVariantNumeric: "tabular-nums",
-          fontFamily: "var(--font-display, 'Barlow', sans-serif)"
+          fontFamily: "var(--font-display, 'Hanken Grotesk', sans-serif)"
         }}
       >
         {value}
@@ -975,7 +975,7 @@ function EmptyState() {
           border: "1px solid var(--color-border, rgba(10, 160, 128, 0.1))",
           display: "grid",
           placeItems: "center",
-          color: "var(--color-primary, #0a7d64)",
+          color: "var(--color-primary, #13735d)",
           boxShadow: "0 4px 12px rgba(10, 160, 128, 0.03)"
         }}
       >
@@ -985,7 +985,7 @@ function EmptyState() {
       </div>
       <h3
         style={{
-          fontFamily: "var(--font-display, 'Barlow', sans-serif)",
+          fontFamily: "var(--font-display, 'Hanken Grotesk', sans-serif)",
           fontSize: "1.8rem",
           fontWeight: 600,
           color: "var(--color-text, #1e1c18)",
@@ -1011,7 +1011,7 @@ function EmptyState() {
           href="/unlisted"
           style={{
             background: "transparent",
-            color: "var(--color-primary, #0a7d64)",
+            color: "var(--color-primary, #13735d)",
             border: "1px solid var(--color-border, rgba(10, 160, 128, 0.2))",
             borderRadius: 12,
             padding: "0.8rem 1.6rem",
@@ -1021,11 +1021,11 @@ function EmptyState() {
             display: "inline-block",
             cursor: "pointer",
             transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-            fontFamily: "var(--font-display, 'Barlow', sans-serif)"
+            fontFamily: "var(--font-display, 'Hanken Grotesk', sans-serif)"
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = "var(--color-primary-highlight, rgba(10, 160, 128, 0.04))";
-            e.currentTarget.style.borderColor = "var(--color-primary, #0a7d64)";
+            e.currentTarget.style.borderColor = "var(--color-primary, #13735d)";
             e.currentTarget.style.transform = "translateY(-1px)";
           }}
           onMouseLeave={(e) => {

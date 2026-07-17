@@ -31,7 +31,7 @@ export default function Watchlist() {
             height: 36,
             borderRadius: "50%",
             border: "3px solid rgba(10, 160, 128,0.15)",
-            borderTopColor: "#0a7d64",
+            borderTopColor: "#13735d",
             animation: "wlspin 0.9s linear infinite"
           }}
         />

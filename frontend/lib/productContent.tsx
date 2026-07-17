@@ -17,13 +17,11 @@ export const PRODUCTS: Record<string, ProductContent> = {
     label: "Mutual Funds",
     title: <>Build wealth, one SIP at a <em>time.</em></>,
     subtitle:
-      "Invest across 40+ AMCs and 1,500+ schemes — equity, debt, hybrid, ELSS — all on a single platform with goal-based planning and SEBI-registered advisor support.",
+      "Invest across 40+ AMCs and 1,500+ schemes — equity, debt, hybrid, ELSS — all on a single platform with goal-based planning.",
     highlights: [
-      { title: "Direct plans only", body: "Zero commission. We charge a flat advisory fee, never a cut from the AMC. You keep the full alpha." },
       { title: "SIP & lump sum", body: "Start a SIP from ₹500 a month or invest a lump sum from ₹500. Set up auto-debits in seconds via UPI or NACH." },
       { title: "Goal-based portfolios", body: "Tell us your goal — retirement, a home, your child's education — and our advisors map the right scheme mix and review it quarterly." },
       { title: "ELSS for tax saving", body: "Section 80C deductions up to ₹1.5L, with the shortest 3-year lock-in among tax-saving instruments." },
-      { title: "Direct AMC integration", body: "Orders settle directly with the AMC — your folios are in your name from day one. We never hold custody." },
       { title: "Tax & exit reports", body: "Capital gains statements, XIRR, and exit-load calculators built-in — ready for filing or rebalancing." }
     ],
     howItWorks: [
@@ -35,11 +33,10 @@ export const PRODUCTS: Record<string, ProductContent> = {
     metrics: [
       { value: "1,500+", label: "Schemes available" },
       { value: "40+",    label: "Asset management cos." },
-      { value: "₹500", label: "Minimum SIP" },
-      { value: "0%",     label: "Commission" }
+      { value: "₹500", label: "Minimum SIP" }
     ],
     closing:
-      "Whether you're starting your first SIP or rebalancing a ₹5 Cr portfolio, our advisors map your fund mix to your goals — not to ours.",
+      "Whether you're starting your first SIP or rebalancing a ₹50 Cr portfolio, our advisors map your fund mix to your goals — not to ours.",
     cta: { label: "Start a SIP →", href: "/calculator" },
     related: ["pms", "aif", "bonds", "insurance"]
   },
@@ -239,7 +236,7 @@ export const PRODUCTS: Record<string, ProductContent> = {
       "Pledge your mutual fund units and get an instant overdraft at interest rates far below a personal loan — while your investments stay invested and keep compounding.",
     highlights: [
       { title: "Stay invested", body: "Your units are only pledged, never sold. You keep the upside, dividends, and long-term compounding while borrowing against them." },
-      { title: "Rates from ~9% p.a.", body: "Interest is charged only on the amount you use, not the full sanctioned limit — dramatically cheaper than personal loans or credit cards." },
+      { title: "Rates from ~X% p.a.", body: "Interest is charged only on the amount you use, not the full sanctioned limit — dramatically cheaper than personal loans or credit cards." },
       { title: "Instant digital pledge", body: "Pledge equity or debt funds online via CAMS/KFintech in minutes. No paperwork, no branch visit, no income proof for most limits." },
       { title: "Overdraft, not EMI", body: "Draw and repay any amount, any time. Interest accrues only on the outstanding balance — ideal for short-term cash-flow gaps." },
       { title: "Loan-to-value up to 50–80%", body: "Borrow up to 80% against debt funds and up to 50% against equity funds, subject to lender norms and scheme eligibility." },
@@ -252,10 +249,10 @@ export const PRODUCTS: Record<string, ProductContent> = {
       { step: "04", title: "Repay flexibly", body: "Pay interest only on what you use. Clear the balance any time and release the pledge on your units." }
     ],
     metrics: [
-      { value: "~9%",   label: "Interest from (p.a.)" },
-      { value: "80%",   label: "Max loan-to-value" },
-      { value: "₹1 Cr+", label: "Sanction limits" },
-      { value: "24 hrs", label: "Typical disbursal" }
+      { value: "~9%*",   label: "Interest from (p.a.)" },
+      { value: "80%*",   label: "Max loan-to-value" },
+      { value: "₹1 Cr+*", label: "Sanction limits" },
+      { value: "24 hrs*", label: "Typical disbursal" }
     ],
     closing:
       "Selling good funds to raise cash is a decision you often regret at the next market high. A loan against mutual funds keeps you invested and liquid at the same time.",

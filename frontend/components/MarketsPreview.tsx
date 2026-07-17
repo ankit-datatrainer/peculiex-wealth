@@ -65,7 +65,7 @@ export default function MarketsPreview() {
           </Link>
         </div>
 
-        <div className="stock-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
+        <div className="stock-grid reveal-stagger" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}>
           {stocks.slice(0, 4).map((s, i) => {
             const up = s.chg >= 0;
             const vals = sparks[s.sym] || [100, 100, 100, 100, 100]; // fallback spark
@@ -85,7 +85,7 @@ export default function MarketsPreview() {
                           if (fb) fb.style.display = "grid";
                         }}
                       />
-                      <span className="unl-logo-fallback" style={{ display: "none", width: 32, height: 32, borderRadius: 999, background: "#0a7d64", color: "#fff", placeItems: "center", fontSize: "0.85rem", fontWeight: 600, letterSpacing: 1 }}>
+                      <span className="unl-logo-fallback" style={{ display: "none", width: 32, height: 32, borderRadius: 999, background: "#13735d", color: "#fff", placeItems: "center", fontSize: "0.85rem", fontWeight: 600, letterSpacing: 1 }}>
                         {s.sym.slice(0, 2)}
                       </span>
                       <div>

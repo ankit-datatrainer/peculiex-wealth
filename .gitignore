@@ -29,3 +29,4 @@ Thumbs.db
 # Runtime-uploaded files (factsheet PDFs, unlisted-share logos) — generated
 # on the server at runtime via the admin panel, not part of the source.
 backend/uploads/
+frontend/public/videos/_source/

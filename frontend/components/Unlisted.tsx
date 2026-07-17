@@ -63,7 +63,7 @@ export default function Unlisted() {
       <section id="unlisted" className="unlisted-v2">
         <div className="container">
           <div className="sec-head reveal">
-            <div className="label">Unlisted Shares</div>
+
             <h2 className="stitle">
               Private market <em>opportunities</em>
             </h2>

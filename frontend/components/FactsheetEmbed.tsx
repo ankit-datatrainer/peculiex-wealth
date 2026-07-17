@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 import useSWR from "swr";
 import { fetcher } from "@/lib/api";
 import "./factsheet-embed.css";
 
-type Payload = { exists: boolean; html?: string; updatedAt?: string };
+type Payload = { exists: boolean; html?: string; updatedAt?: string; servedVariant?: string };
 
 /**
  * Renders a super-admin-supplied HTML factsheet.
@@ -27,6 +28,15 @@ type Payload = { exists: boolean; html?: string; updatedAt?: string };
  */
 
 const HEIGHT_REPORTER = `
+<style>
+  html, body {
+    overflow: hidden !important;
+    scrollbar-width: none !important;
+  }
+  ::-webkit-scrollbar {
+    display: none !important;
+  }
+</style>
 <script>
 (function(){
   function send(){
@@ -52,11 +62,15 @@ const HEIGHT_REPORTER = `
 export default function FactsheetEmbed({ slug, label }: { slug: string; label: string }) {
   const frameRef = useRef<HTMLIFrameElement | null>(null);
   const [height, setHeight] = useState(600);
+  const { resolvedTheme } = useTheme();
+  // Until the theme resolves on the client, ask for light (the site default) so
+  // SSR and first paint agree; SWR re-fetches the dark variant once known.
+  const theme = resolvedTheme === "dark" ? "dark" : "light";
 
   const { data, error, isLoading } = useSWR<Payload>(
-    `/api/factsheet-html/${slug}`,
+    `/api/factsheet-html/${slug}?theme=${theme}`,
     fetcher,
-    { revalidateOnFocus: false, shouldRetryOnError: false }
+    { revalidateOnFocus: false, shouldRetryOnError: false, keepPreviousData: true }
   );
 
   useEffect(() => {
@@ -95,6 +109,7 @@ export default function FactsheetEmbed({ slug, label }: { slug: string; label: s
           style={{ height }}
           srcDoc={srcDoc}
           loading="lazy"
+          scrolling="no"
           title={`${label} factsheet`}
           // No allow-same-origin: keeps the frame on an opaque origin so it
           // cannot touch the parent page or its storage.

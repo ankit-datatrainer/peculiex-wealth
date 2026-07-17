@@ -54,7 +54,7 @@ export default function GlobalUX() {
       },
       { threshold: 0.14, rootMargin: "0px 0px -60px 0px" }
     );
-    $$(".reveal").forEach((el) => io.observe(el));
+    $$(".reveal, .reveal-stagger, .reveal-children").forEach((el) => io.observe(el));
     (window as any).__finvoqReveal = io;
     cleanups.push(() => io.disconnect());
 

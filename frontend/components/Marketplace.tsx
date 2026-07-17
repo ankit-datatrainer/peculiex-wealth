@@ -52,7 +52,7 @@ export default function Marketplace() {
           </p>
         </div>
 
-        <div className="product-grid">
+        <div className="product-grid reveal-stagger">
           {items.map((p) => {
             const slug = p.slug || TITLE_TO_SLUG[p.title];
             const card = (
