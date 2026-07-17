@@ -279,24 +279,39 @@ img, svg { display: block; max-width: 100%; }
 
 /* â”€â”€â”€ Nav â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .main-nav {
-  position: fixed; top: 37px; left: 0; right: 0; z-index: 90;
-  transition: all .4s var(--ease);
+  position: fixed; top: 20px; left: 0; right: 0; z-index: 90;
+  transition: top .4s var(--ease);
 }
-.main-nav.scrolled {
-  background: rgba(247, 246, 242, .85);
-  backdrop-filter: blur(22px) saturate(140%);
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
-  border-bottom: 1px solid var(--color-divider);
-  top: 37px;
-}
-.dark .main-nav.scrolled {
-  background: rgba(11, 18, 27, 0.85);
-}
+/* The bar itself is transparent — the nav-inner is a floating white pill. */
+.main-nav.scrolled { top: 12px; }
+/* Floating pure-white rounded pill (SecuredFi-style). Always white in both
+   themes, so nav content is forced dark below to stay legible. */
 .nav-inner {
-  max-width: 1320px; margin: 0 auto;
-  padding: 14px 32px;
+  max-width: 1280px; margin: 0 24px;
+  padding: 10px 12px 10px 22px;
   display: flex; align-items: center; justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 999px;
+  box-shadow: 0 10px 34px -8px rgba(4, 23, 19, 0.22), 0 2px 8px rgba(4, 23, 19, 0.06);
 }
+@media (min-width: 1328px) { .nav-inner { margin: 0 auto; } }
+.main-nav.scrolled .nav-inner {
+  box-shadow: 0 14px 40px -10px rgba(4, 23, 19, 0.28), 0 2px 8px rgba(4, 23, 19, 0.08);
+}
+/* Force nav content dark — the pill is white in light AND dark theme. */
+.main-nav .nav-links a,
+.main-nav .nav-link,
+.main-nav .nav-link-parent,
+.main-nav .logo-text,
+.dark .main-nav .nav-links a,
+.dark .main-nav .nav-link,
+.dark .main-nav .logo-text { color: #12313a; }
+.main-nav .nav-caret-btn,
+.dark .main-nav .nav-caret-btn { color: #5b6f6d; }
+.main-nav .nav-links a:hover,
+.main-nav .nav-link:hover,
+.main-nav .nav-links a.active { color: var(--color-primary-ink); }
 .logo { display: flex; align-items: center; gap: 10px; transition: transform .3s var(--ease); }
 .logo-mark {
   width: 34px; height: 34px;
@@ -597,97 +612,121 @@ section { padding: 110px 0; position: relative; }
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  background: #05070c;
+  align-items: center;
+  /* Solid brand ground (deep petrol-green) so the headline is always legible;
+     the sphere rises into it from the bottom via the mask below. */
+  background:
+    radial-gradient(130% 80% at 50% 120%, #0e4a3d 0%, transparent 55%),
+    linear-gradient(180deg, #062b24 0%, #05201b 48%, #041713 100%);
+}
+/* Particle sphere — occupies the lower portion, rising from the bottom edge.
+   Its top fades to transparent so it melts into the green ground under the
+   headline (SecuredFi's "globe emerging from below"). */
+.hero-video-wrap {
+  position: absolute;
+  left: 50%; bottom: -8%;
+  width: min(1100px, 128%);
+  aspect-ratio: 16 / 9;
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(70% 70% at 50% 60%, #000 40%, transparent 72%);
+          mask-image: radial-gradient(70% 70% at 50% 60%, #000 40%, transparent 72%);
 }
 .hero-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   object-fit: cover;
-  z-index: 0;
+  opacity: 0.95;
 }
-/* Readability veil: darker at the edges, clear through the middle. */
-.hero-video-veil {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background:
-    radial-gradient(120% 90% at 50% 45%, transparent 0%, transparent 45%, rgba(5, 7, 12, 0.55) 100%),
-    linear-gradient(180deg, rgba(5, 7, 12, 0.6) 0%, transparent 22%, transparent 62%, rgba(5, 7, 12, 0.85) 100%);
+/* Soft glow where the sphere meets the ground */
+.hero-sticky::after {
+  content: "";
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(60% 40% at 50% 88%, rgba(107, 251, 213, 0.10), transparent 70%);
 }
-/* Beats: each is a full-screen centered overlay; only one is visible at a
-   time, cross-fading as the pinned video scrubs behind. */
-.hero-beats {
-  position: absolute;
-  inset: 0;
+
+/* Readable content column — top-aligned on the solid ground */
+.hero-lead {
+  position: relative;
   z-index: 2;
-}
-.hero-beat {
-  position: absolute;
-  inset: 0;
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: clamp(120px, 15vh, 180px) 24px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
   gap: 22px;
-  padding: 120px 24px 80px;
   color: #fff;
   will-change: opacity, transform;
-  transition: opacity 0.12s linear;
 }
-.hero-beat > * { max-width: 900px; }
-.hero-beat .hero-chips,
-.hero-beat .hero-ctas,
-.hero-beat .hero-stats { justify-content: center; }
-.hero-sticky .hero-pill {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #eafff8;
-  backdrop-filter: blur(8px);
-}
-.hero-sticky .hero-title {
-  color: #fff;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 8px 40px rgba(0, 0, 0, 0.6);
-}
-.hero-sticky .hero-title .seg-em,
-.hero-sticky .hero-title em { color: #6bfbd5; }
-.hero-sticky .hero-sub {
-  color: rgba(255, 255, 255, 0.86);
-  margin-left: auto; margin-right: auto;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
-}
-.hero-sticky .hchip {
+.hero-lead .hero-pill {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.9);
+  color: #d6fff2;
+  backdrop-filter: blur(8px);
+}
+.hero-lead .hero-title {
+  color: #fff;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+}
+.hero-lead .hero-title .seg-em,
+.hero-lead .hero-title em { color: #6bfbd5; font-style: italic; }
+.hero-lead .hero-sub {
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 620px;
+}
+.hero-lead .hero-ctas,
+.hero-lead .hero-chips,
+.hero-lead .hero-stats { justify-content: center; }
+.hero-lead .hchip {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(6px);
 }
-.hero-sticky .hero-stats .stat-num { color: #fff; }
-.hero-sticky .hero-stats .stat-label { color: rgba(255, 255, 255, 0.6); }
-.hero-sticky .btn-ghost {
+.hero-lead .hero-stats { margin-top: 6px; }
+.hero-lead .hero-stats .stat-num { color: #fff; }
+.hero-lead .hero-stats .stat-label { color: rgba(255, 255, 255, 0.55); }
+/* Ghost button variant that reads on the dark ground without touching the
+   site-wide .btn-ghost (used elsewhere on light surfaces). */
+.hero-lead .btn-hero-ghost {
   color: #fff;
-  border-color: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: transparent;
 }
-.hero-sticky .btn-ghost:hover { background: rgba(255, 255, 255, 0.12); }
+.hero-lead .btn-hero-ghost:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+/* Mount fade-in sequence for the readable content (independent of scroll). */
+.hero-fade-1, .hero-fade-2, .hero-fade-3, .hero-fade-4, .hero-fade-5 {
+  opacity: 0; transform: translateY(18px);
+  animation: heroFadeUp 0.9s var(--ease-out) forwards;
+}
+.hero-fade-1 { animation-delay: 0.15s; }
+.hero-fade-2 { animation-delay: 0.55s; }
+.hero-fade-3 { animation-delay: 0.7s; }
+.hero-fade-4 { animation-delay: 0.85s; }
+.hero-fade-5 { animation-delay: 1s; }
+@keyframes heroFadeUp { to { opacity: 1; transform: none; } }
 
 /* Scroll cue */
 .hero-scroll-cue {
   position: absolute;
-  bottom: 30px; left: 50%;
+  bottom: 26px; left: 50%;
   transform: translateX(-50%);
   z-index: 3;
   display: flex; flex-direction: column; align-items: center; gap: 10px;
   font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.6);
   transition: opacity 0.3s ease;
 }
 .hero-scroll-cue-line {
-  width: 1px; height: 40px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), transparent);
+  width: 1px; height: 38px;
+  background: linear-gradient(180deg, rgba(107, 251, 213, 0.8), transparent);
   animation: heroCueDrop 1.8s ease-in-out infinite;
 }
 @keyframes heroCueDrop {
@@ -696,10 +735,14 @@ section { padding: 110px 0; position: relative; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hero-scroll-cue-line { animation: none; }
+  .hero-fade-1, .hero-fade-2, .hero-fade-3, .hero-fade-4, .hero-fade-5 {
+    opacity: 1; transform: none; animation: none;
+  }
 }
 @media (max-width: 767px) {
   .hero-track { height: 240vh; }
-  .hero-sticky .hero-content { max-width: 100%; padding: 0 4px; }
+  .hero-video-wrap { width: 165%; bottom: 0; }
+  .hero-lead { padding-top: 108px; gap: 18px; }
 }
 
 .hero {

@@ -101,144 +101,122 @@ export default function Hero() {
     ? "/videos/hero-poster-mobile.jpg"
     : "/videos/hero-poster.jpg";
 
-  /* ---- Progress-driven choreography (the director's cue sheet) ----
-     SecuredFi-style: the particle video stays pinned while content BEATS
-     cross-fade over it, one at a time, as the user scrolls. Each beat has a
-     scroll window; it slides up + fades in, holds, then fades out as the next
-     beat arrives. Only the final beat holds to the end before the page begins. */
-  const beat = (start: number, end: number, opts?: { holdEnd?: boolean }) => {
-    const fade = 0.09;
-    if (progress < start || progress > end) return { opacity: 0, y: progress < start ? 26 : -26 };
-    const inP = clamp((progress - start) / fade);
-    const outP = opts?.holdEnd ? 1 : clamp(1 - (progress - (end - fade)) / fade);
-    const opacity = Math.min(inP, outP);
-    // Slide from +26px (below) to 0 on entry, drift to -26px on exit.
-    const y = (1 - inP) * 26 - (1 - outP) * 26;
-    return { opacity, y };
-  };
-
-  const beatA = beat(0.0, 0.4); // pill + headline
-  const beatB = beat(0.36, 0.72); // sub + asset chips
-  const beatC = beat(0.68, 1.0, { holdEnd: true }); // CTAs + stats
-  const cueOpacity = clamp(1 - progress / 0.12);
+  /* ---- Progress-driven choreography ----
+     SecuredFi composition: a solid brand ground holds the readable headline
+     at the top; the particle sphere rises from the bottom and scrubs on
+     scroll. The content gently parallaxes up and fades as the page begins,
+     so it never fights the sphere for legibility. */
+  const contentOpacity = progress < 0.5 ? 1 : clamp(1 - (progress - 0.5) / 0.3);
+  const contentLift = -progress * 70;
+  const cueOpacity = clamp(1 - progress / 0.1);
 
   return (
     <>
       <a id="top" />
 
-      {/* Tall track — the scrollbar scrubs the pinned video; beats fly over it */}
+      {/* Tall track — the scrollbar scrubs the sphere rising from the bottom */}
       <div className="hero-track" ref={trackRef}>
         <section className="hero-sticky" id="hero">
-          <video
-            ref={videoRef}
-            key={src}
-            className="hero-video"
-            src={src}
-            poster={poster}
-            muted
-            playsInline
-            preload="auto"
-          />
-          {/* Readability veil — dark at top & bottom, transparent middle */}
-          <div className="hero-video-veil" aria-hidden="true" />
+          {/* Particle sphere — anchored to the bottom, masked into the ground */}
+          <div className="hero-video-wrap" aria-hidden="true">
+            <video
+              ref={videoRef}
+              key={src}
+              className="hero-video"
+              src={src}
+              poster={poster}
+              muted
+              playsInline
+              preload="auto"
+            />
+          </div>
 
-          <div className="hero-beats">
-            {/* Beat A — brand headline */}
-            <div
-              className="hero-beat"
-              style={{ opacity: beatA.opacity, transform: `translateY(${beatA.y}px)`, pointerEvents: beatA.opacity > 0.5 ? "auto" : "none" }}
-            >
-              <div className="hero-pill">
-                <span className="pill-dot"></span>
-                SEBI Registered · Trusted by 4,000+ investors
-              </div>
-              <h1 className="hero-title" id="heroTitle" ref={titleRef}>
-                <span className="seg">Invest</span>{" "}
-                <span className="seg">with</span>{" "}
-                <em className="seg seg-em">clarity</em>{" "}
-                <span className="seg">across</span>{" "}
-                <span className="seg">every</span>{" "}
-                <span className="seg">asset</span>{" "}
-                <span className="seg">class.</span>
-              </h1>
+          {/* Readable content column, top-aligned on the solid ground */}
+          <div
+            className="hero-lead"
+            style={{ opacity: contentOpacity, transform: `translateY(${contentLift}px)` }}
+          >
+            <div className="hero-pill hero-fade-1">
+              <span className="pill-dot"></span>
+              SEBI Registered · Trusted by 4,000+ investors
             </div>
 
-            {/* Beat B — what we offer */}
-            <div
-              className="hero-beat"
-              style={{ opacity: beatB.opacity, transform: `translateY(${beatB.y}px)`, pointerEvents: beatB.opacity > 0.5 ? "auto" : "none" }}
-            >
-              <p className="hero-sub">
-                Listed shares, unlisted opportunities, mutual funds, PMS, AIF,
-                bonds, and insurance. Curated by experts and executed in seconds.
-              </p>
-              <div className="hero-chips">
-                <span className="hchip">Equities</span>
-                <span className="hchip">Mutual Funds</span>
-                <span className="hchip">PMS</span>
-                <span className="hchip">AIF</span>
-                <span className="hchip">FDs</span>
-                <span className="hchip">Bonds</span>
-                <span className="hchip">Insurance</span>
-                <span className="hchip">Unlisted</span>
-              </div>
+            <h1 className="hero-title" id="heroTitle" ref={titleRef}>
+              <span className="seg">Invest</span>{" "}
+              <span className="seg">with</span>{" "}
+              <em className="seg seg-em">clarity</em>{" "}
+              <span className="seg">across</span>{" "}
+              <span className="seg">every</span>{" "}
+              <span className="seg">asset</span>{" "}
+              <span className="seg">class.</span>
+            </h1>
+
+            <p className="hero-sub hero-fade-2">
+              Listed shares, unlisted opportunities, mutual funds, PMS, AIF,
+              bonds, and insurance. Curated by experts and executed in seconds.
+            </p>
+
+            <div className="hero-ctas hero-fade-3">
+              <a
+                href="/get-started"
+                className="btn btn-primary btn-lg btn-arrow"
+                data-magnetic
+              >
+                <span>Start Investing</span>
+                <span className="btn-arrow-track" aria-hidden="true">
+                  <svg viewBox="0 0 14 14" fill="none">
+                    <path d="M1 7h12m0 0L8 2m5 5l-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <svg viewBox="0 0 14 14" fill="none">
+                    <path d="M1 7h12m0 0L8 2m5 5l-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+              </a>
+              <a href="/markets" className="btn btn-hero-ghost btn-lg" data-magnetic>
+                Explore Markets <span className="arrow">→</span>
+              </a>
             </div>
 
-            {/* Beat C — CTAs + proof */}
-            <div
-              className="hero-beat"
-              style={{ opacity: beatC.opacity, transform: `translateY(${beatC.y}px)`, pointerEvents: beatC.opacity > 0.5 ? "auto" : "none" }}
-            >
-              <div className="hero-ctas">
-                <a
-                  href="/get-started"
-                  className="btn btn-primary btn-lg btn-arrow"
-                  data-magnetic
-                >
-                  <span>Start Investing</span>
-                  <span className="btn-arrow-track" aria-hidden="true">
-                    <svg viewBox="0 0 14 14" fill="none">
-                      <path d="M1 7h12m0 0L8 2m5 5l-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    <svg viewBox="0 0 14 14" fill="none">
-                      <path d="M1 7h12m0 0L8 2m5 5l-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
-                </a>
-                <a href="/markets" className="btn btn-ghost btn-lg" data-magnetic>
-                  Explore Markets <span className="arrow">→</span>
-                </a>
+            <div className="hero-chips hero-fade-4">
+              <span className="hchip">Equities</span>
+              <span className="hchip">Mutual Funds</span>
+              <span className="hchip">PMS</span>
+              <span className="hchip">AIF</span>
+              <span className="hchip">FDs</span>
+              <span className="hchip">Bonds</span>
+              <span className="hchip">Insurance</span>
+              <span className="hchip">Unlisted</span>
+            </div>
+
+            <div className="hero-stats hero-fade-5">
+              <div className="stat">
+                <div className="stat-num">
+                  ₹<span className="counter" data-target="182" data-suffix="">0</span>Cr
+                </div>
+                <div className="stat-label">Assets Managed</div>
               </div>
-              <div className="hero-stats">
-                <div className="stat">
-                  <div className="stat-num">
-                    ₹<span className="counter" data-target="182" data-suffix="">0</span>Cr
-                  </div>
-                  <div className="stat-label">Assets Managed</div>
+              <div className="stat">
+                <div className="stat-num">
+                  <span className="counter" data-target="1200" data-suffix="+">0</span>
                 </div>
-                <div className="stat">
-                  <div className="stat-num">
-                    <span className="counter" data-target="1200" data-suffix="+">0</span>
-                  </div>
-                  <div className="stat-label">Active Investors</div>
+                <div className="stat-label">Active Investors</div>
+              </div>
+              <div className="stat">
+                <div className="stat-num">
+                  <span className="counter" data-target="10" data-suffix="+">0</span>
                 </div>
-                <div className="stat">
-                  <div className="stat-num">
-                    <span className="counter" data-target="10" data-suffix="+">0</span>
-                  </div>
-                  <div className="stat-label">Product Categories</div>
+                <div className="stat-label">Product Categories</div>
+              </div>
+              <div className="stat">
+                <div className="stat-num">
+                  <span className="counter" data-target="10" data-suffix=" yrs +">0</span>
                 </div>
-                <div className="stat">
-                  <div className="stat-num">
-                    <span className="counter" data-target="10" data-suffix=" yrs +">0</span>
-                  </div>
-                  <div className="stat-label">Industry Experience</div>
-                </div>
+                <div className="stat-label">Industry Experience</div>
               </div>
             </div>
           </div>
 
-          {/* Scroll cue — fades out as soon as the user starts */}
+          {/* Scroll cue */}
           <div
             className="hero-scroll-cue"
             style={{ opacity: cueOpacity }}
