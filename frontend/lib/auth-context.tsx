@@ -87,7 +87,7 @@ const isBrowser = () => typeof window !== "undefined";
 async function migrateLocalWatchlist(): Promise<void> {
   if (!isBrowser()) return;
   try {
-    const raw = window.localStorage.getItem("peculiex-watchlist");
+    const raw = window.localStorage.getItem("finvoq-watchlist");
     if (!raw) return;
     const list = JSON.parse(raw);
     if (!Array.isArray(list) || !list.length) return;
@@ -96,7 +96,7 @@ async function migrateLocalWatchlist(): Promise<void> {
       .map((s: string) => ({ symbol: s.toUpperCase().trim() }));
     if (!items.length) return;
     await apiPostJSON("/api/watchlist/batch", { items });
-    window.localStorage.removeItem("peculiex-watchlist");
+    window.localStorage.removeItem("finvoq-watchlist");
   } catch (e) {
     // eslint-disable-next-line no-console
     console.warn("[auth] watchlist migration skipped:", e);

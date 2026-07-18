@@ -1,19 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import { fetcher } from "@/lib/api";
+import Link from "next/link";
 
 type Item = { q: string; a: string };
 
 const FALLBACK: Item[] = [
-  { q: "Is my money safe with Finvoq?", a: "Yes. Your demat account is held with SEBI-registered partners and funds move via RBI-regulated banking rails. Finvoq never holds custody of your assets — we are an advisor and execution layer only, and every transaction settles directly into your name." },
-  { q: "What's the minimum amount to start investing?", a: "You can start a SIP from ₹1,000 per month or a lump sum from ₹500. PMS and AIF have higher statutory minimums (₹50L and ₹1Cr respectively) as mandated by SEBI. Unlisted shares vary by lot size — typically ₹25,000 to ₹1L per opportunity." },
-  { q: "How is Finvoq different from a discount broker?", a: "Discount brokers give you a tool. Finvoq gives you an advisor, a curated product list across 8 asset classes, and a single dashboard that ties it all together. You get curation, accountability, and a relationship — not just access to an order screen." },
-  { q: "Can I withdraw or sell my investments anytime?", a: "For listed equity, mutual funds, and bonds — yes, subject to standard settlement cycles (T+1 or T+2). Unlisted shares, PMS, and AIF have lock-in periods that vary by product. Each lock-in is clearly disclosed before you invest, never buried in fine print." },
-  { q: "What does Finvoq charge?", a: "A flat advisory fee starting at 0.25% per year on assets advised — billed quarterly, transparent to the rupee. We earn nothing from product manufacturers, distributors, or anyone else. Your fee is our only revenue, so our incentives stay aligned with yours." },
-  { q: "Who is my advisor and how do I reach them?", a: "Every investor is paired with a SEBI-registered advisor based on goals, time horizon, and portfolio size. You can reach them via WhatsApp, email, or scheduled video call — typical response time is under 30 minutes during market hours." },
-  { q: "How do I track my portfolio performance?", a: "You can track your portfolio performance through our unified dashboard. It provides real-time updates across all asset classes, detailed analytics, and personalized insights." },
-  { q: "What are the tax implications of my investments?", a: "Taxation varies by asset class. We provide a comprehensive annual tax statement and capital gains report to make filing easy. However, we recommend consulting a tax advisor for personalized advice." },
-  { q: "Is there a lock-in period for my investments?", a: "Lock-in periods depend on the specific product. Listed equities and mutual funds generally have no lock-in (except ELSS). Unlisted shares, PMS, and AIFs may have varying lock-in periods, which are clearly stated before investing." }
+  { q: "Is there a free plan available?", a: "Yes. Your demat account is held with SEBI-registered partners and funds move via RBI-regulated banking rails. Finvoq never holds custody of your assets — we are an advisor and execution layer only." },
+  { q: "Can I invite my team members?", a: "Absolutely. Invite teammates, assign roles, and collaborate in real time from a shared workspace." },
+  { q: "Does it integrate with other tools?", a: "Yes, we offer seamless integrations with popular tools like Slack, Jira, and GitHub to streamline your workflow." },
+  { q: "Can I upgrade or downgrade my plan anytime?", a: "Yes, you can easily change your plan at any time. Prorated charges or credits will be applied automatically." },
+  { q: "Is my project data secure?", a: "Security is our top priority. All data is encrypted at rest and in transit, and we undergo regular third-party audits." }
 ];
 
 export default function FAQ() {
@@ -39,44 +36,53 @@ export default function FAQ() {
   return (
     <section id="faq" className="faq-sec">
       <div className="container">
-        <div className="sec-head sec-head-center reveal">
-          <div className="label">FAQ</div>
-          <h2 className="stitle">
-            Questions, <em>answered.</em>
-          </h2>
-          <p className="sdesc">
-            Everything investors ask before getting started — straight answers,
-            no jargon.
-          </p>
-        </div>
+        <div className="faq-two-column-wrapper reveal rv-right">
+          
+          <div className="faq-left-col">
+            <div className="faq-label-small">
+              <span className="faq-dot"></span> FAQ
+            </div>
+            <h2 className="faq-title-main">
+              Frequently Asked<br/>Questions
+            </h2>
+            
+            <div className="faq-contact-block">
+              <h3>Still have a question?</h3>
+              <p>Don't worry we're here for consultation.</p>
+              <Link href="/get-started" className="btn-contact-theme">Contact Us</Link>
+            </div>
+          </div>
 
-        <ul className="faq-list">
-          {items.map((it, i) => (
-            <li className="faq-item reveal" data-open={openIndex === i} key={i}>
-              <button 
-                className="faq-q" 
-                type="button" 
-                aria-expanded={openIndex === i}
-                onClick={() => toggle(i)}
-              >
-                <span>{it.q}</span>
-                <span className="faq-icon">
-                  <svg viewBox="0 0 14 14" aria-hidden="true">
-                    <path
-                      d="M7 1v12M1 7h12"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </span>
-              </button>
-              <div className="faq-a">
-                <p>{it.a}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+          <div className="faq-right-col">
+            <ul className="faq-list">
+              {items.map((it, i) => {
+                const num = String(i + 1).padStart(2, '0');
+                return (
+                  <li className="faq-item" data-open={openIndex === i} key={i}>
+                    <button 
+                      className="faq-q" 
+                      type="button" 
+                      aria-expanded={openIndex === i}
+                      onClick={() => toggle(i)}
+                    >
+                      <div className="faq-q-left">
+                        <span className="faq-num">{num}</span>
+                        <span className="faq-q-text">{it.q}</span>
+                      </div>
+                      <span className="faq-toggle-icon">
+                        {openIndex === i ? '-' : '+'}
+                      </span>
+                    </button>
+                    <div className="faq-a">
+                      <p>{it.a}</p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          
+        </div>
       </div>
     </section>
   );

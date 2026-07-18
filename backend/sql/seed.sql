@@ -1,5 +1,5 @@
 -- =============================================================
--- Peculiex — Supabase Postgres seed data
+-- Finvoq — Supabase Postgres seed data
 -- Run after schema.sql. Safe to re-run (uses ON CONFLICT DO NOTHING).
 -- =============================================================
 
@@ -67,37 +67,31 @@ on conflict (title) do nothing;
 insert into public.testimonials (quote, author, role, color, initials, position) values
   ('Finally a platform that treats unlisted shares with the same rigor as listed ones. The diligence is exceptional.', 'Aarav Shah',    'Founder, Lumen Studios',                  '#0E3F76', 'AS', 1),
   ('I moved my entire portfolio over after my first call with their advisor. The depth of research is unmatched.',     'Priya Kapoor',  'Director, MIT-K Capital',                 '#7c3aed', 'PK', 2),
-  ('Most platforms feel like brokerage apps. Peculiex actually feels like a private bank — without the markup.',       'Vikram Iyer',   'Managing Partner, Iyer Family Office',    '#01696f', 'VI', 3),
+  ('Most platforms feel like brokerage apps. Finvoq actually feels like a private bank — without the markup.',       'Vikram Iyer',   'Managing Partner, Iyer Family Office',    '#01696f', 'VI', 3),
   ('The unified dashboard alone saves me three hours a week. I can finally see every asset class in one place.',       'Neha Reddy',    'CFO, Zenith Health',                      '#ea7c1c', 'NR', 4),
   ('I''ve been investing for 25 years. This is the first platform that actually serves me, not the other way around.', 'Rajesh Bansal', 'Retd. Senior Banker',                     '#16a34a', 'RB', 5),
   ('The PMS access alone justifies the platform. The team made onboarding feel personal — rare these days.',           'Karan Mehta',   'Founder, Stride Ventures',                '#dc2626', 'KM', 6);
 
 -- FAQs
 insert into public.faqs (q, a, position) values
-  ('Is my money safe with Peculiex?',
-   'Yes. Your demat account is held with SEBI-registered partners and funds move via RBI-regulated banking rails. Peculiex never holds custody of your assets — we are an advisor and execution layer only, and every transaction settles directly into your name.',
+  ('Is my money safe with Finvoq?',
+   'Yes. Your demat account is held with SEBI-registered partners and funds move via RBI-regulated banking rails. Finvoq never holds custody of your assets — we are an advisor and execution layer only, and every transaction settles directly into your name.',
    1),
   ('What''s the minimum amount to start investing?',
    'You can start a SIP from ₹1,000 per month or a lump sum from ₹500. PMS and AIF have higher statutory minimums (₹50L and ₹1Cr respectively) as mandated by SEBI. Unlisted shares vary by lot size — typically ₹25,000 to ₹1L per opportunity.',
    2),
-  ('How is Peculiex different from a discount broker?',
-   'Discount brokers give you a tool. Peculiex gives you an advisor, a curated product list across 8 asset classes, and a single dashboard that ties it all together. You get curation, accountability, and a relationship — not just access to an order screen.',
+  ('How is Finvoq different from a discount broker?',
+   'Discount brokers give you a tool. Finvoq gives you an advisor, a curated product list across 8 asset classes, and a single dashboard that ties it all together. You get curation, accountability, and a relationship — not just access to an order screen.',
    3),
   ('Can I withdraw or sell my investments anytime?',
    'For listed equity, mutual funds, and bonds — yes, subject to standard settlement cycles (T+1 or T+2). Unlisted shares, PMS, and AIF have lock-in periods that vary by product. Each lock-in is clearly disclosed before you invest, never buried in fine print.',
    4),
-  ('What does Peculiex charge?',
-   'A flat advisory fee starting at 0.25% per year on assets advised — billed quarterly, transparent to the rupee. We earn nothing from product manufacturers, distributors, or anyone else. Your fee is our only revenue, so our incentives stay aligned with yours.',
-   5),
   ('Who is my advisor and how do I reach them?',
    'Every investor is paired with a SEBI-registered advisor based on goals, time horizon, and portfolio size. You can reach them via WhatsApp, email, or scheduled video call — typical response time is under 30 minutes during market hours.',
-   6),
+   5),
   ('How do I track my portfolio performance?',
    'You can track your portfolio performance through our unified dashboard. It provides real-time updates across all asset classes, detailed analytics, and personalized insights.',
-   7),
-  ('What are the tax implications of my investments?',
-   'Taxation varies by asset class. We provide a comprehensive annual tax statement and capital gains report to make filing easy. However, we recommend consulting a tax advisor for personalized advice.',
-   8),
+   6),
   ('Is there a lock-in period for my investments?',
    'Lock-in periods depend on the specific product. Listed equities and mutual funds generally have no lock-in (except ELSS). Unlisted shares, PMS, and AIFs may have varying lock-in periods, which are clearly stated before investing.',
-   9);
+   7);

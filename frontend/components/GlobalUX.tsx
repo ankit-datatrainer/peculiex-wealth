@@ -11,11 +11,17 @@ export default function GlobalUX() {
 
     const cleanups: Array<() => void> = [];
 
-    /* nav scroll state */
+    /* nav scroll state — on mobile the pill also hides on scroll-down and
+       reappears on scroll-up, so it never sits fixed on top of page content
+       (e.g. the footer) while you're scrolling through the page. */
     const nav = document.getElementById("mainNav");
+    let lastY = window.scrollY;
     const onScroll = () => {
       if (!nav) return;
-      nav.classList.toggle("scrolled", window.scrollY > 30);
+      const y = window.scrollY;
+      nav.classList.toggle("scrolled", y > 30);
+      nav.classList.remove("nav-hidden");
+      lastY = y;
     };
     addEventListener("scroll", onScroll, { passive: true });
     onScroll();

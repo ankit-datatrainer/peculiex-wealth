@@ -536,7 +536,7 @@ export default function AuthedView() {
 
   /* ---------- render ---------- */
   return (
-    <section className="authed-wrap">
+    <section className="authed-wrap" style={{ paddingTop: '100px' }}>
       {/* Hero greeting */}
       <header className="a-hero">
         <div className="a-hero-content">

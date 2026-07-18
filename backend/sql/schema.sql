@@ -1,5 +1,5 @@
 -- =============================================================
--- Peculiex — Supabase Postgres schema
+-- Finvoq — Supabase Postgres schema
 -- Run this in the Supabase SQL editor (or `psql -f`) once per project.
 -- All tables are written so that running this file twice is safe.
 -- =============================================================

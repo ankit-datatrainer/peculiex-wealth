@@ -1,7 +1,6 @@
 import Hero from "@/components/Hero";
 import Why from "@/components/Why";
-import Marketplace from "@/components/Marketplace";
-import MarketsPreview from "@/components/MarketsPreview";
+import PartnerLogos from "@/components/PartnerLogos";
 
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
@@ -11,9 +10,8 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <Marketplace />
       <Why />
-      <MarketsPreview />
+      <PartnerLogos productSlug="mutual-funds" />
 
       {/* Offer / value proposition before credibility (testimonials) to improve conversion flow */}
       <Pricing />

@@ -6,7 +6,7 @@ export const apiUrl = (path: string) => {
   return base.replace(/\/$/, "") + path;
 };
 
-const TOKEN_KEY = "peculiex-auth-token";
+const TOKEN_KEY = "finvoq-auth-token";
 
 export const tokenStore = {
   get(): string | null {

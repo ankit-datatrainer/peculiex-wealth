@@ -128,25 +128,46 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
               Everything that makes <em>{p.label}</em> simple.
             </h2>
           </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              gap: "20px"
-            }}
-          >
-            {p.highlights.map((h) => (
-              <article
-                key={h.title}
-                className="why-card reveal"
-                data-tilt
-                style={{ minHeight: "auto" }}
-              >
-                <h3>{h.title}</h3>
-                <p>{h.body}</p>
-              </article>
-            ))}
-          </div>
+          {p.slug === "insurance" ? (
+            <div className="insurance-card-grid reveal-stagger">
+              {[
+                { title: "Health Care", img: "/health_care.png" },
+                { title: "Life Care", img: "/life_care.png" },
+                { title: "Motor Care", img: "/motor_care.png" },
+                { title: "Home Care", img: "/home_care.png" },
+                { title: "Travel Care", img: "/travel_care.png" }
+              ].map((card, i) => (
+                <article key={i} className="insurance-card reveal">
+                  <img src={card.img} alt={card.title} className="insurance-card-img" />
+                  <div className="insurance-card-footer">
+                    <span>{card.title}</span>
+                    <span>🍃</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: "20px"
+              }}
+              className="reveal-stagger"
+            >
+              {p.highlights.map((h) => (
+                <article
+                  key={h.title}
+                  className="why-card reveal"
+                  data-tilt
+                  style={{ minHeight: "auto" }}
+                >
+                  <h3>{h.title}</h3>
+                  <p>{h.body}</p>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

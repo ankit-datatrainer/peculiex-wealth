@@ -2,20 +2,23 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Cinematic scroll-video hero.
+ * Cinematic scroll-video hero — SecuredFi composition.
  *
- * A tall invisible track holds a sticky, full-screen particle video whose
- * play-head is driven by scroll (the "scroll = timeline" trick from the
- * cinematic-scroll playbook). The hero content is staged in over it one beat
- * at a time via a 0→1 scroll-progress number, then hands off into the page.
+ * The particle sphere plays as a FULL-SCREEN background that stays pinned
+ * (sticky) for the length of a tall track. A solid brand "cover" sits over it
+ * at the top holding the opening headline; as you scroll a little the cover
+ * fades away, revealing the sphere filling the whole background while its
+ * play-head is scrubbed by scroll. Text "beats" reveal one after another over
+ * the live sphere, then the page hands off underneath.
  */
 
 const clamp = (v: number) => Math.min(Math.max(v, 0), 1);
+// map v from [a,b] → [0,1]
+const range = (v: number, a: number, b: number) => clamp((v - a) / (b - a));
 
 export default function Hero() {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const titleRef = useRef<HTMLHeadingElement | null>(null);
   const [progress, setProgress] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -37,7 +40,9 @@ export default function Hero() {
       const scrolled = Math.min(Math.max(-rect.top, 0), scrollable);
       const p = scrollable > 0 ? scrolled / scrollable : 0;
       setProgress(p);
-      target = p * ((video.duration || 10) - 0.05);
+      // Scrub the whole clip across the full scroll — smooth, frame by frame.
+      const dur = (video.duration || 10) - 0.05;
+      target = p * dur;
     };
 
     // Chase the target time each frame with easing → smooth, not jumpy.
@@ -60,65 +65,43 @@ export default function Hero() {
     };
   }, [isMobile]);
 
-  /* ---- Char-split title reveal ---- */
-  useEffect(() => {
-    const title = titleRef.current;
-    if (!title) return;
-    const segs = Array.from(title.querySelectorAll<HTMLElement>(".seg"));
-    let total = 0;
-    segs.forEach((seg) => {
-      const text = seg.textContent || "";
-      seg.textContent = "";
-      const words = text.split(" ");
-      words.forEach((word, wIdx) => {
-        const wordSpan = document.createElement("span");
-        wordSpan.style.whiteSpace = "nowrap";
-        [...word].forEach((ch) => {
-          const span = document.createElement("span");
-          span.className = "char";
-          span.textContent = ch;
-          span.style.transitionDelay = total * 22 + "ms";
-          wordSpan.appendChild(span);
-          total++;
-        });
-        seg.appendChild(wordSpan);
-        if (wIdx < words.length - 1) {
-          const space = document.createElement("span");
-          space.className = "char";
-          space.textContent = " ";
-          space.style.transitionDelay = total * 22 + "ms";
-          seg.appendChild(space);
-          total++;
-        }
-      });
-    });
-    const t = setTimeout(() => title.classList.add("in"), 250);
-    return () => clearTimeout(t);
-  }, []);
+  const src = isMobile ? "/videos/hero-mint-mobile.mp4" : "/videos/hero-mint.mp4";
+  const poster = "/videos/hero-mint-poster.jpg";
 
-  const src = isMobile ? "/videos/hero-mobile.mp4" : "/videos/hero-desktop.mp4";
-  const poster = isMobile
-    ? "/videos/hero-poster-mobile.jpg"
-    : "/videos/hero-poster.jpg";
+  /* ---- Progress-driven choreography (slow & smooth, NO dead scroll) ----
+     0.00–0.35  Green hero + headline; the mint circle rises and grows.
+     0.35–0.92  Headline fades; the circle keeps growing until it just barely
+                covers the screen right at the END of the track — so the
+                instant it's full, the page hands straight to the next section.
+     The radius max is sized to the minimum that covers the screen corner (not
+     a big overshoot), so "visually full" and "track end" happen together —
+     no stretch of scrolling through an already-full-screen video.              */
+  const domeR = 26 + range(progress, 0.08, 0.94) * 96; // 26 (dome) → 122 (just covers, ends with track)
+  const domeDetail = 1 - range(progress, 0.5, 0.85); // rim/glow fade as it fills
 
-  /* ---- Progress-driven choreography ----
-     SecuredFi composition: a solid brand ground holds the readable headline
-     at the top; the particle sphere rises from the bottom and scrubs on
-     scroll. The content gently parallaxes up and fades as the page begins,
-     so it never fights the sphere for legibility. */
-  const contentOpacity = progress < 0.5 ? 1 : clamp(1 - (progress - 0.5) / 0.3);
-  const contentLift = -progress * 70;
-  const cueOpacity = clamp(1 - progress / 0.1);
+  const beat1 = clamp(1 - range(progress, 0.32, 0.48)); // opening headline
+  const beat1Lift = -range(progress, 0, 0.48) * 44;
+
+  const cueOpacity = clamp(1 - progress / 0.08);
 
   return (
     <>
       <a id="top" />
 
-      {/* Tall track — the scrollbar scrubs the sphere rising from the bottom */}
+      {/* Tall track — its scroll distance scrubs the sphere + drives the beats */}
       <div className="hero-track" ref={trackRef}>
-        <section className="hero-sticky" id="hero">
-          {/* Particle sphere — anchored to the bottom, masked into the ground */}
-          <div className="hero-video-wrap" aria-hidden="true">
+        <section
+          className="hero-cine-stage"
+          id="hero"
+          style={{
+            ["--dome-r" as string]: String(domeR),
+            ["--dome-detail" as string]: String(domeDetail),
+          } as React.CSSProperties}
+        >
+          {/* Full-screen video at native resolution; a circular mask (radius
+              driven by --dome-r) reveals it as a dome rising from the bottom
+              and growing to cover the screen — no zoom, so it stays crisp. */}
+          <div className="hero-cine-dome" aria-hidden="true">
             <video
               ref={videoRef}
               key={src}
@@ -130,33 +113,30 @@ export default function Hero() {
               preload="auto"
             />
           </div>
+          <div className="hero-dome-ring" aria-hidden="true" />
+          <div className="hero-dome-scrim" aria-hidden="true" />
 
-          {/* Readable content column, top-aligned on the solid ground */}
+          {/* Beat 1 — opening headline (on the cover) */}
           <div
-            className="hero-lead"
-            style={{ opacity: contentOpacity, transform: `translateY(${contentLift}px)` }}
+            className="hero-beat hero-beat-1"
+            style={{
+              opacity: beat1,
+              transform: `translateY(${beat1Lift}px)`,
+              pointerEvents: beat1 > 0.5 ? "auto" : "none",
+            }}
           >
             <div className="hero-pill hero-fade-1">
-              <span className="pill-dot"></span>
+              <span className="pill-dot" />
               SEBI Registered · Trusted by 4,000+ investors
             </div>
-
-            <h1 className="hero-title" id="heroTitle" ref={titleRef}>
-              <span className="seg">Invest</span>{" "}
-              <span className="seg">with</span>{" "}
-              <em className="seg seg-em">clarity</em>{" "}
-              <span className="seg">across</span>{" "}
-              <span className="seg">every</span>{" "}
-              <span className="seg">asset</span>{" "}
-              <span className="seg">class.</span>
+            <h1 className="hero-title hero-cine-title hero-fade-2">
+              Invest with <em>clarity</em> across every asset class.
             </h1>
-
-            <p className="hero-sub hero-fade-2">
+            <p className="hero-sub hero-fade-3">
               Listed shares, unlisted opportunities, mutual funds, PMS, AIF,
-              bonds, and insurance. Curated by experts and executed in seconds.
+              bonds, and insurance — curated by experts, executed in seconds.
             </p>
-
-            <div className="hero-ctas hero-fade-3">
+            <div className="hero-ctas hero-fade-4">
               <a
                 href="/get-started"
                 className="btn btn-primary btn-lg btn-arrow"
@@ -175,44 +155,6 @@ export default function Hero() {
               <a href="/markets" className="btn btn-hero-ghost btn-lg" data-magnetic>
                 Explore Markets <span className="arrow">→</span>
               </a>
-            </div>
-
-            <div className="hero-chips hero-fade-4">
-              <span className="hchip">Equities</span>
-              <span className="hchip">Mutual Funds</span>
-              <span className="hchip">PMS</span>
-              <span className="hchip">AIF</span>
-              <span className="hchip">FDs</span>
-              <span className="hchip">Bonds</span>
-              <span className="hchip">Insurance</span>
-              <span className="hchip">Unlisted</span>
-            </div>
-
-            <div className="hero-stats hero-fade-5">
-              <div className="stat">
-                <div className="stat-num">
-                  ₹<span className="counter" data-target="182" data-suffix="">0</span>Cr
-                </div>
-                <div className="stat-label">Assets Managed</div>
-              </div>
-              <div className="stat">
-                <div className="stat-num">
-                  <span className="counter" data-target="1200" data-suffix="+">0</span>
-                </div>
-                <div className="stat-label">Active Investors</div>
-              </div>
-              <div className="stat">
-                <div className="stat-num">
-                  <span className="counter" data-target="10" data-suffix="+">0</span>
-                </div>
-                <div className="stat-label">Product Categories</div>
-              </div>
-              <div className="stat">
-                <div className="stat-num">
-                  <span className="counter" data-target="10" data-suffix=" yrs +">0</span>
-                </div>
-                <div className="stat-label">Industry Experience</div>
-              </div>
             </div>
           </div>
 

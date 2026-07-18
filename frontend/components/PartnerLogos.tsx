@@ -1,4 +1,5 @@
 import { getCompanyLogo } from "@/lib/util";
+import Link from "next/link";
 
 type Partner = { name: string; domain?: string; imgUrl?: string };
 
@@ -58,27 +59,67 @@ export default function PartnerLogos({ productSlug }: { productSlug: string }) {
   const set = SETS[productSlug];
   if (!set) return null;
 
+  const topPartners = set.partners.slice(0, 7);
+  const marqueePartners = set.partners.slice(7);
+
   return (
     <section className="partner-logos-sec">
-      <div className="container">
-        <div className="sec-head reveal">
-          <div className="label">Partners</div>
-          <h2 className="stitle">{set.title}</h2>
+      <div className="partner-ring-wrap">
+        <div className="partner-ring"></div>
+        <div className="partner-ring"></div>
+        <div className="partner-ring"></div>
+      </div>
+      
+      <div className="container" style={{ position: "relative", zIndex: 10 }}>
+        <div className="partner-floating-wrap reveal rv-zoom">
+          {topPartners.map((p, i) => {
+            const isCenter = i === 3;
+            return (
+              <div className={`partner-badge ${isCenter ? "center-badge" : ""}`} key={p.name} title={p.name}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={p.imgUrl || getCompanyLogo(p.domain!)} alt={p.name} loading="lazy" />
+              </div>
+            );
+          })}
         </div>
-        <div className="partner-grid reveal">
-          {set.partners.map((p) => (
-            <div className="partner-logo" key={p.name} title={p.name}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={p.imgUrl || getCompanyLogo(p.domain!)}
-                alt={`${p.name} logo`}
-                loading="lazy"
-                style={p.imgUrl ? { width: '100%', height: 'auto', objectFit: 'contain' } : undefined}
-              />
-              {!p.imgUrl && <span>{p.name}</span>}
+
+        <div className="reveal">
+          <h2 className="stitle">
+            The Trusted Wealth Partner <br /> For Growing Portfolios
+          </h2>
+          <p className="sdesc">
+            Access institutional-grade investment products through our partnerships with India’s leading asset managers and financial institutions.
+          </p>
+          
+          <div className="partner-cta">
+            <Link href="/contact" className="btn-primary">
+              Book a Consultation
+            </Link>
+            <Link href="/about" className="btn-link">
+              Explore Platform Features
+              <svg viewBox="0 0 14 14" fill="none" width="16" height="16">
+                <path d="M1 7h12m0 0L8 2m5 5l-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+
+        {marqueePartners.length > 0 && (
+          <div className="reveal">
+            <p className="partner-bottom-txt">And {marqueePartners.length}+ more leading institutions</p>
+            <div className="partner-marquee-wrap">
+              <div className="partner-marquee-track">
+                {[...marqueePartners, ...marqueePartners].map((p, i) => (
+                  <div className="partner-marquee-logo" key={`${p.name}-${i}`} title={p.name}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={p.imgUrl || getCompanyLogo(p.domain!)} alt={p.name} loading="lazy" />
+                    {!p.imgUrl && <span style={{ marginLeft: "8px" }}>{p.name}</span>}
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );

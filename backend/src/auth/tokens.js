@@ -18,7 +18,7 @@ const SECRET =
   process.env.JWT_SECRET ||
   // Stable per-process fallback — fine for local dev / seed mode. The README
   // recommends overriding AUTH_SECRET in any real deployment.
-  "peculiex-dev-secret-change-me";
+  "finvoq-dev-secret-change-me";
 
 const b64url = (buf) =>
   Buffer.from(buf).toString("base64").replace(/=+$/, "").replace(/\+/g, "-").replace(/\//g, "_");

@@ -15,7 +15,7 @@ export default function Pricing() {
   return (
     <section id="pricing" className="pricing-sec">
       <div className="container">
-        <div className="sec-head sec-head-center reveal">
+        <div className="sec-head sec-head-center reveal rv-left">
           <div className="label">Pricing</div>
           <h2 className="stitle">
             Transparent. <em>Always.</em>
@@ -24,7 +24,7 @@ export default function Pricing() {
 
         <div className="pricing-grid reveal-stagger">
           {/* Tier 1: Essentials */}
-          <article className="price-card reveal" data-tilt>
+          <article className="price-card reveal">
             <div className="pc-head">
               <h3>Essentials</h3>
               <p className="pc-best">For self-directed investors</p>
@@ -56,7 +56,7 @@ export default function Pricing() {
 
 
           {/* Tier 3: Private Client */}
-          <article className="price-card reveal" data-tilt>
+          <article className="price-card reveal">
             <div className="pc-head">
               <h3>Private Client</h3>
               <p className="pc-best">For portfolios above ₹1 Cr</p>

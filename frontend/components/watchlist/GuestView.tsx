@@ -61,7 +61,7 @@ export default function GuestView() {
   }, []);
 
   return (
-    <div className="gv-wrap">
+    <div className="gv-wrap" style={{ paddingTop: '100px' }}>
 
       {/* ═══════════════════════ HERO ═══════════════════════ */}
       <section className="gv-hero" ref={heroRef as any}>

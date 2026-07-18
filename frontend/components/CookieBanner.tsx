@@ -9,7 +9,7 @@ export default function CookieBanner() {
     if (!banner) return;
     let stored: string | null = null;
     try {
-      stored = localStorage.getItem("peculiex-cookie-consent");
+      stored = localStorage.getItem("finvoq-cookie-consent");
     } catch {}
     if (stored) return;
 
@@ -17,7 +17,7 @@ export default function CookieBanner() {
 
     const dismiss = (choice: string) => {
       try {
-        localStorage.setItem("peculiex-cookie-consent", choice);
+        localStorage.setItem("finvoq-cookie-consent", choice);
       } catch {}
       banner.classList.remove("show");
       banner.classList.add("gone");
