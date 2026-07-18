@@ -3658,10 +3658,29 @@ section { padding: 110px 0; position: relative; }
   .nav-cta .btn-gold,
   .nav-cta [data-account-menu] { display: none !important; }
   .mobile-only { display: flex !important; flex-direction: column; gap: 12px; align-items: center; margin-top: 24px; padding: 0 20px; width: 100%; }
-  .nav-inner { padding: 8px 14px; margin: 0 16px; }
+  .nav-inner {
+    padding: 8px 14px;
+    margin: 0 16px;
+    max-width: calc(100vw - 32px);
+    box-sizing: border-box;
+  }
+  /* Guarantee the theme toggle + hamburger never shrink/overflow off-frame on
+     narrow phones — they're the only interactive controls left on mobile. */
+  .nav-inner > * { flex-shrink: 0; }
+  .nav-cta { flex-shrink: 0; }
+  .nav-cta > * { flex-shrink: 0; }
   .logo img { height: 32px !important; width: auto !important; }
   .mobile-toggle span { background: #12313a !important; }
+}
+/* Extra-narrow phones (iPhone SE and similar ~320–360px): trim gaps/padding
+   further so the pill (logo + theme toggle + hamburger) always fits cleanly. */
+@media (max-width: 380px) {
+  .nav-inner { padding: 6px 10px; margin: 0 10px; }
+  .nav-cta { gap: 6px !important; }
+  .logo img { height: 28px !important; }
+}
 
+@media (max-width: 760px) {
   /* Top ticker */
   .ticker-item { padding: 0 18px; font-size: 11px; }
 
