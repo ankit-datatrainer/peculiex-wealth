@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   fetchProfile,
   fetchNews,
@@ -12,6 +12,7 @@ import {
   fmtPct,
   fmtPrice,
   isIndex,
+  wsBaseUrl,
   type LiveQuote,
   type NewsItem,
   type StockProfile
@@ -40,6 +41,10 @@ export default function StockDetail({ symbol }: Props) {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  /** "up" | "dn" for one beat after each tick, to flash the price green/red. */
+  const [tickDir, setTickDir] = useState<"up" | "dn" | null>(null);
+  const lastPriceRef = useRef<number | null>(null);
+  const flashTimer = useRef<number | null>(null);
 
   useEffect(() => {
     let killed = false;
@@ -78,6 +83,62 @@ export default function StockDetail({ symbol }: Props) {
     return () => {
       killed = true;
       window.clearInterval(t);
+    };
+  }, [symbol]);
+
+  /* Live ticks over WebSocket — the backend pushes a PRICE_TICK roughly every
+     2s for subscribed symbols while the market is open. This is what makes the
+     header price move in real time (the 15s poll above is only a safety net). */
+  useEffect(() => {
+    let ws: WebSocket | null = null;
+    try {
+      ws = new WebSocket(wsBaseUrl());
+      ws.onopen = () => {
+        ws?.send(JSON.stringify({ action: "subscribe", symbols: [symbol] }));
+      };
+      ws.onmessage = (e) => {
+        try {
+          const msg = JSON.parse(e.data);
+          if (msg.type !== "PRICE_TICK" || !msg.payload) return;
+          const p = msg.payload;
+          if (p.symbol !== symbol && p.yahooSymbol !== symbol) return;
+
+          const price = p.price ?? p.c;
+          if (price == null) return;
+
+          // Flash the price green/red in the direction it moved.
+          const prev = lastPriceRef.current;
+          if (prev != null && price !== prev) {
+            setTickDir(price > prev ? "up" : "dn");
+            if (flashTimer.current) window.clearTimeout(flashTimer.current);
+            flashTimer.current = window.setTimeout(() => setTickDir(null), 700);
+          }
+          lastPriceRef.current = price;
+
+          setQuote((q) =>
+            q
+              ? {
+                  ...q,
+                  price,
+                  change: p.change ?? p.d ?? q.change,
+                  changePercent: p.changePercent ?? p.dp ?? q.changePercent
+                }
+              : q
+          );
+        } catch (err) {}
+      };
+    } catch (err) {
+      console.error("WebSocket connect error", err);
+    }
+
+    return () => {
+      if (flashTimer.current) window.clearTimeout(flashTimer.current);
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ action: "unsubscribe", symbols: [symbol] }));
+        ws.close();
+      } else if (ws) {
+        ws.close();
+      }
     };
   }, [symbol]);
 
@@ -208,7 +269,10 @@ export default function StockDetail({ symbol }: Props) {
         </div>
 
         <div className="stock-page-price-block-groww" style={{ marginTop: "1.5rem", display: "flex", alignItems: "baseline", gap: "12px" }}>
-          <div className="stock-page-price" style={{ fontSize: "2rem", fontWeight: 700 }}>
+          <div
+            className={`stock-page-price${tickDir ? ` tick-${tickDir}` : ""}`}
+            style={{ fontSize: "2rem", fontWeight: 700 }}
+          >
             {fmtPrice(display.price, display.currency, idxFlag)}
           </div>
           <div className={`stock-page-change ${up ? "up" : "dn"}`} style={{ fontSize: "1rem", fontWeight: 500 }}>
@@ -222,6 +286,12 @@ export default function StockDetail({ symbol }: Props) {
             )}
             <span className="stock-page-change-tag" style={{ color: "var(--c-text-mut)", marginLeft: "6px" }}>1D</span>
           </div>
+          {display.marketState === "REGULAR" && (
+            <span className="stock-live-pill" title="Live — updating in real time">
+              <span className="stock-live-dot" />
+              LIVE
+            </span>
+          )}
         </div>
       </header>
 

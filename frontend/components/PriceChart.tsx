@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   fetchCandles,
+  wsBaseUrl,
   type CandleSeries,
   type Timeframe,
   TIMEFRAMES
@@ -51,32 +52,52 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
     };
   }, [symbol, tf]);
 
-  // Subscribe to live WebSocket updates
+  /* Live WebSocket ticks — only meaningful on the intraday (1D) view; on
+     longer timeframes a live tick would distort a daily/weekly candle series.
+     Ticks roll into the current 1-minute bucket (updating close/high/low) and
+     only start a new point when the minute turns, so the series stays bounded
+     and the line grows the way Groww/Zerodha intraday charts do. */
   useEffect(() => {
+    if (tf !== "1D") return;
     let ws: WebSocket | null = null;
-    const apiBaseStr = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:4000/api";
-    const wsUrl = apiBaseStr.replace(/^http/, "ws").replace(/\/api\/?$/, "");
 
     try {
-      ws = new WebSocket(wsUrl);
+      ws = new WebSocket(wsBaseUrl());
       ws.onopen = () => {
         ws?.send(JSON.stringify({ action: "subscribe", symbols: [symbol] }));
       };
       ws.onmessage = (e) => {
         try {
           const msg = JSON.parse(e.data);
-          if (msg.type === "PRICE_TICK" && msg.payload && msg.payload.symbol === symbol) {
-            setSeries((prev) => {
-              if (!prev) return prev;
-              const price = msg.payload.price ?? msg.payload.c;
-              if (price == null) return prev;
-              const t = msg.payload.t ? msg.payload.t * 1000 : Date.now();
-              return {
-                ...prev,
-                candles: [...prev.candles, { t, c: price, o: price, h: price, l: price, v: 0 }]
+          if (msg.type !== "PRICE_TICK" || !msg.payload) return;
+          const p = msg.payload;
+          if (p.symbol !== symbol && p.yahooSymbol !== symbol) return;
+
+          const price = p.price ?? p.c;
+          if (price == null) return;
+          const t = p.t ? p.t * 1000 : Date.now();
+
+          setSeries((prev) => {
+            if (!prev || !prev.candles.length) return prev;
+            const candles = prev.candles.slice();
+            const last = candles[candles.length - 1];
+            const sameMinute =
+              last && Math.floor(last.t / 60_000) === Math.floor(t / 60_000);
+
+            if (sameMinute) {
+              candles[candles.length - 1] = {
+                ...last,
+                c: price,
+                h: Math.max(last.h ?? price, price),
+                l: Math.min(last.l ?? price, price)
               };
-            });
-          }
+            } else {
+              candles.push({ t, c: price, o: price, h: price, l: price, v: 0 });
+              // Keep the intraday series bounded (a full session is ~375 min).
+              if (candles.length > 420) candles.shift();
+            }
+            return { ...prev, candles };
+          });
         } catch (err) {}
       };
     } catch (err) {
@@ -91,7 +112,7 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
         ws.close();
       }
     };
-  }, [symbol]);
+  }, [symbol, tf]);
 
   // Track wrapper width so the chart fills its container
   useEffect(() => {
