@@ -83,13 +83,39 @@ export const getCompanyDomain = (sym: string, name: string): string => {
     HINDUNILVR: "hul.co.in",
     ITC: "itcportal.com",
     SBIN: "sbi.co.in",
-    BAJFINANCE: "bajajfinserv.in"
+    BAJFINANCE: "bajajfinserv.in",
+    MRF: "mrftyres.com",
+    RTNPOWER: "rattanindia.com",
+    WIPRO: "wipro.com",
+    AXISBANK: "axisbank.com",
+    KOTAKBANK: "kotak.com",
+    TATAMOTORS: "tatamotors.com",
+    TATASTEEL: "tatasteel.com",
+    SUNPHARMA: "sunpharma.com",
+    TITAN: "titancompany.in",
+    ULTRACEMCO: "ultratechcement.com",
+    NESTLEIND: "nestle.in",
+    POWERGRID: "powergrid.in",
+    NTPC: "ntpc.co.in",
+    ONGC: "ongcindia.com",
+    COALINDIA: "coalindia.in",
+    ADANIENT: "adanienterprises.com",
+    ADANIPORTS: "adaniports.com",
+    JSWSTEEL: "jsw.in",
+    TECHM: "techmahindra.com",
+    HCLTECH: "hcltech.com",
+    ZOMATO: "zomato.com",
+    PAYTM: "paytm.com",
+    DMART: "dmart.in"
   };
-  if (map[sym]) return map[sym];
-  
-  const clean = (name || sym).split(" ")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+  // Strip the exchange suffix (.NS / .BO) before matching — otherwise
+  // "MRF.BO" never hits the map and we guess a wrong domain.
+  const base = (sym || "").split(".")[0].toUpperCase();
+  if (map[base]) return map[base];
+
+  const clean = (name || base).split(" ")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
   if (clean.length > 2) return `${clean}.com`;
-  return `${sym.toLowerCase()}.com`;
+  return `${base.toLowerCase()}.com`;
 };
 
 export const getCompanyLogo = (domain: string) =>

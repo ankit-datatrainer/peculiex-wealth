@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import {
   fetchProfile,
@@ -17,7 +16,7 @@ import {
   type NewsItem,
   type StockProfile
 } from "@/lib/markets";
-import { getCompanyDomain, getCompanyLogo } from "@/lib/util";
+import CompanyLogo from "./CompanyLogo";
 import PriceChart from "./PriceChart";
 import WatchlistButton from "./WatchlistButton";
 
@@ -222,19 +221,7 @@ export default function StockDetail({ symbol }: Props) {
       <header className="stock-page-head-groww">
         <div className="stock-page-head-groww-top">
           <div className="stock-page-id">
-            <div className="stock-logo-wrap" style={{ position: "relative", width: 48, height: 48, borderRadius: "50%", overflow: "hidden", border: "1px solid var(--c-border)", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--c-bg-hover)", fontSize: "1.2rem", fontWeight: "bold", color: "var(--c-text-mut)" }}>
-              <span style={{ position: "absolute", zIndex: 0 }}>{display.symbol.charAt(0)}</span>
-              <Image
-                src={getCompanyLogo(getCompanyDomain(display.symbol, display.name))}
-                alt={display.symbol}
-                fill
-                style={{ objectFit: "cover", zIndex: 1 }}
-                unoptimized
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).style.display = 'none';
-                }}
-              />
-            </div>
+            <CompanyLogo symbol={display.symbol} name={display.name} size={52} />
             <div>
               <h1 className="stock-page-name" style={{ fontSize: "1.5rem", marginBottom: "4px" }}>{display.name}</h1>
               <div className="stock-page-meta">
@@ -399,13 +386,6 @@ export default function StockDetail({ symbol }: Props) {
 }
 
 /* ---------- helpers ---------- */
-
-function hashColor(s: string): string {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
-  const hue = Math.abs(h) % 360;
-  return `linear-gradient(135deg, hsl(${hue} 65% 38%), hsl(${(hue + 40) % 360} 60% 28%))`;
-}
 
 function hostname(url: string): string {
   try {

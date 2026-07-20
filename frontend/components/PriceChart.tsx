@@ -217,6 +217,19 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
   };
   const onLeave = () => setHoverIdx(null);
 
+  /* Coordinates of the newest point — anchors the pulsing "live" dot that
+     rides the end of the line and moves up/down with each tick. */
+  const lastPt = useMemo(() => {
+    if (!points.length || !stats) return null;
+    const p = points[points.length - 1];
+    const range = Math.max(1, stats.max - stats.min);
+    return {
+      x: PAD.l + ((p.t - timeBounds.min) / timeBounds.range) * innerW,
+      y: PAD.t + (1 - (p.c - stats.min) / range) * innerH
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [points, stats, innerW, innerH, timeBounds]);
+
   const hover = hoverIdx != null ? points[hoverIdx] : null;
   const hoverX =
     hover && stats
@@ -277,6 +290,27 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
               strokeLinejoin="round"
               strokeLinecap="round"
             />
+
+            {/* Live end-of-line dot with a breathing halo (Groww-style). It
+                sits on the newest point, so it glides up/down as ticks land. */}
+            {lastPt && (
+              <g className="pchart-live">
+                <circle
+                  className="pchart-live-halo"
+                  cx={lastPt.x}
+                  cy={lastPt.y}
+                  r="6"
+                  fill={stroke}
+                />
+                <circle
+                  className="pchart-live-dot"
+                  cx={lastPt.x}
+                  cy={lastPt.y}
+                  r="3.5"
+                  fill={stroke}
+                />
+              </g>
+            )}
 
             {hover && (
               <>
