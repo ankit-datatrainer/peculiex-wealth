@@ -167,14 +167,27 @@ export const closeSeries = (series: CandleSeries): Array<[number, number]> =>
 /**
  * Browser WebSocket base URL for live price ticks.
  *
- * The old code derived this from NEXT_PUBLIC_API_BASE, which is not set (only
- * the server-side API_BASE is), so it fell back to :4000 while the backend WS
- * actually runs on :4001 — the socket never connected and prices only updated
- * on a manual refresh. This resolves it correctly in every environment:
+ * Resolution order:
  *   1. An explicit NEXT_PUBLIC_WS_URL wins (set per deploy).
- *   2. On localhost dev, the backend WS is on :4001.
- *   3. In production, the socket rides the same host over wss:// (nginx proxies
- *      the upgrade to the backend).
+ *   2. On localhost dev, the browser talks to the backend directly on :4001.
+ *   3. In production the socket rides the same origin on the /ws path.
+ *
+ * Why /ws and not the bare origin: in production the browser only ever reaches
+ * Next.js (port 3001), and REST works because next.config rewrites proxy
+ * /api/* to the backend. Next rewrites do NOT proxy WebSocket upgrades, so a
+ * socket opened against the bare origin lands on Next, which has no WS handler,
+ * and dies — prices looked frozen in production while working locally. The /ws
+ * path exists so nginx can proxy the upgrade straight to the backend (:4001),
+ * bypassing Next entirely. Requires the matching nginx location block:
+ *
+ *   location /ws {
+ *     proxy_pass http://127.0.0.1:4001;
+ *     proxy_http_version 1.1;
+ *     proxy_set_header Upgrade $http_upgrade;
+ *     proxy_set_header Connection "upgrade";
+ *     proxy_set_header Host $host;
+ *     proxy_read_timeout 3600s;
+ *   }
  */
 export function wsBaseUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_WS_URL;
@@ -186,7 +199,7 @@ export function wsBaseUrl(): string {
     if (host === "localhost" || host === "127.0.0.1") {
       return `${proto}//${host}:4001`;
     }
-    return `${proto}//${window.location.host}`;
+    return `${proto}//${window.location.host}/ws`;
   }
   return "ws://127.0.0.1:4001";
 }
