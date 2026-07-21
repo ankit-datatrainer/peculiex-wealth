@@ -203,3 +203,106 @@ export function wsBaseUrl(): string {
   }
   return "ws://127.0.0.1:4001";
 }
+
+/**
+ * Live price ticks for a set of symbols, with a polling safety net.
+ *
+ * Prefers the WebSocket (sub-second push, ~2s ticks). If the socket can't be
+ * established — most commonly because the reverse proxy in front of the app
+ * isn't forwarding the upgrade, which silently froze prices in production
+ * while they worked locally — it degrades to polling the REST quotes endpoint,
+ * which is proxied normally. That way prices always move, and the socket is a
+ * fast path rather than a single point of failure.
+ *
+ * Returns an unsubscribe function.
+ */
+export function subscribeTicks(
+  symbols: string[],
+  onTick: (q: Partial<LiveQuote> & { symbol: string }) => void,
+  opts?: { pollMs?: number; connectTimeoutMs?: number }
+): () => void {
+  const pollMs = opts?.pollMs ?? 5000;
+  const connectTimeoutMs = opts?.connectTimeoutMs ?? 4000;
+
+  let ws: WebSocket | null = null;
+  let pollTimer: number | null = null;
+  let connectTimer: number | null = null;
+  let opened = false;
+  let killed = false;
+
+  const startPolling = () => {
+    if (killed || pollTimer != null || !symbols.length) return;
+    const run = () => {
+      fetchQuotes(symbols)
+        .then((quotes) => {
+          if (killed || !quotes) return;
+          quotes.forEach((q) => q && q.symbol && onTick(q));
+        })
+        .catch(() => {});
+    };
+    run();
+    pollTimer = window.setInterval(run, pollMs);
+  };
+
+  if (typeof window === "undefined" || !symbols.length) return () => {};
+
+  try {
+    ws = new WebSocket(wsBaseUrl());
+
+    // If the upgrade never completes, stop waiting and fall back.
+    connectTimer = window.setTimeout(() => {
+      if (!opened && !killed) {
+        try {
+          ws?.close();
+        } catch {}
+        startPolling();
+      }
+    }, connectTimeoutMs);
+
+    ws.onopen = () => {
+      opened = true;
+      if (connectTimer) window.clearTimeout(connectTimer);
+      ws?.send(JSON.stringify({ action: "subscribe", symbols }));
+    };
+
+    ws.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.type !== "PRICE_TICK" || !msg.payload) return;
+        const p = msg.payload;
+        if (!p.symbol) return;
+        onTick({
+          ...p,
+          price: p.price ?? p.c,
+          change: p.change ?? p.d,
+          changePercent: p.changePercent ?? p.dp
+        });
+      } catch {}
+    };
+
+    ws.onerror = () => {
+      if (!opened && !killed) startPolling();
+    };
+
+    ws.onclose = () => {
+      // Covers both "never connected" and "dropped mid-session".
+      if (!killed) startPolling();
+    };
+  } catch {
+    startPolling();
+  }
+
+  return () => {
+    killed = true;
+    if (connectTimer) window.clearTimeout(connectTimer);
+    if (pollTimer) window.clearInterval(pollTimer);
+    if (ws) {
+      try {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ action: "unsubscribe", symbols }));
+        }
+        ws.close();
+      } catch {}
+    }
+  };
+}

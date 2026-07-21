@@ -11,7 +11,7 @@ import {
 import { apiFetch, apiPostJSON, fetcher } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import { fmtINR2, randomSpark, sparkPath, formatCompact, formatIndianCap } from "@/lib/util";
-import { wsBaseUrl } from "@/lib/markets";
+import { subscribeTicks } from "@/lib/markets";
 import { makeUnlistedSymbol } from "@/components/WatchlistButton";
 import {
   CURATED_BASKETS,
@@ -129,8 +129,7 @@ export default function AuthedView() {
 
   useEffect(() => {
     let killed = false;
-    let ws: WebSocket | null = null;
-    
+
     const listedSyms = items
       .filter((it) => {
         const isUnl = it.symbol.startsWith("UNL-") || it.note === "unlisted" || unlistedMap[it.symbol];
@@ -138,52 +137,35 @@ export default function AuthedView() {
       })
       .map((it) => it.symbol);
 
-    if (listedSyms.length > 0) {
-      const symStr = listedSyms.join(",");
-      apiFetch<{ quotes: any[] }>(`/api/markets/quotes?symbols=${symStr}`)
-        .then((res) => {
-          if (killed) return;
-          if (res?.quotes) {
-            const m: Record<string, any> = {};
-            res.quotes.forEach((q) => {
-              m[q.symbol] = q;
-            });
-            setLiveQuotes(m);
-          }
-        })
-        .catch(console.error);
-        
-      const wsUrl = wsBaseUrl();
+    if (listedSyms.length === 0) return;
 
-      try {
-        ws = new WebSocket(wsUrl);
-        ws.onopen = () => {
-          ws?.send(JSON.stringify({ action: "subscribe", symbols: listedSyms }));
-        };
-        ws.onmessage = (e) => {
-          try {
-            const msg = JSON.parse(e.data);
-            if (msg.type === "PRICE_TICK" && msg.payload) {
-              setLiveQuotes((prev) => ({
-                ...prev,
-                [msg.payload.symbol]: msg.payload
-              }));
-            }
-          } catch(err) {}
-        };
-      } catch (err) {
-        console.error("Failed to connect to WebSocket", err);
-      }
-    }
-    
+    const symStr = listedSyms.join(",");
+    apiFetch<{ quotes: any[] }>(`/api/markets/quotes?symbols=${symStr}`)
+      .then((res) => {
+        if (killed) return;
+        if (res?.quotes) {
+          const m: Record<string, any> = {};
+          res.quotes.forEach((q) => {
+            m[q.symbol] = q;
+          });
+          setLiveQuotes(m);
+        }
+      })
+      .catch(console.error);
+
+    // WebSocket when available, automatic polling fallback otherwise, so the
+    // watchlist keeps moving even where the proxy won't forward the upgrade.
+    const unsubscribe = subscribeTicks(listedSyms, (q) => {
+      if (killed) return;
+      setLiveQuotes((prev) => ({
+        ...prev,
+        [q.symbol]: { ...(prev[q.symbol] || {}), ...q }
+      }));
+    });
+
     return () => {
       killed = true;
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ action: "unsubscribe", symbols: listedSyms }));
-        ws.close();
-      } else if (ws) {
-        ws.close();
-      }
+      unsubscribe();
     };
   }, [items, unlistedMap]);
 

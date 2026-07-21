@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { fetchQuotes, wsBaseUrl } from "@/lib/markets";
+import { fetchQuotes, subscribeTicks } from "@/lib/markets";
 
 type Tick = { name: string; price: number; chg: number };
 
@@ -41,52 +41,21 @@ export default function TickerBar() {
   }, []);
 
   useEffect(() => {
-    let ws: WebSocket | null = null;
-    const wsUrl = wsBaseUrl();
-
-    try {
-      ws = new WebSocket(wsUrl);
-      ws.onopen = () => {
-        ws?.send(JSON.stringify({ action: "subscribe", symbols: SYMBOLS }));
-      };
-      ws.onmessage = (e) => {
-        try {
-          const msg = JSON.parse(e.data);
-          if (msg.type === "PRICE_TICK" && msg.payload) {
-            setItems((prev) => {
-              const copy = [...prev];
-              const idx = copy.findIndex((it) => it.name === msg.payload.symbol);
-              const price = msg.payload.price ?? msg.payload.c;
-              const chg = msg.payload.changePercent ?? msg.payload.dp ?? 0;
-              if (price == null) return prev; // Avoid setting undefined if payload is weird
-
-              const tick = {
-                name: msg.payload.symbol,
-                price: price,
-                chg: chg
-              };
-              if (idx >= 0) {
-                copy[idx] = tick;
-              } else {
-                copy.push(tick);
-              }
-              return copy;
-            });
-          }
-        } catch (err) {}
-      };
-    } catch (err) {
-      console.error("WebSocket connect error", err);
-    }
-
-    return () => {
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ action: "unsubscribe", symbols: SYMBOLS }));
-        ws.close();
-      } else if (ws) {
-        ws.close();
-      }
-    };
+    // WebSocket when available, automatic polling fallback when the upgrade
+    // can't get through (e.g. proxy not forwarding it) so the ticker still moves.
+    return subscribeTicks(SYMBOLS, (q) => {
+      const price = q.price;
+      if (price == null) return;
+      const chg = q.changePercent ?? 0;
+      setItems((prev) => {
+        const copy = [...prev];
+        const idx = copy.findIndex((it) => it.name === q.symbol);
+        const tick = { name: q.symbol, price, chg };
+        if (idx >= 0) copy[idx] = tick;
+        else copy.push(tick);
+        return copy;
+      });
+    });
   }, []);
 
   // Render ticker HTML twice for seamless marquee

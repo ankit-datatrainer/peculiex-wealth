@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   fetchCandles,
-  wsBaseUrl,
+  subscribeTicks,
   type CandleSeries,
   type Timeframe,
   TIMEFRAMES
@@ -59,59 +59,36 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
      and the line grows the way Groww/Zerodha intraday charts do. */
   useEffect(() => {
     if (tf !== "1D") return;
-    let ws: WebSocket | null = null;
 
-    try {
-      ws = new WebSocket(wsBaseUrl());
-      ws.onopen = () => {
-        ws?.send(JSON.stringify({ action: "subscribe", symbols: [symbol] }));
-      };
-      ws.onmessage = (e) => {
-        try {
-          const msg = JSON.parse(e.data);
-          if (msg.type !== "PRICE_TICK" || !msg.payload) return;
-          const p = msg.payload;
-          if (p.symbol !== symbol && p.yahooSymbol !== symbol) return;
+    return subscribeTicks([symbol], (p) => {
+      if (p.symbol !== symbol && p.yahooSymbol !== symbol) return;
+      const price = p.price;
+      if (price == null) return;
+      const t = (p as any).t ? (p as any).t * 1000 : Date.now();
 
-          const price = p.price ?? p.c;
-          if (price == null) return;
-          const t = p.t ? p.t * 1000 : Date.now();
+      setSeries((prev) => {
+        if (!prev || !prev.candles.length) return prev;
+        const candles = prev.candles.slice();
+        const last = candles[candles.length - 1];
+        const sameMinute =
+          last && Math.floor(last.t / 60_000) === Math.floor(t / 60_000);
 
-          setSeries((prev) => {
-            if (!prev || !prev.candles.length) return prev;
-            const candles = prev.candles.slice();
-            const last = candles[candles.length - 1];
-            const sameMinute =
-              last && Math.floor(last.t / 60_000) === Math.floor(t / 60_000);
-
-            if (sameMinute) {
-              candles[candles.length - 1] = {
-                ...last,
-                c: price,
-                h: Math.max(last.h ?? price, price),
-                l: Math.min(last.l ?? price, price)
-              };
-            } else {
-              candles.push({ t, c: price, o: price, h: price, l: price, v: 0 });
-              // Keep the intraday series bounded (a full session is ~375 min).
-              if (candles.length > 420) candles.shift();
-            }
-            return { ...prev, candles };
-          });
-        } catch (err) {}
-      };
-    } catch (err) {
-      console.error("WebSocket connect error", err);
-    }
-
-    return () => {
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ action: "unsubscribe", symbols: [symbol] }));
-        ws.close();
-      } else if (ws) {
-        ws.close();
-      }
-    };
+        if (sameMinute) {
+          if (last.c === price) return prev; // nothing moved — avoid a re-render
+          candles[candles.length - 1] = {
+            ...last,
+            c: price,
+            h: Math.max(last.h ?? price, price),
+            l: Math.min(last.l ?? price, price)
+          };
+        } else {
+          candles.push({ t, c: price, o: price, h: price, l: price, v: 0 });
+          // Keep the intraday series bounded (a full session is ~375 min).
+          if (candles.length > 420) candles.shift();
+        }
+        return { ...prev, candles };
+      });
+    });
   }, [symbol, tf]);
 
   // Track wrapper width so the chart fills its container

@@ -11,7 +11,7 @@ import {
   fmtPct,
   fmtPrice,
   isIndex,
-  wsBaseUrl,
+  subscribeTicks,
   type LiveQuote,
   type NewsItem,
   type StockProfile
@@ -89,55 +89,35 @@ export default function StockDetail({ symbol }: Props) {
      2s for subscribed symbols while the market is open. This is what makes the
      header price move in real time (the 15s poll above is only a safety net). */
   useEffect(() => {
-    let ws: WebSocket | null = null;
-    try {
-      ws = new WebSocket(wsBaseUrl());
-      ws.onopen = () => {
-        ws?.send(JSON.stringify({ action: "subscribe", symbols: [symbol] }));
-      };
-      ws.onmessage = (e) => {
-        try {
-          const msg = JSON.parse(e.data);
-          if (msg.type !== "PRICE_TICK" || !msg.payload) return;
-          const p = msg.payload;
-          if (p.symbol !== symbol && p.yahooSymbol !== symbol) return;
+    const unsubscribe = subscribeTicks([symbol], (p) => {
+      if (p.symbol !== symbol && p.yahooSymbol !== symbol) return;
+      const price = p.price;
+      if (price == null) return;
 
-          const price = p.price ?? p.c;
-          if (price == null) return;
+      // Flash the price green/red in the direction it moved.
+      const prev = lastPriceRef.current;
+      if (prev != null && price !== prev) {
+        setTickDir(price > prev ? "up" : "dn");
+        if (flashTimer.current) window.clearTimeout(flashTimer.current);
+        flashTimer.current = window.setTimeout(() => setTickDir(null), 700);
+      }
+      lastPriceRef.current = price;
 
-          // Flash the price green/red in the direction it moved.
-          const prev = lastPriceRef.current;
-          if (prev != null && price !== prev) {
-            setTickDir(price > prev ? "up" : "dn");
-            if (flashTimer.current) window.clearTimeout(flashTimer.current);
-            flashTimer.current = window.setTimeout(() => setTickDir(null), 700);
-          }
-          lastPriceRef.current = price;
-
-          setQuote((q) =>
-            q
-              ? {
-                  ...q,
-                  price,
-                  change: p.change ?? p.d ?? q.change,
-                  changePercent: p.changePercent ?? p.dp ?? q.changePercent
-                }
-              : q
-          );
-        } catch (err) {}
-      };
-    } catch (err) {
-      console.error("WebSocket connect error", err);
-    }
+      setQuote((q) =>
+        q
+          ? {
+              ...q,
+              price,
+              change: p.change ?? q.change,
+              changePercent: p.changePercent ?? q.changePercent
+            }
+          : q
+      );
+    });
 
     return () => {
       if (flashTimer.current) window.clearTimeout(flashTimer.current);
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ action: "unsubscribe", symbols: [symbol] }));
-        ws.close();
-      } else if (ws) {
-        ws.close();
-      }
+      unsubscribe();
     };
   }, [symbol]);
 
