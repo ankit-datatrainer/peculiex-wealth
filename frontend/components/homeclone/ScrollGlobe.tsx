@@ -189,7 +189,12 @@ export default function ScrollGlobe() {
         y = y2;
         z = z2;
 
-        const persp = 1 / (2.2 - z);
+        // Guard: during shape morphs a rotated point can land at or behind
+        // the camera plane (z >= 2.2), flipping persp negative — which made
+        // ctx.arc() throw IndexSizeError ("radius provided is negative").
+        const denom = 2.2 - z;
+        if (denom <= 0.05) continue;
+        const persp = 1 / denom;
         const sx = cx + x * R * persp;
         const sy = cy + y * R * persp;
 
@@ -197,8 +202,9 @@ export default function ScrollGlobe() {
         if (sx < -20 || sx > W + 20 || sy < -20 || sy > H + 20) continue;
 
         const depth = (z + 1) / 2;
-        const alpha = (0.08 + depth * 0.55) * opacity;
+        const alpha = Math.min(1, Math.max(0, (0.08 + depth * 0.55) * opacity));
         const size = (0.4 + depth * 1.6) * persp * 1.3;
+        if (size <= 0 || alpha <= 0) continue;
 
         // Front-facing particles: bright cyan; back: deeper indigo
         let r8: number, g8: number, b8: number;

@@ -95,19 +95,26 @@ const STATS = [
   { v: "10 yrs+", l: "Industry experience" }
 ];
 
-const PARTNERS = [
-  "HDFC Mutual Fund",
-  "ICICI Prudential",
-  "Tata Mutual Fund",
-  "Nippon India",
-  "DSP Mutual Fund",
-  "Axis Mutual Fund",
-  "UTI Mutual Fund",
-  "Aditya Birla Capital",
-  "HSBC Mutual Fund",
-  "LIC Mutual Fund",
-  "Invesco",
-  "Quant Mutual Fund"
+/* Same partner logo assets the rest of the site uses (see PartnerLogos.tsx).
+   Rendered on white tiles so the artwork reads identically in light and dark
+   theme — the tile is the constant background, never the page. */
+const PARTNERS: Array<{ name: string; img: string }> = [
+  { name: "HDFC", img: "/partners/1.png" },
+  { name: "Canara Robeco", img: "/partners/2.png" },
+  { name: "Invesco", img: "/partners/3.png" },
+  { name: "ICICI Prudential", img: "/partners/4.png" },
+  { name: "Nippon India", img: "/partners/5.png" },
+  { name: "Motilal Oswal", img: "/partners/6.png" },
+  { name: "Quant", img: "/partners/7.png" },
+  { name: "SBI Mutual Fund", img: "/partners/8.png" },
+  { name: "Kotak Mutual Fund", img: "/partners/12.png" },
+  { name: "Tata Mutual Fund", img: "/partners/14.png" },
+  { name: "DSP Mutual Fund", img: "/partners/15.png" },
+  { name: "LIC Mutual Fund", img: "/partners/16.png" },
+  { name: "UTI Mutual Fund", img: "/partners/17.png" },
+  { name: "Axis Mutual Fund", img: "/partners/18.png" },
+  { name: "HSBC Mutual Fund", img: "/partners/19.png" },
+  { name: "Aditya Birla Capital", img: "/partners/20.png" }
 ];
 
 const POSTS = [
@@ -339,10 +346,10 @@ export default function HomeClone() {
           </div>
           <div className="sfc-marquee">
             <div className="sfc-marquee-track">
-              {[...PARTNERS, ...PARTNERS].map((l, i) => (
-                <div key={i} className="sfc-marquee-item">
-                  <span className="sfc-dot" />
-                  {l}
+              {[...PARTNERS, ...PARTNERS].map((p, i) => (
+                <div key={i} className="sfc-partner-tile" title={p.name}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.img} alt={p.name} loading="lazy" />
                 </div>
               ))}
             </div>
@@ -420,6 +427,10 @@ export default function HomeClone() {
                   India&apos;s premium investment marketplace. Multiple asset
                   classes, one platform, advisory-led.
                 </p>
+                <div className="sfc-footer-reg">
+                  <span className="sfc-dot" />
+                  SEBI Registered Investment Distributor
+                </div>
               </div>
               <div>
                 <div className="sfc-footer-col-title">Products</div>
@@ -434,6 +445,18 @@ export default function HomeClone() {
                     <Link href="/products/pms">PMS</Link>
                   </li>
                   <li>
+                    <Link href="/products/aif">AIF</Link>
+                  </li>
+                  <li>
+                    <Link href="/products/fixed-deposits">FDs</Link>
+                  </li>
+                  <li>
+                    <Link href="/products/bonds">Bonds</Link>
+                  </li>
+                  <li>
+                    <Link href="/products/insurance">Insurance</Link>
+                  </li>
+                  <li>
                     <Link href="/unlisted">Unlisted</Link>
                   </li>
                 </ul>
@@ -445,20 +468,102 @@ export default function HomeClone() {
                     <Link href="/about">About</Link>
                   </li>
                   <li>
-                    <Link href="/news">News</Link>
+                    <Link href="/stories">Investor stories</Link>
                   </li>
                   <li>
                     <Link href="/faq">FAQ</Link>
+                  </li>
+                  <li>
+                    <Link href="/get-started">Get started</Link>
                   </li>
                   <li>
                     <Link href="/careers">Careers</Link>
                   </li>
                 </ul>
               </div>
+              <div>
+                <div className="sfc-footer-col-title">Resources</div>
+                <ul>
+                  <li>
+                    <Link href="/news">News</Link>
+                  </li>
+                  <li>
+                    <Link href="/calculator">SIP Calculator</Link>
+                  </li>
+                  <li>
+                    <Link href="/calculator/lumpsum">Lumpsum Calculator</Link>
+                  </li>
+                  <li>
+                    <Link href="/calculator/goal-planner">Goal Planner</Link>
+                  </li>
+                  <li>
+                    <Link href="/insights">Market Insights</Link>
+                  </li>
+                  <li>
+                    <Link href="/glossary">Glossary</Link>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <div className="sfc-footer-col-title">Legal</div>
+                <ul>
+                  <li>
+                    <Link href="/legal/terms">Terms of service</Link>
+                  </li>
+                  <li>
+                    <Link href="/legal/privacy">Privacy policy</Link>
+                  </li>
+                  <li>
+                    <Link href="/legal/risk-disclosure">Risk disclosure</Link>
+                  </li>
+                  <li>
+                    <Link href="/legal/grievance">Grievance redressal</Link>
+                  </li>
+                  <li>
+                    <Link href="/legal/investor-charter">Investor charter</Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="sfc-footer-disclaim">
+              <p>
+                <strong>
+                  Investments in securities markets are subject to market
+                  risks.
+                </strong>{" "}
+                Read all related documents carefully before investing. Past
+                performance does not guarantee future returns. Finvoq Wealth
+                Pvt. Ltd. is a SEBI Registered Investment Distributor. Demat
+                services are provided by SEBI registered portfolio management
+                distributor.
+              </p>
+              <p>
+                Risk Factors – Investments in Mutual Funds are subject to
+                Market Risks. Read all scheme related documents carefully
+                before investing. Mutual Fund Schemes do not assure or
+                guarantee any returns. Past performances of any Mutual Fund
+                Scheme may or may not be sustained in future. There is no
+                guarantee that the investment objective of any suggested scheme
+                shall be achieved. We deal in Regular Plans only for Mutual
+                Fund Schemes and earn a Trailing Commission on client
+                investments. Disclosure for commission earnings is made to
+                clients at the time of investment. Option of Direct Plan for
+                every Mutual Fund Scheme is available to investors offering
+                advantage of lower expense ratio. We are not entitled to earn
+                any commission on Direct plans; hence we do not deal in Direct
+                Plans.
+              </p>
             </div>
 
             <div className="sfc-footer-base">
-              <span>© {new Date().getFullYear()} Finvoq Wealth Pvt. Ltd.</span>
+              <span>
+                © {new Date().getFullYear()} Finvoq Wealth Pvt. Ltd. — All
+                rights reserved.
+              </span>
+              <span className="sfc-footer-made">
+                Crafted with care · Delhi, India
+              </span>
               <a href="#intro">Back to top ↑</a>
             </div>
           </div>
@@ -910,6 +1015,28 @@ export default function HomeClone() {
           font-size: clamp(20px, 2.4vw, 30px);
           color: oklch(0.16 0.07 265 / 0.45);
         }
+        /* Partner logo tiles — constant white ground so the artwork reads the
+           same in light and dark theme. */
+        .sfc-partner-tile {
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 92px;
+          width: 172px;
+          margin: 0 14px;
+          padding: 16px 22px;
+          background: #fff;
+          border: 1px solid oklch(0.16 0.07 265 / 0.12);
+          border-radius: 18px;
+          box-shadow: 0 8px 22px oklch(0.16 0.07 265 / 0.07);
+        }
+        .sfc-partner-tile img {
+          max-height: 100%;
+          max-width: 100%;
+          object-fit: contain;
+          display: block;
+        }
         .sfc-dot {
           display: inline-block;
           height: 6px;
@@ -1061,21 +1188,58 @@ export default function HomeClone() {
         .sfc-footer-links {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 32px;
+          gap: 40px 32px;
           padding: 64px 0;
           font-size: 14px;
         }
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
           .sfc-footer-links {
-            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-columns: 1.7fr 1fr 1fr 1fr 1fr;
           }
         }
         .sfc-footer-brand {
           grid-column: span 2;
         }
-        @media (min-width: 768px) {
+        @media (min-width: 1024px) {
           .sfc-footer-brand {
             grid-column: span 1;
+          }
+        }
+        .sfc-footer-reg {
+          display: inline-flex;
+          align-items: center;
+          gap: 9px;
+          margin-top: 18px;
+          padding: 8px 16px;
+          border-radius: 999px;
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          background: rgba(255, 255, 255, 0.06);
+          font-size: 12px;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.75);
+        }
+        .sfc-footer-disclaim {
+          border-top: 1px solid rgba(255, 255, 255, 0.12);
+          padding: 28px 0 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+        .sfc-footer-disclaim p {
+          margin: 0;
+          font-size: 11.5px;
+          line-height: 1.7;
+          color: rgba(255, 255, 255, 0.45);
+        }
+        .sfc-footer-disclaim strong {
+          color: rgba(255, 255, 255, 0.65);
+        }
+        .sfc-footer-made {
+          display: none;
+        }
+        @media (min-width: 768px) {
+          .sfc-footer-made {
+            display: inline;
           }
         }
         .sfc-footer-logo {
@@ -1123,6 +1287,56 @@ export default function HomeClone() {
         }
         .sfc-footer-base a:hover {
           color: #fff;
+        }
+
+        /* ── Homepage-only nav restyle (SecuredFi chrome) ──────────────────
+           These globals live inside this page's styled-jsx, so they apply
+           ONLY while the homepage is mounted and vanish on navigation:
+           the full-width pill becomes a standalone logo pill on the left
+           and a floating links/CTA pill on the RIGHT, like the clone. */
+        .main-nav .nav-inner,
+        .dark .main-nav .nav-inner {
+          background: transparent !important;
+          border: 0 !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          max-width: 1400px;
+        }
+        .main-nav .logo {
+          background: #fff;
+          border-radius: 999px;
+          padding: 6px 20px;
+          box-shadow: 0 10px 30px rgba(4, 10, 40, 0.25);
+        }
+        .main-nav .nav-inner > nav {
+          margin-left: auto;
+          background: #fff;
+          border-radius: 999px;
+          padding: 6px 10px;
+          box-shadow: 0 10px 30px rgba(4, 10, 40, 0.25);
+        }
+        .main-nav .nav-cta {
+          background: #fff;
+          border-radius: 999px;
+          padding: 6px 8px !important;
+          margin-left: 10px;
+          box-shadow: 0 10px 30px rgba(4, 10, 40, 0.25);
+        }
+        /* Dark theme keeps its dark pills (so the dark-mode logo stays
+           visible) — the page behind them is blue either way. */
+        .dark .main-nav .logo,
+        .dark .main-nav .nav-inner > nav,
+        .dark .main-nav .nav-cta {
+          background: #0d1f1a;
+          border: 1px solid rgba(107, 251, 213, 0.14);
+        }
+        @media (max-width: 760px) {
+          .main-nav .nav-inner {
+            margin: 0 14px !important;
+          }
+          .main-nav .logo {
+            padding: 5px 14px;
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {
