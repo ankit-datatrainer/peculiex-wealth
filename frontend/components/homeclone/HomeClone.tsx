@@ -167,26 +167,27 @@ export default function HomeClone() {
         {/* ── Hero ─────────────────────────────────────────────────────── */}
         <section id="intro" className="sfc-hero">
           <div className="sfc-hero-inner">
-            <div className="sfc-hero-top">
-              <h1 className="sfc-h1 sfc-up sfc-d1">
-                Invest with clarity across every{" "}
-                <span className="sfc-h1-em">
-                  asset&nbsp;class.
-                  <span className="sfc-h1-underline sfc-d3" />
-                </span>
-              </h1>
+            {/* Centered headline — SecuredFi composition */}
+            <h1 className="sfc-h1 sfc-up sfc-d1">
+              Invest with clarity across every{" "}
+              <span className="sfc-h1-em">
+                asset&nbsp;class.
+                <span className="sfc-h1-underline sfc-d3" />
+              </span>
+            </h1>
 
-              <a href="#platform" className="sfc-portrait sfc-up sfc-d2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/homeclone-portrait.jpg" alt="Your Finvoq advisor" />
-                <span className="sfc-portrait-play">
-                  <Play size={15} fill="currentColor" />
-                </span>
-              </a>
-            </div>
+            {/* Portrait floating on the right edge, mid-height */}
+            <a href="#platform" className="sfc-portrait sfc-up sfc-d2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/homeclone-portrait.jpg" alt="Your Finvoq advisor" />
+              <span className="sfc-portrait-play">
+                <Play size={15} fill="currentColor" />
+              </span>
+            </a>
 
+            {/* Bottom row: link left · buttons CENTER · share right */}
             <div className="sfc-hero-bottom sfc-up sfc-d3">
-              <Link href="/get-started" className="sfc-mini-link">
+              <Link href="/get-started" className="sfc-mini-link sfc-hb-left">
                 Start investing
               </Link>
 
@@ -653,24 +654,16 @@ export default function HomeClone() {
             padding-right: 40px;
           }
         }
-        .sfc-hero-top {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 40px;
-          align-items: start;
-        }
-        @media (min-width: 768px) {
-          .sfc-hero-top {
-            grid-template-columns: 1fr auto;
-          }
-        }
         .sfc-h1 {
           font-weight: 300;
           color: #fff;
-          font-size: clamp(2.5rem, 6.4vw, 6.8rem);
-          line-height: 1.02;
+          font-size: clamp(2.5rem, 6.2vw, 6.6rem);
+          line-height: 1.06;
           letter-spacing: -0.02em;
-          margin: 0;
+          /* SecuredFi composition: headline centered on the screen */
+          text-align: center;
+          max-width: 1150px;
+          margin: clamp(24px, 7vh, 90px) auto 0;
         }
         .sfc-h1-em {
           position: relative;
@@ -696,15 +689,34 @@ export default function HomeClone() {
           }
         }
         .sfc-portrait {
-          position: relative;
+          /* Floats on the right edge at mid-height, like the reference */
+          position: absolute;
+          right: clamp(16px, 4vw, 72px);
+          top: 44%;
+          transform: translateY(-50%);
           display: none;
-          height: 160px;
-          width: 160px;
-          margin-top: 32px;
+          height: clamp(140px, 13vw, 190px);
+          width: clamp(140px, 13vw, 190px);
+          z-index: 3;
         }
         @media (min-width: 768px) {
           .sfc-portrait {
             display: block;
+          }
+        }
+        /* Own entrance keyframes — the generic sfcUp ends at transform:none,
+           which would erase this element's translateY(-50%) centring. */
+        .sfc-portrait.sfc-up {
+          animation-name: sfcPortraitIn;
+        }
+        @keyframes sfcPortraitIn {
+          from {
+            opacity: 0;
+            transform: translateY(calc(-50% + 22px));
+          }
+          to {
+            opacity: 1;
+            transform: translateY(-50%);
           }
         }
         .sfc-portrait img {
@@ -733,13 +745,32 @@ export default function HomeClone() {
           transform: scale(1.1);
         }
         .sfc-hero-bottom {
+          /* link left · CTAs dead-centre · share right (reference layout) */
           margin-top: auto;
-          display: flex;
-          align-items: flex-end;
-          justify-content: space-between;
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
+          align-items: end;
           gap: 16px;
           padding-top: 64px;
-          flex-wrap: wrap;
+        }
+        .sfc-hb-left {
+          justify-self: start;
+        }
+        .sfc-hero-bottom .sfc-hero-ctas {
+          justify-self: center;
+        }
+        .sfc-hero-bottom .sfc-share {
+          justify-self: end;
+        }
+        @media (max-width: 767px) {
+          .sfc-hero-bottom {
+            grid-template-columns: 1fr;
+            justify-items: center;
+            gap: 20px;
+          }
+          .sfc-hb-left {
+            justify-self: center;
+          }
         }
         .sfc-mini-link {
           font-size: 10px;
@@ -1302,24 +1333,36 @@ export default function HomeClone() {
           padding: 0 !important;
           max-width: 1400px;
         }
+        /* One consistent pill height for every piece of the chrome. */
         .main-nav .logo {
           background: #fff;
           border-radius: 999px;
-          padding: 6px 20px;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          padding: 0 22px;
           box-shadow: 0 10px 30px rgba(4, 10, 40, 0.25);
         }
+        /* Links + theme toggle + account join into a SINGLE right-side pill:
+           the two elements are flush (no gap), each contributing one rounded
+           end, sharing the same height and background. */
         .main-nav .nav-inner > nav {
           margin-left: auto;
           background: #fff;
-          border-radius: 999px;
-          padding: 6px 10px;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          border-radius: 999px 0 0 999px;
+          padding: 0 6px 0 16px;
           box-shadow: 0 10px 30px rgba(4, 10, 40, 0.25);
         }
         .main-nav .nav-cta {
           background: #fff;
-          border-radius: 999px;
-          padding: 6px 8px !important;
-          margin-left: 10px;
+          height: 60px;
+          align-items: center;
+          border-radius: 0 999px 999px 0;
+          padding: 0 12px 0 6px !important;
+          margin-left: 0 !important;
           box-shadow: 0 10px 30px rgba(4, 10, 40, 0.25);
         }
         /* Dark theme keeps its dark pills (so the dark-mode logo stays
@@ -1328,14 +1371,20 @@ export default function HomeClone() {
         .dark .main-nav .nav-inner > nav,
         .dark .main-nav .nav-cta {
           background: #0d1f1a;
-          border: 1px solid rgba(107, 251, 213, 0.14);
         }
         @media (max-width: 760px) {
           .main-nav .nav-inner {
             margin: 0 14px !important;
           }
           .main-nav .logo {
-            padding: 5px 14px;
+            height: 52px;
+            padding: 0 16px;
+          }
+          /* Links are hidden on phones — the controls become a full pill. */
+          .main-nav .nav-cta {
+            height: 52px;
+            border-radius: 999px;
+            padding: 0 10px !important;
           }
         }
 
