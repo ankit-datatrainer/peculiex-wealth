@@ -1,9 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { postJSON } from "@/lib/api";
 import Logo from "./Logo";
 
 export default function Footer() {
+  const pathname = usePathname();
   const [year, setYear] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -32,6 +34,10 @@ export default function Footer() {
       setSubmitting(false);
     }
   };
+
+  // The homepage is the SecuredFi-style clone, which ships its own footer —
+  // rendering this one too would stack two footers on the blue page.
+  if (pathname === "/") return null;
 
   return (
     <footer className="site-footer">
