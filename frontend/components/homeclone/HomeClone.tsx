@@ -500,7 +500,17 @@ export default function HomeClone() {
           </div>
           <div className="sfc-marquee">
             <div className="sfc-marquee-track">
-              {[...PARTNERS, ...PARTNERS].map((p, i) => (
+              {[...PARTNERS.slice(0, 8), ...PARTNERS.slice(0, 8)].map(
+                (p, i) => (
+                  <div key={i} className="sfc-partner-tile" title={p.name}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={p.img} alt={p.name} loading="lazy" />
+                  </div>
+                )
+              )}
+            </div>
+            <div className="sfc-marquee-track sfc-marquee-rev">
+              {[...PARTNERS.slice(8), ...PARTNERS.slice(8)].map((p, i) => (
                 <div key={i} className="sfc-partner-tile" title={p.name}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={p.img} alt={p.name} loading="lazy" />
@@ -796,11 +806,14 @@ export default function HomeClone() {
           z-index: 2;
           max-width: 1400px;
           margin: 0 auto;
-          min-height: 100vh;
+          /* Fixed viewport height so the CTA row always sits in view at the
+             bottom — content is sized to fit, never to push it below fold. */
+          height: 100svh;
+          min-height: 620px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          padding: 158px 24px 40px;
+          padding: clamp(120px, 16svh, 170px) 24px 44px;
         }
         @media (min-width: 768px) {
           .sfc-hero .sfc-hero-inner {
@@ -810,9 +823,18 @@ export default function HomeClone() {
         }
         .sfc-hero .sfc-h1 {
           text-align: center;
-          max-width: 1150px;
-          font-size: clamp(2.5rem, 6.2vw, 6.4rem);
-          margin: clamp(24px, 7vh, 90px) auto 0;
+          text-wrap: balance;
+          font-size: clamp(2.3rem, 5vw, 5.4rem);
+          max-width: 1100px;
+          margin: clamp(8px, 4svh, 48px) auto 0;
+        }
+        /* Keep the centred headline clear of the floating portrait: cap its
+           width so its right edge never reaches the portrait zone. The
+           portrait only renders ≥1100px, so the cap applies there too. */
+        @media (min-width: 1100px) {
+          .sfc-hero .sfc-h1 {
+            max-width: min(1100px, calc(100vw - 580px));
+          }
         }
         .sfc-h1-br {
           display: none;
@@ -832,7 +854,8 @@ export default function HomeClone() {
           width: clamp(140px, 13vw, 190px);
           z-index: 3;
         }
-        @media (min-width: 768px) {
+        /* Only render where the capped headline leaves it clear space */
+        @media (min-width: 1100px) {
           .sfc-portrait {
             display: block;
           }
@@ -1542,12 +1565,37 @@ export default function HomeClone() {
         .sfc-marquee {
           position: relative;
           overflow: hidden;
+          padding: 18px 0 34px;
+          /* Soft edge fade so tiles glide in/out instead of hard-cutting */
+          -webkit-mask-image: linear-gradient(
+            to right,
+            transparent,
+            #000 8%,
+            #000 92%,
+            transparent
+          );
+          mask-image: linear-gradient(
+            to right,
+            transparent,
+            #000 8%,
+            #000 92%,
+            transparent
+          );
         }
         .sfc-marquee-track {
           display: flex;
           white-space: nowrap;
           width: max-content;
-          animation: sfcMarquee 40s linear infinite;
+          animation: sfcMarquee 46s linear infinite;
+        }
+        .sfc-marquee:hover .sfc-marquee-track {
+          animation-play-state: paused;
+        }
+        /* Second row glides the opposite way, slightly slower */
+        .sfc-marquee-rev {
+          margin-top: 24px;
+          animation-direction: reverse;
+          animation-duration: 54s;
         }
         @keyframes sfcMarquee {
           from {
@@ -1565,27 +1613,48 @@ export default function HomeClone() {
           font-size: clamp(20px, 2.4vw, 30px);
           color: oklch(0.16 0.07 265 / 0.45);
         }
-        /* Partner logo tiles — constant white ground so the artwork reads the
-           same in light and dark theme. */
+        /* Partner logo tiles — premium treatment: quiet monochrome cards
+           that bloom to full colour and lift on hover. Constant white ground
+           so the artwork reads the same in light and dark theme. */
         .sfc-partner-tile {
           flex-shrink: 0;
           display: flex;
           align-items: center;
           justify-content: center;
-          height: 92px;
-          width: 172px;
-          margin: 0 14px;
-          padding: 16px 22px;
-          background: #fff;
-          border: 1px solid oklch(0.16 0.07 265 / 0.12);
-          border-radius: 18px;
-          box-shadow: 0 8px 22px oklch(0.16 0.07 265 / 0.07);
+          height: 104px;
+          width: 208px;
+          margin: 0 12px;
+          padding: 24px 34px;
+          background: linear-gradient(180deg, #fff 0%, #fafbfd 100%);
+          border: 1px solid oklch(0.16 0.07 265 / 0.08);
+          border-radius: 20px;
+          box-shadow:
+            0 1px 2px oklch(0.16 0.07 265 / 0.05),
+            0 12px 32px -14px oklch(0.16 0.07 265 / 0.16);
+          transition:
+            transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+            box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+            border-color 0.35s ease;
+          cursor: default;
+        }
+        .sfc-partner-tile:hover {
+          transform: translateY(-6px);
+          border-color: oklch(0.56 0.24 275 / 0.35);
+          box-shadow:
+            0 1px 2px oklch(0.16 0.07 265 / 0.05),
+            0 24px 48px -16px oklch(0.56 0.24 275 / 0.3);
         }
         .sfc-partner-tile img {
           max-height: 100%;
           max-width: 100%;
           object-fit: contain;
           display: block;
+          filter: grayscale(1) opacity(0.62);
+          transition: filter 0.35s ease, transform 0.35s ease;
+        }
+        .sfc-partner-tile:hover img {
+          filter: none;
+          transform: scale(1.05);
         }
         .sfc-dot {
           display: inline-block;
