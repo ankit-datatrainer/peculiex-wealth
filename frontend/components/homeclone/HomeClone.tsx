@@ -1320,72 +1320,13 @@ export default function HomeClone() {
           color: #fff;
         }
 
-        /* ── Homepage-only nav restyle (SecuredFi chrome) ──────────────────
-           These globals live inside this page's styled-jsx, so they apply
-           ONLY while the homepage is mounted and vanish on navigation:
-           the full-width pill becomes a standalone logo pill on the left
-           and a floating links/CTA pill on the RIGHT, like the clone. */
-        .main-nav .nav-inner,
-        .dark .main-nav .nav-inner {
-          background: transparent !important;
-          border: 0 !important;
-          box-shadow: none !important;
-          padding: 0 !important;
+        /* ── Homepage nav ──────────────────────────────────────────────────
+           The site's own nav pill already matches the reference chrome: ONE
+           continuous white pill holding the logo, links, theme toggle and
+           account together — no separators. No overrides needed; only widen
+           it to this page's 1400px container so it lines up with the hero. */
+        .main-nav .nav-inner {
           max-width: 1400px;
-        }
-        /* One consistent pill height for every piece of the chrome. */
-        .main-nav .logo {
-          background: #fff;
-          border-radius: 999px;
-          height: 60px;
-          display: flex;
-          align-items: center;
-          padding: 0 22px;
-          box-shadow: 0 10px 30px rgba(4, 10, 40, 0.25);
-        }
-        /* Links + theme toggle + account join into a SINGLE right-side pill:
-           the two elements are flush (no gap), each contributing one rounded
-           end, sharing the same height and background. */
-        .main-nav .nav-inner > nav {
-          margin-left: auto;
-          background: #fff;
-          height: 60px;
-          display: flex;
-          align-items: center;
-          border-radius: 999px 0 0 999px;
-          padding: 0 6px 0 16px;
-          box-shadow: 0 10px 30px rgba(4, 10, 40, 0.25);
-        }
-        .main-nav .nav-cta {
-          background: #fff;
-          height: 60px;
-          align-items: center;
-          border-radius: 0 999px 999px 0;
-          padding: 0 12px 0 6px !important;
-          margin-left: 0 !important;
-          box-shadow: 0 10px 30px rgba(4, 10, 40, 0.25);
-        }
-        /* Dark theme keeps its dark pills (so the dark-mode logo stays
-           visible) — the page behind them is blue either way. */
-        .dark .main-nav .logo,
-        .dark .main-nav .nav-inner > nav,
-        .dark .main-nav .nav-cta {
-          background: #0d1f1a;
-        }
-        @media (max-width: 760px) {
-          .main-nav .nav-inner {
-            margin: 0 14px !important;
-          }
-          .main-nav .logo {
-            height: 52px;
-            padding: 0 16px;
-          }
-          /* Links are hidden on phones — the controls become a full pill. */
-          .main-nav .nav-cta {
-            height: 52px;
-            border-radius: 999px;
-            padding: 0 10px !important;
-          }
         }
 
         @media (prefers-reduced-motion: reduce) {
