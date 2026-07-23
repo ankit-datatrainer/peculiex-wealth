@@ -6,10 +6,13 @@ import { postJSON } from "@/lib/api";
 import {
   ArrowDown,
   ArrowUpRight,
+  Bell,
   Layers,
   LineChart,
-  Play,
-  Share2,
+  Menu,
+  PieChart,
+  Search,
+  Settings,
   ShieldCheck,
   Zap
 } from "lucide-react";
@@ -139,6 +142,28 @@ export default function HomeClone() {
   const [submitting, setSubmitting] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const emailRef = useRef<HTMLInputElement | null>(null);
+  const heroTrackRef = useRef<HTMLDivElement | null>(null);
+
+  /* Drive the hero choreography (giant "Platform" sweep, headline lift,
+     device parallax) with a single CSS variable set from scroll progress. */
+  useEffect(() => {
+    const el = heroTrackRef.current;
+    if (!el) return;
+    let raf = 0;
+    let last = -1;
+    const tick = () => {
+      const r = el.getBoundingClientRect();
+      const total = Math.max(r.height - window.innerHeight, 1);
+      const p = Math.min(1, Math.max(0, -r.top / total));
+      if (Math.abs(p - last) > 0.0005) {
+        el.style.setProperty("--hp", p.toFixed(4));
+        last = p;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   const onSubscribe = async () => {
     const input = emailRef.current;
@@ -164,34 +189,26 @@ export default function HomeClone() {
       <ScrollGlobe />
 
       <div className="sfc-content">
-        {/* ── Hero ─────────────────────────────────────────────────────── */}
-        <section id="intro" className="sfc-hero">
-          <div className="sfc-hero-inner">
-            {/* Centered headline — SecuredFi composition */}
-            <h1 className="sfc-h1 sfc-up sfc-d1">
-              Invest with clarity across every{" "}
-              <span className="sfc-h1-em">
-                asset&nbsp;class.
-                <span className="sfc-h1-underline sfc-d3" />
-              </span>
-            </h1>
+        {/* ── Hero — pinned blue panel, SecuredFi composition ──────────── */}
+        <div id="intro" className="sfc-hero-track" ref={heroTrackRef}>
+          <Stars seed={3} />
+          <section className="sfc-hero-panel">
+            {/* Giant mint word sweeping across as you scroll */}
+            <div className="sfc-giantword" aria-hidden>
+              Platform
+            </div>
 
-            {/* Portrait floating on the right edge, mid-height */}
-            <a href="#platform" className="sfc-portrait sfc-up sfc-d2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/homeclone-portrait.jpg" alt="Your Finvoq advisor" />
-              <span className="sfc-portrait-play">
-                <Play size={15} fill="currentColor" />
-              </span>
-            </a>
+            <div className="sfc-hero-inner">
+              <h1 className="sfc-h1 sfc-up sfc-d1">
+                All-in-one investment{" "}
+                <span className="sfc-h1-em">
+                  platform
+                  <span className="sfc-h1-underline sfc-d3" />
+                </span>{" "}
+                for serious Indian investors
+              </h1>
 
-            {/* Bottom row: link left · buttons CENTER · share right */}
-            <div className="sfc-hero-bottom sfc-up sfc-d3">
-              <Link href="/get-started" className="sfc-mini-link sfc-hb-left">
-                Start investing
-              </Link>
-
-              <div className="sfc-hero-ctas">
+              <div className="sfc-hero-ctas sfc-up sfc-d2">
                 <a href="#platform" className="sfc-btn-ghost">
                   Explore <ArrowDown size={15} />
                 </a>
@@ -199,20 +216,124 @@ export default function HomeClone() {
                   Open Account
                 </Link>
               </div>
+            </div>
 
-              <button
-                type="button"
-                className="sfc-mini-link sfc-share"
-                onClick={() => {
-                  if (typeof navigator !== "undefined" && navigator.share) {
-                    navigator
-                      .share({ title: "Finvoq", url: window.location.href })
-                      .catch(() => {});
-                  }
-                }}
-              >
-                Share <Share2 size={11} />
-              </button>
+            {/* Device mockups — tablet + phone, cropped by the panel edge */}
+            <div className="sfc-devices sfc-up sfc-d2" aria-hidden>
+              <div className="sfc-tablet">
+                <div className="sfc-tablet-screen">
+                  <div className="sfc-tab-side">
+                    <span className="sfc-tab-logo">
+                      <span className="sfc-dot" />
+                    </span>
+                    <span className="sfc-tab-ico">
+                      <PieChart size={16} />
+                    </span>
+                    <span className="sfc-tab-ico">
+                      <LineChart size={16} />
+                    </span>
+                    <span className="sfc-tab-ico">
+                      <Settings size={16} />
+                    </span>
+                  </div>
+                  <div className="sfc-tab-main">
+                    <div className="sfc-tab-head">
+                      <div>
+                        <b>Wealth Dashboard</b>
+                        <span>By Finvoq</span>
+                      </div>
+                      <span className="sfc-tab-search">
+                        <Search size={14} />
+                      </span>
+                    </div>
+                    <div className="sfc-tab-tabs">
+                      <span className="on">INVEST</span>
+                      <span>TRACK</span>
+                    </div>
+                    <div className="sfc-tab-metric">
+                      <label>PORTFOLIO XIRR</label>
+                      <strong>18.20%</strong>
+                    </div>
+                    <div className="sfc-tab-row">
+                      <span>ASSET</span>
+                      <b>Nifty 50 Index Fund</b>
+                    </div>
+                    <div className="sfc-tab-row">
+                      <span>SIP DATE</span>
+                      <b>1st of every month</b>
+                    </div>
+                    <div className="sfc-tab-cta">DONE</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="sfc-phone">
+                <div className="sfc-phone-screen">
+                  <div className="sfc-ph-top">
+                    <span className="sfc-ph-burger">
+                      <Menu size={13} />
+                    </span>
+                    <span className="sfc-ph-ico">
+                      <Bell size={12} />
+                    </span>
+                    <span className="sfc-ph-ico">
+                      <Search size={12} />
+                    </span>
+                    <span className="sfc-ph-avatar" />
+                  </div>
+                  <label>BALANCE</label>
+                  <strong>₹2.4Cr</strong>
+                  <div className="sfc-ph-chart">
+                    <span className="sfc-ph-chip">+18.2%</span>
+                    <svg viewBox="0 0 220 96" preserveAspectRatio="none">
+                      <path
+                        d="M0,88 C34,86 48,44 76,42 C102,40 112,66 138,34 C158,10 186,16 220,12"
+                        fill="none"
+                        stroke="oklch(0.9 0.13 155)"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                      />
+                      <circle
+                        cx="138"
+                        cy="34"
+                        r="4.5"
+                        fill="oklch(0.9 0.13 155)"
+                      />
+                    </svg>
+                  </div>
+                  <div className="sfc-ph-dates">
+                    <span>SEP 25</span>
+                    <span>DEC 25</span>
+                    <span>MAR 26</span>
+                    <span>JUN 26</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* ── Overlay card — rises over the pinned hero panel ──────────── */}
+        <section id="platform" className="sfc-overcard">
+          <div className="sfc-wrap">
+            <div className="sfc-sec-head">
+              <p className="sfc-eyebrow sfc-eyebrow-indigo">The Platform</p>
+              <h2 className="sfc-h2-serif">
+                A curated marketplace built like an institution and open to
+                everyone.
+              </h2>
+            </div>
+
+            <div className="sfc-feature-grid sfc-feature-grid-light">
+              {FEATURES.map((f, i) => (
+                <Reveal key={f.title} delay={i * 80}>
+                  <div className="sfc-feature">
+                    <f.icon className="sfc-feature-icon" />
+                    <h3>{f.title}</h3>
+                    <p>{f.desc}</p>
+                  </div>
+                </Reveal>
+              ))}
             </div>
           </div>
         </section>
@@ -272,31 +393,6 @@ export default function HomeClone() {
                 wealth to the future.
               </p>
             </Reveal>
-          </div>
-        </section>
-
-        {/* ── Platform ─────────────────────────────────────────────────── */}
-        <section id="platform" className="sfc-platform">
-          <div className="sfc-wrap">
-            <div className="sfc-sec-head">
-              <p className="sfc-eyebrow sfc-eyebrow-indigo">The Platform</p>
-              <h2 className="sfc-h2-serif">
-                A curated marketplace built like an institution and open to
-                everyone.
-              </h2>
-            </div>
-
-            <div className="sfc-feature-grid">
-              {FEATURES.map((f, i) => (
-                <Reveal key={f.title} delay={i * 80}>
-                  <div className="sfc-feature">
-                    <f.icon className="sfc-feature-icon" />
-                    <h3>{f.title}</h3>
-                    <p>{f.desc}</p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -630,40 +726,370 @@ export default function HomeClone() {
           transform: none;
         }
 
-        /* ── Hero ── */
-        .sfc-hero {
+        /* ── Hero — pinned rounded panel + overlay handoff ──
+           The track is taller than the viewport; the blue panel pins inside
+           it while the giant word sweeps, then the white overlay card
+           (margin-top: -100vh) rises over the still-pinned panel. */
+        .sfc-hero-track {
+          --hp: 0;
           position: relative;
-          min-height: 100vh;
+          height: 280vh;
+          z-index: 1;
+        }
+        .sfc-hero-track > .sfc-stars {
+          position: fixed;
+          height: 100vh;
+        }
+        .sfc-hero-panel {
+          position: sticky;
+          top: 0;
+          height: 100vh;
           overflow: hidden;
-          background-color: oklch(0.56 0.24 275 / 0.92);
+          margin: 0 10px;
+          border-radius: 0 0 44px 44px;
+          background-color: oklch(0.56 0.24 275);
+          box-shadow: 0 40px 90px oklch(0.1 0.05 265 / 0.55);
+        }
+        @media (min-width: 768px) {
+          .sfc-hero-panel {
+            border-radius: 44px;
+            margin: 12px 12px 0;
+            height: calc(100vh - 12px);
+          }
+        }
+        /* Giant mint word — sweeps right-to-left with scroll */
+        .sfc-giantword {
+          position: absolute;
+          bottom: -0.28em;
+          left: 0;
+          z-index: 1;
+          font-size: clamp(220px, 34vw, 560px);
+          font-weight: 300;
+          letter-spacing: -0.045em;
+          line-height: 1;
+          white-space: nowrap;
+          color: var(--sfc-mint);
+          pointer-events: none;
+          opacity: min(1, calc(var(--hp) * 3));
+          transform: translateX(calc(30vw - var(--hp) * 95vw));
+          will-change: transform, opacity;
         }
         .sfc-hero-inner {
           position: relative;
           z-index: 2;
           max-width: 1400px;
           margin: 0 auto;
-          min-height: 100vh;
+          height: 100%;
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
-          padding: 158px 24px 40px;
+          padding: clamp(120px, 18vh, 190px) 24px 40px;
+          transform: translateY(calc(var(--hp) * -14vh));
+          opacity: calc(1 - var(--hp) * 1.6);
+          will-change: transform, opacity;
         }
         @media (min-width: 768px) {
           .sfc-hero-inner {
-            padding-left: 40px;
+            padding-left: clamp(40px, 5vw, 88px);
             padding-right: 40px;
           }
         }
         .sfc-h1 {
           font-weight: 300;
           color: #fff;
-          font-size: clamp(2.5rem, 6.2vw, 6.6rem);
-          line-height: 1.06;
+          font-size: clamp(2.6rem, 5.6vw, 6rem);
+          line-height: 1.08;
           letter-spacing: -0.02em;
-          /* SecuredFi composition: headline centered on the screen */
+          /* Reference composition: headline left-aligned, upper half */
+          text-align: left;
+          max-width: 13em;
+          margin: 0;
+        }
+        .sfc-hero-inner .sfc-hero-ctas {
+          margin-top: clamp(28px, 4.5vh, 48px);
+        }
+        /* Device mockups, bottom-right, cropped by the panel edge */
+        .sfc-devices {
+          position: absolute;
+          z-index: 2;
+          right: max(-60px, -4vw);
+          bottom: -70px;
+          display: none;
+          transform: translateY(calc(var(--hp) * 10vh));
+          will-change: transform;
+        }
+        @media (min-width: 900px) {
+          .sfc-devices {
+            display: block;
+          }
+        }
+        .sfc-tablet {
+          width: clamp(520px, 46vw, 760px);
+          border-radius: 34px;
+          background: #0b0b10;
+          padding: 16px;
+          box-shadow: 0 50px 100px oklch(0.1 0.05 265 / 0.5);
+        }
+        .sfc-tablet-screen {
+          display: flex;
+          gap: 14px;
+          border-radius: 22px;
+          background: #fbfaf7;
+          padding: 18px;
+          min-height: 380px;
+          color: var(--sfc-navy);
+        }
+        .sfc-tab-side {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 12px;
+          border-radius: 16px;
+          background: var(--sfc-indigo);
+          padding: 14px 10px;
+          color: #fff;
+        }
+        .sfc-tab-logo {
+          display: flex;
+          height: 30px;
+          width: 30px;
+          align-items: center;
+          justify-content: center;
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.16);
+          margin-bottom: 6px;
+        }
+        .sfc-tab-ico {
+          display: flex;
+          height: 34px;
+          width: 34px;
+          align-items: center;
+          justify-content: center;
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.12);
+        }
+        .sfc-tab-main {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          padding: 6px 8px;
+        }
+        .sfc-tab-head {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+        }
+        .sfc-tab-head b {
+          display: block;
+          font-size: 22px;
+          font-weight: 600;
+          letter-spacing: -0.01em;
+        }
+        .sfc-tab-head span:not(.sfc-tab-search) {
+          font-size: 11px;
+          color: oklch(0.16 0.07 265 / 0.5);
+        }
+        .sfc-tab-search {
+          display: flex;
+          height: 32px;
+          width: 32px;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          border: 1px solid oklch(0.16 0.07 265 / 0.15);
+        }
+        .sfc-tab-tabs {
+          display: flex;
+          border-radius: 12px;
+          background: oklch(0.16 0.07 265 / 0.06);
+          padding: 4px;
+          font-size: 11px;
+          letter-spacing: 0.14em;
+          font-weight: 600;
+        }
+        .sfc-tab-tabs span {
+          flex: 1;
           text-align: center;
-          max-width: 1150px;
-          margin: clamp(24px, 7vh, 90px) auto 0;
+          padding: 8px 0;
+          border-radius: 9px;
+          color: oklch(0.16 0.07 265 / 0.45);
+        }
+        .sfc-tab-tabs span.on {
+          background: #fff;
+          color: var(--sfc-navy);
+          box-shadow: 0 2px 8px oklch(0.16 0.07 265 / 0.12);
+        }
+        .sfc-tab-metric {
+          border-radius: 14px;
+          border: 1px solid oklch(0.16 0.07 265 / 0.1);
+          background: #fff;
+          padding: 14px 16px;
+        }
+        .sfc-tab-metric label {
+          display: block;
+          font-size: 10px;
+          letter-spacing: 0.16em;
+          color: oklch(0.16 0.07 265 / 0.5);
+          margin-bottom: 4px;
+        }
+        .sfc-tab-metric strong {
+          font-size: clamp(30px, 3vw, 44px);
+          font-weight: 500;
+          letter-spacing: -0.02em;
+        }
+        .sfc-tab-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-radius: 12px;
+          background: #fff;
+          border: 1px solid oklch(0.16 0.07 265 / 0.08);
+          padding: 11px 16px;
+          font-size: 13px;
+        }
+        .sfc-tab-row span {
+          font-size: 10px;
+          letter-spacing: 0.14em;
+          color: oklch(0.16 0.07 265 / 0.5);
+        }
+        .sfc-tab-cta {
+          margin-top: auto;
+          border-radius: 12px;
+          background: var(--sfc-indigo);
+          color: #fff;
+          text-align: center;
+          font-size: 12px;
+          letter-spacing: 0.2em;
+          font-weight: 600;
+          padding: 13px 0;
+        }
+        .sfc-phone {
+          position: absolute;
+          left: -150px;
+          bottom: 26px;
+          width: 250px;
+          border-radius: 38px;
+          background: #0b0b10;
+          padding: 10px;
+          box-shadow: 0 40px 80px oklch(0.1 0.05 265 / 0.55);
+        }
+        .sfc-phone-screen {
+          border-radius: 30px;
+          background: var(--sfc-indigo);
+          padding: 18px 16px 22px;
+          color: #fff;
+          min-height: 330px;
+          display: flex;
+          flex-direction: column;
+        }
+        .sfc-ph-top {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 22px;
+        }
+        .sfc-ph-burger {
+          display: flex;
+          height: 30px;
+          width: 30px;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          background: #fff;
+          color: var(--sfc-navy);
+        }
+        .sfc-ph-ico {
+          display: flex;
+          height: 26px;
+          width: 26px;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.14);
+          margin-left: auto;
+        }
+        .sfc-ph-ico + .sfc-ph-ico {
+          margin-left: 0;
+        }
+        .sfc-ph-avatar {
+          height: 26px;
+          width: 26px;
+          border-radius: 50%;
+          background: var(--sfc-mint);
+        }
+        .sfc-phone-screen label {
+          font-size: 9px;
+          letter-spacing: 0.2em;
+          color: rgba(255, 255, 255, 0.65);
+        }
+        .sfc-phone-screen strong {
+          font-size: 40px;
+          font-weight: 500;
+          letter-spacing: -0.02em;
+          margin-top: 2px;
+        }
+        .sfc-ph-chart {
+          position: relative;
+          margin-top: 18px;
+          flex: 1;
+        }
+        .sfc-ph-chart svg {
+          position: absolute;
+          inset: 0;
+          height: 100%;
+          width: 100%;
+        }
+        .sfc-ph-chip {
+          position: absolute;
+          top: 8px;
+          left: 50%;
+          transform: translateX(-50%);
+          border-radius: 999px;
+          background: var(--sfc-mint);
+          color: var(--sfc-navy);
+          font-size: 11px;
+          font-weight: 600;
+          padding: 4px 12px;
+          z-index: 1;
+        }
+        .sfc-ph-dates {
+          display: flex;
+          justify-content: space-between;
+          font-size: 8.5px;
+          letter-spacing: 0.12em;
+          color: rgba(255, 255, 255, 0.55);
+          margin-top: 12px;
+        }
+
+        /* ── Overlay card — rises over the pinned hero ── */
+        .sfc-overcard {
+          position: relative;
+          z-index: 3;
+          margin-top: -100vh;
+          border-radius: 44px 44px 0 0;
+          background: #f6f4ef;
+          color: var(--sfc-navy);
+          padding: clamp(96px, 12vh, 150px) 0 128px;
+          box-shadow: 0 -30px 80px oklch(0.1 0.05 265 / 0.35);
+        }
+        .sfc-overcard .sfc-h2-serif {
+          color: var(--sfc-navy);
+        }
+        .sfc-feature-grid-light {
+          background: oklch(0.16 0.07 265 / 0.1);
+          border-color: oklch(0.16 0.07 265 / 0.1);
+        }
+        .sfc-feature-grid-light .sfc-feature {
+          background: #fff;
+        }
+        .sfc-feature-grid-light .sfc-feature:hover {
+          background: #fbfaf6;
+        }
+        .sfc-feature-grid-light .sfc-feature-icon {
+          color: var(--sfc-indigo);
+        }
+        .sfc-feature-grid-light .sfc-feature p {
+          color: oklch(0.16 0.07 265 / 0.65);
         }
         .sfc-h1-em {
           position: relative;
@@ -688,90 +1114,6 @@ export default function HomeClone() {
             transform: scaleX(1);
           }
         }
-        .sfc-portrait {
-          /* Floats on the right edge at mid-height, like the reference */
-          position: absolute;
-          right: clamp(16px, 4vw, 72px);
-          top: 44%;
-          transform: translateY(-50%);
-          display: none;
-          height: clamp(140px, 13vw, 190px);
-          width: clamp(140px, 13vw, 190px);
-          z-index: 3;
-        }
-        @media (min-width: 768px) {
-          .sfc-portrait {
-            display: block;
-          }
-        }
-        /* Own entrance keyframes — the generic sfcUp ends at transform:none,
-           which would erase this element's translateY(-50%) centring. */
-        .sfc-portrait.sfc-up {
-          animation-name: sfcPortraitIn;
-        }
-        @keyframes sfcPortraitIn {
-          from {
-            opacity: 0;
-            transform: translateY(calc(-50% + 22px));
-          }
-          to {
-            opacity: 1;
-            transform: translateY(-50%);
-          }
-        }
-        .sfc-portrait img {
-          height: 100%;
-          width: 100%;
-          border-radius: 50%;
-          object-fit: cover;
-          display: block;
-        }
-        .sfc-portrait-play {
-          position: absolute;
-          bottom: -4px;
-          right: -4px;
-          display: flex;
-          height: 40px;
-          width: 40px;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          background: #fff;
-          color: var(--sfc-navy);
-          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
-          transition: transform 0.25s ease;
-        }
-        .sfc-portrait:hover .sfc-portrait-play {
-          transform: scale(1.1);
-        }
-        .sfc-hero-bottom {
-          /* link left · CTAs dead-centre · share right (reference layout) */
-          margin-top: auto;
-          display: grid;
-          grid-template-columns: 1fr auto 1fr;
-          align-items: end;
-          gap: 16px;
-          padding-top: 64px;
-        }
-        .sfc-hb-left {
-          justify-self: start;
-        }
-        .sfc-hero-bottom .sfc-hero-ctas {
-          justify-self: center;
-        }
-        .sfc-hero-bottom .sfc-share {
-          justify-self: end;
-        }
-        @media (max-width: 767px) {
-          .sfc-hero-bottom {
-            grid-template-columns: 1fr;
-            justify-items: center;
-            gap: 20px;
-          }
-          .sfc-hb-left {
-            justify-self: center;
-          }
-        }
         .sfc-mini-link {
           font-size: 10px;
           letter-spacing: 0.25em;
@@ -787,14 +1129,6 @@ export default function HomeClone() {
         }
         .sfc-mini-link:hover {
           color: #fff;
-        }
-        .sfc-share {
-          display: none;
-        }
-        @media (min-width: 768px) {
-          .sfc-share {
-            display: inline-flex;
-          }
         }
         .sfc-hero-ctas {
           display: flex;
@@ -881,11 +1215,6 @@ export default function HomeClone() {
           background: rgba(255, 255, 255, 0.6);
         }
 
-        /* ── Platform ── */
-        .sfc-platform {
-          position: relative;
-          padding: 128px 0;
-        }
         .sfc-sec-head {
           max-width: 48rem;
         }

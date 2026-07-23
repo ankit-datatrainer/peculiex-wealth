@@ -80,10 +80,26 @@ export default function ScrollGlobe() {
 
     let scrollProgress = 0; // in units of viewport heights
     let target = 0;
+    // The hero is now a tall pinned track + overlay card, so raw
+    // scrollY/vh no longer lines up with the star screens. Anchor the
+    // progress to the first .sfc-screen instead: p reaches 1 exactly when
+    // that screen starts entering the viewport.
+    let base = 0;
+    const measure = () => {
+      const first = document.querySelector<HTMLElement>(".sfc-screen");
+      base = first
+        ? first.getBoundingClientRect().top + window.scrollY - window.innerHeight
+        : 0;
+    };
+    measure();
     const onScroll = () => {
-      target = window.scrollY / window.innerHeight;
+      target = Math.max(
+        0,
+        (window.scrollY - base) / window.innerHeight + 1
+      );
     };
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", measure);
     onScroll();
 
     let rafId = 0;
@@ -234,6 +250,7 @@ export default function ScrollGlobe() {
     return () => {
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", measure);
       window.removeEventListener("scroll", onScroll);
     };
   }, []);
