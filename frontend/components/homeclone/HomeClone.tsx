@@ -11,8 +11,10 @@ import {
   LineChart,
   Menu,
   PieChart,
+  Play,
   Search,
   Settings,
+  Share2,
   ShieldCheck,
   Zap
 } from "lucide-react";
@@ -189,8 +191,121 @@ export default function HomeClone() {
       <ScrollGlobe />
 
       <div className="sfc-content">
-        {/* ── Hero — pinned blue panel, SecuredFi composition ──────────── */}
-        <div id="intro" className="sfc-hero-track" ref={heroTrackRef}>
+        {/* ── Hero — SecuredFi reference clone: centred headline over the
+               particle globe dome, portrait right, docs/CTA/share row ──── */}
+        <section id="intro" className="sfc-hero">
+          <div className="sfc-hero-inner">
+            <h1 className="sfc-h1 sfc-up sfc-d1">
+              India&apos;s Curated Investment{" "}
+              <br className="sfc-h1-br" />
+              Marketplace meets{" "}
+              <span className="sfc-h1-em">
+                Advisory.
+                <span className="sfc-h1-underline sfc-d3" />
+              </span>
+            </h1>
+
+            {/* Portrait floating on the right edge, mid-height */}
+            <a href="#platform" className="sfc-portrait sfc-up sfc-d2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/homeclone-portrait.jpg" alt="Your Finvoq advisor" />
+              <span className="sfc-portrait-play">
+                <Play size={15} fill="currentColor" />
+              </span>
+            </a>
+
+            {/* Bottom row: link left · buttons CENTER · share right */}
+            <div className="sfc-hero-bottom sfc-up sfc-d3">
+              <Link href="/get-started" className="sfc-mini-link sfc-hb-left">
+                Start investing
+              </Link>
+
+              <div className="sfc-hero-ctas">
+                <a href="#platform" className="sfc-btn-ghost">
+                  Explore <ArrowDown size={15} />
+                </a>
+                <Link href="/signup" className="sfc-btn-mint">
+                  Open Account
+                </Link>
+              </div>
+
+              <button
+                type="button"
+                className="sfc-mini-link sfc-share"
+                onClick={() => {
+                  if (typeof navigator !== "undefined" && navigator.share) {
+                    navigator
+                      .share({ title: "Finvoq", url: window.location.href })
+                      .catch(() => {});
+                  }
+                }}
+              >
+                Share <Share2 size={11} />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Intro copy — three globe screens ─────────────────────────── */}
+        <section className="sfc-screen">
+          <Stars />
+          <div className="sfc-screen-grid">
+            <div />
+            <Reveal>
+              <h2 className="sfc-h2">
+                New era
+                <br />
+                of investing
+              </h2>
+              <p className="sfc-lead">
+                We&apos;re on the verge of a new investing era — where
+                opportunities once reserved for institutions open up to every
+                serious investor in India.
+              </p>
+            </Reveal>
+          </div>
+        </section>
+
+        <section className="sfc-screen">
+          <Stars seed={9} />
+          <div className="sfc-screen-grid">
+            <Reveal>
+              <h2 className="sfc-h2">
+                Every asset,
+                <br />
+                one platform
+              </h2>
+              <p className="sfc-lead">
+                Listed shares, unlisted opportunities, mutual funds, PMS, AIF,
+                bonds and insurance — curated by experts and executed in
+                seconds.
+              </p>
+            </Reveal>
+            <div />
+          </div>
+        </section>
+
+        <section className="sfc-screen">
+          <Stars seed={17} />
+          <div className="sfc-screen-grid">
+            <div />
+            <Reveal>
+              <h2 className="sfc-h2">
+                Building
+                <br />
+                your future
+              </h2>
+              <p className="sfc-lead">
+                We connect India&apos;s leading asset managers with a clean,
+                advisory-led platform — elegant infrastructure that takes your
+                wealth to the future.
+              </p>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ── Pinned "All-in-one platform" panel — sits just before About */}
+        <div className="sfc-hero-track" ref={heroTrackRef}>
           <Stars seed={3} />
           <section className="sfc-hero-panel">
             {/* Giant mint word sweeping across as you scroll */}
@@ -335,64 +450,6 @@ export default function HomeClone() {
                 </Reveal>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* ── Intro copy — three globe screens ─────────────────────────── */}
-        <section className="sfc-screen">
-          <Stars />
-          <div className="sfc-screen-grid">
-            <div />
-            <Reveal>
-              <h2 className="sfc-h2">
-                New era
-                <br />
-                of investing
-              </h2>
-              <p className="sfc-lead">
-                We&apos;re on the verge of a new investing era — where
-                opportunities once reserved for institutions open up to every
-                serious investor in India.
-              </p>
-            </Reveal>
-          </div>
-        </section>
-
-        <section className="sfc-screen">
-          <Stars seed={9} />
-          <div className="sfc-screen-grid">
-            <Reveal>
-              <h2 className="sfc-h2">
-                Every asset,
-                <br />
-                one platform
-              </h2>
-              <p className="sfc-lead">
-                Listed shares, unlisted opportunities, mutual funds, PMS, AIF,
-                bonds and insurance — curated by experts and executed in
-                seconds.
-              </p>
-            </Reveal>
-            <div />
-          </div>
-        </section>
-
-        <section className="sfc-screen">
-          <Stars seed={17} />
-          <div className="sfc-screen-grid">
-            <div />
-            <Reveal>
-              <h2 className="sfc-h2">
-                Building
-                <br />
-                your future
-              </h2>
-              <p className="sfc-lead">
-                We connect India&apos;s leading asset managers with a clean,
-                advisory-led platform — elegant infrastructure that takes your
-                wealth to the future.
-              </p>
-            </Reveal>
           </div>
         </section>
 
@@ -726,7 +783,138 @@ export default function HomeClone() {
           transform: none;
         }
 
-        /* ── Hero — pinned rounded panel + overlay handoff ──
+        /* ── Hero — reference clone: centred headline over the globe dome ── */
+        .sfc-hero {
+          position: relative;
+          min-height: 100vh;
+          overflow: hidden;
+          /* Slightly translucent so the fixed particle dome reads through */
+          background-color: oklch(0.56 0.24 275 / 0.92);
+        }
+        .sfc-hero .sfc-hero-inner {
+          position: relative;
+          z-index: 2;
+          max-width: 1400px;
+          margin: 0 auto;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding: 158px 24px 40px;
+        }
+        @media (min-width: 768px) {
+          .sfc-hero .sfc-hero-inner {
+            padding-left: 40px;
+            padding-right: 40px;
+          }
+        }
+        .sfc-hero .sfc-h1 {
+          text-align: center;
+          max-width: 1150px;
+          font-size: clamp(2.5rem, 6.2vw, 6.4rem);
+          margin: clamp(24px, 7vh, 90px) auto 0;
+        }
+        .sfc-h1-br {
+          display: none;
+        }
+        @media (min-width: 1024px) {
+          .sfc-h1-br {
+            display: block;
+          }
+        }
+        .sfc-portrait {
+          position: absolute;
+          right: clamp(16px, 4vw, 72px);
+          top: 44%;
+          transform: translateY(-50%);
+          display: none;
+          height: clamp(140px, 13vw, 190px);
+          width: clamp(140px, 13vw, 190px);
+          z-index: 3;
+        }
+        @media (min-width: 768px) {
+          .sfc-portrait {
+            display: block;
+          }
+        }
+        /* Own entrance keyframes — generic sfcUp ends at transform:none,
+           which would erase this element's translateY(-50%) centring. */
+        .sfc-portrait.sfc-up {
+          animation-name: sfcPortraitIn;
+        }
+        @keyframes sfcPortraitIn {
+          from {
+            opacity: 0;
+            transform: translateY(calc(-50% + 22px));
+          }
+          to {
+            opacity: 1;
+            transform: translateY(-50%);
+          }
+        }
+        .sfc-portrait img {
+          height: 100%;
+          width: 100%;
+          border-radius: 50%;
+          object-fit: cover;
+          display: block;
+        }
+        .sfc-portrait-play {
+          position: absolute;
+          bottom: -4px;
+          right: -4px;
+          display: flex;
+          height: 40px;
+          width: 40px;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          background: #fff;
+          color: var(--sfc-navy);
+          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+          transition: transform 0.25s ease;
+        }
+        .sfc-portrait:hover .sfc-portrait-play {
+          transform: scale(1.1);
+        }
+        .sfc-hero-bottom {
+          /* link left · CTAs dead-centre · share right (reference layout) */
+          margin-top: auto;
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
+          align-items: end;
+          gap: 16px;
+          padding-top: 64px;
+        }
+        .sfc-hb-left {
+          justify-self: start;
+        }
+        .sfc-hero-bottom .sfc-hero-ctas {
+          justify-self: center;
+        }
+        .sfc-hero-bottom .sfc-share {
+          justify-self: end;
+        }
+        @media (max-width: 767px) {
+          .sfc-hero-bottom {
+            grid-template-columns: 1fr;
+            justify-items: center;
+            gap: 20px;
+          }
+          .sfc-hb-left {
+            justify-self: center;
+          }
+        }
+        .sfc-share {
+          display: none;
+        }
+        @media (min-width: 768px) {
+          .sfc-share {
+            display: inline-flex;
+          }
+        }
+
+        /* ── Pinned platform panel + overlay handoff ──
            The track is taller than the viewport; the blue panel pins inside
            it while the giant word sweeps, then the white overlay card
            (margin-top: -100vh) rises over the still-pinned panel. */
@@ -774,7 +962,7 @@ export default function HomeClone() {
           transform: translateX(calc(30vw - var(--hp) * 95vw));
           will-change: transform, opacity;
         }
-        .sfc-hero-inner {
+        .sfc-hero-panel .sfc-hero-inner {
           position: relative;
           z-index: 2;
           max-width: 1400px;
@@ -788,7 +976,7 @@ export default function HomeClone() {
           will-change: transform, opacity;
         }
         @media (min-width: 768px) {
-          .sfc-hero-inner {
+          .sfc-hero-panel .sfc-hero-inner {
             padding-left: clamp(40px, 5vw, 88px);
             padding-right: 40px;
           }
@@ -799,12 +987,14 @@ export default function HomeClone() {
           font-size: clamp(2.6rem, 5.6vw, 6rem);
           line-height: 1.08;
           letter-spacing: -0.02em;
-          /* Reference composition: headline left-aligned, upper half */
-          text-align: left;
-          max-width: 13em;
           margin: 0;
         }
-        .sfc-hero-inner .sfc-hero-ctas {
+        /* Panel composition: headline left-aligned, upper half */
+        .sfc-hero-panel .sfc-h1 {
+          text-align: left;
+          max-width: 13em;
+        }
+        .sfc-hero-panel .sfc-hero-ctas {
           margin-top: clamp(28px, 4.5vh, 48px);
         }
         /* Device mockups, bottom-right, cropped by the panel edge */
