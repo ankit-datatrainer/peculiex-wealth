@@ -793,13 +793,14 @@ export default function HomeClone() {
           transform: none;
         }
 
-        /* ── Hero — reference clone: centred headline over the globe dome ── */
+        /* ── Hero — reference clone: centred headline over the globe dome ──
+           NO background here: the ScrollGlobe canvas paints the hero blue
+           itself (and cross-fades it to navy as the planet rises), so the
+           solid planet + wave-band show through exactly like the reference. */
         .sfc-hero {
           position: relative;
           min-height: 100vh;
           overflow: hidden;
-          /* Slightly translucent so the fixed particle dome reads through */
-          background-color: oklch(0.56 0.24 275 / 0.92);
         }
         .sfc-hero .sfc-hero-inner {
           position: relative;
