@@ -14,7 +14,10 @@
   width: 100%;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  background: #fff;
+  /* Theme-aware ground: white in light mode, dark surface in dark mode, so
+     the frame no longer flashes a white slab while the dark factsheet
+     variant loads (and matches it once it does). */
+  background: var(--color-surface);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   /* Height is set inline from the postMessage reporter. */

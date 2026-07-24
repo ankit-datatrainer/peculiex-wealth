@@ -104,7 +104,7 @@ export default function Footer() {
       <div className="container foot-grid">
         <div className="foot-col foot-brand">
           <div className="logo">
-            <Logo width={140} height={56} />
+            <Logo width={168} height={66} />
           </div>
           <p>
             India's premium investment marketplace. Multiple asset classes, one platform, advisory-led.

@@ -3669,7 +3669,7 @@ section { padding: 110px 0; position: relative; }
   .nav-inner > * { flex-shrink: 0; }
   .nav-cta { flex-shrink: 0; }
   .nav-cta > * { flex-shrink: 0; }
-  .logo img { height: 32px !important; width: auto !important; }
+  .logo img { height: 40px !important; width: auto !important; }
   .mobile-toggle span { background: #12313a !important; }
 }
 /* Extra-narrow phones (iPhone SE and similar ~320–360px): trim gaps/padding
@@ -3677,7 +3677,7 @@ section { padding: 110px 0; position: relative; }
 @media (max-width: 380px) {
   .nav-inner { padding: 6px 10px; margin: 0 10px; }
   .nav-cta { gap: 6px !important; }
-  .logo img { height: 28px !important; }
+  .logo img { height: 34px !important; }
 }
 
 @media (max-width: 760px) {
@@ -7674,8 +7674,8 @@ section { padding: 110px 0; position: relative; }
    fill and a footer strip in the site theme (light + dark). */
 .insurance-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 28px;
 }
 .insurance-card {
   display: flex;
@@ -7707,9 +7707,9 @@ section { padding: 110px 0; position: relative; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 20px 24px;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 1.125rem;
   color: var(--color-text);
   border-top: 1px solid var(--color-border);
 }

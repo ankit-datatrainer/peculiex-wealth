@@ -120,7 +120,7 @@ export default function MainNav() {
     <header className="main-nav" id="mainNav">
       <div className="nav-inner">
         <Link href="/" className="logo" data-magnetic>
-          <Logo width={140} height={56} />
+          <Logo width={172} height={68} />
         </Link>
         <nav>
           <ul className={`nav-links${mobileOpen ? " mobile-open" : ""}`} ref={linksRef}>
