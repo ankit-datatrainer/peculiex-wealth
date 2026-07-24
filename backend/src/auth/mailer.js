@@ -240,6 +240,7 @@ function renderWelcomeText({ name }) {
 }
 
 function renderWelcomeHtml({ name }) {
+  const appUrl = (process.env.APP_URL || "https://finvoq.com").replace(/\/$/, "");
   return `<!doctype html>
 <html><body style="margin:0;padding:0;background:#f4f7f6;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#131313">
   <div style="max-width:560px;margin:0 auto;padding:40px 24px">
@@ -269,7 +270,7 @@ function renderWelcomeHtml({ name }) {
       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:32px;">
         <tr>
           <td>
-            <a href="http://localhost:3000/login" style="display:inline-block;background:#01696f;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:14px 28px;border-radius:10px;text-align:center;">
+            <a href="${appUrl}/login" style="display:inline-block;background:#01696f;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:14px 28px;border-radius:10px;text-align:center;">
               Go to Dashboard
             </a>
           </td>

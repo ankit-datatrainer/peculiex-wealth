@@ -938,6 +938,40 @@ export default function HomeClone() {
           }
         }
 
+        /* ── Mobile hero tuning — keep the headline readable and the CTA row
+           in view above the growing gold dome on small screens. */
+        @media (max-width: 640px) {
+          .sfc-hero .sfc-hero-inner {
+            padding: 118px 20px 32px;
+            min-height: 560px;
+            justify-content: flex-start;
+          }
+          .sfc-hero .sfc-h1 {
+            font-size: clamp(1.85rem, 8.4vw, 2.9rem);
+            line-height: 1.12;
+            margin-top: 6px;
+            max-width: 20ch;
+          }
+          .sfc-hero-bottom {
+            padding-top: 40px;
+          }
+          .sfc-hero-ctas {
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+          }
+          .sfc-hero-ctas .sfc-btn-ghost,
+          .sfc-hero-ctas .sfc-btn-mint {
+            padding: 11px 22px;
+            font-size: 13px;
+          }
+        }
+        @media (max-width: 380px) {
+          .sfc-hero .sfc-h1 {
+            font-size: 1.7rem;
+          }
+        }
+
         /* ── Pinned platform panel + overlay handoff ──
            The track is taller than the viewport; the blue panel pins inside
            it while the giant word sweeps, then the white overlay card

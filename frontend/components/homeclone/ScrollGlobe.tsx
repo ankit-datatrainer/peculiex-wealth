@@ -21,8 +21,8 @@ import { useEffect, useRef } from "react";
  * Palette is intentionally fixed — homepage only, theme-independent.
  */
 
-const BLUE = [88, 92, 246]; // hero indigo  ~ oklch(0.56 0.24 275)
-const NAVY = [9, 14, 36]; //  page base    ~ oklch(0.10 0.05 265)
+const BLUE = [212, 175, 55]; // hero brand gold  #D4AF37
+const NAVY = [9, 14, 36]; //   page base        ~ oklch(0.10 0.05 265)
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
