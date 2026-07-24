@@ -7668,6 +7668,29 @@ section { padding: 110px 0; position: relative; }
 @media (max-width: 760px) { .dark .mobile-toggle span { background: #e8f2ef !important; } }
 
 
+/* ── Simple content-page hero (About / Stories / Careers) + branding ──
+   Clears the floating nav pill so the heading never clashes with it, and
+   frames the page with the Finvoq logo above the heading. */
+.page-hero {
+  position: relative;
+  padding: 188px 0 64px;
+}
+.page-hero-logo {
+  height: 58px;
+  width: auto;
+}
+/* Get-started onboarding had no top padding, so its heading sat under the
+   nav — give it the same clearance as the content-page heroes. */
+.onboard-sec {
+  padding-top: 172px;
+}
+@media (max-width: 760px) {
+  .page-hero { padding: 142px 0 48px; }
+  .page-hero-logo { height: 48px; }
+  .onboard-sec { padding-top: 128px; }
+}
+
+
 /* ── Insurance "What you get" cards — premium square tiles, theme-aware ──
    Previously undefined, so the raw <img> rendered at full natural size. Each
    card is now a fixed-square, responsive grid item with the image cropped to

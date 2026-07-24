@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { postJSON } from "@/lib/api";
+import Logo from "./Logo";
 
 export default function Onboard() {
   const [submitting, setSubmitting] = useState(false);
@@ -42,6 +43,12 @@ export default function Onboard() {
       <div className="container onboard-grid">
         <div className="onboard-left">
           <div className="sec-head reveal">
+            <Logo
+              width={148}
+              height={58}
+              className="page-hero-logo"
+              style={{ margin: "0 0 22px" }}
+            />
             <div className="label">Get Started</div>
             <h2 className="stitle">
               Open your account in <em>minutes</em>

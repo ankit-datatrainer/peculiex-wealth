@@ -12,6 +12,7 @@ export default function Logo({
   height = 56,
   className = "",
   forceLight = false,
+  style,
 }: {
   width?: number;
   height?: number;
@@ -19,6 +20,7 @@ export default function Logo({
   /** Always use the light-mode (dark-ink) logo, e.g. on a surface that stays
    *  white in both themes (like the floating nav pill). */
   forceLight?: boolean;
+  style?: React.CSSProperties;
 }) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -37,7 +39,7 @@ export default function Logo({
       width={width}
       height={height}
       className={className}
-      style={{ display: "block", objectFit: "contain" }}
+      style={{ display: "block", objectFit: "contain", ...style }}
     />
   );
 }
