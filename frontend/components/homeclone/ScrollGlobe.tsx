@@ -161,7 +161,7 @@ export default function ScrollGlobe() {
 
     // Screen-space layout: Rs is the projected on-screen radius
     const layoutAt = (p: number) => {
-      const RsHero = Math.max(W * 0.56, H * 0.62);
+      const RsHero = Math.max(W * 0.4, H * 0.46);
       const RsFull = Math.min(W, H) * 0.44;
       if (p < 1) {
         const k = smooth(p);
