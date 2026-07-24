@@ -7666,3 +7666,54 @@ section { padding: 110px 0; position: relative; }
 
 
 @media (max-width: 760px) { .dark .mobile-toggle span { background: #e8f2ef !important; } }
+
+
+/* ── Insurance "What you get" cards — premium square tiles, theme-aware ──
+   Previously undefined, so the raw <img> rendered at full natural size. Each
+   card is now a fixed-square, responsive grid item with the image cropped to
+   fill and a footer strip in the site theme (light + dark). */
+.insurance-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+}
+.insurance-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.insurance-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--color-primary-ink);
+  box-shadow: var(--shadow-lg);
+}
+.insurance-card-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.insurance-card:hover .insurance-card-img {
+  transform: scale(1.05);
+}
+.insurance-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-text);
+  border-top: 1px solid var(--color-border);
+}
+@media (max-width: 520px) {
+  .insurance-card-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .insurance-card-footer { padding: 12px 14px; font-size: 0.875rem; }
+}
