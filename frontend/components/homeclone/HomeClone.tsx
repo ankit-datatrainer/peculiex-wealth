@@ -1679,17 +1679,17 @@ export default function HomeClone() {
             0 1px 2px oklch(0.16 0.07 265 / 0.05),
             0 24px 48px -16px oklch(0.56 0.24 275 / 0.3);
         }
+        /* Logos always ride in full brand colour; hover just brings them
+           forward with a springy zoom. */
         .sfc-partner-tile img {
           max-height: 100%;
           max-width: 100%;
           object-fit: contain;
           display: block;
-          filter: grayscale(1) opacity(0.62);
-          transition: filter 0.35s ease, transform 0.35s ease;
+          transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .sfc-partner-tile:hover img {
-          filter: none;
-          transform: scale(1.05);
+          transform: scale(1.16);
         }
         .sfc-dot {
           display: inline-block;
