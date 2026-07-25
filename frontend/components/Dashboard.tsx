@@ -213,11 +213,6 @@ export default function Dashboard() {
         <div className="ud-shell">
           {/* ─── Sidebar ─── */}
           <aside className="ud-sidebar">
-            <div className="ud-sidebar-brand">
-              <Link href="/">finvo<em>q</em></Link>
-              <span>Dashboard</span>
-            </div>
-
             <div className="ud-user-card">
               <div className="ud-avatar" style={{ background: "#13735d" }}>
                 {initials}
