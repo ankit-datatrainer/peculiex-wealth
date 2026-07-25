@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { apiFetch } from "@/lib/api";
 import { fmtINR2, sparkPath, randomSpark, getCompanyDomain, getCompanyLogo } from "@/lib/util";
@@ -41,6 +42,16 @@ function MiniSpark({ vals, up }: { vals: number[]; up: boolean }) {
 /* ─── Main Dashboard ─── */
 export default function Dashboard() {
   const { user, ready } = useAuth();
+  const router = useRouter();
+
+  // Super admins manage the platform from /admin, not the investor
+  // dashboard — send them there instead of rendering this page.
+  useEffect(() => {
+    if (ready && user?.role === "superadmin") {
+      router.replace("/admin");
+    }
+  }, [ready, user, router]);
+
   const [tab, setTab] = useState<DashTab>("overview");
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [quotes, setQuotes] = useState<Record<string, LiveQuote>>({});
@@ -161,6 +172,12 @@ export default function Dashboard() {
   }, [watchlist, quotes]);
 
   /* ─── Not logged in ─── */
+  // Redirecting to /admin — render nothing so the investor dashboard never
+  // flashes on screen for a super admin.
+  if (ready && user?.role === "superadmin") {
+    return null;
+  }
+
   if (ready && !user) {
     return (
       <section className="ud-section">

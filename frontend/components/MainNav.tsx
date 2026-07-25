@@ -313,7 +313,9 @@ export default function MainNav() {
                       <div style={{ fontSize: "0.9rem", color: "var(--color-text-muted)" }}>{user.email}</div>
                     </div>
                   </div>
-                  <Link href="/dashboard" className="btn btn-outline" style={{ width: "100%", justifyContent: "center" }} onClick={() => setMobileOpen(false)}>Dashboard</Link>
+                  {user.role !== "superadmin" && (
+                    <Link href="/dashboard" className="btn btn-outline" style={{ width: "100%", justifyContent: "center" }} onClick={() => setMobileOpen(false)}>Dashboard</Link>
+                  )}
                   {isAdminUser(user) && (
                     <Link href="/admin" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }} onClick={() => setMobileOpen(false)}>Admin Panel</Link>
                   )}
@@ -455,19 +457,21 @@ export default function MainNav() {
                   >
                     My watchlist
                   </Link>
-                  <Link
-                    href="/dashboard"
-                    onClick={() => setMenuOpen(false)}
-                    style={{
-                      display: "block",
-                      padding: "0.7rem 1rem",
-                      fontSize: "0.88rem",
-                      color: "var(--color-text, #131313)",
-                      textDecoration: "none"
-                    }}
-                  >
-                    Dashboard
-                  </Link>
+                  {user.role !== "superadmin" && (
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setMenuOpen(false)}
+                      style={{
+                        display: "block",
+                        padding: "0.7rem 1rem",
+                        fontSize: "0.88rem",
+                        color: "var(--color-text, #131313)",
+                        textDecoration: "none"
+                      }}
+                    >
+                      Dashboard
+                    </Link>
+                  )}
                   {isAdminUser(user) && (
                     <Link
                       href="/admin"
