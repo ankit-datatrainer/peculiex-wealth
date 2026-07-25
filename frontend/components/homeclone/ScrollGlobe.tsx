@@ -21,7 +21,7 @@ import { useEffect, useRef } from "react";
  * Palette is intentionally fixed — homepage only, theme-independent.
  */
 
-const BLUE = [147, 248, 184]; // hero brand mint  #93F8B8
+const BLUE = [19, 115, 93]; // hero brand green  #13735D
 const NAVY = [9, 14, 36]; //   page base        ~ oklch(0.10 0.05 265)
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -222,9 +222,7 @@ export default function ScrollGlobe() {
 
       /* Page background painted here: hero blue cross-fades to deep navy as
          the planet rises (reference frames 1→3), then stays navy. */
-      // Hold the mint until the hero copy has scrolled away, then fade to
-      // navy in time for the white text on the first story screen (p = 1).
-      const mix = smooth((p - 0.62) / 0.36);
+      const mix = smooth((p - 0.5) / 0.48);
       const bg = `rgb(${Math.round(lerp(BLUE[0], NAVY[0], mix))}, ${Math.round(
         lerp(BLUE[1], NAVY[1], mix)
       )}, ${Math.round(lerp(BLUE[2], NAVY[2], mix))})`;

@@ -833,40 +833,30 @@ export default function HomeClone() {
         }
 
         /* ── Hero ink ──
-           The hero ground is bright mint (#93F8B8), so every control in it
-           switches from white to deep navy. Scoped to .sfc-hero so the navy
-           platform panel further down keeps its white treatment. */
+           The hero ground is deep green (#13735D) and the CTA row sits over
+           the dark globe dome, so the controls stay white/mint and get a
+           solid fill plus a soft shadow to hold their edge against both. */
         .sfc-hero .sfc-h1 {
-          color: var(--sfc-navy);
-        }
-        .sfc-hero .sfc-h1-underline {
-          background: var(--sfc-navy);
-        }
-        .sfc-hero .sfc-mini-link {
-          color: oklch(0.16 0.07 265 / 0.78);
-          border-bottom-color: oklch(0.16 0.07 265 / 0.45);
-        }
-        .sfc-hero .sfc-mini-link:hover {
-          color: var(--sfc-navy);
-          border-bottom-color: var(--sfc-navy);
+          color: #fff;
+          text-shadow: 0 2px 24px oklch(0.16 0.07 265 / 0.28);
         }
         .sfc-hero .sfc-btn-ghost {
-          color: var(--sfc-navy);
-          border-color: oklch(0.16 0.07 265 / 0.45);
+          color: #fff;
+          border-color: rgba(255, 255, 255, 0.62);
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
         }
         .sfc-hero .sfc-btn-ghost:hover {
-          background: oklch(0.16 0.07 265 / 0.08);
-          border-color: var(--sfc-navy);
+          background: rgba(255, 255, 255, 0.22);
+          border-color: #fff;
         }
-        /* Solid navy pill reads as the primary action on a light ground. */
         .sfc-hero .sfc-btn-mint {
-          background: var(--sfc-navy);
-          color: #eafff3;
-          box-shadow: 0 10px 26px -10px oklch(0.16 0.07 265 / 0.55);
+          box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.45);
         }
-        .sfc-hero .sfc-btn-mint:hover {
-          filter: none;
-          background: oklch(0.22 0.08 265);
+        .sfc-hero .sfc-mini-link {
+          color: #fff;
+          border-bottom-color: rgba(255, 255, 255, 0.65);
         }
         /* Keep the centred headline clear of the floating portrait: cap its
            width so its right edge never reaches the portrait zone. The
@@ -978,7 +968,7 @@ export default function HomeClone() {
         }
 
         /* ── Mobile hero tuning: keep the headline readable and the CTA row
-           in view above the growing mint dome on small screens. */
+           in view above the growing dome on small screens. */
         @media (max-width: 640px) {
           .sfc-hero .sfc-hero-inner {
             padding: 118px 20px 32px;
