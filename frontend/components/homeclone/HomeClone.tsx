@@ -831,6 +831,43 @@ export default function HomeClone() {
           max-width: 1100px;
           margin: clamp(8px, 4svh, 48px) auto 0;
         }
+
+        /* ── Hero ink ──
+           The hero ground is bright mint (#93F8B8), so every control in it
+           switches from white to deep navy. Scoped to .sfc-hero so the navy
+           platform panel further down keeps its white treatment. */
+        .sfc-hero .sfc-h1 {
+          color: var(--sfc-navy);
+        }
+        .sfc-hero .sfc-h1-underline {
+          background: var(--sfc-navy);
+        }
+        .sfc-hero .sfc-mini-link {
+          color: oklch(0.16 0.07 265 / 0.78);
+          border-bottom-color: oklch(0.16 0.07 265 / 0.45);
+        }
+        .sfc-hero .sfc-mini-link:hover {
+          color: var(--sfc-navy);
+          border-bottom-color: var(--sfc-navy);
+        }
+        .sfc-hero .sfc-btn-ghost {
+          color: var(--sfc-navy);
+          border-color: oklch(0.16 0.07 265 / 0.45);
+        }
+        .sfc-hero .sfc-btn-ghost:hover {
+          background: oklch(0.16 0.07 265 / 0.08);
+          border-color: var(--sfc-navy);
+        }
+        /* Solid navy pill reads as the primary action on a light ground. */
+        .sfc-hero .sfc-btn-mint {
+          background: var(--sfc-navy);
+          color: #eafff3;
+          box-shadow: 0 10px 26px -10px oklch(0.16 0.07 265 / 0.55);
+        }
+        .sfc-hero .sfc-btn-mint:hover {
+          filter: none;
+          background: oklch(0.22 0.08 265);
+        }
         /* Keep the centred headline clear of the floating portrait: cap its
            width so its right edge never reaches the portrait zone. The
            portrait only renders ≥1100px, so the cap applies there too. */
@@ -940,8 +977,8 @@ export default function HomeClone() {
           }
         }
 
-        /* ── Mobile hero tuning — keep the headline readable and the CTA row
-           in view above the growing gold dome on small screens. */
+        /* ── Mobile hero tuning: keep the headline readable and the CTA row
+           in view above the growing mint dome on small screens. */
         @media (max-width: 640px) {
           .sfc-hero .sfc-hero-inner {
             padding: 118px 20px 32px;
