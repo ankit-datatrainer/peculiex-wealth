@@ -34,7 +34,7 @@ const CARDS: Card[] = [
     titlePrefix: "One unified",
     titleImg: "/why_platform.png",
     titleSuffix: "platform",
-    body: "Equities, mutual funds, unlisted, PMS, AIF, bonds, insurance — and a single dashboard that ties it all together.",
+    body: "Equities, mutual funds, unlisted, PMS, AIF, bonds, insurance, and a single dashboard that ties it all together.",
     meta: "8 asset classes"
   },
   {
@@ -42,7 +42,7 @@ const CARDS: Card[] = [
     titlePrefix: "Premium",
     titleImg: "/why_support.png",
     titleSuffix: "support",
-    body: "A dedicated relationship manager for every investor. WhatsApp, email, or call — your advisor is reachable in minutes.",
+    body: "A dedicated relationship manager for every investor. WhatsApp, email, or call. Your advisor is reachable in minutes.",
     meta: "Dedicated RM included"
   },
   {
@@ -50,7 +50,7 @@ const CARDS: Card[] = [
     titlePrefix: "Real-time",
     titleImg: "/why_execution.png",
     titleSuffix: "execution",
-    body: "From research to investing — completed in seconds. No paperwork. No fragmentation. No waiting on multiple platforms.",
+    body: "From research to investing, completed in seconds. No paperwork. No fragmentation. No waiting on multiple platforms.",
     meta: "< 60 seconds to invest"
   }
 ];
@@ -117,7 +117,7 @@ export default function Why() {
           </span>
         </div>
 
-        {/* Cards — cross-faded one at a time */}
+        {/* Cards: cross-faded one at a time */}
         <div className="why-pin-cards">
           {CARDS.map((c, i) => {
             const p = (progress - i * seg) / seg; // 0..1 within this card

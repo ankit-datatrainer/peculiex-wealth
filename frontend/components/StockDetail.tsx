@@ -254,7 +254,7 @@ export default function StockDetail({ symbol }: Props) {
             <span className="stock-page-change-tag" style={{ color: "var(--c-text-mut)", marginLeft: "6px" }}>1D</span>
           </div>
           {display.marketState === "REGULAR" && (
-            <span className="stock-live-pill" title="Live — updating in real time">
+            <span className="stock-live-pill" title="Live: updating in real time">
               <span className="stock-live-dot" />
               LIVE
             </span>
@@ -358,7 +358,7 @@ export default function StockDetail({ symbol }: Props) {
 
       <p className="stock-page-disclaimer">
         Live prices are sourced from public market feeds with up to a 15-minute
-        delay during market hours. This page is informational only — it is not
+        delay during market hours. This page is informational only. It is not
         an offer or recommendation to buy or sell securities.
       </p>
     </main>

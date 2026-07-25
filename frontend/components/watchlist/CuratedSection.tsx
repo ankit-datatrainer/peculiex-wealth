@@ -57,8 +57,8 @@ export default function CuratedSection({
                   b.symbols.slice(0, 5).map((sym) => (
                     <div className="cur-row" key={sym}>
                       <strong>{sym}</strong>
-                      <span className="cur-name">—</span>
-                      <span style={{ color: "var(--color-text-muted, #333333)" }}>—</span>
+                      <span className="cur-name">, </span>
+                      <span style={{ color: "var(--color-text-muted, #333333)" }}>, </span>
                     </div>
                   ))}
               </div>

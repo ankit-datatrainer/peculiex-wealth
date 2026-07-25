@@ -5,7 +5,7 @@ import PageHero from "@/components/PageHero";
 export const metadata: Metadata = {
   title: "Frequently Asked Questions",
   description:
-    "Straight answers to the questions investors ask before getting started with Finvoq — security, minimums, fees, withdrawals, and more."
+    "Straight answers to the questions investors ask before getting started with Finvoq: security, minimums, fees, withdrawals, and more."
 };
 
 export default function FAQPage() {
@@ -14,7 +14,7 @@ export default function FAQPage() {
       <PageHero
         label="FAQ"
         title={<>Questions, <em>answered.</em></>}
-        subtitle="Everything investors ask before getting started — straight answers, no jargon."
+        subtitle="Everything investors ask before getting started: straight answers, no jargon."
         align="center"
       />
       <FAQ />

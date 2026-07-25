@@ -3,7 +3,7 @@ import PageHero from "@/components/PageHero";
 import MFResources from "@/components/MFResources";
 
 export const metadata: Metadata = {
-  title: "Mutual Fund Resources — Past SIP Performance, NFOs & More",
+  title: "Mutual Fund Resources: Past SIP Performance, NFOs & More",
   description: "Comprehensive resources to help you analyze past SIP performance, track current NFOs, compare schemes, and calculate SWPs.",
 };
 

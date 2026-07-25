@@ -118,7 +118,7 @@ export default function ScrollGlobe() {
     }
 
     /* Scroll progress: 0..1 across the hero (whatever its height), then +1
-       per story screen — anchored to the first .sfc-screen so the beats line
+       per story screen: anchored to the first .sfc-screen so the beats line
        up with the copy regardless of section heights. */
     let sTop = 0;
     const measure = () => {

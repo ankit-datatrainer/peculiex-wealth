@@ -103,7 +103,7 @@ export default function AdminFactsheetsPage() {
         <div>
           <h1>Factsheets</h1>
           <p className="admin-page-sub">
-            Upload a PDF for any product. It appears automatically on that product’s page —
+            Upload a PDF for any product. It appears automatically on that product’s page,
             no code changes needed. Uploading again replaces the existing file.
           </p>
         </div>

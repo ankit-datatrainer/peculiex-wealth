@@ -21,7 +21,7 @@ import {
 import ScrollGlobe from "./ScrollGlobe";
 
 /* ────────────────────────────────────────────────────────────────────────────
-   SecuredFi-style homepage — a 1:1 layout port of the clone build
+   SecuredFi-style homepage, a 1:1 layout port of the clone build
    ("securedfi.studiovoila.com clone/"), re-worded with Finvoq content.
    The palette is intentionally fixed (indigo/navy/mint) and does NOT follow
    the site theme: the homepage stays blue in light and dark mode alike.
@@ -84,12 +84,12 @@ const FEATURES = [
   {
     icon: Layers,
     title: "One unified platform",
-    desc: "Equities, mutual funds, unlisted, PMS, AIF, bonds, insurance — and a single dashboard that ties it all together."
+    desc: "Equities, mutual funds, unlisted, PMS, AIF, bonds, insurance, and a single dashboard that ties it all together."
   },
   {
     icon: Zap,
     title: "Real-time execution",
-    desc: "From research to investing — completed in seconds. Live NSE & BSE prices, no paperwork, no waiting."
+    desc: "From research to investing, completed in seconds. Live NSE & BSE prices, no paperwork, no waiting."
   }
 ];
 
@@ -102,7 +102,7 @@ const STATS = [
 
 /* Same partner logo assets the rest of the site uses (see PartnerLogos.tsx).
    Rendered on white tiles so the artwork reads identically in light and dark
-   theme — the tile is the constant background, never the page. */
+   theme: the tile is the constant background, never the page. */
 const PARTNERS: Array<{ name: string; img: string }> = [
   { name: "HDFC", img: "/partners/1.png" },
   { name: "Canara Robeco", img: "/partners/2.png" },
@@ -136,7 +136,7 @@ const POSTS = [
   {
     tag: "Company",
     date: "Beta",
-    title: "Finvoq opens its doors — India's advisory-led investment marketplace"
+    title: "Finvoq opens its doors: India's advisory-led investment marketplace"
   }
 ];
 
@@ -191,7 +191,7 @@ export default function HomeClone() {
       <ScrollGlobe />
 
       <div className="sfc-content">
-        {/* ── Hero — SecuredFi reference clone: centred headline over the
+        {/* ── Hero: SecuredFi reference clone: centred headline over the
                particle globe dome, portrait right, docs/CTA/share row ──── */}
         <section id="intro" className="sfc-hero">
           <div className="sfc-hero-inner">
@@ -246,7 +246,7 @@ export default function HomeClone() {
           </div>
         </section>
 
-        {/* ── Intro copy — three globe screens ─────────────────────────── */}
+        {/* ── Intro copy: three globe screens ─────────────────────────── */}
         <section className="sfc-screen">
           <Stars />
           <div className="sfc-screen-grid">
@@ -258,7 +258,7 @@ export default function HomeClone() {
                 of investing
               </h2>
               <p className="sfc-lead">
-                We&apos;re on the verge of a new investing era — where
+                We&apos;re on the verge of a new investing era, where
                 opportunities once reserved for institutions open up to every
                 serious investor in India.
               </p>
@@ -277,7 +277,7 @@ export default function HomeClone() {
               </h2>
               <p className="sfc-lead">
                 Listed shares, unlisted opportunities, mutual funds, PMS, AIF,
-                bonds and insurance — curated by experts and executed in
+                bonds and insurance: curated by experts and executed in
                 seconds.
               </p>
             </Reveal>
@@ -297,14 +297,14 @@ export default function HomeClone() {
               </h2>
               <p className="sfc-lead">
                 We connect India&apos;s leading asset managers with a clean,
-                advisory-led platform — elegant infrastructure that takes your
+                advisory-led platform: elegant infrastructure that takes your
                 wealth to the future.
               </p>
             </Reveal>
           </div>
         </section>
 
-        {/* ── Pinned "All-in-one platform" panel — sits just before About */}
+        {/* ── Pinned "All-in-one platform" panel: sits just before About */}
         <div className="sfc-hero-track" ref={heroTrackRef}>
           <Stars seed={3} />
           <section className="sfc-hero-panel">
@@ -333,7 +333,7 @@ export default function HomeClone() {
               </div>
             </div>
 
-            {/* Device mockups — tablet + phone, cropped by the panel edge */}
+            {/* Device mockups: tablet + phone, cropped by the panel edge */}
             <div className="sfc-devices sfc-up sfc-d2" aria-hidden>
               <div className="sfc-tablet">
                 <div className="sfc-tablet-screen">
@@ -428,7 +428,7 @@ export default function HomeClone() {
           </section>
         </div>
 
-        {/* ── Overlay card — rises over the pinned hero panel ──────────── */}
+        {/* ── Overlay card: rises over the pinned hero panel ──────────── */}
         <section id="platform" className="sfc-overcard">
           <div className="sfc-wrap">
             <div className="sfc-sec-head">
@@ -468,11 +468,11 @@ export default function HomeClone() {
                 Our team has spent a decade inside India&apos;s wealth industry
                 building portfolios for families and institutions. We&apos;re
                 rebuilding that experience as a platform any investor can walk
-                into — advisory-led, transparent, and SEBI-registered.
+                into: advisory-led, transparent, and SEBI-registered.
               </p>
               <p>
-                Finvoq is a marketplace for real ownership across asset classes
-                — not another trading app. Every product carries real diligence,
+                Finvoq is a marketplace for real ownership across asset classes,
+                 not another trading app. Every product carries real diligence,
                 clear costs and a human advisor behind it.
               </p>
             </div>
@@ -703,7 +703,7 @@ export default function HomeClone() {
                 distributor.
               </p>
               <p>
-                Risk Factors – Investments in Mutual Funds are subject to
+                Risk Factors: Investments in Mutual Funds are subject to
                 Market Risks. Read all scheme related documents carefully
                 before investing. Mutual Fund Schemes do not assure or
                 guarantee any returns. Past performances of any Mutual Fund
@@ -722,7 +722,7 @@ export default function HomeClone() {
 
             <div className="sfc-footer-base">
               <span>
-                © {new Date().getFullYear()} Finvoq Wealth Pvt. Ltd. — All
+                © {new Date().getFullYear()} Finvoq Wealth Pvt. Ltd. All
                 rights reserved.
               </span>
               <span className="sfc-footer-made">
@@ -734,7 +734,7 @@ export default function HomeClone() {
         </footer>
       </div>
 
-      {/* ── Scoped styles — the clone's exact palette, homepage only ───── */}
+      {/* ── Scoped styles: the clone's exact palette, homepage only ───── */}
       <style jsx global>{`
         .sfc {
           --sfc-indigo: oklch(0.56 0.24 275);
@@ -808,7 +808,7 @@ export default function HomeClone() {
           max-width: 1400px;
           margin: 0 auto;
           /* Fixed viewport height so the CTA row always sits in view at the
-             bottom — content is sized to fit, never to push it below fold. */
+             bottom: content is sized to fit, never to push it below fold. */
           height: 100svh;
           min-height: 620px;
           display: flex;
@@ -1600,7 +1600,7 @@ export default function HomeClone() {
         .sfc-marquee {
           position: relative;
           overflow: hidden;
-          padding: 18px 0 34px;
+          padding: 28px 0 44px;
           /* Soft edge fade so tiles glide in/out instead of hard-cutting */
           -webkit-mask-image: linear-gradient(
             to right,
@@ -1648,9 +1648,7 @@ export default function HomeClone() {
           font-size: clamp(20px, 2.4vw, 30px);
           color: oklch(0.16 0.07 265 / 0.45);
         }
-        /* Partner logo tiles — premium treatment: quiet monochrome cards
-           that bloom to full colour and lift on hover. Constant white ground
-           so the artwork reads the same in light and dark theme. */
+        /* Partner logo tiles — colorful while moving, zoom-in effect on hover. */
         .sfc-partner-tile {
           flex-shrink: 0;
           display: flex;
@@ -1658,19 +1656,21 @@ export default function HomeClone() {
           justify-content: center;
           height: 104px;
           width: 208px;
-          margin: 0 12px;
-          padding: 24px 34px;
-          background: linear-gradient(180deg, #fff 0%, #fafbfd 100%);
-          border: 1px solid oklch(0.16 0.07 265 / 0.08);
+          margin: 0 14px;
+          padding: 22px 30px;
+          background: linear-gradient(180deg, #ffffff 0%, #f8fafd 100%);
+          border: 1px solid oklch(0.16 0.07 265 / 0.1);
           border-radius: 20px;
           box-shadow:
-            0 1px 2px oklch(0.16 0.07 265 / 0.05),
+            0 2px 6px oklch(0.16 0.07 265 / 0.06),
             0 12px 32px -14px oklch(0.16 0.07 265 / 0.16);
           transition:
-            transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-            box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-            border-color 0.35s ease;
-          cursor: default;
+            transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+            box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+            border-color 0.4s ease;
+          cursor: pointer;
+          position: relative;
+          z-index: 1;
         }
         .sfc-partner-tile:hover {
           transform: translateY(-6px);
@@ -1946,7 +1946,7 @@ export default function HomeClone() {
         /* ── Homepage nav ──────────────────────────────────────────────────
            The site's own nav pill already matches the reference chrome: ONE
            continuous white pill holding the logo, links, theme toggle and
-           account together — no separators. No overrides needed; only widen
+           account together: no separators. No overrides needed; only widen
            it to this page's 1400px container so it lines up with the hero. */
         .main-nav .nav-inner {
           max-width: 1400px;

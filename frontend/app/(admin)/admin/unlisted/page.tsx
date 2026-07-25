@@ -503,7 +503,7 @@ export default function AdminUnlistedPage() {
               </label>
 
               <label className="admin-field admin-field-wide">
-                <span>Upload logo (PNG, JPG, GIF or WEBP — max 5 MB)</span>
+                <span>Upload logo (PNG, JPG, GIF or WEBP, max 5 MB)</span>
                 <input
                   type="file"
                   accept="image/png,image/jpeg,image/gif,image/webp"
@@ -524,7 +524,7 @@ export default function AdminUnlistedPage() {
                   onChange={(e) =>
                     setForm({ ...form, logo_url: e.target.value })
                   }
-                  placeholder="https://example.com/logo.png — leave empty to use Clearbit fallback"
+                  placeholder="https://example.com/logo.png, leave empty to use Clearbit fallback"
                   disabled={!!logoFile}
                 />
                 <small className="admin-field-hint">

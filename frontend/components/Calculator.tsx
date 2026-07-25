@@ -353,7 +353,7 @@ export default function Calculator() {
         <div className="insight reveal" data-tilt>
           <h4>Rupee cost averaging</h4>
           <p>
-            Buy more units when prices are low, fewer when high —
+            Buy more units when prices are low, fewer when high,
             automatically.
           </p>
         </div>

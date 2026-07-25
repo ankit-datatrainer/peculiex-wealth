@@ -30,14 +30,14 @@ Your job: rebuild the sample HTML file using the data from my PDF, and give me b
 
 Rules:
 1. Keep the sample's design, layout, colours, fonts and structure EXACTLY as they are. Do not restyle anything.
-2. Replace only the CONTENT — the heading, the "as on" date, and all the data rows — with the real data from my PDF.
+2. Replace only the CONTENT: the heading, the "as on" date, and all the data rows, with the real data from my PDF.
 3. In the sample, the data lives in a JavaScript array near the bottom called FV_CATEGORIES, in the format
    [name, AUM, 1Y%, 3Y%, 5Y%, SinceInception%]. Put my PDF's data into that same array in that same format.
    Use null (not 0, not "-") wherever the PDF has no value.
 4. Update the headline, the sub-heading and the "Performance as on ..." date to match my PDF.
 5. Copy the disclaimer text at the bottom exactly as it appears in my PDF.
 6. Do not add any new sections, logos, branding or commentary that is not in my PDF.
-7. It must stay fully responsive on mobile — do not remove any @media rules.
+7. It must stay fully responsive on mobile. Do not remove any @media rules.
 8. Give me the ENTIRE file as one single HTML code block, starting at <!DOCTYPE html> and ending at </html>.
    Do not split it, do not summarise it, do not leave any "..." placeholders.
 
@@ -115,7 +115,7 @@ export default function AdminFactsheetHtmlPage() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
-      setError("Couldn't copy automatically — open the prompt and copy it manually.");
+      setError("Couldn't copy automatically. Open the prompt and copy it manually.");
     }
   };
 
@@ -181,7 +181,7 @@ export default function AdminFactsheetHtmlPage() {
           <h1>HTML Factsheets</h1>
           <p className="admin-page-sub">
             Paste an HTML factsheet for any product and it appears on that product&apos;s page
-            straight away — no code changes. Use the prompt below to generate the HTML from a
+            straight away: no code changes. Use the prompt below to generate the HTML from a
             PDF with ChatGPT or Claude.
           </p>
         </div>
@@ -199,7 +199,7 @@ export default function AdminFactsheetHtmlPage() {
         <ol style={{ paddingLeft: 20, margin: "0 0 16px", lineHeight: 1.85, fontSize: ".9rem" }}>
           <li>Pick the product below.</li>
           <li>
-            Click <strong>Copy prompt</strong> — this copies the instructions <em>and</em> the sample
+            Click <strong>Copy prompt</strong>. This copies the instructions <em>and</em> the sample
             factsheet together.
           </li>
           <li>Open ChatGPT or Claude, paste the prompt, and attach your PDF factsheet.</li>
@@ -331,17 +331,17 @@ export default function AdminFactsheetHtmlPage() {
                 variantMeta.updatedAt ? new Date(variantMeta.updatedAt).toLocaleString() : "—"
               }${variantMeta.updatedBy ? ` by ${variantMeta.updatedBy}` : ""}`
             : entry?.base
-            ? `No dedicated ${variant} version — visitors in ${variant} mode see the shared upload. Paste one here to override it.`
+            ? `No dedicated ${variant} version, visitors in ${variant} mode see the shared upload. Paste one here to override it.`
             : hasDefault
-            ? `No ${variant} version — ${variant}-mode visitors see the built-in factsheet.`
-            : `No ${variant} factsheet yet — ${variant}-mode visitors see nothing until you add one.`}
+            ? `No ${variant} version: ${variant}-mode visitors see the built-in factsheet.`
+            : `No ${variant} factsheet yet, ${variant}-mode visitors see nothing until you add one.`}
         </div>
 
         <textarea
           value={html}
           onChange={(e) => setHtml(e.target.value)}
           spellCheck={false}
-          placeholder="Paste the full HTML code here — starting with <!DOCTYPE html> and ending with </html>"
+          placeholder="Paste the full HTML code here, starting with <!DOCTYPE html> and ending with </html>"
           style={{
             width: "100%",
             height: 380,
@@ -438,7 +438,7 @@ export default function AdminFactsheetHtmlPage() {
               }}
             >
               <strong style={{ fontSize: ".9rem", color: "#111" }}>
-                Preview — {product?.label}
+                Preview: {product?.label}
               </strong>
               <button type="button" className="btn btn-outline" onClick={() => setPreview(null)}>
                 Close

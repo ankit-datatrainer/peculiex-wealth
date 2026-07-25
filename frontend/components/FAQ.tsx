@@ -6,7 +6,7 @@ import Link from "next/link";
 type Item = { q: string; a: string };
 
 const FALLBACK: Item[] = [
-  { q: "Is there a free plan available?", a: "Yes. Your demat account is held with SEBI-registered partners and funds move via RBI-regulated banking rails. Finvoq never holds custody of your assets — we are an advisor and execution layer only." },
+  { q: "Is there a free plan available?", a: "Yes. Your demat account is held with SEBI-registered partners and funds move via RBI-regulated banking rails. Finvoq never holds custody of your assets. We are an advisor and execution layer only." },
   { q: "Can I invite my team members?", a: "Absolutely. Invite teammates, assign roles, and collaborate in real time from a shared workspace." },
   { q: "Does it integrate with other tools?", a: "Yes, we offer seamless integrations with popular tools like Slack, Jira, and GitHub to streamline your workflow." },
   { q: "Can I upgrade or downgrade my plan anytime?", a: "Yes, you can easily change your plan at any time. Prorated charges or credits will be applied automatically." },

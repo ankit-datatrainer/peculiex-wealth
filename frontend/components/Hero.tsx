@@ -71,10 +71,10 @@ export default function Hero() {
   /* ---- Progress-driven choreography (slow & smooth, NO dead scroll) ----
      0.00–0.35  Green hero + headline; the mint circle rises and grows.
      0.35–0.92  Headline fades; the circle keeps growing until it just barely
-                covers the screen right at the END of the track — so the
+                covers the screen right at the END of the track, so the
                 instant it's full, the page hands straight to the next section.
      The radius max is sized to the minimum that covers the screen corner (not
-     a big overshoot), so "visually full" and "track end" happen together —
+     a big overshoot), so "visually full" and "track end" happen together:
      no stretch of scrolling through an already-full-screen video.              */
   const domeR = 26 + range(progress, 0.08, 0.94) * 96; // 26 (dome) → 122 (just covers, ends with track)
   const domeDetail = 1 - range(progress, 0.5, 0.85); // rim/glow fade as it fills
@@ -88,7 +88,7 @@ export default function Hero() {
     <>
       <a id="top" />
 
-      {/* Tall track — its scroll distance scrubs the sphere + drives the beats */}
+      {/* Tall track. Its scroll distance scrubs the sphere + drives the beats */}
       <div className="hero-track" ref={trackRef}>
         <section
           className="hero-cine-stage"
@@ -100,7 +100,7 @@ export default function Hero() {
         >
           {/* Full-screen video at native resolution; a circular mask (radius
               driven by --dome-r) reveals it as a dome rising from the bottom
-              and growing to cover the screen — no zoom, so it stays crisp. */}
+              and growing to cover the screen, no zoom, so it stays crisp. */}
           <div className="hero-cine-dome" aria-hidden="true">
             <video
               ref={videoRef}
@@ -116,7 +116,7 @@ export default function Hero() {
           <div className="hero-dome-ring" aria-hidden="true" />
           <div className="hero-dome-scrim" aria-hidden="true" />
 
-          {/* Beat 1 — opening headline (on the cover) */}
+          {/* Beat 1: opening headline (on the cover) */}
           <div
             className="hero-beat hero-beat-1"
             style={{
@@ -134,7 +134,7 @@ export default function Hero() {
             </h1>
             <p className="hero-sub hero-fade-3">
               Listed shares, unlisted opportunities, mutual funds, PMS, AIF,
-              bonds, and insurance — curated by experts, executed in seconds.
+              bonds, and insurance, curated by experts, executed in seconds.
             </p>
             <div className="hero-ctas hero-fade-4">
               <a
@@ -170,7 +170,7 @@ export default function Hero() {
         </section>
       </div>
 
-      {/* Trust marquee — sits below the scroll track */}
+      {/* Trust marquee: sits below the scroll track */}
       <div className="hero-trust reveal">
         <span className="trust-label">Regulated &amp; Trusted by</span>
         <div className="trust-track">

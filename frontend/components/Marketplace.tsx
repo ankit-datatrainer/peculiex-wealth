@@ -47,7 +47,7 @@ export default function Marketplace() {
             Every financial product, <em>one destination</em>
           </h2>
           <p className="sdesc">
-            From equities to alternative investments — explore, compare, and
+            From equities to alternative investments: explore, compare, and
             invest with guidance at every step.
           </p>
         </div>

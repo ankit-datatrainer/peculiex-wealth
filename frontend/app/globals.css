@@ -284,8 +284,16 @@ img, svg { display: block; max-width: 100%; }
   position: fixed; top: 52px; left: 0; right: 0; z-index: 110;
   transition: top .4s var(--ease), transform .35s var(--ease);
 }
+.main-nav .logo {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.main-nav .logo:hover {
+  transform: scale(1.08);
+}
 /* The bar itself is transparent â€” the nav-inner is a floating white pill. */
-.main-nav.scrolled { /* top stays the same — only shadow changes */ }
+.main-nav.scrolled { /* top stays the same, only shadow changes */ }
 /* Floating pure-white rounded pill (SecuredFi-style). Always white in both
    themes, so nav content is forced dark below to stay legible. */
 .nav-inner {
@@ -650,7 +658,7 @@ section { padding: 110px 0; position: relative; }
 .hero-track {
   position: relative;
   /* Track length = content + dome-grow-to-full, kept SHORT so the video fills
-     the screen right as the track ends — the very next scroll tick hands off
+     the screen right as the track ends, the very next scroll tick hands off
      to the next section. No stretch of scrolling through an already-full
      video with nothing new happening. */
   height: 210vh;
@@ -672,7 +680,7 @@ section { padding: 110px 0; position: relative; }
 }
 /* Full-screen video at native resolution; a circular mask (radius = --dome-r,
    centred at the bottom) reveals it as a dome that rises and grows. Because the
-   video is never scaled/zoomed, it stays crisp — no pixelation. */
+   video is never scaled/zoomed, it stays crisp, no pixelation. */
 .hero-cine-dome {
   position: absolute;
   inset: 0;
@@ -3665,7 +3673,7 @@ section { padding: 110px 0; position: relative; }
     box-sizing: border-box;
   }
   /* Guarantee the theme toggle + hamburger never shrink/overflow off-frame on
-     narrow phones — they're the only interactive controls left on mobile. */
+     narrow phones. They're the only interactive controls left on mobile. */
   .nav-inner > * { flex-shrink: 0; }
   .nav-cta { flex-shrink: 0; }
   .nav-cta > * { flex-shrink: 0; }
@@ -7498,6 +7506,24 @@ section { padding: 110px 0; position: relative; }
   display: grid; place-items: center;
   box-shadow: var(--shadow-sm);
   padding: 12px;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+  cursor: pointer;
+  z-index: 1;
+}
+.partner-badge:hover {
+  transform: translateY(-8px) scale(1.18);
+  z-index: 10;
+  border-color: var(--color-primary);
+  box-shadow: 0 14px 32px -8px rgba(0, 0, 0, 0.2);
+}
+.partner-badge img {
+  max-width: 100%; max-height: 100%; object-fit: contain;
+  filter: none;
+  opacity: 1;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.partner-badge:hover img {
+  transform: scale(1.22);
 }
 .center-badge { width: 120px; height: 120px; padding: 18px; }
 .partner-floating-wrap {
@@ -7513,6 +7539,7 @@ section { padding: 110px 0; position: relative; }
   overflow: hidden;
   position: relative;
   width: 100%;
+  padding: 20px 0 30px;
 }
 .partner-marquee-track {
   display: flex;
@@ -7520,16 +7547,38 @@ section { padding: 110px 0; position: relative; }
   width: max-content;
   animation: marquee 30s linear infinite;
 }
+.partner-marquee-wrap:hover .partner-marquee-track {
+  animation-play-state: paused;
+}
 .partner-marquee-logo {
-  width: 120px;
-  height: 50px;
+  width: 130px;
+  height: 56px;
   display: flex; align-items: center; justify-content: center;
   background: #ffffff;
-  border-radius: 8px;
-  padding: 8px;
+  border-radius: 12px;
+  padding: 10px 16px;
+  border: 1px solid var(--color-divider);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+}
+.partner-marquee-logo:hover {
+  transform: translateY(-8px) scale(1.15);
+  z-index: 20;
+  border-color: var(--color-primary);
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.18);
 }
 .partner-marquee-logo img {
   max-width: 100%; max-height: 100%; object-fit: contain;
+  filter: none;
+  opacity: 1;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.4s ease;
+}
+.partner-marquee-logo:hover img {
+  transform: scale(1.2);
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
 }
 @media (max-width: 760px) {
   .partner-floating-wrap {
@@ -7680,7 +7729,7 @@ section { padding: 110px 0; position: relative; }
   width: auto;
 }
 /* Get-started onboarding had no top padding, so its heading sat under the
-   nav — give it the same clearance as the content-page heroes. */
+   nav: give it the same clearance as the content-page heroes. */
 .onboard-sec {
   padding-top: 172px;
 }

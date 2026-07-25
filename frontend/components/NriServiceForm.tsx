@@ -49,7 +49,7 @@ export default function NriServiceForm({
         <div className="nri-svc-success-icon">✓</div>
         <h3>Request received</h3>
         <p>
-          Thank you — our NRI desk will reach out within one business day to
+          Thank you. Our NRI desk will reach out within one business day to
           discuss your {serviceName.toLowerCase()} requirement.
         </p>
       </div>

@@ -96,7 +96,7 @@ export default function NewsPage() {
   return (
     <main className="np">
       <div className="container">
-        {/* Framed module — the whole feed reads as one embedded unit rather
+        {/* Framed module: the whole feed reads as one embedded unit rather
             than loose sections on the page, matching the factsheet embeds. */}
         <div className="np-module">
         <header className="np-head">

@@ -6,7 +6,7 @@ import ContentBody from "@/components/ContentBody";
 export const metadata: Metadata = {
   title: "About Finvoq",
   description:
-    "Finvoq is India's premium investment marketplace — eight asset classes, one platform, advisory-led. Learn about our mission, values, and the team behind the platform."
+    "Finvoq is India's premium investment marketplace: eight asset classes, one platform, advisory-led. Learn about our mission, values, and the team behind the platform."
 };
 
 export default function AboutPage() {
@@ -27,7 +27,7 @@ export default function AboutPage() {
           commission. None of it was bought as part of a plan.
         </p>
         <p>
-          Finvoq unifies the investing surface — eight asset classes, one dashboard — and
+          Finvoq unifies the investing surface (eight asset classes, one dashboard), and
           changes the business model. We earn a flat advisory fee from <em>you</em>, and
           nothing from product manufacturers. Ever. Our incentives match yours, by design.
         </p>
@@ -36,7 +36,7 @@ export default function AboutPage() {
         <ul>
           <li>
             <strong>Curation beats access.</strong> India has 1,500 mutual fund schemes and
-            300+ unlisted offers. The win isn't more choice — it's the right shortlist.
+            300+ unlisted offers. The win isn't more choice. It's the right shortlist.
           </li>
           <li>
             <strong>Advice should be paid for, openly.</strong> An advisor who earns from a
@@ -45,7 +45,7 @@ export default function AboutPage() {
           </li>
           <li>
             <strong>Tools should be opinionated.</strong> Calculators, dashboards, and
-            research notes should help you decide — not just visualise.
+            research notes should help you decide, not just visualise.
           </li>
           <li>
             <strong>Compliance is a feature, not a hurdle.</strong> SEBI-registered, RBI-rail
@@ -58,19 +58,19 @@ export default function AboutPage() {
           <li>Founded in 2024 in Mumbai, India.</li>
           <li>SEBI Registered Investment Adviser (RIA: INA000099999).</li>
           <li>4,000+ active investors, ₹450 Cr+ in assets advised.</li>
-          <li>A team of 28 — engineers, advisors, and a research desk that has covered Indian markets through three boom-bust cycles.</li>
+          <li>A team of 28: engineers, advisors, and a research desk that has covered Indian markets through three boom-bust cycles.</li>
         </ul>
 
         <h2>How we work with you</h2>
         <p>
           Every investor is paired with a SEBI-registered advisor based on goals, time
-          horizon, and portfolio size. You'll get one human as your point of contact —
-          reachable on WhatsApp, email, or a scheduled call — backed by a research desk and
+          horizon, and portfolio size. You'll get one human as your point of contact
+          (reachable on WhatsApp, email, or a scheduled call), backed by a research desk and
           an operations team that handles the paperwork.
         </p>
         <p>
           We do quarterly portfolio reviews on the calendar, and ad-hoc reviews whenever
-          there's a market event or a personal one. The goal is steady, boring compounding —
+          there's a market event or a personal one. The goal is steady, boring compounding,
           and the discipline to ride out the rough quarters.
         </p>
 

@@ -179,7 +179,7 @@ export default function AuthedView() {
 
   /* ---------- live listed-share search (full NSE/BSE universe) ----------
      The curated /api/stocks list is only a handful of names. To let a user
-     add *any* listed share or ETF — the way Groww/Zerodha do — we also hit
+     add *any* listed share or ETF (the way Groww/Zerodha do), we also hit
      the live search endpoint (debounced) and fold those hits into the
      suggestion list below. Prices arrive from the live-quotes poll once the
      share is added, so a hit needs only its symbol and name. */

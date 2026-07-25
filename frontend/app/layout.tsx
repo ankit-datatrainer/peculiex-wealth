@@ -8,14 +8,14 @@ const SITE_URL =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Finvoq — India's Investment Marketplace",
+    default: "Finvoq: India's Investment Marketplace",
     template: "%s · Finvoq"
   },
   description:
     "Finvoq offers listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, and insurance in a single premium platform.",
   openGraph: {
     type: "website",
-    title: "Finvoq — India's Investment Marketplace",
+    title: "Finvoq: India's Investment Marketplace",
     description:
       "Listed and unlisted shares, mutual funds, PMS, AIF, bonds, and insurance. Curated by experts and executed in seconds.",
     siteName: "Finvoq",
@@ -23,9 +23,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Finvoq — India's Investment Marketplace",
+    title: "Finvoq: India's Investment Marketplace",
     description:
-      "Listed, unlisted, mutual funds, PMS, AIF, bonds, insurance — curated by experts, executed in seconds."
+      "Listed, unlisted, mutual funds, PMS, AIF, bonds, insurance, curated by experts, executed in seconds."
   },
   icons: {
     icon: {

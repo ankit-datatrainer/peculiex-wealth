@@ -365,7 +365,7 @@ async function getQuote(symbol) {
   }
 
   if (!slim) throw new Error(`No quote data for ${symbol}`);
-  cacheSet(key, slim, 30_000); // 30s — feels live, kind to upstream
+  cacheSet(key, slim, 30_000); // 30s: feels live, kind to upstream
   return slim;
 }
 

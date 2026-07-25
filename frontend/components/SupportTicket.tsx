@@ -44,7 +44,7 @@ export default function SupportTicket() {
           <div className="support-panel-head">
             <div>
               <strong>Need help?</strong>
-              <span>Raise a ticket — we reply within a few hours.</span>
+              <span>Raise a ticket. We reply within a few hours.</span>
             </div>
             <button type="button" className="support-close" aria-label="Close" onClick={() => setOpen(false)}>
               ✕

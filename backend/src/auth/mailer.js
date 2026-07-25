@@ -130,9 +130,9 @@ function renderText({ name, otp, isReset }) {
     `    ${otp}`,
     "",
     "This code expires in 10 minutes. If you didn't request it, you can",
-    "safely ignore this email — your account stays untouched.",
+    "safely ignore this email. Your account stays untouched.",
     "",
-    "— The Finvoq team"
+    "The Finvoq team"
   ].join("\n");
 }
 
@@ -172,7 +172,7 @@ function renderHtml({ name, otp, isReset }) {
       </div>
       
       <p style="margin:0 0 24px;color:#5b5e63;line-height:1.6;font-size:14px">
-        Didn't request this code? You can safely ignore this email — your account is protected.
+        Didn't request this code? You can safely ignore this email. Your account is protected.
       </p>
       
       <div style="border-top:1px solid #edf1f0;padding-top:24px;margin-top:8px;">
@@ -235,7 +235,7 @@ function renderWelcomeText({ name }) {
     "",
     "Log in now to explore your dashboard and build your watchlist.",
     "",
-    "— The Finvoq team"
+    "The Finvoq team"
   ].join("\n");
 }
 

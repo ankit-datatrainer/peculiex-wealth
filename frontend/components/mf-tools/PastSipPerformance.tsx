@@ -53,7 +53,7 @@ export default function PastSipPerformance() {
     <div className="mf-tool-container">
       <div className="mf-tool-header">
         <h2>Past SIP Performance</h2>
-        <p>Real historical NAV-based calculation — pick any scheme and see how a SIP would have performed.</p>
+        <p>Real historical NAV-based calculation. Pick any scheme and see how a SIP would have performed.</p>
       </div>
 
       <form className="mf-tool-form" onSubmit={handleCalculate}>

@@ -64,7 +64,7 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
         email: email.trim(),
         mobile: phone.trim(),
         source: "unlisted-invest",
-        notes: `Interest in ${company.name} — ${units} units @ ${fmtINR(company.price)}/unit = ${fmtINR(finalAmount)}`
+        notes: `Interest in ${company.name}, ${units} units @ ${fmtINR(company.price)}/unit = ${fmtINR(finalAmount)}`
       });
       setSubmitted(true);
     } catch {

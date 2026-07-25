@@ -37,7 +37,7 @@ export const LEGAL: Record<string, LegalDoc> = {
           Finvoq is a SEBI Registered Investment Adviser (RIA: INA000099999). We provide
           investment advisory services and an execution interface to SEBI-registered partner
           brokers, AMCs, and IRDAI-licensed insurers. Finvoq itself does not hold custody
-          of your money or securities — every trade settles into your own demat or insurance
+          of your money or securities, every trade settles into your own demat or insurance
           policy.
         </p>
 
@@ -63,13 +63,13 @@ export const LEGAL: Record<string, LegalDoc> = {
         <ul>
           <li>Keep your login credentials confidential and notify us immediately of any unauthorised access.</li>
           <li>Provide accurate, current, and complete information during onboarding and update it when material facts change.</li>
-          <li>Comply with all applicable tax laws on your investments — Finvoq provides reports but does not file taxes for you.</li>
+          <li>Comply with all applicable tax laws on your investments, Finvoq provides reports but does not file taxes for you.</li>
           <li>Use the Platform only for lawful, personal investment purposes.</li>
         </ul>
 
         <h2>7. Intellectual property</h2>
         <p>
-          All content on the Platform — design, text, logos, research notes — is owned by
+          All content on the Platform (design, text, logos, research notes) is owned by
           Finvoq Wealth Pvt. Ltd. or licensed to us. You may use the content for your own
           investment decisions but may not redistribute, scrape, or commercially exploit it
           without written consent.
@@ -112,7 +112,7 @@ export const LEGAL: Record<string, LegalDoc> = {
     label: "Legal",
     title: "Privacy Policy",
     subtitle:
-      "How we collect, use, store, and protect your personal data — and the rights you have over it.",
+      "How we collect, use, store, and protect your personal data, and the rights you have over it.",
     updated: "Last updated: 1 May 2026",
     body: (
       <>
@@ -130,7 +130,7 @@ export const LEGAL: Record<string, LegalDoc> = {
           <li>To provide investment advisory services and execute transactions you authorise.</li>
           <li>To send you service updates, portfolio reports, and tax statements.</li>
           <li>To comply with legal and regulatory obligations (PMLA, SEBI, RBI, IT Department).</li>
-          <li>To improve our products — only on aggregated, anonymised data.</li>
+          <li>To improve our products, only on aggregated, anonymised data.</li>
         </ul>
 
         <h2>3. Who we share it with</h2>
@@ -138,7 +138,7 @@ export const LEGAL: Record<string, LegalDoc> = {
           We share your data <strong>only</strong> with:
         </p>
         <ul>
-          <li>SEBI-registered partner brokers, AMCs, and IRDAI-licensed insurers — as needed to execute the investments you authorise.</li>
+          <li>SEBI-registered partner brokers, AMCs, and IRDAI-licensed insurers, as needed to execute the investments you authorise.</li>
           <li>Regulators (SEBI, RBI, IT Dept., FIU-IND) on lawful demand.</li>
           <li>Third-party service providers (e-sign, eKYC, hosting) under strict contractual data-protection terms.</li>
         </ul>
@@ -150,7 +150,7 @@ export const LEGAL: Record<string, LegalDoc> = {
         <h2>4. How we protect it</h2>
         <ul>
           <li>Encryption in transit (TLS 1.2+) and at rest (AES-256).</li>
-          <li>Role-based access on the server side — least-privilege by default.</li>
+          <li>Role-based access on the server side, least-privilege by default.</li>
           <li>Annual third-party security audits and quarterly internal reviews.</li>
           <li>Database row-level security: only server-side service-role keys can read sensitive data.</li>
         </ul>
@@ -248,7 +248,7 @@ export const LEGAL: Record<string, LegalDoc> = {
         <h2>3. Operational risks</h2>
         <ul>
           <li>Settlement delays at exchanges, banks, or RTAs can delay your transactions.</li>
-          <li>System outages — at our end, our partner broker's, or the exchange's — can prevent timely execution.</li>
+          <li>System outages (at our end, our partner broker's, or the exchange's) can prevent timely execution.</li>
           <li>Cybersecurity incidents, despite our controls, remain a residual risk.</li>
         </ul>
 
@@ -289,13 +289,13 @@ export const LEGAL: Record<string, LegalDoc> = {
     label: "Legal",
     title: "Grievance Redressal",
     subtitle:
-      "How to raise a complaint with Finvoq, and how we resolve it — within SEBI-mandated timelines.",
+      "How to raise a complaint with Finvoq, and how we resolve it, within SEBI-mandated timelines.",
     updated: "Last updated: 1 May 2026",
     body: (
       <>
         <h2>Three-stage process</h2>
 
-        <h3>Stage 1 — Customer support</h3>
+        <h3>Stage 1: Customer support</h3>
         <p>
           Email{" "}
           <a href="mailto:support@finvoq.example.com">support@finvoq.example.com</a> or
@@ -304,7 +304,7 @@ export const LEGAL: Record<string, LegalDoc> = {
           <strong>three business days</strong>.
         </p>
 
-        <h3>Stage 2 — Compliance officer</h3>
+        <h3>Stage 2: Compliance officer</h3>
         <p>
           If your issue isn't resolved at Stage 1, escalate to our Compliance Officer:
         </p>
@@ -329,7 +329,7 @@ export const LEGAL: Record<string, LegalDoc> = {
           within <strong>15 business days</strong> per SEBI guidelines.
         </p>
 
-        <h3>Stage 3 — SEBI SCORES</h3>
+        <h3>Stage 3: SEBI SCORES</h3>
         <p>
           If you remain dissatisfied, escalate to SEBI's online complaint portal:{" "}
           <a href="https://scores.sebi.gov.in/" target="_blank" rel="noopener noreferrer">
@@ -345,7 +345,7 @@ export const LEGAL: Record<string, LegalDoc> = {
           <li>Your client ID, if known.</li>
           <li>The transaction or recommendation in question, with dates.</li>
           <li>What outcome you want.</li>
-          <li>Any attachments — emails, statements, screenshots.</li>
+          <li>Any attachments: emails, statements, screenshots.</li>
         </ul>
 
         <h2>Our service standards</h2>
@@ -454,7 +454,7 @@ export const LEGAL: Record<string, LegalDoc> = {
         <h3>Don'ts</h3>
         <ul>
           <li>Don't act on tips or recommendations from unregistered persons.</li>
-          <li>Don't share your demat or login credentials with anyone — including us.</li>
+          <li>Don't share your demat or login credentials with anyone, including us.</li>
           <li>Don't invest in products you don't understand.</li>
           <li>Don't chase past returns at the expense of your risk profile.</li>
         </ul>

@@ -7,13 +7,13 @@ type T = { quote: string; author: string; role: string; color: string; initials:
 const FALLBACK: T[] = [
   { quote: "Finally a platform that treats unlisted shares with the same rigor as listed ones. The diligence is exceptional.", author: "Aarav Shah", role: "Founder, Lumen Studios", color: "#0E3F76", initials: "AS" },
   { quote: "I moved my entire portfolio over after my first call with their advisor. The depth of research is unmatched.", author: "Priya Kapoor", role: "Director, MIT-K Capital", color: "#7c3aed", initials: "PK" },
-  { quote: "Most platforms feel like brokerage apps. Finvoq actually feels like a private bank — without the markup.", author: "Vikram Iyer", role: "Managing Partner, Iyer Family Office", color: "#13735d", initials: "VI" },
+  { quote: "Most platforms feel like brokerage apps. Finvoq actually feels like a private bank, without the markup.", author: "Vikram Iyer", role: "Managing Partner, Iyer Family Office", color: "#13735d", initials: "VI" },
   { quote: "The unified dashboard alone saves me three hours a week. I can finally see every asset class in one place.", author: "Neha Reddy", role: "CFO, Zenith Health", color: "#ea7c1c", initials: "NR" },
   { quote: "I've been investing for 25 years. This is the first platform that actually serves me, not the other way around.", author: "Rajesh Bansal", role: "Retd. Senior Banker", color: "#16a34a", initials: "RB" },
-  { quote: "The PMS access alone justifies the platform. The team made onboarding feel personal — rare these days.", author: "Karan Mehta", role: "Founder, Stride Ventures", color: "#dc2626", initials: "KM" },
+  { quote: "The PMS access alone justifies the platform. The team made onboarding feel personal, rare these days.", author: "Karan Mehta", role: "Founder, Stride Ventures", color: "#dc2626", initials: "KM" },
   { quote: "Their advisory team helped me allocate across 5 asset classes in under a week. Truly seamless experience.", author: "Sneha Patel", role: "CTO, NovaByte Systems", color: "#0891b2", initials: "SP" },
-  { quote: "What impressed me most was the transparency. Every fee, every allocation — crystal clear from day one.", author: "Arjun Menon", role: "Partner, Meridian Capital", color: "#9333ea", initials: "AM" },
-  { quote: "From unlisted pre-IPO to bonds — everything under one roof. My CA loves the tax reports they generate.", author: "Deepa Krishnan", role: "Founder, Aura Interiors", color: "#c2410c", initials: "DK" },
+  { quote: "What impressed me most was the transparency. Every fee, every allocation, crystal clear from day one.", author: "Arjun Menon", role: "Partner, Meridian Capital", color: "#9333ea", initials: "AM" },
+  { quote: "From unlisted pre-IPO to bonds, everything under one roof. My CA loves the tax reports they generate.", author: "Deepa Krishnan", role: "Founder, Aura Interiors", color: "#c2410c", initials: "DK" },
   { quote: "The relationship manager actually picks up the phone. In 2024, that alone is worth its weight in gold.", author: "Rohit Sharma", role: "VP Engineering, ScaleStack", color: "#0d9488", initials: "RS" },
 ];
 

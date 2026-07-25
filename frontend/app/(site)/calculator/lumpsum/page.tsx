@@ -3,7 +3,7 @@ import LumpsumCalc from "@/components/LumpsumCalc";
 import PageHero from "@/components/PageHero";
 
 export const metadata: Metadata = {
-  title: "Lumpsum Calculator — One-time Investment Returns",
+  title: "Lumpsum Calculator: One-time Investment Returns",
   description:
     "See what a one-time mutual fund investment can grow to. Adjust amount, expected return, and duration to model your future portfolio."
 };

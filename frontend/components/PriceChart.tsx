@@ -74,7 +74,7 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
           last && Math.floor(last.t / 60_000) === Math.floor(t / 60_000);
 
         if (sameMinute) {
-          if (last.c === price) return prev; // nothing moved — avoid a re-render
+          if (last.c === price) return prev; // nothing moved, avoid a re-render
           candles[candles.length - 1] = {
             ...last,
             c: price,
@@ -385,8 +385,8 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
             {stats.min.toLocaleString("en-IN", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
-            })}{" "}
-            – {isIndex ? "" : "₹"}
+            })}{" "}:
+             {isIndex ? "" : "₹"}
             {stats.max.toLocaleString("en-IN", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2

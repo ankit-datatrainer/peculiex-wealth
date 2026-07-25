@@ -43,7 +43,7 @@ export default function MfPerformance() {
             Top-performing funds, <em>ranked by returns.</em>
           </h2>
           <p className="sdesc">
-            Consistent outperformers across horizons — hand-tracked by our research desk.
+            Consistent outperformers across horizons, hand-tracked by our research desk.
           </p>
         </div>
 

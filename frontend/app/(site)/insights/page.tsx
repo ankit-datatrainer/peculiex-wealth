@@ -4,7 +4,7 @@ import PageHero from "@/components/PageHero";
 export const metadata: Metadata = {
   title: "Market Insights",
   description:
-    "Curated weekly research from the Finvoq desk — what we're watching across Indian equities, debt, unlisted, and global markets."
+    "Curated weekly research from the Finvoq desk, what we're watching across Indian equities, debt, unlisted, and global markets."
 };
 
 const POSTS = [
@@ -34,7 +34,7 @@ const POSTS = [
   },
   {
     tag: "Fixed Income",
-    title: "G-Sec curve at 7.18% — buying duration here?",
+    title: "G-Sec curve at 7.18%: buying duration here?",
     summary:
       "With the RBI on a holding pattern and inflation easing toward target, longer-dated G-Secs are starting to look attractive. The math, the risks, and the alternatives.",
     date: "May 10, 2026",
@@ -50,7 +50,7 @@ const POSTS = [
   },
   {
     tag: "Behaviour",
-    title: "The investor who beat the market — by doing nothing for 3 years",
+    title: "The investor who beat the market: by doing nothing for 3 years",
     summary:
       "A real portfolio review of one of our investors who hit pause on rebalancing during the 2023–24 run, and outperformed by 3.4% p.a. as a result.",
     date: "May 01, 2026",
@@ -60,7 +60,7 @@ const POSTS = [
     tag: "Global",
     title: "What rising US yields mean for your Indian portfolio",
     summary:
-      "FII flows, INR-USD, and the import-cost translation — three transmission channels and the asset classes most exposed.",
+      "FII flows, INR-USD, and the import-cost translation, three transmission channels and the asset classes most exposed.",
     date: "Apr 26, 2026",
     read: "6 min read"
   },

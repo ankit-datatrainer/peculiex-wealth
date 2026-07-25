@@ -105,7 +105,7 @@ export default function AdminLeadsPage() {
                   <td>{l.interest}</td>
                   <td>{l.budget}</td>
                   <td className="admin-msg-cell">
-                    {l.message || <em>—</em>}
+                    {l.message || <em>, </em>}
                   </td>
                   <td>
                     <select

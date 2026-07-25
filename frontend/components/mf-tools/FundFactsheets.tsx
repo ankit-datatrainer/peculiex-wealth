@@ -62,7 +62,7 @@ export default function FundFactsheets() {
     <div className="mf-tool-container">
       <div className="mf-tool-header">
         <h2>Fund Factsheets</h2>
-        <p>A real, live quick-factsheet built from actual fund data — with a link to the official published PDF.</p>
+        <p>A real, live quick-factsheet built from actual fund data, with a link to the official published PDF.</p>
       </div>
 
       <form className="mf-tool-form" onSubmit={handleSubmit}>

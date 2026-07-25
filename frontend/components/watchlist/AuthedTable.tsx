@@ -138,7 +138,7 @@ export default function AuthedTable({
                     />
                   </svg>
                 ) : (
-                  <span className="t-muted">—</span>
+                  <span className="t-muted">, </span>
                 )}
               </div>
 

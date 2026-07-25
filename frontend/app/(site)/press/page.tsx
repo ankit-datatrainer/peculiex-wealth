@@ -38,9 +38,9 @@ export default function PressPage() {
 
         <h2>Boilerplate</h2>
         <blockquote>
-          Finvoq is India's premium investment marketplace. We unify eight asset classes —
-          listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, insurance,
-          and gold &amp; commodities — into a single advisor-led platform. As a SEBI Registered
+          Finvoq is India's premium investment marketplace. We unify eight asset classes
+          (listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, insurance,
+          and gold &amp; commodities), into a single advisor-led platform. As a SEBI Registered
           Investment Adviser, Finvoq earns a flat fee from investors and accepts no
           commissions from product manufacturers. Founded in 2024, headquartered in Mumbai.
         </blockquote>

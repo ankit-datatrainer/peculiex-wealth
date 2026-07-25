@@ -81,7 +81,7 @@ export default function AdminNewsletterPage() {
         ) : items.length === 0 ? (
           <div className="admin-empty">
             No subscribers yet. (In seed mode the backend doesn&apos;t persist
-            sign-ups — connect Supabase to enable.)
+            sign-ups: connect Supabase to enable.)
           </div>
         ) : (
           <table className="admin-table">

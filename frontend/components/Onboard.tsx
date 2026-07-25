@@ -73,7 +73,7 @@ export default function Onboard() {
               <div>
                 <h4>Complete KYC verification</h4>
                 <p>
-                  Aadhaar-based eKYC or upload PAN &amp; address proof — done
+                  Aadhaar-based eKYC or upload PAN &amp; address proof, done
                   in under 5 minutes.
                 </p>
               </div>
@@ -93,7 +93,7 @@ export default function Onboard() {
               <div>
                 <h4>Start investing</h4>
                 <p>
-                  Access the full marketplace — equities, unlisted, MF, PMS,
+                  Access the full marketplace: equities, unlisted, MF, PMS,
                   bonds &amp; more.
                 </p>
               </div>
@@ -142,9 +142,9 @@ export default function Onboard() {
               <span>Budget</span>
               <select name="budget" defaultValue="Below ₹1 Lakh">
                 <option>Below ₹1 Lakh</option>
-                <option>₹1 Lakh – ₹10 Lakh</option>
-                <option>₹10 Lakh – ₹50 Lakh</option>
-                <option>₹50 Lakh – ₹1 Cr</option>
+                <option>₹1 Lakh to ₹10 Lakh</option>
+                <option>₹10 Lakh to ₹50 Lakh</option>
+                <option>₹50 Lakh to ₹1 Cr</option>
                 <option>₹1 Cr and above</option>
               </select>
             </label>

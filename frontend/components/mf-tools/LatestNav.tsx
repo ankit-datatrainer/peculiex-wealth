@@ -55,7 +55,7 @@ export default function LatestNav() {
     <div className="mf-tool-container">
       <div className="mf-tool-header">
         <h2>Latest NAV</h2>
-        <p>Live, real NAV data — pick an AMC to see its schemes' latest published NAV.</p>
+        <p>Live, real NAV data. Pick an AMC to see its schemes' latest published NAV.</p>
       </div>
 
       <form className="mf-tool-form" onSubmit={handleSubmit}>

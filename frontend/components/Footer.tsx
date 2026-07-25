@@ -47,7 +47,7 @@ export default function Footer() {
             Get the <em>weekly market brief.</em>
           </h3>
           <p>
-            Curated insights from our research team — every Monday before
+            Curated insights from our research team, every Monday before
             markets open. No promotions, no spam, ever.
           </p>
         </div>
@@ -223,7 +223,7 @@ export default function Footer() {
             provided by SEBI registered portfolio management distributor.
           </p>
           <p>
-            Risk Factors – Investments in Mutual Funds are subject to Market Risks. Read all scheme related documents carefully before investing. Mutual Fund Schemes do not assure or guarantee any returns. Past performances of any Mutual Fund Scheme may or may not be sustained in future. There is no guarantee that the investment objective of any suggested scheme shall be achieved. All existing and prospective investors are advised to check and evaluate the Exit loads and other cost structure (TER) applicable at the time of making the investment before finalizing on any investment decision for Mutual Funds schemes. We deal in Regular Plans only for Mutual Fund Schemes and earn a Trailing Commission on client investments. Disclosure For Commission earnings is made to clients at the time of investments. Option of Direct Plan for every Mutual Fund Scheme is available to investors offering advantage of lower expense ratio. We are not entitled to earn any commission on Direct plans. Hence we do not deal in Direct Plans.
+            Risk Factors: Investments in Mutual Funds are subject to Market Risks. Read all scheme related documents carefully before investing. Mutual Fund Schemes do not assure or guarantee any returns. Past performances of any Mutual Fund Scheme may or may not be sustained in future. There is no guarantee that the investment objective of any suggested scheme shall be achieved. All existing and prospective investors are advised to check and evaluate the Exit loads and other cost structure (TER) applicable at the time of making the investment before finalizing on any investment decision for Mutual Funds schemes. We deal in Regular Plans only for Mutual Fund Schemes and earn a Trailing Commission on client investments. Disclosure For Commission earnings is made to clients at the time of investments. Option of Direct Plan for every Mutual Fund Scheme is available to investors offering advantage of lower expense ratio. We are not entitled to earn any commission on Direct plans. Hence we do not deal in Direct Plans.
           </p>
         </div>
         <div className="foot-social" aria-label="Social links">
@@ -247,7 +247,7 @@ export default function Footer() {
 
       <div className="container foot-base">
         <span>
-          © <span id="year">{year ?? ""}</span> Finvoq Wealth Pvt. Ltd. — All
+          © <span id="year">{year ?? ""}</span> Finvoq Wealth Pvt. Ltd. All
           rights reserved.
         </span>
         <span>Crafted with care · Delhi, India</span>

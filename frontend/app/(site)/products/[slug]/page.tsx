@@ -22,7 +22,7 @@ export function generateMetadata({
   const p = PRODUCTS[params.slug];
   if (!p) return { title: "Not found" };
   return {
-    title: `${p.label} — Finvoq`,
+    title: `${p.label}: Finvoq`,
     description: p.subtitle
   };
 }
@@ -110,11 +110,11 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       {/* Partner logos */}
       <PartnerLogos productSlug={p.slug} />
 
-      {/* Factsheet / brochure PDF — dynamic (super-admin uploadable), with a
+      {/* Factsheet / brochure PDF: dynamic (super-admin uploadable), with a
           static fallback at /public/factsheets/<slug>.pdf */}
       {p.slug !== "pms" && <Factsheet slug={p.slug} label={p.label} />}
 
-      {/* HTML factsheet — pasted by a super-admin in the admin panel and
+      {/* HTML factsheet: pasted by a super-admin in the admin panel and
           rendered in a sandboxed frame. Available on every product, including
           PMS and AIF; renders nothing until a factsheet is saved for the slug. */}
       <FactsheetEmbed slug={p.slug} label={p.label} />
@@ -221,14 +221,14 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         </div>
       </section>
 
-      {/* LAMF cross-sell — appears only on mutual funds page */}
+      {/* LAMF cross-sell: appears only on mutual funds page */}
       {p.slug === "mutual-funds" && (
         <section style={{ padding: "0 0 110px" }}>
           <div className="container">
             <div className="lamf-band reveal">
               <div className="lamf-band-text">
                 <div className="label">Loan Against Mutual Funds</div>
-                <h3>Need liquidity? Don’t sell — pledge.</h3>
+                <h3>Need liquidity? Don’t sell, pledge.</h3>
                 <p>
                   Pledge your mutual fund units and unlock an instant overdraft from ~X% p.a.
                   while your investments stay invested. Interest only on what you use.

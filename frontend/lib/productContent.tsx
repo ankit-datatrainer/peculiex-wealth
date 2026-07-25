@@ -17,12 +17,12 @@ export const PRODUCTS: Record<string, ProductContent> = {
     label: "Mutual Funds",
     title: <>Build wealth, one SIP at a <em>time.</em></>,
     subtitle:
-      "Invest across 40+ AMCs and 1,500+ schemes — equity, debt, hybrid, ELSS — all on a single platform with goal-based planning.",
+      "Invest across 40+ AMCs and 1,500+ schemes (equity, debt, hybrid, ELSS), all on a single platform with goal-based planning.",
     highlights: [
       { title: "SIP & lump sum", body: "Start a SIP from ₹500 a month or invest a lump sum from ₹500. Set up auto-debits in seconds via UPI or NACH." },
-      { title: "Goal-based portfolios", body: "Tell us your goal — retirement, a home, your child's education — and our advisors map the right scheme mix and review it quarterly." },
+      { title: "Goal-based portfolios", body: "Tell us your goal (retirement, a home, your child's education), and our advisors map the right scheme mix and review it quarterly." },
       { title: "ELSS for tax saving", body: "Section 80C deductions up to ₹1.5L, with the shortest 3-year lock-in among tax-saving instruments." },
-      { title: "Tax & exit reports", body: "Capital gains statements, XIRR, and exit-load calculators built-in — ready for filing or rebalancing." }
+      { title: "Tax & exit reports", body: "Capital gains statements, XIRR, and exit-load calculators built-in: ready for filing or rebalancing." }
     ],
     howItWorks: [
       { step: "01", title: "Discover", body: "Browse curated lists by category, AMC, or 5-star rating. Filter by expense ratio, fund size, or risk-adjusted returns." },
@@ -36,7 +36,7 @@ export const PRODUCTS: Record<string, ProductContent> = {
       { value: "₹500", label: "Minimum SIP" }
     ],
     closing:
-      "Whether you're starting your first SIP or rebalancing a ₹50 Cr portfolio, our advisors map your fund mix to your goals — not to ours.",
+      "Whether you're starting your first SIP or rebalancing a ₹50 Cr portfolio, our advisors map your fund mix to your goals, not to ours.",
     cta: { label: "Start a SIP →", href: "/calculator" },
     related: ["pms", "aif", "bonds", "insurance"]
   },
@@ -48,17 +48,17 @@ export const PRODUCTS: Record<string, ProductContent> = {
     subtitle:
       "Discretionary PMS strategies hand-picked for HNI investors. Bespoke mandates, transparent reporting, no hidden trails.",
     highlights: [
-      { title: "Curated PMS strategies", body: "We onboard fewer than 1 in 8 PMS strategies we evaluate. Multi-cap, focused, sectoral, contra — only the ones with auditable track records survive." },
+      { title: "Curated PMS strategies", body: "We onboard fewer than 1 in 8 PMS strategies we evaluate. Multi-cap, focused, sectoral, contra: only the ones with auditable track records survive." },
       { title: "Statutory minimums", body: "PMS from ₹50L (SEBI mandated). We help you decide which structure fits your tax position and liquidity needs." },
-      { title: "Quarterly reviews with the manager", body: "Direct calls with the fund manager — not a relationship sales rep. You hear the thesis from the source." },
-      { title: "Consolidated tax reporting", body: "Capital gains, LTCG/STCG — all consolidated across PMS investments." },
-      { title: "Estate-aware structuring", body: "Trust, HUF, family-office structures — we coordinate with your CA and lawyer to keep the wrapper tax-efficient." }
+      { title: "Quarterly reviews with the manager", body: "Direct calls with the fund manager: not a relationship sales rep. You hear the thesis from the source." },
+      { title: "Consolidated tax reporting", body: "Capital gains, LTCG/STCG: all consolidated across PMS investments." },
+      { title: "Estate-aware structuring", body: "Trust, HUF, family-office structures. We coordinate with your CA and lawyer to keep the wrapper tax-efficient." }
     ],
     howItWorks: [
       { step: "01", title: "Risk profiling", body: "A 30-minute call with our advisor to understand your liquidity, time horizon, and existing portfolio gaps." },
       { step: "02", title: "Strategy shortlist", body: "We present 3–5 PMS strategies with full track-record disclosure and direct access to the fund team." },
       { step: "03", title: "Onboarding & funding", body: "Documentation, demat-linked execution, and regulatory disclosures handled end-to-end by our compliance team." },
-      { step: "04", title: "Quarterly oversight", body: "Performance reviews, attribution analysis, and rebalancing — we sit with you, not the manufacturer." }
+      { step: "04", title: "Quarterly oversight", body: "Performance reviews, attribution analysis, and rebalancing. We sit with you, not the manufacturer." }
     ],
     metrics: [
       { value: "₹50L",   label: "PMS minimum" },
@@ -80,15 +80,15 @@ export const PRODUCTS: Record<string, ProductContent> = {
     highlights: [
       { title: "Category I, II & III AIFs", body: "Venture capital, real estate, private credit, long-short equity, structured credit. Direct access to fund managers, no aggregator markups." },
       { title: "Statutory minimums", body: "AIFs from ₹1Cr. We help you evaluate the illiquidity premium and risk profile." },
-      { title: "Quarterly reviews with the manager", body: "Direct calls with the fund manager — hear the thesis straight from the source." },
-      { title: "Consolidated tax reporting", body: "Capital gains and K-1 equivalents — all consolidated across AIF investments." },
-      { title: "Estate-aware structuring", body: "Trust, HUF, family-office structures — coordinated with your CA and lawyer." }
+      { title: "Quarterly reviews with the manager", body: "Direct calls with the fund manager. Hear the thesis straight from the source." },
+      { title: "Consolidated tax reporting", body: "Capital gains and K-1 equivalents: all consolidated across AIF investments." },
+      { title: "Estate-aware structuring", body: "Trust, HUF, family-office structures: coordinated with your CA and lawyer." }
     ],
     howItWorks: [
       { step: "01", title: "Risk profiling", body: "A 30-minute call with our advisor to understand your liquidity, time horizon, and existing portfolio gaps." },
       { step: "02", title: "Strategy shortlist", body: "We present 3–5 AIF strategies with full track-record disclosure and direct access to the fund team." },
       { step: "03", title: "Onboarding & funding", body: "Documentation, execution, and regulatory disclosures handled end-to-end by our compliance team." },
-      { step: "04", title: "Quarterly oversight", body: "Performance reviews, attribution analysis, and rebalancing — we sit with you, not the manufacturer." }
+      { step: "04", title: "Quarterly oversight", body: "Performance reviews, attribution analysis, and rebalancing. We sit with you, not the manufacturer." }
     ],
     metrics: [
       { value: "₹1 Cr",  label: "AIF minimum" },
@@ -106,20 +106,20 @@ export const PRODUCTS: Record<string, ProductContent> = {
     label: "Bonds & G-Sec",
     title: <>Predictable income from <em>regulated debt.</em></>,
     subtitle:
-      "Government securities, AAA corporate bonds, tax-free bonds, sovereign gold bonds, and 54EC capital-gains bonds — all on transparent yield-to-maturity terms.",
+      "Government securities, AAA corporate bonds, tax-free bonds, sovereign gold bonds, and 54EC capital-gains bonds, all on transparent yield-to-maturity terms.",
     highlights: [
-      { title: "Government securities", body: "T-Bills, dated G-Secs, State Development Loans — sovereign-rated, RBI-issued debt with daily liquidity." },
+      { title: "Government securities", body: "T-Bills, dated G-Secs, State Development Loans: sovereign-rated, RBI-issued debt with daily liquidity." },
       { title: "AAA & PSU bonds", body: "Hand-picked corporate and PSU issues with credit ratings of AA+ or above. Yield-to-maturity transparent before you buy." },
-      { title: "Tax-free bonds", body: "NHAI, REC, IRFC, PFC — interest exempt under Sec 10(15)(iv)(h). Especially attractive in higher tax brackets." },
-      { title: "Sovereign Gold Bonds", body: "Earn 2.5% p.a. fixed interest plus the gold price upside — no storage cost, no GST, sovereign-backed." },
+      { title: "Tax-free bonds", body: "NHAI, REC, IRFC, PFC: interest exempt under Sec 10(15)(iv)(h). Especially attractive in higher tax brackets." },
+      { title: "Sovereign Gold Bonds", body: "Earn 2.5% p.a. fixed interest plus the gold price upside: no storage cost, no GST, sovereign-backed." },
       { title: "54EC capital-gains bonds", body: "REC and PFC bonds for ₹50L+ tax exemption on long-term capital gains. 5-year lock-in." },
       { title: "Yield calculators", body: "Live YTM, accrued interest, and post-tax yield comparison so you compare like-for-like across issuers." }
     ],
     howItWorks: [
       { step: "01", title: "Browse the live-yield desk", body: "Filter by maturity, rating, and post-tax yield. Compare a G-Sec to a tax-free bond to a corporate FD side by side." },
-      { step: "02", title: "Lock in the rate", body: "Place a buy order and lock the YTM. Settlement happens via RBI's NDS-OM or BSE/NSE bond platform — fully regulated." },
+      { step: "02", title: "Lock in the rate", body: "Place a buy order and lock the YTM. Settlement happens via RBI's NDS-OM or BSE/NSE bond platform: fully regulated." },
       { step: "03", title: "Earn coupon income", body: "Coupons credit directly to your bank, semi-annually or annually depending on the issue." },
-      { step: "04", title: "Hold or trade", body: "Hold to maturity for full principal, or sell on the exchange before maturity — your call." }
+      { step: "04", title: "Hold or trade", body: "Hold to maturity for full principal, or sell on the exchange before maturity. Your call." }
     ],
     metrics: [
       { value: "7.0–8.5%", label: "Typical YTM range" },
@@ -138,18 +138,18 @@ export const PRODUCTS: Record<string, ProductContent> = {
     label: "Insurance",
     title: <>Insurance, the way it <em>should be sold.</em></>,
     subtitle:
-      "Pure protection products — term life and health — from IRDAI-regulated insurers, recommended on coverage and claim-settlement ratio, never on agent commission.",
+      "Pure protection products (term life and health), from IRDAI-regulated insurers, recommended on coverage and claim-settlement ratio, never on agent commission.",
     highlights: [
       { title: "Pure term life", body: "₹1Cr cover for as little as ₹600/month for a healthy 30-year-old. We compare 14+ insurers on premium, claim ratio, and rider quality." },
       { title: "Family floater health", body: "₹10L–₹50L cover with no co-pay, no room-rent caps, and 7,500+ network hospitals. Pre-existing waiver options included." },
       { title: "Top-up & super top-up", body: "Stack a ₹5L base policy with a ₹95L super top-up for ~30% the cost of a single ₹1Cr policy." },
-      { title: "Critical illness rider", body: "Lump-sum payout on diagnosis of 30+ critical conditions — independent of hospitalisation." },
+      { title: "Critical illness rider", body: "Lump-sum payout on diagnosis of 30+ critical conditions: independent of hospitalisation." },
       { title: "Claim-ratio first", body: "We rank every insurer by IRDAI's claim-settlement ratio, not by commission. You see the data, you choose." },
       { title: "ULIP-free zone", body: "We do not sell unit-linked or endowment plans. They mix insurance and investing badly. Buy term, invest the difference." }
     ],
     howItWorks: [
       { step: "01", title: "Get your number", body: "Coverage = 15–20× annual income for term, ₹10L+ per family member for health. We help you size it right." },
-      { step: "02", title: "Compare", body: "Side-by-side premium, claim ratio, network, and rider quality across 14+ insurers — no sponsored placements." },
+      { step: "02", title: "Compare", body: "Side-by-side premium, claim ratio, network, and rider quality across 14+ insurers: no sponsored placements." },
       { step: "03", title: "Apply paperless", body: "Aadhaar-based KYC, video medicals where required. Most policies issue in under 72 hours." },
       { step: "04", title: "Claim support", body: "If you ever need to claim, our team escalates to the insurer on your behalf. Documented record of every interaction." }
     ],
@@ -201,19 +201,19 @@ export const PRODUCTS: Record<string, ProductContent> = {
     label: "Listed Equities",
     title: <>Direct shares, with <em>research that holds up.</em></>,
     subtitle:
-      "Trade and invest in NSE/BSE-listed equities with live price feeds, watchlists, sparklines, and curated research — backed by execution at exchange best-bid.",
+      "Trade and invest in NSE/BSE-listed equities with live price feeds, watchlists, sparklines, and curated research, backed by execution at exchange best-bid.",
     highlights: [
       { title: "Live market data", body: "Real-time bid/ask, depth, and intraday sparklines on every stock card. No 15-minute delay." },
       { title: "Curated coverage", body: "We track ~250 stocks across NIFTY, NEXT 50, midcap, and high-quality smallcap. Quarterly updates after every result." },
       { title: "Smart watchlist", body: "Persistent watchlist that follows you across devices, with custom alerts on price, P/E, or earnings dates." },
-      { title: "Direct execution", body: "Orders route to NSE/BSE via SEBI-registered partner brokers — no aggregator latency, no markup." },
+      { title: "Direct execution", body: "Orders route to NSE/BSE via SEBI-registered partner brokers: no aggregator latency, no markup." },
       { title: "Tax-loss harvesting hints", body: "Year-end suggestions to offset gains by realising losses on positions we'd planned to exit anyway." },
-      { title: "Quality scoring", body: "Each stock is scored on profitability, balance sheet, and capital-allocation discipline — not just price momentum." }
+      { title: "Quality scoring", body: "Each stock is scored on profitability, balance sheet, and capital-allocation discipline: not just price momentum." }
     ],
     howItWorks: [
       { step: "01", title: "Discover", body: "Filter by sector, market cap, momentum, or our internal quality score. Add to watchlist with one click." },
       { step: "02", title: "Research", body: "Read our quarterly notes, view 5-year financial trends, and check insider/promoter activity." },
-      { step: "03", title: "Execute", body: "Place a market or limit order — settles via partner broker into your demat account directly." },
+      { step: "03", title: "Execute", body: "Place a market or limit order: settles via partner broker into your demat account directly." },
       { step: "04", title: "Track", body: "Position-level P&L, dividend history, and rebalancing prompts when allocations drift." }
     ],
     metrics: [
@@ -233,18 +233,18 @@ export const PRODUCTS: Record<string, ProductContent> = {
     label: "Loan Against Mutual Funds",
     title: <>Unlock liquidity <em>without selling.</em></>,
     subtitle:
-      "Pledge your mutual fund units and get an instant overdraft at interest rates far below a personal loan — while your investments stay invested and keep compounding.",
+      "Pledge your mutual fund units and get an instant overdraft at interest rates far below a personal loan, while your investments stay invested and keep compounding.",
     highlights: [
       { title: "Stay invested", body: "Your units are only pledged, never sold. You keep the upside, dividends, and long-term compounding while borrowing against them." },
-      { title: "Rates from ~X% p.a.", body: "Interest is charged only on the amount you use, not the full sanctioned limit — dramatically cheaper than personal loans or credit cards." },
+      { title: "Rates from ~X% p.a.", body: "Interest is charged only on the amount you use, not the full sanctioned limit: dramatically cheaper than personal loans or credit cards." },
       { title: "Instant digital pledge", body: "Pledge equity or debt funds online via CAMS/KFintech in minutes. No paperwork, no branch visit, no income proof for most limits." },
-      { title: "Overdraft, not EMI", body: "Draw and repay any amount, any time. Interest accrues only on the outstanding balance — ideal for short-term cash-flow gaps." },
+      { title: "Overdraft, not EMI", body: "Draw and repay any amount, any time. Interest accrues only on the outstanding balance: ideal for short-term cash-flow gaps." },
       { title: "Loan-to-value up to 50–80%", body: "Borrow up to 80% against debt funds and up to 50% against equity funds, subject to lender norms and scheme eligibility." },
       { title: "No prepayment penalty", body: "Repay whenever you like without charges. Unpledge your units the moment the outstanding is cleared." }
     ],
     howItWorks: [
       { step: "01", title: "Check eligibility", body: "Share your mutual fund holdings. We compute your sanctioned limit across eligible equity and debt schemes instantly." },
-      { step: "02", title: "Pledge online", body: "Authorise the lien digitally through CAMS/KFintech with an OTP. Your units are marked as pledged — you still own them." },
+      { step: "02", title: "Pledge online", body: "Authorise the lien digitally through CAMS/KFintech with an OTP. Your units are marked as pledged. You still own them." },
       { step: "03", title: "Draw funds", body: "The overdraft limit is activated in your account. Withdraw part or all of it whenever you need liquidity." },
       { step: "04", title: "Repay flexibly", body: "Pay interest only on what you use. Clear the balance any time and release the pledge on your units." }
     ],
@@ -265,18 +265,18 @@ export const PRODUCTS: Record<string, ProductContent> = {
     label: "Gift City (IFSC)",
     title: <>Invest offshore, <em>from onshore India.</em></>,
     subtitle:
-      "Access global markets, USD-denominated funds, and IFSC-regulated structures through GIFT City — India's International Financial Services Centre — with resident and NRI-friendly routing.",
+      "Access global markets, USD-denominated funds, and IFSC-regulated structures through GIFT City (India's International Financial Services Centre), with resident and NRI-friendly routing.",
     highlights: [
-      { title: "USD-denominated investing", body: "Invest in global equities, US-listed ETFs, and offshore funds in dollars through IFSC units at GIFT City — a clean, regulated route out of INR." },
-      { title: "IFSCA-regulated", body: "Every structure sits under the International Financial Services Centres Authority — a dedicated unified regulator, not a grey-market workaround." },
+      { title: "USD-denominated investing", body: "Invest in global equities, US-listed ETFs, and offshore funds in dollars through IFSC units at GIFT City: a clean, regulated route out of INR." },
+      { title: "IFSCA-regulated", body: "Every structure sits under the International Financial Services Centres Authority: a dedicated unified regulator, not a grey-market workaround." },
       { title: "Tax-efficient wrappers", body: "GIFT City funds and structures enjoy specific exemptions and concessional rates designed to make offshore access competitive with Singapore or Dubai." },
       { title: "LRS & NRI routing", body: "Residents can route via the Liberalised Remittance Scheme; NRIs and foreign investors get a familiar, English-law-adjacent framework." },
-      { title: "Global diversification", body: "Hold assets outside the rupee and the Indian cycle — US tech, global bonds, and multi-currency portfolios in one IFSC account." },
+      { title: "Global diversification", body: "Hold assets outside the rupee and the Indian cycle: US tech, global bonds, and multi-currency portfolios in one IFSC account." },
       { title: "Institutional custody", body: "Assets are held with IFSC-registered custodians and administrators, with reporting built for HNI and family-office needs." }
     ],
     howItWorks: [
       { step: "01", title: "Eligibility & structure", body: "We assess whether an LRS remittance, an NRI route, or a fund structure fits your residency and objective." },
-      { step: "02", title: "Open an IFSC account", body: "KYC and onboarding with an IFSC-registered intermediary at GIFT City — handled end-to-end by our desk." },
+      { step: "02", title: "Open an IFSC account", body: "KYC and onboarding with an IFSC-registered intermediary at GIFT City: handled end-to-end by our desk." },
       { step: "03", title: "Fund & allocate", body: "Remit in USD and allocate across global funds, ETFs, or bespoke offshore mandates." },
       { step: "04", title: "Consolidated reporting", body: "Track your onshore and GIFT City holdings together, with tax-ready statements across jurisdictions." }
     ],
@@ -287,7 +287,7 @@ export const PRODUCTS: Record<string, ProductContent> = {
       { value: "NRI +",   label: "Resident routing" }
     ],
     closing:
-      "GIFT City turns offshore investing from a compliance headache into a regulated, tax-aware decision — the same global access, without leaving the Indian framework.",
+      "GIFT City turns offshore investing from a compliance headache into a regulated, tax-aware decision: the same global access, without leaving the Indian framework.",
     cta: { label: "Explore Gift City options →", href: "/get-started" },
     related: ["pms", "aif", "mutual-funds", "bonds"]
   }

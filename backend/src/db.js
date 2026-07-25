@@ -17,7 +17,7 @@ if (url && serviceKey) {
 } else {
   // eslint-disable-next-line no-console
   console.warn(
-    "[supabase] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY missing — running in seed-only mode."
+    "[supabase] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY missing, running in seed-only mode."
   );
 }
 

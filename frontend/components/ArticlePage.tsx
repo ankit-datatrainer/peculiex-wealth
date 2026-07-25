@@ -79,7 +79,7 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
           <div className="np-state">
             <h3>Story not available</h3>
             <p>
-              This story is no longer in the current feed — headlines roll off as
+              This story is no longer in the current feed, headlines roll off as
               newer ones arrive.
             </p>
             <Link href="/news" className="btn btn-primary">

@@ -572,7 +572,7 @@ export default function Dashboard() {
                                 {chg.toFixed(2)}%
                               </span>
                               {dayL > 0 && dayH > 0 && (
-                                <small>{isIndex(w.symbol) ? "" : "₹"}{fmtINR2(dayL)} – {isIndex(w.symbol) ? "" : "₹"}{fmtINR2(dayH)}</small>
+                                <small>{isIndex(w.symbol) ? "" : "₹"}{fmtINR2(dayL)} to {isIndex(w.symbol) ? "" : "₹"}{fmtINR2(dayH)}</small>
                               )}
                             </div>
                           </Link>

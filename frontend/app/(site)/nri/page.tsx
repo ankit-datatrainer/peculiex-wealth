@@ -3,9 +3,9 @@ import Link from "next/link";
 import PageHero from "@/components/PageHero";
 
 export const metadata: Metadata = {
-  title: "NRI Investing — Finvoq",
+  title: "NRI Investing: Finvoq",
   description:
-    "Invest in India as an NRI — mutual funds, PMS, AIF, unlisted shares, bonds, and Gift City (IFSC) offshore access, with repatriation-aware, FEMA-compliant routing."
+    "Invest in India as an NRI: mutual funds, PMS, AIF, unlisted shares, bonds, and Gift City (IFSC) offshore access, with repatriation-aware, FEMA-compliant routing."
 };
 
 const FEATURES = [
@@ -23,7 +23,7 @@ const FEATURES = [
   },
   {
     title: "Gift City (IFSC) offshore route",
-    body: "Invest in USD-denominated global funds through GIFT City — a familiar, IFSCA-regulated framework for NRIs."
+    body: "Invest in USD-denominated global funds through GIFT City: a familiar, IFSCA-regulated framework for NRIs."
   },
   {
     title: "Tax & DTAA support",
@@ -31,7 +31,7 @@ const FEATURES = [
   },
   {
     title: "Dedicated NRI desk",
-    body: "A relationship manager who understands time zones, repatriation, and cross-border paperwork — reachable on WhatsApp, email or call."
+    body: "A relationship manager who understands time zones, repatriation, and cross-border paperwork: reachable on WhatsApp, email or call."
   }
 ];
 
@@ -41,7 +41,7 @@ export default function NriPage() {
       <PageHero
         label="For Non-Resident Indians"
         title={<>Invest in India, <em>from anywhere.</em></>}
-        subtitle="Mutual funds, PMS, AIF, unlisted shares, bonds and Gift City offshore access — with repatriation-aware, FEMA-compliant routing for NRIs and OCIs."
+        subtitle="Mutual funds, PMS, AIF, unlisted shares, bonds and Gift City offshore access, with repatriation-aware, FEMA-compliant routing for NRIs and OCIs."
       />
 
       <section style={{ padding: "0 0 100px" }}>
@@ -83,7 +83,7 @@ export default function NriPage() {
             Distance shouldn’t cost you the India growth story.
           </h2>
           <p style={{ color: "var(--color-text-muted)", marginBottom: 24 }}>
-            Our NRI desk handles the paperwork, the compliance, and the tax — you just decide where to invest.
+            Our NRI desk handles the paperwork, the compliance, and the tax. You just decide where to invest.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/get-started" className="btn btn-primary btn-lg" data-magnetic>

@@ -53,7 +53,7 @@ export default function MfPerformanceTool() {
     <div className="mf-tool-container">
       <div className="mf-tool-header">
         <h2>MF Performance</h2>
-        <p>Real trailing returns computed from historical NAV — 1M through 5Y, annualised beyond 1 year.</p>
+        <p>Real trailing returns computed from historical NAV: 1M through 5Y, annualised beyond 1 year.</p>
       </div>
 
       <form className="mf-tool-form" onSubmit={handleSubmit}>

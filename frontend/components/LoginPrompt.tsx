@@ -13,7 +13,7 @@ export default function LoginPrompt({
   open,
   onClose,
   title = "Sign in to save to your watchlist",
-  body = "Track live prices, get a personal watchlist across listed and unlisted shares, and pick up where you left off — across devices.",
+  body = "Track live prices, get a personal watchlist across listed and unlisted shares, and pick up where you left off, across devices.",
   next
 }: {
   open: boolean;

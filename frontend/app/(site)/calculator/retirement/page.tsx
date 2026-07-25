@@ -3,7 +3,7 @@ import RetirementCalc from "@/components/RetirementCalc";
 import PageHero from "@/components/PageHero";
 
 export const metadata: Metadata = {
-  title: "Retirement Calculator — Secure your golden years",
+  title: "Retirement Calculator: Secure your golden years",
   description:
     "Calculate the corpus needed for retirement and the SIP required to get there based on your current age, retirement age, and monthly expenses."
 };

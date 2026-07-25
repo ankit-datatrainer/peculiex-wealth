@@ -47,7 +47,7 @@ export default function Watchlist() {
   }
 
   /* AuthedView uses the container internally (with full-bleed hero header).
-     GuestView is full-width by design — no outer container needed. */
+     GuestView is full-width by design, no outer container needed. */
   if (user) {
     return (
       <div className="container">

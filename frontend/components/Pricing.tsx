@@ -35,7 +35,7 @@ export default function Pricing() {
               <span className="pc-per">/ month</span>
             </div>
             <p className="pc-summary">
-              Full marketplace access without an advisor — for investors who
+              Full marketplace access without an advisor, for investors who
               already know what they want.
             </p>
             <ul className="pc-feats">

@@ -83,7 +83,7 @@ export default function GuestView() {
               <em>listed</em> &amp; unlisted.
             </h1>
             <p className="gv-sub">
-              Live NSE prices, pre-IPO valuations, sparkline trends — your
+              Live NSE prices, pre-IPO valuations, sparkline trends. Your
               personal portfolio radar, beautifully synced across all devices.
             </p>
             <div className="gv-chips">
@@ -231,7 +231,7 @@ export default function GuestView() {
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12.01" y2="18" /></svg>
             </div>
             <h3>Syncs Everywhere</h3>
-            <p>One account, every device. Phone, tablet, desktop — always in sync.</p>
+            <p>One account, every device. Phone, tablet, desktop, always in sync.</p>
           </div>
           <div className="gv-feat-card">
             <div className="gv-feat-icon" style={{ background: "#a3262d14", color: "#a3262d" }}>
@@ -251,7 +251,7 @@ export default function GuestView() {
             <h2 className="stitle">Track pre-IPO names<br /><em>before they list.</em></h2>
             <p className="sdesc">
               India's most sought-after unlisted shares with indicative valuations,
-              sector tags, and availability status — all in your watchlist.
+              sector tags, and availability status, all in your watchlist.
             </p>
             <Link href="/unlisted" className="btn btn-ghost btn-lg" style={{ marginTop: "1.5rem" }}>
               Explore Unlisted →
@@ -285,7 +285,7 @@ export default function GuestView() {
         </div>
         <div className="gv-steps reveal-children">
           {[
-            { n: "01", title: "Create your account", desc: "Enter your email, verify with OTP — no credit card, no KYC for watchlist." },
+            { n: "01", title: "Create your account", desc: "Enter your email, verify with OTP: no credit card, no KYC for watchlist." },
             { n: "02", title: "Search any stock", desc: "Type a ticker or company name. Listed and unlisted results appear instantly." },
             { n: "03", title: "Track & analyse", desc: "Watch live prices, sparklines, and changes update in real time on any device." },
           ].map((s) => (

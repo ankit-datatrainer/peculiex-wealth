@@ -77,7 +77,7 @@ export default function InvestorZone() {
             Every tool an investor needs, <em>in one place.</em>
           </h1>
           <p>
-            Your command center — live markets, calculators, fund performance, unlisted access and
+            Your command center: live markets, calculators, fund performance, unlisted access and
             research, curated for the Visionary Trailblazers community.
           </p>
         </section>

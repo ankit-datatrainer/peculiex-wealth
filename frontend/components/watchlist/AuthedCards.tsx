@@ -59,7 +59,7 @@ export default function AuthedCards({
             ) : w.isUnlisted ? (
               <div className="c-chg unl-iv">IV {w.iv ?? "—"}</div>
             ) : (
-              <div className="c-chg">—</div>
+              <div className="c-chg">, </div>
             )}
 
             <button

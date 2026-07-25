@@ -341,7 +341,7 @@ function SignupInner() {
               {delivery === "dev-console" && (
                 <div className="auth-info">
                   <strong>Dev mode:</strong> the backend isn&apos;t configured
-                  to send real email. Look at the server console — your code
+                  to send real email. Look at the server console. Your code
                   is printed there. Or hit{" "}
                   <code>/api/auth/dev-last-otp?email={encodeURIComponent(email)}</code>.
                 </div>
