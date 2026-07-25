@@ -19,6 +19,7 @@ import {
   Zap
 } from "lucide-react";
 import ScrollGlobe from "./ScrollGlobe";
+import Logo from "../Logo";
 
 /* ────────────────────────────────────────────────────────────────────────────
    SecuredFi-style homepage, a 1:1 layout port of the clone build
@@ -584,8 +585,9 @@ export default function HomeClone() {
             <div className="sfc-footer-links">
               <div className="sfc-footer-brand">
                 <div className="sfc-footer-logo">
-                  <span className="sfc-dot" />
-                  <span>Finvoq</span>
+                  {/* The footer stays navy in both themes, so pin the
+                      light-ink logo rather than following the site theme. */}
+                  <Logo width={176} height={70} forceDark />
                 </div>
                 <p>
                   India&apos;s premium investment marketplace. Multiple asset
@@ -1899,9 +1901,16 @@ export default function HomeClone() {
         .sfc-footer-logo {
           display: flex;
           align-items: center;
-          gap: 8px;
-          margin-bottom: 16px;
-          font-size: 24px;
+          margin-bottom: 18px;
+        }
+        .sfc-footer-logo img {
+          height: 70px;
+          width: auto;
+        }
+        @media (max-width: 760px) {
+          .sfc-footer-logo img {
+            height: 56px;
+          }
         }
         .sfc-footer-brand p {
           color: rgba(255, 255, 255, 0.6);

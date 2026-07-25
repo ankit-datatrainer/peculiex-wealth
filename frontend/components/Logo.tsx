@@ -12,6 +12,7 @@ export default function Logo({
   height = 56,
   className = "",
   forceLight = false,
+  forceDark = false,
   style,
 }: {
   width?: number;
@@ -20,6 +21,9 @@ export default function Logo({
   /** Always use the light-mode (dark-ink) logo, e.g. on a surface that stays
    *  white in both themes (like the floating nav pill). */
   forceLight?: boolean;
+  /** Always use the dark-mode (light-ink) logo, for a surface that stays dark
+   *  in both themes (like the homepage's navy footer). */
+  forceDark?: boolean;
   style?: React.CSSProperties;
 }) {
   const { resolvedTheme } = useTheme();
@@ -28,9 +32,10 @@ export default function Logo({
   useEffect(() => setMounted(true), []);
 
   // Before mounting, render the light logo as a safe default (avoids hydration mismatch)
-  const src = !forceLight && mounted && resolvedTheme === "dark"
-    ? "/logo_dark.svg"
-    : "/logo_light.svg";
+  const src =
+    forceDark || (!forceLight && mounted && resolvedTheme === "dark")
+      ? "/logo_dark.svg"
+      : "/logo_light.svg";
 
   return (
     <img
