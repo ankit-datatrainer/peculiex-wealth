@@ -42,6 +42,7 @@ export default function GlossaryPage() {
   return (
     <>
       <PageHero
+        page="glossary"
         label="Glossary"
         title={<>Investing terms, in <em>plain English.</em></>}
         subtitle="From AIF and CAGR to SIP and YTM: definitions you can rely on, with the Indian regulatory context where it matters."

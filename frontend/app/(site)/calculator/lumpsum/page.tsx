@@ -12,6 +12,7 @@ export default function LumpsumPage() {
   return (
     <>
       <PageHero
+        page="calculator-lumpsum"
         label="Calculator"
         title={<>Lumpsum <em>investment calculator</em></>}
         subtitle="Compounding turns a one-time deposit into a meaningful corpus over time. Try the numbers below."

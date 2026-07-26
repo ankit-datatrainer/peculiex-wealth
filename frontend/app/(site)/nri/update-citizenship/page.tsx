@@ -49,5 +49,5 @@ const content: NriServiceContent = {
 };
 
 export default function UpdateCitizenshipPage() {
-  return <NriServicePage content={content} />;
+  return <NriServicePage page="nri-citizenship" content={content} />;
 }

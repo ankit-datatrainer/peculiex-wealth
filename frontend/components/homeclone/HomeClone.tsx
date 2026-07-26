@@ -20,6 +20,25 @@ import {
 } from "lucide-react";
 import ScrollGlobe from "./ScrollGlobe";
 import Logo from "../Logo";
+import { useContent, imgSrc } from "@/lib/content";
+
+/** Render a CMS multi-line value, keeping the author's line breaks. */
+function lines(text: string) {
+  return text.split("\n").map((line, i, arr) => (
+    <span key={i}>
+      {line}
+      {i < arr.length - 1 && <br />}
+    </span>
+  ));
+}
+
+/* Feature-card icons, keyed by the name stored in the content manager. */
+const ICONS: Record<string, typeof ShieldCheck> = {
+  shield: ShieldCheck,
+  chart: LineChart,
+  layers: Layers,
+  zap: Zap
+};
 
 /* ────────────────────────────────────────────────────────────────────────────
    SecuredFi-style homepage, a 1:1 layout port of the clone build
@@ -71,24 +90,25 @@ function Reveal({
   );
 }
 
+/* Fallbacks: what renders until a super admin edits these in the CMS. */
 const FEATURES = [
   {
-    icon: ShieldCheck,
+    icon: "shield",
     title: "Bank-grade security",
     desc: "RBI & SEBI compliant. End-to-end encryption and annual third-party audits. Your wealth, fully protected."
   },
   {
-    icon: LineChart,
+    icon: "chart",
     title: "Curated by experts",
     desc: "Every product is hand-picked by SEBI-registered advisors. We say no to nine out of ten opportunities we evaluate."
   },
   {
-    icon: Layers,
+    icon: "layers",
     title: "One unified platform",
     desc: "Equities, mutual funds, unlisted, PMS, AIF, bonds, insurance, and a single dashboard that ties it all together."
   },
   {
-    icon: Zap,
+    icon: "zap",
     title: "Real-time execution",
     desc: "From research to investing, completed in seconds. Live NSE & BSE prices, no paperwork, no waiting."
   }
@@ -146,6 +166,9 @@ export default function HomeClone() {
   const [subscribed, setSubscribed] = useState(false);
   const emailRef = useRef<HTMLInputElement | null>(null);
   const heroTrackRef = useRef<HTMLDivElement | null>(null);
+  // Copy and imagery come from the super-admin content manager, falling back
+  // to the values below whenever a field has not been edited.
+  const c = useContent("home");
 
   /* Drive the hero choreography (giant "Platform" sweep, headline lift,
      device parallax) with a single CSS variable set from scroll progress. */
@@ -197,11 +220,11 @@ export default function HomeClone() {
         <section id="intro" className="sfc-hero">
           <div className="sfc-hero-inner">
             <h1 className="sfc-h1 sfc-up sfc-d1">
-              India&apos;s Curated Investment{" "}
+              {c.t("hero", "titleA", "India's Curated Investment")}{" "}
               <br className="sfc-h1-br" />
-              Marketplace meets{" "}
+              {c.t("hero", "titleB", "Marketplace meets")}{" "}
               <span className="sfc-h1-em">
-                Advisory.
+                {c.t("hero", "titleAccent", "Advisory.")}
                 <span className="sfc-h1-underline sfc-d3" />
               </span>
             </h1>
@@ -209,7 +232,10 @@ export default function HomeClone() {
             {/* Portrait floating on the right edge, mid-height */}
             <a href="#platform" className="sfc-portrait sfc-up sfc-d2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/homeclone-portrait.jpg" alt="Your Finvoq advisor" />
+              <img
+                src={imgSrc(c.t("hero", "portrait", "/homeclone-portrait.jpg"))}
+                alt="Your Finvoq advisor"
+              />
               <span className="sfc-portrait-play">
                 <Play size={15} fill="currentColor" />
               </span>
@@ -217,16 +243,22 @@ export default function HomeClone() {
 
             {/* Bottom row: link left · buttons CENTER · share right */}
             <div className="sfc-hero-bottom sfc-up sfc-d3">
-              <Link href="/get-started" className="sfc-mini-link sfc-hb-left">
-                Start investing
+              <Link
+                href={c.t("hero", "linkHref", "/get-started")}
+                className="sfc-mini-link sfc-hb-left"
+              >
+                {c.t("hero", "linkLabel", "Start investing")}
               </Link>
 
               <div className="sfc-hero-ctas">
                 <a href="#platform" className="sfc-btn-ghost">
-                  Explore <ArrowDown size={15} />
+                  {c.t("hero", "ctaGhost", "Explore")} <ArrowDown size={15} />
                 </a>
-                <Link href="/signup" className="sfc-btn-mint">
-                  Open Account
+                <Link
+                  href={c.t("hero", "ctaPrimaryHref", "/signup")}
+                  className="sfc-btn-mint"
+                >
+                  {c.t("hero", "ctaPrimary", "Open Account")}
                 </Link>
               </div>
 
@@ -253,16 +285,8 @@ export default function HomeClone() {
           <div className="sfc-screen-grid">
             <div />
             <Reveal>
-              <h2 className="sfc-h2">
-                New era
-                <br />
-                of investing
-              </h2>
-              <p className="sfc-lead">
-                We&apos;re on the verge of a new investing era, where
-                opportunities once reserved for institutions open up to every
-                serious investor in India.
-              </p>
+              <h2 className="sfc-h2">{lines(c.t("screens", "oneTitle", "New era\nof investing"))}</h2>
+              <p className="sfc-lead">{c.t("screens", "oneBody", "We are on the verge of a new investing era, where opportunities once reserved for institutions open up to every serious investor in India.")}</p>
             </Reveal>
           </div>
         </section>
@@ -271,16 +295,8 @@ export default function HomeClone() {
           <Stars seed={9} />
           <div className="sfc-screen-grid">
             <Reveal>
-              <h2 className="sfc-h2">
-                Every asset,
-                <br />
-                one platform
-              </h2>
-              <p className="sfc-lead">
-                Listed shares, unlisted opportunities, mutual funds, PMS, AIF,
-                bonds and insurance: curated by experts and executed in
-                seconds.
-              </p>
+              <h2 className="sfc-h2">{lines(c.t("screens", "twoTitle", "Every asset,\none platform"))}</h2>
+              <p className="sfc-lead">{c.t("screens", "twoBody", "Listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds and insurance: curated by experts and executed in seconds.")}</p>
             </Reveal>
             <div />
           </div>
@@ -291,16 +307,8 @@ export default function HomeClone() {
           <div className="sfc-screen-grid">
             <div />
             <Reveal>
-              <h2 className="sfc-h2">
-                Building
-                <br />
-                your future
-              </h2>
-              <p className="sfc-lead">
-                We connect India&apos;s leading asset managers with a clean,
-                advisory-led platform: elegant infrastructure that takes your
-                wealth to the future.
-              </p>
+              <h2 className="sfc-h2">{lines(c.t("screens", "threeTitle", "Building\nyour future"))}</h2>
+              <p className="sfc-lead">{c.t("screens", "threeBody", "We connect India s leading asset managers with a clean, advisory-led platform: elegant infrastructure that takes your wealth to the future.")}</p>
             </Reveal>
           </div>
         </section>
@@ -310,18 +318,12 @@ export default function HomeClone() {
           <Stars seed={3} />
           <section className="sfc-hero-panel">
             {/* Giant mint word sweeping across as you scroll */}
-            <div className="sfc-giantword" aria-hidden>
-              Platform
-            </div>
+            <div className="sfc-giantword" aria-hidden>{c.t("platform", "sweepWord", "Platform")}</div>
 
             <div className="sfc-hero-inner">
               <h1 className="sfc-h1 sfc-up sfc-d1">
-                All-in-one investment{" "}
-                <span className="sfc-h1-em">
-                  platform
-                  <span className="sfc-h1-underline sfc-d3" />
-                </span>{" "}
-                for serious Indian investors
+                {c.t("platform", "titleA", "All-in-one investment")}{" "}
+                <span className="sfc-h1-em">{c.t("platform", "titleAccent", "platform")}<span className="sfc-h1-underline sfc-d3" /></span>{" "}{c.t("platform", "titleB", "for serious Indian investors")}
               </h1>
 
               <div className="sfc-hero-ctas sfc-up sfc-d2">
@@ -355,8 +357,8 @@ export default function HomeClone() {
                   <div className="sfc-tab-main">
                     <div className="sfc-tab-head">
                       <div>
-                        <b>Wealth Dashboard</b>
-                        <span>By Finvoq</span>
+                        <b>{c.t("platform", "deviceTitle", "Wealth Dashboard")}</b>
+                        <span>{c.t("platform", "deviceSubtitle", "By Finvoq")}</span>
                       </div>
                       <span className="sfc-tab-search">
                         <Search size={14} />
@@ -367,8 +369,8 @@ export default function HomeClone() {
                       <span>TRACK</span>
                     </div>
                     <div className="sfc-tab-metric">
-                      <label>PORTFOLIO XIRR</label>
-                      <strong>18.20%</strong>
+                      <label>{c.t("platform", "metricLabel", "PORTFOLIO XIRR")}</label>
+                      <strong>{c.t("platform", "metricValue", "18.20%")}</strong>
                     </div>
                     <div className="sfc-tab-row">
                       <span>ASSET</span>
@@ -397,10 +399,10 @@ export default function HomeClone() {
                     </span>
                     <span className="sfc-ph-avatar" />
                   </div>
-                  <label>BALANCE</label>
-                  <strong>₹2.4Cr</strong>
+                  <label>{c.t("platform", "phoneLabel", "BALANCE")}</label>
+                  <strong>{c.t("platform", "phoneValue", "₹2.4Cr")}</strong>
                   <div className="sfc-ph-chart">
-                    <span className="sfc-ph-chip">+18.2%</span>
+                    <span className="sfc-ph-chip">{c.t("platform", "phoneChip", "+18.2%")}</span>
                     <svg viewBox="0 0 220 96" preserveAspectRatio="none">
                       <path
                         d="M0,88 C34,86 48,44 76,42 C102,40 112,66 138,34 C158,10 186,16 220,12"
@@ -433,18 +435,15 @@ export default function HomeClone() {
         <section id="platform" className="sfc-overcard">
           <div className="sfc-wrap">
             <div className="sfc-sec-head">
-              <p className="sfc-eyebrow sfc-eyebrow-indigo">The Platform</p>
-              <h2 className="sfc-h2-serif">
-                A curated marketplace built like an institution and open to
-                everyone.
-              </h2>
+              <p className="sfc-eyebrow sfc-eyebrow-indigo">{c.t("features", "eyebrow", "The Platform")}</p>
+              <h2 className="sfc-h2-serif">{c.t("features", "title", "A curated marketplace built like an institution and open to everyone.")}</h2>
             </div>
 
             <div className="sfc-feature-grid sfc-feature-grid-light">
-              {FEATURES.map((f, i) => (
+              {c.list("features", "items", FEATURES).map((f: any, i: number) => (
                 <Reveal key={f.title} delay={i * 80}>
                   <div className="sfc-feature">
-                    <f.icon className="sfc-feature-icon" />
+                    {(() => { const I = ICONS[f.icon] || ShieldCheck; return <I className="sfc-feature-icon" />; })()}
                     <h3>{f.title}</h3>
                     <p>{f.desc}</p>
                   </div>
@@ -458,11 +457,8 @@ export default function HomeClone() {
         <section id="about" className="sfc-about">
           <div className="sfc-wrap sfc-about-grid">
             <div>
-              <p className="sfc-eyebrow sfc-eyebrow-mint">About Finvoq</p>
-              <h2 className="sfc-h2-serif">
-                We&apos;re bringing the discipline of private banking to every
-                investor.
-              </h2>
+              <p className="sfc-eyebrow sfc-eyebrow-mint">{c.t("about", "eyebrow", "About Finvoq")}</p>
+              <h2 className="sfc-h2-serif">{c.t("about", "title", "We are bringing the discipline of private banking to every investor.")}</h2>
             </div>
             <div className="sfc-about-copy">
               <p>
@@ -480,7 +476,7 @@ export default function HomeClone() {
           </div>
 
           <div className="sfc-wrap sfc-stats">
-            {STATS.map((s, i) => (
+            {c.list("about", "stats", STATS).map((s, i) => (
               <Reveal key={s.l} delay={i * 100}>
                 <div className="sfc-stat">
                   <div className="sfc-stat-v">{s.v}</div>
@@ -494,10 +490,8 @@ export default function HomeClone() {
         {/* ── Partners marquee ─────────────────────────────────────────── */}
         <section id="investors" className="sfc-partners">
           <div className="sfc-wrap">
-            <p className="sfc-eyebrow sfc-eyebrow-indigo">Partnered with</p>
-            <h2 className="sfc-h2-serif sfc-navy">
-              India&apos;s leading asset managers and institutions.
-            </h2>
+            <p className="sfc-eyebrow sfc-eyebrow-indigo">{c.t("partners", "eyebrow", "Partnered with")}</p>
+            <h2 className="sfc-h2-serif sfc-navy">{c.t("partners", "title", "India s leading asset managers and institutions.")}</h2>
           </div>
           <div className="sfc-marquee">
             <div className="sfc-marquee-track">
@@ -525,14 +519,14 @@ export default function HomeClone() {
         <section id="news" className="sfc-news">
           <div className="sfc-wrap">
             <div className="sfc-news-head">
-              <h2 className="sfc-h2-serif">Latest from Finvoq.</h2>
+              <h2 className="sfc-h2-serif">{c.t("news", "title", "Latest from Finvoq.")}</h2>
               <Link href="/news" className="sfc-mini-link">
                 All news
               </Link>
             </div>
 
             <div className="sfc-news-grid">
-              {POSTS.map((p, i) => (
+              {c.list("news", "items", POSTS).map((p: any, i: number) => (
                 <Reveal key={p.title} delay={i * 100}>
                   <Link href="/news" className="sfc-news-card">
                     <div className="sfc-news-meta">
@@ -554,11 +548,9 @@ export default function HomeClone() {
         <footer id="signup" className="sfc-footer">
           <div className="sfc-wrap">
             <div className="sfc-footer-cta">
-              <h2 className="sfc-h2-serif sfc-footer-title">
-                Build your wealth&apos;s future with us.
-              </h2>
+              <h2 className="sfc-h2-serif sfc-footer-title">{c.t("footerCta", "title", "Build your wealth s future with us.")}</h2>
               <div className="sfc-footer-form">
-                <label>Get the weekly market brief</label>
+                <label>{c.t("footerCta", "formLabel", "Get the weekly market brief")}</label>
                 <div className="sfc-footer-input">
                   <input
                     ref={emailRef}
@@ -575,10 +567,10 @@ export default function HomeClone() {
                       ? "Sending…"
                       : subscribed
                         ? "Subscribed ✓"
-                        : "Sign up"}
+                        : c.t("footerCta", "button", "Sign up")}
                   </button>
                 </div>
-                <p>Curated insights every Monday. No promotions, no spam.</p>
+                <p>{c.t("footerCta", "note", "Curated insights every Monday. No promotions, no spam.")}</p>
               </div>
             </div>
 
@@ -590,12 +582,10 @@ export default function HomeClone() {
                   <Logo width={176} height={70} forceDark />
                 </div>
                 <p>
-                  India&apos;s premium investment marketplace. Multiple asset
-                  classes, one platform, advisory-led.
+                  {c.t("footerCta", "blurb", "India s premium investment marketplace. Multiple asset classes, one platform, advisory-led.")}
                 </p>
                 <div className="sfc-footer-reg">
-                  <span className="sfc-dot" />
-                  SEBI Registered Investment Distributor
+                  <span className="sfc-dot" />{c.t("footerCta", "badge", "SEBI Registered Investment Distributor")}
                 </div>
               </div>
               <div>

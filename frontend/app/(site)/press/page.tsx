@@ -11,6 +11,7 @@ export default function PressPage() {
   return (
     <>
       <PageHero
+        page="press"
         label="Press"
         title={<>Press <em>resources</em></>}
         subtitle="Company facts, brand assets, and media contact for journalists writing about Finvoq."

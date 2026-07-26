@@ -36,6 +36,7 @@ app.disable("x-powered-by");
 app.use("/api/factsheets", require("./routes/factsheets"));
 app.use("/api/factsheet-html", require("./routes/factsheetHtml"));
 app.use("/api/unlisted-logos", require("./routes/unlistedLogos"));
+app.use("/api/content", require("./routes/pageContent"));
 app.use(express.json({ limit: "200kb" }));
 app.use(morgan("dev"));
 app.use(

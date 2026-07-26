@@ -49,5 +49,5 @@ const content: NriServiceContent = {
 };
 
 export default function PanApplicationPage() {
-  return <NriServicePage content={content} />;
+  return <NriServicePage page="nri-pan" content={content} />;
 }

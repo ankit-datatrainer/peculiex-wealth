@@ -75,6 +75,7 @@ export default function StoriesPage() {
   return (
     <>
       <PageHero
+        page="stories"
         label="Investor stories"
         title={<>Investors who chose <em>process over noise.</em></>}
         subtitle="No paid testimonials. These are real Finvoq clients, with the headline change in their portfolio in their own words."

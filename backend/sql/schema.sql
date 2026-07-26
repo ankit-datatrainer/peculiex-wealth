@@ -217,3 +217,18 @@ create index if not exists paper_trades_user_idx on public.paper_trades(user_id,
 create index if not exists paper_trades_symbol_idx on public.paper_trades(symbol);
 
 alter table public.paper_trades enable row level security;
+
+-- ==== SITE CONTENT (super-admin CMS) =========================
+-- One row per editable page. `data` holds only the sections/fields an
+-- admin has changed; anything absent falls back to the defaults declared
+-- in backend/src/content/schema.js.
+
+create table if not exists public.page_content (
+  page         text        primary key,
+  data         jsonb       not null default '{}'::jsonb,
+  updated_at   timestamptz not null default now(),
+  updated_by   text
+);
+create index if not exists page_content_updated_idx on public.page_content(updated_at desc);
+
+alter table public.page_content enable row level security;

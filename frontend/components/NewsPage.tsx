@@ -1,5 +1,14 @@
 "use client";
 
+import { useContent, accent } from "@/lib/content";
+
+/** Render a *starred* CMS heading with the <em> accent the design uses. */
+function heading(text: string) {
+  return accent(text).map((p, i) =>
+    typeof p === "string" ? <span key={i}>{p}</span> : <em key={i}>{p.em}</em>
+  );
+}
+
 import { useMemo, useState } from "react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/api";
@@ -39,6 +48,7 @@ function absoluteTime(ts: number) {
 }
 
 export default function NewsPage() {
+  const cms = useContent("news");
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [query, setQuery] = useState("");
   const [source, setSource] = useState("All");
@@ -105,13 +115,8 @@ export default function NewsPage() {
               <span className="np-live" aria-hidden="true" />
               Market News
             </div>
-            <h1 className="np-title">
-              Every headline that <em>moves the market.</em>
-            </h1>
-            <p className="np-sub">
-              Financial and market news from India&apos;s leading publishers, aggregated
-              in one place and refreshed through the day.
-            </p>
+            <h1 className="np-title">{heading(cms.t("hero", "title", "Every headline that *moves the market.*"))}</h1>
+            <p className="np-sub">{cms.t("hero", "subtitle", "Financial and market news from India s leading publishers, aggregated in one place and refreshed through the day.")}</p>
           </div>
           {!isLoading && !error && stats.latest > 0 && (
             <span className="np-asof">

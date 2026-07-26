@@ -52,5 +52,5 @@ const content: NriServiceContent = {
 };
 
 export default function TaxFilingPage() {
-  return <NriServicePage content={content} />;
+  return <NriServicePage page="nri-tax" content={content} />;
 }

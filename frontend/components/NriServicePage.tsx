@@ -19,13 +19,13 @@ export type NriServiceContent = {
   serviceName: string;
 };
 
-export default function NriServicePage({ content }: { content: NriServiceContent }) {
+export default function NriServicePage({ content, page }: { content: NriServiceContent; page?: string }) {
   const { label, title, subtitle, intro, highlights, steps, documents, faqs, serviceName } = content;
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   return (
     <>
-      <PageHero label={label} title={title} subtitle={subtitle} />
+      <PageHero page={page} label={label} title={title} subtitle={subtitle} />
 
       <section style={{ padding: "0 0 30px" }}>
         <div className="container">

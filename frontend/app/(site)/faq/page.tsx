@@ -12,6 +12,7 @@ export default function FAQPage() {
   return (
     <>
       <PageHero
+        page="faq"
         label="FAQ"
         title={<>Questions, <em>answered.</em></>}
         subtitle="Everything investors ask before getting started: straight answers, no jargon."

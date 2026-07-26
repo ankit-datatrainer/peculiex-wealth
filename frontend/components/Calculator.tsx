@@ -1,4 +1,13 @@
 "use client";
+
+import { useContent, accent } from "@/lib/content";
+
+/** Render a *starred* CMS heading with the <em> accent the design uses. */
+function heading(text: string) {
+  return accent(text).map((p, i) =>
+    typeof p === "string" ? <span key={i}>{p}</span> : <em key={i}>{p.em}</em>
+  );
+}
 import { useEffect, useRef, useState } from "react";
 import { fmtINR } from "@/lib/util";
 import { postJSON } from "@/lib/api";
@@ -25,6 +34,7 @@ function animateText(
 }
 
 export default function Calculator() {
+  const cms = useContent("calculator");
   const [amt, setAmt] = useState(10000);
   const [rate, setRate] = useState(14);
   const [yr, setYr] = useState(10);
@@ -112,13 +122,9 @@ export default function Calculator() {
     <section id="calculator" className="calc-sec">
       <div className="container calc-grid">
         <div className="calc-left reveal">
-          <div className="label">Mutual Funds</div>
-          <h2 className="stitle">
-            Plan your <em>SIP returns</em>
-          </h2>
-          <p className="sdesc">
-            Visualise how systematic investments compound over time.
-          </p>
+          <div className="label">{cms.t("hero", "label", "Mutual Funds")}</div>
+          <h2 className="stitle">{heading(cms.t("hero", "title", "Plan your *SIP returns*"))}</h2>
+          <p className="sdesc">{cms.t("hero", "subtitle", "Visualise how systematic investments compound over time.")}</p>
 
           <div className="calc-card">
             <div className="slider-row">

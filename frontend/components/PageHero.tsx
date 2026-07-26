@@ -1,14 +1,40 @@
+"use client";
+
 import Logo from "./Logo";
+import { useContent, accent } from "@/lib/content";
 
 type Props = {
   label: string;
   title: React.ReactNode;
   subtitle?: React.ReactNode;
   align?: "left" | "center";
+  /**
+   * Content-manager key for this page. When set, the super admin's saved
+   * copy replaces the props above; anything they have not edited falls back
+   * to what is passed in here, so the page never renders empty.
+   */
+  page?: string;
 };
 
-export default function PageHero({ label, title, subtitle, align = "left" }: Props) {
+/** "Wealth management, *without the markup.*" -> JSX with the <em> accent. */
+function renderAccented(text: string) {
+  return accent(text).map((part, i) =>
+    typeof part === "string" ? (
+      <span key={i}>{part}</span>
+    ) : (
+      <em key={i}>{part.em}</em>
+    )
+  );
+}
+
+export default function PageHero({ label, title, subtitle, align = "left", page }: Props) {
+  const c = useContent(page || "");
   const center = align === "center";
+
+  const cmsLabel = page ? c.t("hero", "label") : "";
+  const cmsTitle = page ? c.t("hero", "title") : "";
+  const cmsSubtitle = page ? c.t("hero", "subtitle") : "";
+
   return (
     <section className="page-hero">
       <div className="container">
@@ -20,11 +46,13 @@ export default function PageHero({ label, title, subtitle, align = "left" }: Pro
             className="page-hero-logo"
             style={center ? { margin: "0 auto 22px" } : { margin: "0 0 22px" }}
           />
-          <div className="label">{label}</div>
+          <div className="label">{cmsLabel || label}</div>
           <h1 className="stitle" style={{ fontSize: "clamp(2.4rem, 5vw, 3.6rem)" }}>
-            {title}
+            {cmsTitle ? renderAccented(cmsTitle) : title}
           </h1>
-          {subtitle && <p className="sdesc">{subtitle}</p>}
+          {(cmsSubtitle || subtitle) && (
+            <p className="sdesc">{cmsSubtitle || subtitle}</p>
+          )}
         </div>
       </div>
     </section>

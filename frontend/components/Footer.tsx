@@ -1,10 +1,20 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { postJSON } from "@/lib/api";
 import Logo from "./Logo";
+import { useContent, accent } from "@/lib/content";
+
+/** Render a *starred* CMS heading with the <em> accent the design uses. */
+function heading(text: string) {
+  return accent(text).map((p, i) =>
+    typeof p === "string" ? <span key={i}>{p}</span> : <em key={i}>{p.em}</em>
+  );
+}
 
 export default function Footer() {
+  const cms = useContent("global");
   const pathname = usePathname();
   const [year, setYear] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -43,13 +53,8 @@ export default function Footer() {
     <footer className="site-footer">
       <div className="container foot-newsletter reveal">
         <div className="fn-text">
-          <h3>
-            Get the <em>weekly market brief.</em>
-          </h3>
-          <p>
-            Curated insights from our research team, every Monday before
-            markets open. No promotions, no spam, ever.
-          </p>
+          <h3>{heading(cms.t("footer", "newsletterTitle", "Get the *weekly market brief.*"))}</h3>
+          <p>{cms.t("footer", "newsletterBody", "Curated insights from our research team, every Monday before markets open. No promotions, no spam, ever.")}</p>
         </div>
         <form
           className="fn-form"
@@ -107,10 +112,14 @@ export default function Footer() {
             <Logo width={168} height={66} />
           </div>
           <p>
-            India's premium investment marketplace. Multiple asset classes, one platform, advisory-led.
+            {cms.t(
+              "footer",
+              "blurb",
+              "India's premium investment marketplace. Multiple asset classes, one platform, advisory-led."
+            )}
           </p>
           <div className="foot-reg">
-            <span className="status-dot"></span>SEBI Registered Investment Distributor
+            <span className="status-dot"></span>{cms.t("footer", "badge", "SEBI Registered Investment Distributor")}
           </div>
         </div>
 
@@ -247,10 +256,9 @@ export default function Footer() {
 
       <div className="container foot-base">
         <span>
-          © <span id="year">{year ?? ""}</span> Finvoq Wealth Pvt. Ltd. All
-          rights reserved.
+          © <span id="year">{year ?? ""}</span> {cms.t("footer", "copyright", "Finvoq Wealth Pvt. Ltd. All rights reserved.")}
         </span>
-        <span>Crafted with care · Delhi, India</span>
+        <span>{cms.t("footer", "madeIn", "Crafted with care · Delhi, India")}</span>
       </div>
     </footer>
   );

@@ -1,5 +1,14 @@
 "use client";
 
+import { useContent, accent } from "@/lib/content";
+
+/** Render a *starred* CMS heading with the <em> accent the design uses. */
+function heading(text: string) {
+  return accent(text).map((p, i) =>
+    typeof p === "string" ? <span key={i}>{p}</span> : <em key={i}>{p.em}</em>
+  );
+}
+
 import Link from "next/link";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -29,6 +38,7 @@ const FALLBACK_INDICES: Index[] = [
 type Tab = "all" | "gainers" | "losers";
 
 export default function Markets() {
+  const cms = useContent("markets");
   const [indices, setIndices] = useState<Index[]>(FALLBACK_INDICES);
   const [tab, setTab] = useState<Tab>("all");
   const [search, setSearch] = useState("");
@@ -103,11 +113,9 @@ export default function Markets() {
     <section id="markets" className="markets">
       <div className="container">
         <div className="sec-head reveal">
-          <div className="label"><span className="markets-live-dot" /> Live · NSE</div>
-          <h2 className="stitle">Market <em>Opportunities</em></h2>
-          <p className="sdesc">
-            All Indian stocks listed on NSE. Search any stock, or view today&apos;s top gainers and losers.
-          </p>
+          <div className="label"><span className="markets-live-dot" />{cms.t("hero", "label", "Live · NSE")}</div>
+          <h2 className="stitle">{heading(cms.t("hero", "title", "Market *Opportunities*"))}</h2>
+          <p className="sdesc">{cms.t("hero", "subtitle", "All Indian stocks listed on NSE. Search any stock, or view today s top gainers and losers.")}</p>
         </div>
 
         {/* Indices */}

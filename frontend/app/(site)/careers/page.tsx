@@ -17,6 +17,7 @@ export default function CareersPage() {
   return (
     <>
       <PageHero
+        page="careers"
         label="Careers"
         title={<>Build the platform <em>India's investors deserve.</em></>}
         subtitle="We're a small team rebuilding the wealth-management experience from first principles. We hire for craft, ownership, and unglamorous reliability."

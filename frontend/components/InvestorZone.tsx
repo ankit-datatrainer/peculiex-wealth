@@ -1,3 +1,14 @@
+"use client";
+
+import { useContent, accent } from "@/lib/content";
+
+/** Render a *starred* CMS heading with the <em> accent the design uses. */
+function heading(text: string) {
+  return accent(text).map((p, i) =>
+    typeof p === "string" ? <span key={i}>{p}</span> : <em key={i}>{p.em}</em>
+  );
+}
+
 import Link from "next/link";
 
 type Tool = {
@@ -68,14 +79,13 @@ const TOOLS: Tool[] = [
 ];
 
 export default function InvestorZone() {
+  const cms = useContent("investor-zone");
   return (
     <main className="izone">
       <div className="container">
         <section className="izone-hero reveal">
-          <span className="label">InvestorZone</span>
-          <h1>
-            Every tool an investor needs, <em>in one place.</em>
-          </h1>
+          <span className="label">{cms.t("hero", "label", "InvestorZone")}</span>
+          <h1>{heading(cms.t("hero", "title", "Every tool an investor needs, *in one place.*"))}</h1>
           <p>
             Your command center: live markets, calculators, fund performance, unlisted access and
             research, curated for the Visionary Trailblazers community.

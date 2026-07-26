@@ -23,6 +23,31 @@ type NavItem = {
 };
 
 const ICON = {
+  content: (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden>
+      <rect
+        x="3"
+        y="3"
+        width="18"
+        height="18"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M3 9h18M8 9v12"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M12 13h5M12 16.5h5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  ),
   dashboard: (
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden>
       <path
@@ -126,6 +151,7 @@ const ICON = {
 
 const NAV: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: ICON.dashboard },
+  { href: "/admin/content", label: "Content Manager", icon: ICON.content },
   { href: "/admin/unlisted", label: "Unlisted Shares", icon: ICON.unlisted },
   { href: "/admin/factsheet-html", label: "Factsheets", icon: ICON.factsheet },
   { href: "/admin/users", label: "Users", icon: ICON.users },

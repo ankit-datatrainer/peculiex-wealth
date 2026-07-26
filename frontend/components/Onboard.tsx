@@ -1,9 +1,27 @@
 "use client";
+
 import { useState } from "react";
 import { postJSON } from "@/lib/api";
 import Logo from "./Logo";
+import { useContent, accent } from "@/lib/content";
+
+/** Render a *starred* CMS heading with the <em> accent the design uses. */
+function heading(text: string) {
+  return accent(text).map((p, i) =>
+    typeof p === "string" ? <span key={i}>{p}</span> : <em key={i}>{p.em}</em>
+  );
+}
+
+/* Fallback steps: used until a super admin edits them in the CMS. */
+const STEPS = [
+  { title: "Share your details", body: "Basic profile, contact information, and investment preferences." },
+  { title: "Complete KYC verification", body: "Aadhaar-based eKYC or upload PAN & address proof, done in under 5 minutes." },
+  { title: "Get matched with an advisor", body: "Based on your goals and risk profile, we pair you with the right expert." },
+  { title: "Start investing", body: "Access the full marketplace: equities, unlisted, MF, PMS, bonds & more." }
+];
 
 export default function Onboard() {
+  const cms = useContent("get-started");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,55 +67,20 @@ export default function Onboard() {
               className="page-hero-logo"
               style={{ margin: "0 0 22px" }}
             />
-            <div className="label">Get Started</div>
-            <h2 className="stitle">
-              Open your account in <em>minutes</em>
-            </h2>
-            <p className="sdesc">
-              Start investing with a simple, guided onboarding process.
-            </p>
+            <div className="label">{cms.t("hero", "label", "Get Started")}</div>
+            <h2 className="stitle">{heading(cms.t("hero", "title", "Open your account in *minutes*"))}</h2>
+            <p className="sdesc">{cms.t("hero", "subtitle", "Start investing with a simple, guided onboarding process.")}</p>
           </div>
           <ol className="steps">
-            <li className="reveal">
-              <span className="step-no">01</span>
-              <div>
-                <h4>Share your details</h4>
-                <p>
-                  Basic profile, contact information, and investment
-                  preferences.
-                </p>
-              </div>
-            </li>
-            <li className="reveal">
-              <span className="step-no">02</span>
-              <div>
-                <h4>Complete KYC verification</h4>
-                <p>
-                  Aadhaar-based eKYC or upload PAN &amp; address proof, done
-                  in under 5 minutes.
-                </p>
-              </div>
-            </li>
-            <li className="reveal">
-              <span className="step-no">03</span>
-              <div>
-                <h4>Get matched with an advisor</h4>
-                <p>
-                  Based on your goals and risk profile, we pair you with the
-                  right expert.
-                </p>
-              </div>
-            </li>
-            <li className="reveal">
-              <span className="step-no">04</span>
-              <div>
-                <h4>Start investing</h4>
-                <p>
-                  Access the full marketplace: equities, unlisted, MF, PMS,
-                  bonds &amp; more.
-                </p>
-              </div>
-            </li>
+            {cms.list("steps", "items", STEPS).map((st: any, i: number) => (
+              <li className="reveal" key={i}>
+                <span className="step-no">{String(i + 1).padStart(2, "0")}</span>
+                <div>
+                  <h4>{st.title}</h4>
+                  <p>{st.body}</p>
+                </div>
+              </li>
+            ))}
           </ol>
         </div>
 
@@ -107,9 +90,13 @@ export default function Onboard() {
           id="onboardForm"
           onSubmit={onSubmit}
         >
-          <h3>Investor Interest Form</h3>
+          <h3>{cms.t("hero", "formTitle", "Investor Interest Form")}</h3>
           <p className="form-sub">
-            Tell us about yourself and we'll get you started.
+            {cms.t(
+              "hero",
+              "formNote",
+              "Tell us about yourself and we'll get you started."
+            )}
           </p>
 
           <label>
@@ -164,7 +151,7 @@ export default function Onboard() {
             style={{ opacity: submitting ? 0.7 : 1 }}
             disabled={submitting}
           >
-            {submitting ? "Submitting…" : success ? "Submitted ✓" : "Submit & Get Started"}
+            {submitting ? "Submitting…" : success ? "Submitted ✓" : cms.t("hero", "formButton", "Submit & Get Started")}
           </button>
           <div
             className={`form-success${success ? " show" : ""}`}

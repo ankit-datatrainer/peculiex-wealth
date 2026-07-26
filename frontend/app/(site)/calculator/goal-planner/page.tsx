@@ -12,6 +12,7 @@ export default function GoalPlannerPage() {
   return (
     <>
       <PageHero
+        page="calculator-goal"
         label="Calculator"
         title={<>Goal-based <em>investment planner</em></>}
         subtitle="Start with the destination (retirement, a home, your child's education), and work backward to the monthly SIP that gets you there."

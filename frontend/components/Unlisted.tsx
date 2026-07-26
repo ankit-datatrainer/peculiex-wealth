@@ -1,4 +1,13 @@
 "use client";
+
+import { useContent, accent } from "@/lib/content";
+
+/** Render a *starred* CMS heading with the <em> accent the design uses. */
+function heading(text: string) {
+  return accent(text).map((p, i) =>
+    typeof p === "string" ? <span key={i}>{p}</span> : <em key={i}>{p.em}</em>
+  );
+}
 import { useEffect, useState, useMemo } from "react";
 import { fetcher } from "@/lib/api";
 import InvestModal from "./InvestModal";
@@ -19,6 +28,7 @@ export type Unl = {
 };
 
 export default function Unlisted() {
+  const cms = useContent("unlisted");
   const [items, setItems] = useState<Unl[]>([]);
   const [search, setSearch] = useState("");
   const [modalItem, setModalItem] = useState<Unl | null>(null);
@@ -64,13 +74,8 @@ export default function Unlisted() {
         <div className="container">
           <div className="sec-head reveal">
 
-            <h2 className="stitle">
-              Private market <em>opportunities</em>
-            </h2>
-            <p className="sdesc">
-              Curated pre-IPO and unlisted share inventory with transparent
-              pricing. Click &quot;Invest Now&quot; on any company to submit an inquiry.
-            </p>
+            <h2 className="stitle">{heading(cms.t("hero", "title", "Private market *opportunities*"))}</h2>
+            <p className="sdesc">{cms.t("hero", "subtitle", "Curated pre-IPO and unlisted share inventory with transparent pricing.")}</p>
           </div>
 
           {/* Search Bar */}

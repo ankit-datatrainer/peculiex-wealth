@@ -1,5 +1,14 @@
 "use client";
 
+import { useContent, accent } from "@/lib/content";
+
+/** Render a *starred* CMS heading with the <em> accent the design uses. */
+function heading(text: string) {
+  return accent(text).map((p, i) =>
+    typeof p === "string" ? <span key={i}>{p}</span> : <em key={i}>{p.em}</em>
+  );
+}
+
 import Link from "next/link";
 import { PRODUCTS } from "@/lib/productContent";
 import "./products.css";
@@ -17,6 +26,7 @@ const PRODUCT_ICONS: Record<string, string> = {
 };
 
 export default function ProductsPage() {
+  const cms = useContent("products");
   const productSlugs = Object.keys(PRODUCTS);
 
   return (
@@ -24,10 +34,8 @@ export default function ProductsPage() {
       <div className="container">
         {/* Hero Section */}
         <section className="products-hero reveal">
-          <span className="label">Our Marketplace</span>
-          <h1>
-            Wealth creation, <em>simplified.</em>
-          </h1>
+          <span className="label">{cms.t("hero", "label", "Our Marketplace")}</span>
+          <h1>{heading(cms.t("hero", "title", "Wealth creation, *simplified.*"))}</h1>
           <p>
             Explore our comprehensive suite of financial products designed to build, protect, and grow your wealth.
           </p>

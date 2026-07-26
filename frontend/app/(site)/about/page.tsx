@@ -13,6 +13,7 @@ export default function AboutPage() {
   return (
     <>
       <PageHero
+        page="about"
         label="About"
         title={<>Wealth management, <em>without the markup.</em></>}
         subtitle="We started Finvoq because India's investing experience was broken in two predictable ways: too many platforms, and too many incentives that point away from the investor."

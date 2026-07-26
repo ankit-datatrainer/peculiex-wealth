@@ -12,6 +12,7 @@ export default function RetirementPage() {
   return (
     <>
       <PageHero
+        page="calculator-retirement"
         label="Calculator"
         title={<>Retirement <em>calculator</em></>}
         subtitle="Secure your future by calculating how much you need to save and invest today for a comfortable retirement."
