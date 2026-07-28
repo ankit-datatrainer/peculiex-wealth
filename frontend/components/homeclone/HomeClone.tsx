@@ -1974,9 +1974,8 @@ export default function HomeClone() {
            continuous white pill holding the logo, links, theme toggle and
            account together: no separators. No overrides needed; only widen
            it to this page's 1400px container so it lines up with the hero. */
-        .main-nav .nav-inner {
-          max-width: 1400px;
-        }
+        /* The nav keeps its own slim 1200px width here too, so the glass
+           pill reads the same on the homepage as everywhere else. */
 
         @media (prefers-reduced-motion: reduce) {
           .sfc-up,
