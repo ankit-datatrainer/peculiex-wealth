@@ -64,7 +64,7 @@ export default function NewsPage() {
     }
   );
 
-  const items = data?.items ?? [];
+  const items = (data?.items ?? []).filter((i) => i.source !== "Economic Times");
 
   // Source chips, ordered by how much each publisher actually contributes.
   const sources = useMemo(() => {

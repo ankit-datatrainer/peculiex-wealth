@@ -9,40 +9,44 @@
 //
 // RULE: never hard-code these numbers in a page again. Import from here.
 //
-// ⚠️ FIGURES BELOW NEED CONFIRMATION BY FINVOQ before the next deploy.
-//    The defaults are the value that appeared most often in the codebase, NOT
-//    a verified figure. See CONFIRM markers.
+// 2026-07-29: Finvoq confirmed the regulatory role (distributor), city
+// (Delhi), AUM (₹182 Cr+) and product count (10+). Remaining CONFIRM markers
+// below (registration number, phone, mailboxes, LAMF rate) are still open.
 // ────────────────────────────────────────────────────────────────────────────
 
-/** CONFIRM: audited assets figure + the date it was measured. */
-export const ASSETS_ADVISED = '₹450 Cr+';
+/** Confirmed by Finvoq 2026-07-29. */
+export const ASSETS_ADVISED = '₹182 Cr+';
 export const ASSETS_AS_OF = 'as of 31 March 2026';
 /** Short form for stat bands where the label already says "assets". */
-export const ASSETS_SHORT = '₹450 Cr+';
+export const ASSETS_SHORT = '₹182 Cr+';
 
 /** CONFIRM: investor count. */
 export const INVESTOR_COUNT = '4,000+';
 
 /**
- * CONFIRM: how many asset classes are actually offered.
+ * Confirmed by Finvoq 2026-07-29: "10+ products" sitewide.
  * Keep ASSET_CLASS_COUNT and ASSET_CLASSES in agreement — the audit found the
  * stated count disagreeing with the number of products actually listed.
+ * Mirrors the slugs in lib/productContent.tsx plus /unlisted.
  */
 export const ASSET_CLASSES = [
+  'Equities',
   'Mutual funds',
   'PMS',
   'AIF',
   'Bonds',
-  'Unlisted equity',
-  'Equities',
+  'Insurance',
   'Fixed deposits',
+  'Loan against mutual funds',
   'GIFT City / offshore',
+  'Unlisted equity',
 ] as const;
-export const ASSET_CLASS_COUNT = ASSET_CLASSES.length; // 8
-export const ASSET_CLASS_COUNT_WORD = 'eight';
+export const ASSET_CLASS_COUNT = ASSET_CLASSES.length; // 10
+/** Sitewide display form — always "10+", never spelled out or a bare count. */
+export const ASSET_CLASS_COUNT_WORD = '10+';
 
-/** CONFIRM: registered office city. Audit found Delhi vs Mumbai/Delhi. */
-export const CITY = 'Mumbai';
+/** Confirmed by Finvoq 2026-07-29. */
+export const CITY = 'Delhi';
 
 /** Years operating — used in the homepage stat band. */
 export const YEARS_OPERATING = '10 yrs+';
@@ -95,24 +99,18 @@ export const SOCIAL_LINKS: { id: 'linkedin' | 'x' | 'instagram'; label: string; 
 
 // ── Regulatory ─────────────────────────────────────────────────────────────
 /**
- * ⚠️ BLOCKED ON A COMPLIANCE DECISION (audit item C4).
- *
- * The site currently claims BOTH identities:
- *   • footer  — "SEBI Registered Investment Distributor … earn a Trailing Commission"
- *   • /about  — "SEBI Registered Investment Adviser … nothing from product
- *                manufacturers. Ever."
- *
- * These are mutually exclusive and drive the registration number, the fee
- * disclosure, the About copy, the footer and the demat line. A developer must
- * not guess this. Once Finvoq's compliance owner decides, set REGULATORY_ROLE
- * and fill REGISTRATION_NUMBER; every dependent string reads from here.
+ * CONFIRMED by Finvoq 2026-07-29 (audit item C4): distributor, not adviser.
+ * The site previously claimed both identities at once (footer said
+ * distributor + trail commission; /about said adviser + fee-only). Every
+ * dependent string below now reads from REGULATORY_ROLE, so this is the only
+ * place that decision needs to be made.
  */
 export type RegulatoryRole = 'adviser' | 'distributor';
 // Widened to RegulatoryRole (not the literal) so the dependent ternaries below
-// stay valid when this is switched to 'adviser'.
+// stay valid if this is ever switched back to 'adviser'.
 export const REGULATORY_ROLE = 'distributor' as RegulatoryRole;
 
-/** CONFIRM: verifiable INA (adviser) or AMFI ARN (distributor). */
+/** CONFIRM: still open — Finvoq's AMFI ARN. Nothing renders until this is set. */
 export const REGISTRATION_NUMBER = '';
 
 export const REGULATORY_LABEL =

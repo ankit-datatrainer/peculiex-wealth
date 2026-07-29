@@ -3,11 +3,18 @@ import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import ContentBody from "@/components/ContentBody";
 import { pageMeta } from "@/lib/seo";
+import {
+  ASSETS_ADVISED,
+  ASSET_CLASS_COUNT_WORD,
+  CITY,
+  FEE_DISCLOSURE,
+  INVESTOR_COUNT,
+  REGISTRATION_LINE
+} from "@/lib/siteFacts";
 
 export const metadata: Metadata = pageMeta({
   title: "About Finvoq — who we are",
-  description:
-    "Finvoq is India's advisory-led investment marketplace: eight asset classes on one SEBI-registered platform. Meet the team, the mission and the values behind it.",
+  description: `Finvoq is India's curated investment marketplace: ${ASSET_CLASS_COUNT_WORD} asset classes on one SEBI-linked platform. Meet the team, the mission and the values behind it.`,
   path: "/about"
 });
 
@@ -30,9 +37,9 @@ export default function AboutPage() {
           commission. None of it was bought as part of a plan.
         </p>
         <p>
-          Finvoq unifies the investing surface (eight asset classes, one dashboard), and
-          changes the business model. We earn a flat advisory fee from <em>you</em>, and
-          nothing from product manufacturers. Ever. Our incentives match yours, by design.
+          Finvoq unifies the investing surface ({ASSET_CLASS_COUNT_WORD} asset classes, one
+          dashboard). {FEE_DISCLOSURE} There's no separate bill from us for the research,
+          the curation, or the platform itself.
         </p>
 
         <h2>What we believe</h2>
@@ -42,31 +49,30 @@ export default function AboutPage() {
             300+ unlisted offers. The win isn't more choice. It's the right shortlist.
           </li>
           <li>
-            <strong>Advice should be paid for, openly.</strong> An advisor who earns from a
-            commission cannot ever fully be on your side. We take the kickbacks off the
-            table.
+            <strong>Every fee should be visible.</strong> Distribution commission is how this
+            industry has always worked. What's rare is showing you the number. We disclose
+            what we earn on every recommendation, upfront.
           </li>
           <li>
             <strong>Tools should be opinionated.</strong> Calculators, dashboards, and
             research notes should help you decide, not just visualise.
           </li>
           <li>
-            <strong>Compliance is a feature, not a hurdle.</strong> SEBI-registered, RBI-rail
+            <strong>Compliance is a feature, not a hurdle.</strong> SEBI-linked, RBI-rail
             settlements, demat in your name, audit trail you can pull at any time.
           </li>
         </ul>
 
         <h2>Where we are</h2>
         <ul>
-          <li>Founded in 2024 in Mumbai, India.</li>
-          <li>SEBI Registered Investment Adviser (RIA: INA000099999).</li>
-          <li>4,000+ active investors, ₹450 Cr+ in assets advised.</li>
-          <li>A team of 28: engineers, advisors, and a research desk that has covered Indian markets through three boom-bust cycles.</li>
+          <li>Founded in 2026 in {CITY}, India.</li>
+          <li>{REGISTRATION_LINE}.</li>
+          <li>{INVESTOR_COUNT} active investors, {ASSETS_ADVISED} in assets under distribution.</li>
         </ul>
 
         <h2>How we work with you</h2>
         <p>
-          Every investor is paired with a SEBI-registered advisor based on goals, time
+          Every investor is paired with a relationship manager based on goals, time
           horizon, and portfolio size. You'll get one human as your point of contact
           (reachable on WhatsApp, email, or a scheduled call), backed by a research desk and
           an operations team that handles the paperwork.
@@ -80,18 +86,18 @@ export default function AboutPage() {
         <h2>What we don't do</h2>
         <ul>
           <li>Sell ULIPs, endowment plans, or any product that mixes insurance with investing.</li>
-          <li>Take commissions or revenue-share from AMCs, brokers, or insurers.</li>
+          <li>Charge you a separate advisory fee on top of the commission we disclose.</li>
           <li>Push F&amp;O speculation, intraday tips, or "get-rich" schemes.</li>
           <li>Promise specific returns. We promise process and transparency.</li>
         </ul>
 
         <h2>Our regulators</h2>
         <p>
-          We work within the framework set by <strong>SEBI</strong> (Investment Adviser and
-          Research Analyst regulations), <strong>RBI</strong> (banking rails), and{" "}
-          <strong>IRDAI</strong> (insurance distribution). Disputes can be raised through{" "}
-          <Link href="/legal/grievance">our grievance redressal process</Link>, with
-          escalation to the SEBI SCORES portal at every stage.
+          We work within the framework set by <strong>SEBI</strong> and{" "}
+          <strong>AMFI</strong> (mutual fund distribution), <strong>RBI</strong> (banking
+          rails), and <strong>IRDAI</strong> (insurance distribution). Disputes can be
+          raised through <Link href="/legal/grievance">our grievance redressal process</Link>,
+          with escalation to the SEBI SCORES portal at every stage.
         </p>
 
         <hr />

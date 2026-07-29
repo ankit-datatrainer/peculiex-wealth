@@ -1,3 +1,5 @@
+import { REGISTRATION_NUMBER } from "./siteFacts";
+
 export type LegalDoc = {
   slug: string;
   label: string;
@@ -34,19 +36,19 @@ export const LEGAL: Record<string, LegalDoc> = {
 
         <h2>3. Nature of services</h2>
         <p>
-          Finvoq is a SEBI Registered Investment Adviser (RIA: INA000099999). We provide
-          investment advisory services and an execution interface to SEBI-registered partner
-          brokers, AMCs, and IRDAI-licensed insurers. Finvoq itself does not hold custody
-          of your money or securities, every trade settles into your own demat or insurance
-          policy.
+          Finvoq is an AMFI Registered Mutual Fund Distributor. We provide product
+          distribution and an execution interface to SEBI-registered partner brokers, AMCs,
+          and IRDAI-licensed insurers. Finvoq itself does not hold custody of your money or
+          securities, every trade settles into your own demat or insurance policy.
         </p>
 
         <h2>4. Fees</h2>
         <p>
-          Fees are billed quarterly in advance, calculated as a percentage of assets under
-          advisory at the start of each quarter, plus applicable GST. The exact fee schedule
-          is disclosed in your client onboarding agreement and is subject to change with 30
-          days' written notice.
+          Finvoq does not bill you a separate fee for using the Platform. We are compensated
+          through trail commission paid by the asset manager, insurer, or issuer on the
+          products you hold, at rates disclosed to you before you invest and available on
+          request at any time. GST, statutory charges, and any exit load are as levied by the
+          product provider, not by Finvoq.
         </p>
 
         <h2>5. Investment risk</h2>
@@ -78,9 +80,9 @@ export const LEGAL: Record<string, LegalDoc> = {
         <h2>8. Limitation of liability</h2>
         <p>
           To the maximum extent permitted by law, Finvoq's aggregate liability for any
-          claim relating to the Platform is limited to the advisory fees you have paid us in
-          the twelve months preceding the claim. We are not liable for indirect, incidental,
-          consequential, or speculative losses.
+          claim relating to the Platform is limited to the commission we have earned on your
+          account in the twelve months preceding the claim. We are not liable for indirect,
+          incidental, consequential, or speculative losses.
         </p>
 
         <h2>9. Termination</h2>
@@ -95,7 +97,7 @@ export const LEGAL: Record<string, LegalDoc> = {
         <p>
           These Terms are governed by Indian law. Any dispute will first go through our{" "}
           <a href="/legal/grievance">grievance redressal</a> process, then to SEBI's SCORES
-          portal where applicable, and finally to the courts in Mumbai.
+          portal where applicable, and finally to the courts in Delhi.
         </p>
 
         <h2>11. Contact</h2>
@@ -127,7 +129,7 @@ export const LEGAL: Record<string, LegalDoc> = {
         <h2>2. Why we collect it</h2>
         <ul>
           <li>To complete KYC and open your investment account, as required by SEBI.</li>
-          <li>To provide investment advisory services and execute transactions you authorise.</li>
+          <li>To provide investment distribution services and execute transactions you authorise.</li>
           <li>To send you service updates, portfolio reports, and tax statements.</li>
           <li>To comply with legal and regulatory obligations (PMLA, SEBI, RBI, IT Department).</li>
           <li>To improve our products, only on aggregated, anonymised data.</li>
@@ -320,8 +322,7 @@ export const LEGAL: Record<string, LegalDoc> = {
             <strong>Phone:</strong> +91 22 4900 0000 · Mon–Fri 10am–6pm IST
           </li>
           <li>
-            <strong>Address:</strong> Finvoq Wealth Pvt. Ltd., 12th floor, Phoenix Building,
-            Lower Parel, Mumbai 400013
+            <strong>Address:</strong> Finvoq Wealth Pvt. Ltd., Delhi, India
           </li>
         </ul>
         <p>
@@ -335,8 +336,8 @@ export const LEGAL: Record<string, LegalDoc> = {
           <a href="https://scores.sebi.gov.in/" target="_blank" rel="noopener noreferrer">
             https://scores.sebi.gov.in/
           </a>
-          . You'll need our SEBI registration number:{" "}
-          <strong>RIA INA000099999</strong>.
+          . You'll need our registration details:{" "}
+          <strong>AMFI Registered Mutual Fund Distributor{REGISTRATION_NUMBER ? `, ARN ${REGISTRATION_NUMBER}` : ""}</strong>.
         </p>
 
         <h2>What information to include</h2>
@@ -378,29 +379,29 @@ export const LEGAL: Record<string, LegalDoc> = {
     label: "Legal",
     title: "Investor Charter",
     subtitle:
-      "Your rights and our commitments as a SEBI Registered Investment Adviser.",
+      "Your rights and our commitments as an AMFI Registered Mutual Fund Distributor.",
     updated: "Last updated: 1 May 2026",
     body: (
       <>
         <h2>Vision</h2>
         <p>
-          To provide professional, fee-only investment advice that puts the investor's
-          interest above all else, and to make every recommendation transparent, auditable,
-          and aligned with the investor's long-term goals.
+          To distribute investment products with the investor's interest above all else,
+          disclosing every commission we earn upfront, and to make every recommendation
+          transparent, auditable, and aligned with the investor's long-term goals.
         </p>
 
         <h2>Mission</h2>
         <ul>
-          <li>Render unbiased advice based on the investor's risk profile, time horizon, and goals.</li>
-          <li>Maintain clear disclosure of fees, conflicts of interest, and limitations of advice.</li>
+          <li>Recommend products based on the investor's risk profile, time horizon, and goals.</li>
+          <li>Maintain clear disclosure of commission earned, conflicts of interest, and the limits of what a distributor can offer.</li>
           <li>Use due diligence on every product before recommending it.</li>
           <li>Respect investor confidentiality and protect personal data.</li>
         </ul>
 
         <h2>Services we provide</h2>
         <ul>
-          <li>Investment planning and goal-based portfolio construction.</li>
-          <li>Asset-allocation recommendations across mutual funds, equity, debt, unlisted, REITs, gold, and insurance.</li>
+          <li>Curated product selection and goal-based portfolio construction.</li>
+          <li>Distribution across mutual funds, equity, debt, unlisted, REITs, gold, and insurance.</li>
           <li>Periodic portfolio review and rebalancing suggestions.</li>
           <li>Tax-efficient withdrawal planning.</li>
         </ul>
@@ -408,10 +409,10 @@ export const LEGAL: Record<string, LegalDoc> = {
         <h2>Rights of the investor</h2>
         <ol>
           <li>The right to be treated fairly and with respect.</li>
-          <li>The right to receive advice in your language of choice (English or Hindi).</li>
-          <li>The right to know your advisor's SEBI registration and credentials.</li>
-          <li>The right to a written agreement before advisory services begin.</li>
-          <li>The right to know exactly what fees you pay and to whom.</li>
+          <li>The right to receive assistance in your language of choice (English or Hindi).</li>
+          <li>The right to know Finvoq's AMFI registration and the credentials of your relationship manager.</li>
+          <li>The right to a written record before any transaction is executed.</li>
+          <li>The right to know exactly what commission we earn, and from whom.</li>
           <li>The right to be informed of any conflict of interest, before the recommendation.</li>
           <li>The right to confidentiality of your financial and personal data.</li>
           <li>The right to seek redressal through Finvoq's grievance process and SEBI SCORES.</li>
@@ -423,7 +424,7 @@ export const LEGAL: Record<string, LegalDoc> = {
           <li>Inform us promptly of any change in your financial situation, goals, or contact details.</li>
           <li>Read and understand all offer documents before investing.</li>
           <li>Understand that all investments carry risk, including loss of principal.</li>
-          <li>Maintain a written record of all advice received and instructions given.</li>
+          <li>Maintain a written record of all recommendations received and instructions given.</li>
         </ol>
 
         <h2>Service standards</h2>
@@ -446,9 +447,9 @@ export const LEGAL: Record<string, LegalDoc> = {
         <h2>Do's &amp; don'ts</h2>
         <h3>Do's</h3>
         <ul>
-          <li>Verify the SEBI registration number before engaging.</li>
-          <li>Ask for a written investment plan with clear fees.</li>
-          <li>Keep records of every advisory recommendation.</li>
+          <li>Verify Finvoq's AMFI registration before engaging.</li>
+          <li>Ask for a written record of the commission on any product before you invest.</li>
+          <li>Keep records of every recommendation.</li>
           <li>Review your portfolio at least annually.</li>
         </ul>
         <h3>Don'ts</h3>

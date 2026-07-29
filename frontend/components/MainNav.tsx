@@ -12,14 +12,8 @@ type NavItem = {
   children?: { href: string; label: string; disabled?: boolean }[];
 };
 
-// Ordered for a FIRST-TIME visitor, not an existing customer.
-//
-// "Watchlist" used to sit in the first and most prominent slot, but it is a
-// logged-in tool that is empty for everyone who has not signed in — so it is
-// now shown only to authenticated users (see WATCHLIST_ITEM below).
-// The pages a prospect actually hunts for before committing (About, FAQ,
-// Investor stories, Contact) were footer-only; they are promoted here.
 const NAV_ITEMS: NavItem[] = [
+  { href: "/watchlist", label: "Watchlist" },
   {
     href: "/products",
     label: "Products",
@@ -31,8 +25,6 @@ const NAV_ITEMS: NavItem[] = [
       { href: "/products/insurance", label: "Insurance" },
       { href: "/products/fixed-deposits", label: "Fixed Deposits" },
       { href: "/products/gift-city", label: "Gift City" }
-      // "SIF (Coming Soon)" removed: an unclickable menu row teaches people the
-      // menu is unreliable. Re-add it as a real link when the page exists.
     ]
   },
   { href: "/unlisted", label: "Unlisted" },
@@ -55,22 +47,8 @@ const NAV_ITEMS: NavItem[] = [
       { href: "/resources/mutual-funds", label: "Mutual Fund Resources" }
     ]
   },
-  {
-    href: "/about",
-    label: "Company",
-    children: [
-      { href: "/about", label: "About us" },
-      { href: "/stories", label: "Investor stories" },
-      { href: "/faq", label: "FAQ" },
-      { href: "/glossary", label: "Glossary" },
-      { href: "/news", label: "News" }
-    ]
-  },
-  { href: "/contact", label: "Contact" }
+  { href: "/news", label: "News" }
 ];
-
-/** Watchlist is only meaningful once signed in, so it is appended for members. */
-const WATCHLIST_ITEM: NavItem = { href: "/watchlist", label: "Watchlist" };
 
 export default function MainNav() {
   const linksRef = useRef<HTMLUListElement | null>(null);
@@ -78,9 +56,7 @@ export default function MainNav() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, ready, logout } = useAuth();
-  // Watchlist only appears once signed in — it is empty and meaningless to a
-  // first-time visitor, who needs the discovery pages in that space instead.
-  const navItems = user ? [...NAV_ITEMS, WATCHLIST_ITEM] : NAV_ITEMS;
+  const navItems = NAV_ITEMS;
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);

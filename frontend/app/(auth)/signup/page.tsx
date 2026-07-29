@@ -12,6 +12,7 @@ import {
   type KeyboardEvent
 } from "react";
 import { useAuth } from "@/lib/auth-context";
+import { ASSET_CLASS_COUNT_WORD } from "@/lib/siteFacts";
 
 type Step = "creds" | "otp" | "profile" | "done";
 
@@ -180,8 +181,8 @@ function SignupInner() {
           </h2>
           <ul className="auth-points">
             <li>Free to sign up · no credit card</li>
-            <li>SEBI-registered Investment Adviser</li>
-            <li>Curated products across 8 asset classes</li>
+            <li>AMFI Registered Mutual Fund Distributor</li>
+            <li>Curated products across {ASSET_CLASS_COUNT_WORD} asset classes</li>
             <li>A dedicated relationship manager from day one</li>
           </ul>
         </div>

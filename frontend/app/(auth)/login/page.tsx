@@ -162,9 +162,9 @@ function LoginInner() {
             Welcome back to <em>India&apos;s smartest</em> investment marketplace.
           </h2>
           <ul className="auth-points">
-            <li>Eight asset classes, one unified dashboard</li>
+            <li>10+ asset classes, one unified dashboard</li>
             <li>SEBI-registered, advisor-led, transparent pricing</li>
-            <li>Trusted by 4,000+ investors managing ₹450 Cr+</li>
+            <li>Trusted by 4,000+ investors managing ₹182 Cr+</li>
           </ul>
         </div>
         <div className="auth-foot">

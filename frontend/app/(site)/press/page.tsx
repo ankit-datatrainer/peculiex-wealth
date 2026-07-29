@@ -28,22 +28,22 @@ export default function PressPage() {
         <h2>Company facts</h2>
         <ul>
           <li><strong>Legal name:</strong> Finvoq Wealth Pvt. Ltd.</li>
-          <li><strong>Founded:</strong> 2024</li>
-          <li><strong>Headquarters:</strong> Mumbai, India</li>
-          <li><strong>SEBI Registered Investment Adviser:</strong> INA000099999</li>
+          <li><strong>Founded:</strong> 2026</li>
+          <li><strong>Headquarters:</strong> Delhi, India</li>
+          <li><strong>AMFI Registered Mutual Fund Distributor</strong></li>
           <li><strong>CIN:</strong> U67100MH2024PTC999999</li>
           <li><strong>Active investors:</strong> 4,000+</li>
-          <li><strong>Assets advised:</strong> ₹450 Cr+</li>
+          <li><strong>Assets advised:</strong> ₹182 Cr+</li>
           <li><strong>Asset classes covered:</strong> Listed equity, unlisted shares, mutual funds, PMS, AIF, bonds, insurance, gold &amp; commodities</li>
         </ul>
 
         <h2>Boilerplate</h2>
         <blockquote>
-          Finvoq is India's premium investment marketplace. We unify eight asset classes
+          Finvoq is India's premium investment marketplace. We unify 10+ asset classes
           (listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, insurance,
-          and gold &amp; commodities), into a single advisor-led platform. As a SEBI Registered
-          Investment Adviser, Finvoq earns a flat fee from investors and accepts no
-          commissions from product manufacturers. Founded in 2024, headquartered in Mumbai.
+          fixed deposits, and GIFT City products) into a single advisor-led platform. As an
+          AMFI Registered Mutual Fund Distributor, Finvoq is compensated through trail
+          commission paid by the asset manager. Founded in 2026, headquartered in Delhi.
         </blockquote>
 
         <h2>Brand assets</h2>
