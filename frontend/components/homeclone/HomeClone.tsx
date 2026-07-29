@@ -227,7 +227,7 @@ export default function HomeClone() {
       <div className="sfc-content">
         {/* ── Hero: SecuredFi reference clone: centred headline over the
                particle globe dome, portrait right, docs/CTA/share row ──── */}
-        <section id="intro" className="sfc-hero">
+        <section id="intro" className="sfc-hero" data-nav-theme="dark">
           <div className="sfc-hero-inner">
             <h1 className="sfc-h1 sfc-up sfc-d1">
               {c.t("hero", "titleA", "India's curated investment")}{" "}
@@ -290,7 +290,7 @@ export default function HomeClone() {
         </section>
 
         {/* ── Intro copy: three globe screens ─────────────────────────── */}
-        <section className="sfc-screen">
+        <section className="sfc-screen" data-nav-theme="dark">
           <Stars />
           <div className="sfc-screen-grid">
             <div />
@@ -301,7 +301,7 @@ export default function HomeClone() {
           </div>
         </section>
 
-        <section className="sfc-screen">
+        <section className="sfc-screen" data-nav-theme="dark">
           <Stars seed={9} />
           <div className="sfc-screen-grid">
             <Reveal>
@@ -312,7 +312,7 @@ export default function HomeClone() {
           </div>
         </section>
 
-        <section className="sfc-screen">
+        <section className="sfc-screen" data-nav-theme="dark">
           <Stars seed={17} />
           <div className="sfc-screen-grid">
             <div />
@@ -324,7 +324,7 @@ export default function HomeClone() {
         </section>
 
         {/* ── Pinned "All-in-one platform" panel: sits just before About */}
-        <div className="sfc-hero-track" ref={heroTrackRef}>
+        <div className="sfc-hero-track" data-nav-theme="dark" ref={heroTrackRef}>
           <Stars seed={3} />
           <section className="sfc-hero-panel">
             {/* Giant mint word sweeping across as you scroll */}
@@ -464,7 +464,7 @@ export default function HomeClone() {
         </section>
 
         {/* ── About ────────────────────────────────────────────────────── */}
-        <section id="about" className="sfc-about">
+        <section id="about" className="sfc-about" data-nav-theme="dark">
           <div className="sfc-wrap sfc-about-grid">
             <div>
               <p className="sfc-eyebrow sfc-eyebrow-mint">{c.t("about", "eyebrow", "About Finvoq")}</p>
@@ -535,7 +535,7 @@ export default function HomeClone() {
         </section>
 
         {/* ── News ─────────────────────────────────────────────────────── */}
-        <section id="news" className="sfc-news">
+        <section id="news" className="sfc-news" data-nav-theme="dark">
           <div className="sfc-wrap">
             <div className="sfc-news-head">
               <h2 className="sfc-h2-serif">{c.t("news", "title", "Latest from Finvoq.")}</h2>
@@ -568,7 +568,7 @@ export default function HomeClone() {
         </section>
 
         {/* ── Footer / CTA ─────────────────────────────────────────────── */}
-        <footer id="signup" className="sfc-footer">
+        <footer id="signup" className="sfc-footer" data-nav-theme="dark">
           <div className="sfc-wrap">
             <div className="sfc-footer-cta">
               <h2 className="sfc-h2-serif sfc-footer-title">{c.t("footerCta", "title", "Build your wealth’s future with us.")}</h2>
