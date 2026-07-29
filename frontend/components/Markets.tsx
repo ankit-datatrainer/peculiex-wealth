@@ -15,6 +15,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetcher } from "@/lib/api";
 import { fmtINR2, randomSpark, sparkPath, sparkLastPoint, getCompanyDomain, getCompanyLogo } from "@/lib/util";
 import WatchlistButton from "./WatchlistButton";
+import { marketHref } from "@/lib/symbol";
 
 type SymbolEntry = { symbol: string; name: string; currency: string };
 type Quote = {
@@ -123,7 +124,7 @@ export default function Markets() {
           {indices.map((ix) => {
             const up = ix.chg >= 0;
             return (
-              <Link href={`/markets/${encodeURIComponent(ix.name)}`} className="index-card" key={ix.id}>
+              <Link href={marketHref(ix.name)} className="index-card" key={ix.id}>
                 <span>{ix.name}</span>
                 <strong>{ix.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
                 <em className={up ? "up" : "dn"}>
@@ -209,7 +210,7 @@ export default function Markets() {
                     const vals = sparks[q.symbol] || randomSpark(i * 7);
                     return (
                       <article className="stock reveal visible" key={q.symbol}>
-                        <Link href={`/markets/${encodeURIComponent(q.symbol)}`} className="stock-link" aria-label={`Open ${q.name} details`}>
+                        <Link href={marketHref(q.symbol)} className="stock-link" aria-label={`Open ${q.name} details`}>
                           <div className="stock-head" style={{ alignItems: "center" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                               <Image
@@ -299,7 +300,7 @@ export default function Markets() {
                   const vals = randomSpark(i * 5 + (tab === "losers" ? 100 : 0));
                   return (
                     <article className="stock reveal visible" key={q.symbol}>
-                      <Link href={`/markets/${encodeURIComponent(q.symbol)}`} className="stock-link" aria-label={`Open ${q.name} details`}>
+                      <Link href={marketHref(q.symbol)} className="stock-link" aria-label={`Open ${q.name} details`}>
                         <div className="stock-head" style={{ alignItems: "center" }}>
                           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                             <Image

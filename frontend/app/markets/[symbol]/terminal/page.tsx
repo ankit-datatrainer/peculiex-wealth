@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { notFound } from "next/navigation";
+import { displaySymbol, exchangeOf, marketHref, toApiSymbol } from "@/lib/symbol";
 
 type Props = {
   params: { symbol: string };
@@ -10,7 +11,10 @@ type Props = {
 let tvScriptLoadingPromise: Promise<void> | null = null;
 
 export default function TerminalPage({ params }: Props) {
-  const symbol = decodeURIComponent(params.symbol);
+  // URL carries "BHARTIARTL-NSE"; work from the clean ticker and exchange.
+  const apiSymbol = toApiSymbol(params.symbol);
+  const symbol = displaySymbol(apiSymbol);
+  const exchange = exchangeOf(apiSymbol);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,8 +32,8 @@ export default function TerminalPage({ params }: Props) {
           if (["NIFTY", "BANKNIFTY", "FINNIFTY", "MIDCPNIFTY", "SENSEX", "BANKEX"].includes(symbol)) {
             tvSymbol = symbol === "SENSEX" || symbol === "BANKEX" ? `BSE:${symbol}` : `NSE:${symbol}`;
           } else {
-            // Most Indian stocks map nicely to BSE on TradingView
-            tvSymbol = `BSE:${symbol}`;
+            // Use the exchange the symbol actually came from.
+            tvSymbol = `${exchange}:${symbol}`;
           }
         }
 
@@ -95,12 +99,12 @@ export default function TerminalPage({ params }: Props) {
       <header style={{ padding: "12px 24px", borderBottom: "1px solid var(--c-border)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--c-bg)", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <div>
-            <h1 style={{ fontSize: "1.2rem", fontWeight: 700, margin: 0, color: "var(--c-text)" }}>{symbol}</h1>
+            <h1 style={{ fontSize: "1.2rem", fontWeight: 700, margin: 0, color: "var(--c-text)" }}>{symbol} <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--c-text-mut)" }}>{exchange}</span></h1>
             <span style={{ fontSize: "0.8rem", color: "var(--c-text-mut)", fontWeight: 500 }}>Advanced Interactive Terminal</span>
           </div>
         </div>
         <a 
-          href={`/markets/${encodeURIComponent(symbol)}`}
+          href={marketHref(apiSymbol)}
           style={{ 
             padding: "8px 16px", 
             borderRadius: "6px", 

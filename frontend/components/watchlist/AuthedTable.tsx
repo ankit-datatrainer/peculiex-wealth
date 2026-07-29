@@ -3,6 +3,7 @@
 import { fmtINR2, sparkPath, getCompanyDomain } from "@/lib/util";
 import { formatRelative, cleanSymbol, exchangeOf, type SortKey } from "./types";
 import { useRouter } from "next/navigation";
+import { marketHref } from "@/lib/symbol";
 
 type Row = {
   item: { id: string; symbol: string; created_at: string; added_price: number | null };
@@ -78,7 +79,7 @@ export default function AuthedTable({
             <div
               key={w.item.id}
               className={`t-row ${optimistic ? "is-optim" : ""}`}
-              onClick={() => router.push(`/markets/${w.item.symbol}`)}
+              onClick={() => router.push(marketHref(w.item.symbol))}
             >
               {/* Desktop specific cells */}
               <div className="t-cell t-col-hash desktop-only">{index + 1}</div>

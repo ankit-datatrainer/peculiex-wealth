@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { marketHref } from "@/lib/symbol";
 import {
   fetchCandles,
   subscribeTicks,
@@ -420,7 +421,7 @@ export default function PriceChart({ symbol, fallbackUp = true, isIndex = false 
           ))}
         </div>
         <a 
-          href={`/markets/${symbol}/terminal`} 
+          href={`${marketHref(symbol)}/terminal`} 
           target="_blank" 
           rel="noreferrer"
           className="pchart-terminal-btn"

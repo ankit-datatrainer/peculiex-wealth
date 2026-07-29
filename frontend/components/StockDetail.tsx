@@ -19,6 +19,7 @@ import {
 import CompanyLogo from "./CompanyLogo";
 import PriceChart from "./PriceChart";
 import WatchlistButton from "./WatchlistButton";
+import { displaySymbol } from "@/lib/symbol";
 
 
 type Props = { symbol: string };
@@ -128,7 +129,7 @@ export default function StockDetail({ symbol }: Props) {
     return (
       <main className="container stock-page">
         <div className="stock-page-error">
-          <h1>Couldn&apos;t load {decodeURIComponent(symbol)}</h1>
+          <h1>Couldn&apos;t load {displaySymbol(symbol)}</h1>
           <p>{error}</p>
           <Link href="/markets" className="btn btn-outline">
             ← Back to markets

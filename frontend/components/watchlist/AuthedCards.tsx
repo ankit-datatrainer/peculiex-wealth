@@ -3,6 +3,7 @@
 import { fmtINR2 } from "@/lib/util";
 import { cleanSymbol, exchangeOf } from "./types";
 import { useRouter } from "next/navigation";
+import { marketHref } from "@/lib/symbol";
 
 type Row = {
   item: { id: string; symbol: string; created_at: string; added_price: number | null };
@@ -41,7 +42,7 @@ export default function AuthedCards({
           <article
             className={`c-card ${w.isUnlisted ? "is-unlisted" : ""} ${optimistic ? "is-optim" : ""}`}
             key={w.item.id}
-            onClick={() => router.push(`/markets/${w.item.symbol}`)}
+            onClick={() => router.push(marketHref(w.item.symbol))}
           >
             <div className="c-sym">
               {w.isUnlisted ? w.name || "Unlisted" : cleanSymbol(w.item.symbol)}

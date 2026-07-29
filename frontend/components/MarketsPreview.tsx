@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { fetcher } from "@/lib/api";
 import { fmtINR2, randomSpark, sparkPath, sparkLastPoint, getCompanyDomain, getCompanyLogo } from "@/lib/util";
 import WatchlistButton from "./WatchlistButton";
+import { marketHref } from "@/lib/symbol";
 
 type Stock = {
   name: string;
@@ -71,7 +72,7 @@ export default function MarketsPreview() {
             const vals = sparks[s.sym] || [100, 100, 100, 100, 100]; // fallback spark
             return (
               <article className="stock reveal visible" key={s.sym}>
-                <Link href={`/markets/${encodeURIComponent(s.sym)}`} className="stock-link" aria-label={`Open ${s.name} details`}>
+                <Link href={marketHref(s.sym)} className="stock-link" aria-label={`Open ${s.name} details`}>
                   <div className="stock-head">
                     <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
                       <img 

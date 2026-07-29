@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { fetchQuotes, subscribeTicks } from "@/lib/markets";
+import { displaySymbol, marketHref } from "@/lib/symbol";
 
 type Tick = { name: string; price: number; chg: number };
 
@@ -70,10 +71,10 @@ export default function TickerBar() {
           t.price >= 1000
             ? t.price.toLocaleString("en-IN", { maximumFractionDigits: 2 })
             : t.price.toFixed(2);
-        return `<a class="ticker-item" href="/markets/${encodeURIComponent(
-          t.name
-        )}">
-          <span class="ticker-name">${t.name}</span>
+        // Show the bare ticker; the ".NS" suffix is a Yahoo lookup detail,
+        // not something a reader should see scrolling past.
+        return `<a class="ticker-item" href="${marketHref(t.name)}">
+          <span class="ticker-name">${displaySymbol(t.name)}</span>
           <span class="ticker-price">${price}</span>
           <span class="ticker-chg ${cls}">${arrowSVG(up)} ${Math.abs(
           t.chg

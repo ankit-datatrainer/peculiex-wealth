@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth-context";
 import { apiFetch } from "@/lib/api";
 import { fmtINR2, sparkPath, randomSpark, getCompanyDomain, getCompanyLogo } from "@/lib/util";
 import { fetchQuotes, type LiveQuote, fmtPrice, fmtPct, fmtCompactINR, isIndex } from "@/lib/markets";
+import { marketHref } from "@/lib/symbol";
 
 /* ─── Types ─── */
 type WatchlistItem = {
@@ -421,7 +422,7 @@ export default function Dashboard() {
                         const spark = randomSpark(i * 7);
                         return (
                           <Link
-                            href={`/markets/${encodeURIComponent(w.symbol)}`}
+                            href={marketHref(w.symbol)}
                             className="ud-wl-row"
                             key={w.id || w.symbol}
                           >
@@ -541,7 +542,7 @@ export default function Dashboard() {
                         const dayL = q?.dayLow ?? price;
                         return (
                           <Link
-                            href={`/markets/${encodeURIComponent(w.symbol)}`}
+                            href={marketHref(w.symbol)}
                             className="ud-wl-row"
                             key={w.id || w.symbol}
                           >
@@ -647,7 +648,7 @@ export default function Dashboard() {
                         const spark = randomSpark(i * 7);
                         return (
                           <Link
-                            href={`/markets/${encodeURIComponent(w.symbol)}`}
+                            href={marketHref(w.symbol)}
                             className="ud-wl-row"
                             key={w.id || w.symbol}
                           >
