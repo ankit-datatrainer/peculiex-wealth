@@ -298,62 +298,49 @@ img, svg { display: block; max-width: 100%; }
    themes, so nav content is forced dark below to stay legible. */
 .nav-inner {
   max-width: 1200px; margin: 0 24px;
-  /* Slim pill: the logo height below sets the bar's overall thickness. */
+  /* Slim pill: the logo height below sets the bar’s overall thickness. */
   padding: 5px 6px 5px 18px;
   display: flex; align-items: center; justify-content: space-between;
-  /* Frosted glass: translucent white over a blurred, saturated backdrop,
-     with a bright top edge so it catches the light like real glass. */
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.82) 0%,
-    rgba(255, 255, 255, 0.68) 100%
-  );
-  -webkit-backdrop-filter: blur(22px) saturate(180%);
-  backdrop-filter: blur(22px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.65);
+  /* Real glass: a thin white tint over a strongly blurred, saturated
+     backdrop. The tint stays light so the section behind it supplies the
+     colour — that is what makes the pill look blue over blue, green over
+     green. A solid rgba (not a gradient) is used so it can transition. */
+  background: rgba(255, 255, 255, 0.5);
+  -webkit-backdrop-filter: blur(24px) saturate(185%) brightness(1.06);
+  backdrop-filter: blur(24px) saturate(185%) brightness(1.06);
+  border: 1px solid rgba(255, 255, 255, 0.62);
   border-radius: 999px;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 8px 28px -10px rgba(4, 23, 19, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 8px 28px -10px rgba(4, 23, 19, 0.24),
     0 1px 3px rgba(4, 23, 19, 0.05);
-  transition: background .35s var(--ease), box-shadow .35s var(--ease);
 }
 @media (min-width: 1248px) { .nav-inner { margin: 0 auto; } }
 /* On scroll the glass firms up slightly so text stays crisp over content. */
 .main-nav.scrolled .nav-inner {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.92) 0%,
-    rgba(255, 255, 255, 0.82) 100%
-  );
+  background: rgba(255, 255, 255, 0.62);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    0 12px 34px -12px rgba(4, 23, 19, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 12px 34px -12px rgba(4, 23, 19, 0.28),
     0 1px 3px rgba(4, 23, 19, 0.07);
 }
 /* Dark theme: smoked glass instead of frosted white. */
 .dark .nav-inner {
-  background: linear-gradient(
-    180deg,
-    rgba(18, 42, 35, 0.78) 0%,
-    rgba(10, 26, 22, 0.68) 100%
-  );
-  border: 1px solid rgba(107, 251, 213, 0.16);
+  background: rgba(255, 255, 255, 0.09);
+  -webkit-backdrop-filter: blur(26px) saturate(200%) brightness(0.7);
+  backdrop-filter: blur(26px) saturate(200%) brightness(0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow:
-    inset 0 1px 0 rgba(150, 255, 220, 0.12),
-    0 8px 28px -10px rgba(0, 0, 0, 0.6),
-    0 1px 3px rgba(0, 0, 0, 0.4);
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 10px 34px -12px rgba(0, 0, 0, 0.55),
+    0 1px 3px rgba(0, 0, 0, 0.35);
 }
 .dark .main-nav.scrolled .nav-inner {
-  background: linear-gradient(
-    180deg,
-    rgba(18, 42, 35, 0.9) 0%,
-    rgba(10, 26, 22, 0.84) 100%
-  );
+  background: rgba(255, 255, 255, 0.13);
   box-shadow:
-    inset 0 1px 0 rgba(150, 255, 220, 0.14),
-    0 12px 34px -12px rgba(0, 0, 0, 0.65),
-    0 1px 3px rgba(0, 0, 0, 0.45);
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 12px 38px -12px rgba(0, 0, 0, 0.6),
+    0 1px 3px rgba(0, 0, 0, 0.4);
 }
 /* ── Slim proportions ──
    The logo is the tallest thing in the pill, so capping it is what makes
@@ -7938,32 +7925,17 @@ section { padding: 110px 0; position: relative; }
    Two gradient layers are cross-faded because CSS cannot interpolate
    between two gradients — animating opacity is what makes it smooth.
    ══════════════════════════════════════════════════════════════════════ */
-.nav-inner { position: relative; isolation: isolate; }
-.nav-inner > * { position: relative; z-index: 1; }
-.nav-inner::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity .55s var(--ease);
-  background: linear-gradient(
-    180deg,
-    rgba(9, 30, 25, 0.72) 0%,
-    rgba(6, 20, 17, 0.62) 100%
-  );
-  box-shadow: inset 0 1px 0 rgba(180, 255, 228, 0.14);
-}
-body.on-dark .nav-inner::after { opacity: 1; }
 
 /* Border, shadow and ink interpolate directly, so they can simply switch. */
 body.on-dark .nav-inner {
-  border-color: rgba(180, 255, 228, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(26px) saturate(200%) brightness(0.62);
+  backdrop-filter: blur(26px) saturate(200%) brightness(0.62);
+  border-color: rgba(255, 255, 255, 0.24);
   box-shadow:
-    0 10px 34px -12px rgba(0, 0, 0, 0.55),
-    0 1px 3px rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 10px 34px -12px rgba(0, 0, 0, 0.5),
+    0 1px 3px rgba(0, 0, 0, 0.3);
 }
 body.on-dark .main-nav .nav-links a,
 body.on-dark .main-nav .nav-link,
@@ -7989,6 +7961,7 @@ body.on-dark .mobile-toggle span { background: #eafff5 !important; }
 
 /* Everything that changes gets the same easing, so the swap reads as one
    motion rather than several. */
+.main-nav .nav-inner { will-change: backdrop-filter; }
 .main-nav .nav-inner,
 .main-nav .nav-links a,
 .main-nav .nav-link,
@@ -7998,6 +7971,8 @@ body.on-dark .mobile-toggle span { background: #eafff5 !important; }
 .main-nav .btn-outline {
   transition:
     background-color .55s var(--ease),
+    -webkit-backdrop-filter .55s var(--ease),
+    backdrop-filter .55s var(--ease),
     border-color .55s var(--ease),
     box-shadow .55s var(--ease),
     color .45s var(--ease);
