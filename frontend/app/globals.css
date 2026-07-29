@@ -7876,28 +7876,6 @@ section { padding: 110px 0; position: relative; }
    Motion polish, in the Finvoq palette
    ══════════════════════════════════════════════════════════════════════ */
 
-/* ── Back-to-top: the button now carries a reading-progress ring ── */
-.back-top { position: fixed; }
-.back-top-arrow { width: 18px; height: 18px; position: relative; z-index: 1; }
-.back-top-ring {
-  position: absolute;
-  inset: -4px;
-  width: calc(100% + 8px);
-  height: calc(100% + 8px);
-  pointer-events: none;
-  overflow: visible;
-}
-.back-top-ring circle {
-  fill: none;
-  stroke: var(--color-primary-ink);
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  transform: rotate(-90deg);
-  transform-origin: center;
-  transition: stroke-dashoffset .15s linear;
-  opacity: .85;
-}
-.dark .back-top-ring circle { stroke: var(--color-primary-ink); }
 
 /* ── Numbers count up when they scroll into view ── */
 .countup { font-variant-numeric: tabular-nums; }
@@ -7950,7 +7928,6 @@ section { padding: 110px 0; position: relative; }
 
 @media (prefers-reduced-motion: reduce) {
   .steps::after { transform: scaleY(1); transition: none; }
-  .back-top-ring circle { transition: none; }
 }
 
 
