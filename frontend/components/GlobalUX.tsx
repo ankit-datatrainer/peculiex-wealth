@@ -260,50 +260,6 @@ export default function GlobalUX() {
       });
     })();
 
-    /* The navbar reads the section passing underneath it.
-       Any element tagged [data-nav-theme="dark"] that overlaps the pill's
-       own band flips body.on-dark, which cross-fades the pill to smoked
-       glass (see globals.css). Measured against the nav's real rect so it
-       stays correct on mobile, where the pill sits higher. */
-    (() => {
-      const isDark = (el: Element) =>
-        (el as HTMLElement).dataset.navTheme === "dark";
-      const zones = $$<HTMLElement>('[data-nav-theme="dark"]');
-      const navEl = document.getElementById("mainNav");
-      if (!navEl) return;
-      // In dark site theme the pill is already dark; the override is for
-      // light theme, where a dark section would otherwise sit under a
-      // bright white pill.
-      let raf = 0;
-      const check = () => {
-        raf = 0;
-        const live = zones.length
-          ? zones
-          : $$<HTMLElement>('[data-nav-theme="dark"]');
-        const r = navEl.getBoundingClientRect();
-        // Sample the middle of the pill, which is what the eye compares.
-        const y = r.top + r.height / 2;
-        const hit = live.some((z) => {
-          if (!isDark(z)) return false;
-          const b = z.getBoundingClientRect();
-          return b.top <= y && b.bottom >= y;
-        });
-        document.body.classList.toggle("on-dark", hit);
-      };
-      const schedule = () => {
-        if (!raf) raf = requestAnimationFrame(check);
-      };
-      addEventListener("scroll", schedule, { passive: true });
-      addEventListener("resize", schedule);
-      check();
-      cleanups.push(() => {
-        removeEventListener("scroll", schedule);
-        removeEventListener("resize", schedule);
-        if (raf) cancelAnimationFrame(raf);
-        document.body.classList.remove("on-dark");
-      });
-    })();
-
     /* Step lists draw their spine as they scroll past.
        --steps-progress goes 0 -> 1 across the list, which scales the lit
        gradient rail in globals.css. */

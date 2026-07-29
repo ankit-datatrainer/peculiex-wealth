@@ -7917,51 +7917,12 @@ section { padding: 110px 0; position: relative; }
 
 
 /* ══════════════════════════════════════════════════════════════════════
-   Section-aware navbar
-   The pill reads the section passing underneath it and cross-fades between
-   frosted-white and smoked glass, carrying its border, shadow and text
-   colour with it. GlobalUX toggles body.on-dark from the sections tagged
-   [data-nav-theme="dark"].
-   Two gradient layers are cross-faded because CSS cannot interpolate
-   between two gradients — animating opacity is what makes it smooth.
+   Navbar transitions
+   The pill keeps ONE appearance across every page and every section: it no
+   longer restyles itself as dark bands scroll under it. Only the theme
+   (light / dark) and the scrolled state change it, and both are eased so
+   the change is never abrupt.
    ══════════════════════════════════════════════════════════════════════ */
-
-/* Border, shadow and ink interpolate directly, so they can simply switch. */
-body.on-dark .nav-inner {
-  background: rgba(255, 255, 255, 0.1);
-  -webkit-backdrop-filter: blur(26px) saturate(200%) brightness(0.62);
-  backdrop-filter: blur(26px) saturate(200%) brightness(0.62);
-  border-color: rgba(255, 255, 255, 0.24);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    0 10px 34px -12px rgba(0, 0, 0, 0.5),
-    0 1px 3px rgba(0, 0, 0, 0.3);
-}
-body.on-dark .main-nav .nav-links a,
-body.on-dark .main-nav .nav-link,
-body.on-dark .main-nav .nav-link-parent,
-body.on-dark .main-nav .logo-text { color: #eafff5; }
-body.on-dark .main-nav .nav-caret-btn { color: rgba(234, 255, 245, .72); }
-body.on-dark .main-nav .nav-links a:hover,
-body.on-dark .main-nav .nav-link:hover,
-body.on-dark .main-nav .nav-links a.active { color: #7ef2c9; }
-body.on-dark .main-nav .nav-links a::after {
-  background: linear-gradient(90deg, #7ef2c9, var(--color-primary-ink));
-}
-body.on-dark .main-nav .btn-outline {
-  color: #eafff5;
-  background: rgba(255, 255, 255, .08);
-  border-color: rgba(180, 255, 228, .28);
-}
-body.on-dark .main-nav .btn-outline:hover {
-  border-color: #7ef2c9;
-  color: #7ef2c9;
-}
-body.on-dark .mobile-toggle span { background: #eafff5 !important; }
-
-/* Everything that changes gets the same easing, so the swap reads as one
-   motion rather than several. */
-.main-nav .nav-inner { will-change: backdrop-filter; }
 .main-nav .nav-inner,
 .main-nav .nav-links a,
 .main-nav .nav-link,
@@ -7970,10 +7931,25 @@ body.on-dark .mobile-toggle span { background: #eafff5 !important; }
 .main-nav .nav-caret-btn,
 .main-nav .btn-outline {
   transition:
-    background-color .55s var(--ease),
-    -webkit-backdrop-filter .55s var(--ease),
-    backdrop-filter .55s var(--ease),
-    border-color .55s var(--ease),
-    box-shadow .55s var(--ease),
-    color .45s var(--ease);
+    background-color .45s var(--ease),
+    border-color .45s var(--ease),
+    box-shadow .45s var(--ease),
+    color .35s var(--ease);
+}
+
+
+/* ── Logo on dark grounds ──────────────────────────────────────────────
+   Both logo files carry the same dark-ink wordmark (the artwork is an
+   embedded raster, so the "dark" variant is not actually light-ink). On a
+   navy ground the wordmark therefore disappeared. Rendering it as a white
+   reverse lockup is the standard fix and stays legible everywhere.
+   Applies to: the homepage's navy footer, the site footer in dark theme,
+   and the nav pill in dark theme (which is now smoked glass). */
+.sfc-footer .sfc-footer-logo img,
+.dark .site-footer .foot-brand .logo img,
+.dark .main-nav .logo img,
+.dark .page-hero-logo,
+.dark .admin-logo img {
+  filter: brightness(0) invert(1);
+  opacity: .96;
 }
