@@ -7939,17 +7939,7 @@ section { padding: 110px 0; position: relative; }
 
 
 /* ── Logo on dark grounds ──────────────────────────────────────────────
-   Both logo files carry the same dark-ink wordmark (the artwork is an
-   embedded raster, so the "dark" variant is not actually light-ink). On a
-   navy ground the wordmark therefore disappeared. Rendering it as a white
-   reverse lockup is the standard fix and stays legible everywhere.
-   Applies to: the homepage's navy footer, the site footer in dark theme,
-   and the nav pill in dark theme (which is now smoked glass). */
-.sfc-footer .sfc-footer-logo img,
-.dark .site-footer .foot-brand .logo img,
-.dark .main-nav .logo img,
-.dark .page-hero-logo,
-.dark .admin-logo img {
-  filter: brightness(0) invert(1);
-  opacity: .96;
-}
+   No filter needed: logo_dark.svg genuinely is the light-ink lockup
+   (measured: 178 avg luminance vs 94 for logo_light), so it is used as
+   authored. Surfaces that stay dark in both themes pin it with the
+   Logo component’s forceDark prop. */

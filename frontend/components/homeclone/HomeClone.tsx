@@ -600,9 +600,11 @@ export default function HomeClone() {
             <div className="sfc-footer-links">
               <div className="sfc-footer-brand">
                 <div className="sfc-footer-logo">
-                  {/* Same logo variant as the footer on every other page, so
-                      the brand mark is consistent across the site. */}
-                  <Logo width={176} height={70} />
+                  {/* This footer is navy in BOTH themes, so the logo must be
+                      pinned to the light-ink file. Following the site theme
+                      here serves the dark-ink logo in light mode, which is
+                      invisible against the navy. */}
+                  <Logo width={176} height={70} forceDark />
                 </div>
                 <p>
                   {c.t("footerCta", "blurb", "India's premium investment marketplace. Multiple asset classes, one platform, advisory-led.")}
