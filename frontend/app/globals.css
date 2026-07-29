@@ -3102,33 +3102,71 @@ section { padding: 110px 0; position: relative; }
 /* Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Enhanced Footer Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ */
 .site-footer {
   position: relative;
-  background: #ffffff !important;
-  color: #111 !important;
+  /* Theme tokens, not hard-coded white. The previous rule pinned this to
+     #ffffff !important with no dark variant, so in dark mode the surface
+     stayed white while the theme-aware logo and pills switched to their
+     dark treatment — which is exactly why those elements vanished. */
+  background: var(--color-surface);
+  color: var(--color-text);
   padding: 0 0 28px;
   margin-top: 40px;
 }
-.site-footer h3,
-.site-footer h4,
+/* Hairline top edge with a brand-tinted centre, legible on both themes. */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-border) 18%,
+    var(--color-primary) 50%,
+    var(--color-border) 82%,
+    transparent
+  );
+  opacity: .55;
+}
+.site-footer h3 { color: var(--color-text); }
+.site-footer h4 { color: var(--color-text-faint); }
 .site-footer p,
-.site-footer a,
-.site-footer .foot-reg,
-.site-footer .fn-msg {
-  color: #333 !important;
+.site-footer .fn-msg { color: var(--color-text-muted); }
+.site-footer a { color: var(--color-text-muted); }
+.site-footer a:hover { color: var(--color-primary-ink); }
+
+/* Registration pill: a quiet chip that stays legible on either surface. */
+.site-footer .foot-reg {
+  gap: 8px;
+  margin-top: 16px;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-highlight);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary-ink);
+  font-weight: 600;
 }
-.site-footer h3,
-.site-footer h4 {
-  color: #111 !important;
+.dark .site-footer .foot-reg {
+  background: rgba(43, 169, 138, .12);
+  border-color: rgba(69, 201, 166, .3);
 }
+
+/* Newsletter field */
 .site-footer .fn-form {
-  background: #f4f5f6 !important;
-  border-color: #ddd !important;
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
 }
-.site-footer .fn-form input {
-  color: #111 !important;
+.site-footer .fn-form input { color: var(--color-text); }
+.site-footer .fn-form input::placeholder { color: var(--color-text-faint); }
+
+/* Brand column: give the mark room, keep links comfortable to hit. */
+.site-footer .foot-brand .logo img { height: 58px; width: auto; }
+.foot-col ul li { margin-bottom: 2px; }
+.foot-col ul a {
+  display: inline-block;
+  padding: 5px 0;
+  transition: color .25s var(--ease), transform .25s var(--ease);
 }
-.site-footer .fn-form input::placeholder {
-  color: #888 !important;
-}
+.foot-col ul a:hover { transform: translateX(3px); }
 
 /* Newsletter module */
 .foot-newsletter {
