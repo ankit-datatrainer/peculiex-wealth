@@ -7845,3 +7845,85 @@ section { padding: 110px 0; position: relative; }
   .insurance-card-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .insurance-card-footer { padding: 10px 12px; font-size: 0.7rem; }
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   Motion polish, in the Finvoq palette
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Back-to-top: the button now carries a reading-progress ring ── */
+.back-top { position: fixed; }
+.back-top-arrow { width: 18px; height: 18px; position: relative; z-index: 1; }
+.back-top-ring {
+  position: absolute;
+  inset: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  pointer-events: none;
+  overflow: visible;
+}
+.back-top-ring circle {
+  fill: none;
+  stroke: var(--color-primary-ink);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset .15s linear;
+  opacity: .85;
+}
+.dark .back-top-ring circle { stroke: var(--color-primary-ink); }
+
+/* ── Numbers count up when they scroll into view ── */
+.countup { font-variant-numeric: tabular-nums; }
+
+/* ── Steps: a gradient spine that draws itself as the list scrolls in ──
+   Adapted from the reference's connector path. Finvoq's steps are a vertical
+   stack, so the line runs down the left edge, through the number badges. */
+.steps { position: relative; }
+.steps::before,
+.steps::after {
+  content: "";
+  position: absolute;
+  left: 47px;
+  top: 34px;
+  bottom: 34px;
+  width: 2px;
+  border-radius: 2px;
+  pointer-events: none;
+}
+/* the faint rail */
+.steps::before { background: var(--color-border); opacity: .8; }
+/* the lit portion, grown by GlobalUX as the section scrolls past */
+.steps::after {
+  background: linear-gradient(
+    180deg,
+    var(--color-primary) 0%,
+    var(--color-primary-ink) 100%
+  );
+  transform-origin: top;
+  transform: scaleY(var(--steps-progress, 0));
+  transition: transform .18s linear;
+  box-shadow: 0 0 12px -2px var(--color-primary);
+}
+.steps li { position: relative; background-clip: padding-box; }
+.steps li .step-no { position: relative; z-index: 1; }
+/* Single-column grids (product "How it works") lay the steps side by side,
+   where a vertical rail would make no sense. */
+.steps[style*="grid-template-columns"]::before,
+.steps[style*="grid-template-columns"]::after { display: none; }
+@media (max-width: 700px) {
+  .steps::before, .steps::after { left: 41px; }
+}
+
+/* ── Nav underline: gradient sweep instead of a flat rule ── */
+.main-nav .nav-links a::after {
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-ink));
+  height: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steps::after { transform: scaleY(1); transition: none; }
+  .back-top-ring circle { transition: none; }
+}

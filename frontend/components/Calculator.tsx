@@ -8,7 +8,7 @@ function heading(text: string) {
     typeof p === "string" ? <span key={i}>{p}</span> : <em key={i}>{p.em}</em>
   );
 }
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { fmtINR } from "@/lib/util";
 import { postJSON } from "@/lib/api";
 
@@ -27,7 +27,11 @@ function animateText(
     const t = Math.min(1, (now - start) / dur);
     const eased = 1 - Math.pow(1 - t, 3);
     const v = from + (to - from) * eased;
-    el.textContent = fmt(v);
+    // Write into React's existing text node rather than replacing it, so React
+    // keeps ownership of the node and later renders still reach the DOM.
+    const first = el.firstChild;
+    if (first && first.nodeType === 3) first.nodeValue = fmt(v);
+    else el.textContent = fmt(v);
     if (t < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
@@ -36,9 +40,25 @@ function animateText(
 export default function Calculator() {
   const cms = useContent("calculator");
   const [amt, setAmt] = useState(10000);
-  const [rate, setRate] = useState(14);
+  const [rate, setRate] = useState(12);
   const [yr, setYr] = useState(10);
-  const [projection, setProjection] = useState<{year: number, invested: number, total: number}[]>([]);
+
+  // Derived during render (not in an effect) so the very first paint — including
+  // the server-rendered HTML — already shows the numbers for the default inputs.
+  const { invested, gains, total, projection } = useMemo(() => {
+    const P = amt;
+    const r = rate / 100 / 12;
+    const n = yr * 12;
+    const FV = r === 0 ? P * n : P * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+    const inv = P * n;
+    const data: { year: number; invested: number; total: number }[] = [];
+    for (let i = 1; i <= yr; i++) {
+      const mn = i * 12;
+      const val = r === 0 ? P * mn : P * ((Math.pow(1 + r, mn) - 1) / r) * (1 + r);
+      data.push({ year: i, invested: P * mn, total: val });
+    }
+    return { invested: inv, gains: FV - inv, total: FV, projection: data };
+  }, [amt, rate, yr]);
 
   const oInv = useRef<HTMLElement | null>(null);
   const oRet = useRef<HTMLElement | null>(null);
@@ -53,6 +73,7 @@ export default function Calculator() {
 
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shareErr, setShareErr] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
 
   useEffect(() => {
     [sliderAmt.current, sliderRate.current, sliderYr.current].forEach((el) => {
@@ -61,12 +82,7 @@ export default function Calculator() {
       el.style.setProperty("--p", pct + "%");
     });
 
-    const P = amt;
-    const r = rate / 100 / 12;
-    const n = yr * 12;
-    const FV = r === 0 ? P * n : P * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
-    const invested = P * n;
-    const gains = FV - invested;
+    const FV = total;
 
     animateText(oInv.current, lastVals.current.inv || invested, invested, fmtINR);
     animateText(oRet.current, lastVals.current.ret || gains, gains, (v) => "+" + fmtINR(v));
@@ -93,24 +109,26 @@ export default function Calculator() {
       );
     }
 
-    const data = [];
-    for (let i = 1; i <= yr; i++) {
-       const mn = i * 12;
-       const val = r === 0 ? P * mn : P * ((Math.pow(1 + r, mn) - 1) / r) * (1 + r);
-       data.push({ year: i, invested: P * mn, total: val });
-    }
-    setProjection(data);
-
-  }, [amt, rate, yr]);
+  }, [amt, rate, yr, invested, gains, total]);
 
   const onShare = async () => {
     setShareErr(null);
+    setShareCopied(false);
     try {
       const r = await postJSON<{ url: string; id: string }>(
         "/api/sip/share",
         { amount: amt, rate, years: yr }
       );
-      setShareUrl(window.location.origin + "/sip/" + r.id);
+      const url = window.location.origin + "/sip/" + r.id;
+      setShareUrl(url);
+      try {
+        await navigator.clipboard.writeText(url);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 3000);
+      } catch {
+        // Clipboard unavailable (permissions / insecure context) — the link is
+        // still shown below so it can be copied manually.
+      }
     } catch (e: any) {
       setShareErr(e?.message || "Could not create share link.");
     }
@@ -200,8 +218,13 @@ export default function Calculator() {
                 className="btn btn-outline"
                 data-magnetic
               >
-                Share my projection
+                Copy projection link
               </button>
+              {shareCopied && (
+                <span style={{ color: "var(--color-primary)", fontSize: "0.85rem" }}>
+                  Link copied to clipboard
+                </span>
+              )}
               {shareUrl && (
                 <a
                   href={shareUrl}
@@ -245,7 +268,7 @@ export default function Calculator() {
                 stroke="var(--color-primary-highlight)"
                 strokeWidth="22"
                 fill="none"
-                strokeDasharray="0 999"
+                strokeDasharray={`${((invested / total) * C).toFixed(2)} ${C}`}
                 strokeLinecap="round"
                 transform="rotate(-90 110 110)"
               />
@@ -258,7 +281,8 @@ export default function Calculator() {
                 stroke="var(--color-primary)"
                 strokeWidth="22"
                 fill="none"
-                strokeDasharray="0 999"
+                strokeDasharray={`${((gains / total) * C).toFixed(2)} ${C}`}
+                strokeDashoffset={`${((-invested / total) * C).toFixed(2)}`}
                 strokeLinecap="round"
                 transform="rotate(-90 110 110)"
               />
@@ -272,7 +296,7 @@ export default function Calculator() {
                 fontFamily="Instrument Serif"
                 fontSize="22"
               >
-                ₹0
+                {fmtINR(total)}
               </text>
               <text
                 x="110"
@@ -290,21 +314,51 @@ export default function Calculator() {
             <div className="cs-row">
               <span className="dotI" style={{backgroundColor: "var(--color-primary-highlight)"}}></span>You invest
               <strong id="sipInvested" ref={oInv as any}>
-                ₹0
+                {fmtINR(invested)}
               </strong>
             </div>
             <div className="cs-row">
               <span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>Est. returns
               <strong id="sipReturns" ref={oRet as any}>
-                +₹0
+                {"+" + fmtINR(gains)}
               </strong>
             </div>
             <div className="cs-row total">
               <span></span>Total value
               <strong id="sipTotal" ref={oTot as any}>
-                ₹0
+                {fmtINR(total)}
               </strong>
             </div>
+          </div>
+
+          <p
+            style={{
+              marginTop: "0.9rem",
+              fontSize: "0.78rem",
+              lineHeight: 1.5,
+              color: "var(--color-text-faint)"
+            }}
+          >
+            Illustrative projection only. Returns are assumed, not guaranteed —
+            actual returns vary with market performance. This is not investment
+            advice.
+          </p>
+
+          <div
+            style={{
+              marginTop: "1.25rem",
+              display: "flex",
+              gap: "0.75rem",
+              flexWrap: "wrap",
+              alignItems: "center"
+            }}
+          >
+            <a href="/get-started" className="btn btn-primary" data-magnetic>
+              Start this SIP
+            </a>
+            <a href="/get-started" className="btn btn-outline" data-magnetic>
+              Talk to Advisor
+            </a>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { LEGAL } from "@/lib/legalContent";
 import PageHero from "@/components/PageHero";
 import ContentBody from "@/components/ContentBody";
+import { pageMeta } from "@/lib/seo";
 
 export const dynamicParams = false;
 
@@ -16,8 +17,13 @@ export function generateMetadata({
   params: { slug: string };
 }): Metadata {
   const d = LEGAL[params.slug];
-  if (!d) return { title: "Not found" };
-  return { title: d.title, description: d.subtitle };
+  if (!d) return { title: "Not found", robots: { index: false, follow: true } };
+  return pageMeta({
+    title: d.title,
+    description: d.subtitle,
+    path: `/legal/${params.slug}`,
+    ogTitle: `${d.title} — Finvoq`
+  });
 }
 
 export default function LegalPage({ params }: { params: { slug: string } }) {

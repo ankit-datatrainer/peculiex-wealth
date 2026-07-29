@@ -116,7 +116,7 @@ export default function NewsPage() {
               Market News
             </div>
             <h1 className="np-title">{heading(cms.t("hero", "title", "Every headline that *moves the market.*"))}</h1>
-            <p className="np-sub">{cms.t("hero", "subtitle", "Financial and market news from India s leading publishers, aggregated in one place and refreshed through the day.")}</p>
+            <p className="np-sub">{cms.t("hero", "subtitle", "Financial and market news from India’s leading publishers, aggregated in one place and refreshed through the day.")}</p>
           </div>
           {!isLoading && !error && stats.latest > 0 && (
             <span className="np-asof">

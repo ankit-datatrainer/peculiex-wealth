@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Investor Stories",
   description:
-    "Real Finvoq investors on what changed for them, from first-time SIP to private-client mandates."
-};
+    "Real Finvoq investors on what actually changed for them, from a first ₹5,000 SIP to consolidating crores across demats into a single private-client mandate.",
+  path: "/stories",
+  ogTitle: "Investor Stories — Finvoq"
+});
 
 const STORIES = [
   {

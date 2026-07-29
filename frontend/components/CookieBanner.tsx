@@ -64,7 +64,11 @@ export default function CookieBanner() {
         <strong>We use cookies to keep things working.</strong>
         <span>
           Essential cookies run the platform. Analytics cookies help us improve
-          the experience. You can change this anytime in settings.
+          the experience. Read how we use them in our{" "}
+          <a href="/legal/privacy" style={{ textDecoration: "underline" }}>
+            privacy policy
+          </a>
+          .
         </span>
       </div>
       <div className="cb-actions">

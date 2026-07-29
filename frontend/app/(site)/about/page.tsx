@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import ContentBody from "@/components/ContentBody";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "About Finvoq",
+export const metadata: Metadata = pageMeta({
+  title: "About Finvoq — who we are",
   description:
-    "Finvoq is India's premium investment marketplace: eight asset classes, one platform, advisory-led. Learn about our mission, values, and the team behind the platform."
-};
+    "Finvoq is India's advisory-led investment marketplace: eight asset classes on one SEBI-registered platform. Meet the team, the mission and the values behind it.",
+  path: "/about"
+});
 
 export default function AboutPage() {
   return (

@@ -7,6 +7,7 @@ import PartnerLogos from "@/components/PartnerLogos";
 import Factsheet from "@/components/Factsheet";
 import FactsheetEmbed from "@/components/FactsheetEmbed";
 import PremiumThemeSync from "@/components/PremiumThemeSync";
+import { LAMF_RATE } from "@/lib/siteFacts";
 
 export const dynamicParams = false;
 
@@ -230,7 +231,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                 <div className="label">Loan Against Mutual Funds</div>
                 <h3>Need liquidity? Don’t sell, pledge.</h3>
                 <p>
-                  Pledge your mutual fund units and unlock an instant overdraft from ~X% p.a.
+                  Pledge your mutual fund units and unlock an instant overdraft from {LAMF_RATE}
                   while your investments stay invested. Interest only on what you use.
                 </p>
               </div>

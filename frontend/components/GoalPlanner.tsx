@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { fmtINR } from "@/lib/util";
 import { postJSON } from "@/lib/api";
 
@@ -12,7 +12,11 @@ function animateText(el: HTMLElement | SVGTextElement | null, from: number, to: 
   const step = (now: number) => {
     const t = Math.min(1, (now - start) / dur);
     const eased = 1 - Math.pow(1 - t, 3);
-    el.textContent = fmt(from + (to - from) * eased);
+    const txt = fmt(from + (to - from) * eased);
+    // Write into React's existing text node so React keeps ownership of it.
+    const first = el.firstChild;
+    if (first && first.nodeType === 3) first.nodeValue = txt;
+    else el.textContent = txt;
     if (t < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
@@ -22,7 +26,23 @@ export default function GoalPlanner() {
   const [goal, setGoal] = useState(5000000);   // target corpus
   const [yr, setYr] = useState(15);
   const [rate, setRate] = useState(12);
-  const [projection, setProjection] = useState<{year: number, invested: number, total: number}[]>([]);
+
+  // Derived during render (not in an effect) so the first paint / SSR HTML
+  // already shows the numbers for the default inputs.
+  const { sip, invested, gains, projection } = useMemo(() => {
+    // Required monthly SIP for given FV: P = FV * r / ((1+r)^n - 1) / (1+r)
+    const r = rate / 100 / 12;
+    const n = yr * 12;
+    const s = r === 0 ? goal / n : (goal * r) / ((Math.pow(1 + r, n) - 1) * (1 + r));
+    const inv = s * n;
+    const data: { year: number; invested: number; total: number }[] = [];
+    for (let i = 1; i <= yr; i++) {
+      const mn = i * 12;
+      const val = r === 0 ? s * mn : s * ((Math.pow(1 + r, mn) - 1) / r) * (1 + r);
+      data.push({ year: i, invested: s * mn, total: val });
+    }
+    return { sip: s, invested: inv, gains: goal - inv, projection: data };
+  }, [goal, yr, rate]);
 
   const oSip = useRef<HTMLElement | null>(null);
   const oInv = useRef<HTMLElement | null>(null);
@@ -37,6 +57,7 @@ export default function GoalPlanner() {
 
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shareErr, setShareErr] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
 
   useEffect(() => {
     [sliderGoal.current, sliderYr.current, sliderRate.current].forEach((el) => {
@@ -44,13 +65,6 @@ export default function GoalPlanner() {
       const pct = ((+el.value - +el.min) / (+el.max - +el.min)) * 100;
       el.style.setProperty("--p", pct + "%");
     });
-    // Required monthly SIP for given FV: P = FV * r / ((1+r)^n - 1) / (1+r)
-    const r = rate / 100 / 12;
-    const n = yr * 12;
-    const sip = r === 0 ? goal / n : (goal * r) / ((Math.pow(1 + r, n) - 1) * (1 + r));
-    const invested = sip * n;
-    const gains = goal - invested;
-
     animateText(oSip.current, last.current.sip || sip, sip, fmtINR);
     animateText(oInv.current, last.current.inv || invested, invested, fmtINR);
     animateText(oGain.current, last.current.gain || gains, gains, fmtINR);
@@ -63,14 +77,7 @@ export default function GoalPlanner() {
     dGain.current?.setAttribute("stroke-dasharray", `${(pGain * C).toFixed(2)} ${C}`);
     dGain.current?.setAttribute("stroke-dashoffset", `${(-pInv * C).toFixed(2)}`);
 
-    const data = [];
-    for (let i = 1; i <= yr; i++) {
-       const mn = i * 12;
-       const val = r === 0 ? sip * mn : sip * ((Math.pow(1 + r, mn) - 1) / r) * (1 + r);
-       data.push({ year: i, invested: sip * mn, total: val });
-    }
-    setProjection(data);
-  }, [goal, yr, rate]);
+  }, [goal, yr, rate, sip, invested, gains]);
 
   const onShare = async () => {
     setShareErr(null);
@@ -79,7 +86,15 @@ export default function GoalPlanner() {
         "/api/sip/share",
         { amount: goal, rate, years: yr, type: 'goal' }
       );
-      setShareUrl(window.location.origin + "/sip/" + r.id);
+      const url = window.location.origin + "/sip/" + r.id;
+      setShareUrl(url);
+      try {
+        await navigator.clipboard.writeText(url);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 3000);
+      } catch {
+        /* clipboard unavailable - link is still shown below */
+      }
     } catch (e: any) {
       setShareErr(e?.message || "Could not create share link.");
     }
@@ -115,7 +130,8 @@ export default function GoalPlanner() {
             </div>
 
             <div style={{ marginTop: "1.25rem", display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
-              <button type="button" onClick={onShare} className="btn btn-outline" data-magnetic>Share my projection</button>
+              <button type="button" onClick={onShare} className="btn btn-outline" data-magnetic>Copy projection link</button>
+              {shareCopied && <span style={{ color: "var(--color-primary)", fontSize: "0.85rem" }}>Link copied to clipboard</span>}
               {shareUrl && <a href={shareUrl} target="_blank" rel="noreferrer" style={{ color: "var(--color-primary)", fontSize: "0.9rem", wordBreak: "break-all" }}>{shareUrl}</a>}
               {shareErr && <span style={{ color: "var(--color-danger)", fontSize: "0.85rem" }}>{shareErr}</span>}
             </div>
@@ -126,18 +142,28 @@ export default function GoalPlanner() {
           <div className="donut-wrap">
             <svg viewBox="0 0 220 220" className="donut">
               <circle cx="110" cy="110" r="92" stroke="rgba(255,255,255,0.05)" strokeWidth="22" fill="none"/>
-              <circle ref={dInv as any} cx="110" cy="110" r="92" stroke="var(--color-primary-highlight)" strokeWidth="22" fill="none" strokeDasharray="0 999" strokeLinecap="round" transform="rotate(-90 110 110)"/>
-              <circle ref={dGain as any} cx="110" cy="110" r="92" stroke="var(--color-primary)" strokeWidth="22" fill="none" strokeDasharray="0 999" strokeLinecap="round" transform="rotate(-90 110 110)"/>
-              <text ref={dTot as any} x="110" y="105" textAnchor="middle" fill="var(--color-text)" fontFamily="Instrument Serif" fontSize="22">₹0</text>
+              <circle ref={dInv as any} cx="110" cy="110" r="92" stroke="var(--color-primary-highlight)" strokeWidth="22" fill="none" strokeDasharray={`${(Math.max(0, invested / goal) * C).toFixed(2)} ${C}`} strokeLinecap="round" transform="rotate(-90 110 110)"/>
+              <circle ref={dGain as any} cx="110" cy="110" r="92" stroke="var(--color-primary)" strokeWidth="22" fill="none" strokeDasharray={`${(Math.max(0, gains / goal) * C).toFixed(2)} ${C}`} strokeDashoffset={`${(-Math.max(0, invested / goal) * C).toFixed(2)}`} strokeLinecap="round" transform="rotate(-90 110 110)"/>
+              <text ref={dTot as any} x="110" y="105" textAnchor="middle" fill="var(--color-text)" fontFamily="Instrument Serif" fontSize="22">{fmtINR(goal)}</text>
               <text x="110" y="128" textAnchor="middle" fill="var(--color-text-faint)" fontSize="11" letterSpacing="2">TARGET CORPUS</text>
             </svg>
           </div>
           <div className="calc-stats">
             <div className="cs-row total" style={{ borderTop: "none", paddingTop: 0, marginBottom: "0.6rem" }}>
-              <span></span>Required SIP / month<strong ref={oSip as any}>₹0</strong>
+              <span></span>Required SIP / month<strong ref={oSip as any}>{fmtINR(sip)}</strong>
             </div>
-            <div className="cs-row"><span className="dotI" style={{backgroundColor: "var(--color-primary-highlight)"}}></span>You invest<strong ref={oInv as any}>₹0</strong></div>
-            <div className="cs-row"><span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>Est. returns<strong ref={oGain as any}>₹0</strong></div>
+            <div className="cs-row"><span className="dotI" style={{backgroundColor: "var(--color-primary-highlight)"}}></span>You invest<strong ref={oInv as any}>{fmtINR(invested)}</strong></div>
+            <div className="cs-row"><span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>Est. returns<strong ref={oGain as any}>{fmtINR(gains)}</strong></div>
+          </div>
+
+          <p style={{ marginTop: "0.9rem", fontSize: "0.78rem", lineHeight: 1.5, color: "var(--color-text-faint)" }}>
+            Illustrative projection only. Returns are assumed, not guaranteed — actual
+            returns vary with market performance. This is not investment advice.
+          </p>
+
+          <div style={{ marginTop: "1.25rem", display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
+            <a href="/get-started" className="btn btn-primary" data-magnetic>Start this SIP</a>
+            <a href="/get-started" className="btn btn-outline" data-magnetic>Talk to Advisor</a>
           </div>
         </div>
       </div>

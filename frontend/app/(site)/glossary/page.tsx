@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
+import { pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Glossary: Investment Terms Explained",
+export const metadata: Metadata = pageMeta({
+  title: "Investing Glossary",
   description:
-    "A plain-English glossary of investment terms (from AIF and CAGR to SIP and YTM), for Indian investors."
-};
+    "Plain-English definitions of the investment terms Indian investors actually meet, from AIF, CAGR and expense ratio to NAV, SIP, STCG and yield to maturity.",
+  path: "/glossary",
+  ogTitle: "Investing Glossary — Finvoq"
+});
 
 const TERMS: { term: string; def: string }[] = [
   { term: "AIF (Alternative Investment Fund)", def: "A SEBI-regulated pooled investment vehicle for sophisticated investors. Comes in three categories: Cat I (VC, infra), Cat II (PE, real estate, debt), Cat III (long-short, hedge). Minimum ticket: ₹1 Cr." },

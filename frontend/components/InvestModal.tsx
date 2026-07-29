@@ -135,7 +135,7 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
               <div className="invest-modal__wa">
                 Best bulk price?{" "}
                 <a
-                  href={process.env.NEXT_PUBLIC_WHATSAPP_LINK || "https://wa.me/919999999999"}
+                  href={process.env.NEXT_PUBLIC_WHATSAPP_LINK || "/contact"}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

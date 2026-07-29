@@ -260,6 +260,37 @@ export default function GlobalUX() {
       });
     })();
 
+    /* Step lists draw their spine as they scroll past.
+       --steps-progress goes 0 -> 1 across the list, which scales the lit
+       gradient rail in globals.css. */
+    (() => {
+      const lists = $$<HTMLElement>(".steps");
+      if (!lists.length) return;
+      if (reduceMotion) {
+        lists.forEach((l) => l.style.setProperty("--steps-progress", "1"));
+        return;
+      }
+      const draw = () => {
+        const vh = window.innerHeight;
+        for (const list of lists) {
+          const r = list.getBoundingClientRect();
+          // Start filling when the list is a third up the viewport and
+          // finish as its last row clears the same line.
+          const span = r.height + vh * 0.35;
+          const done = vh * 0.65 - r.top;
+          const p = Math.min(1, Math.max(0, done / span));
+          list.style.setProperty("--steps-progress", p.toFixed(3));
+        }
+      };
+      addEventListener("scroll", draw, { passive: true });
+      addEventListener("resize", draw);
+      draw();
+      cleanups.push(() => {
+        removeEventListener("scroll", draw);
+        removeEventListener("resize", draw);
+      });
+    })();
+
     return () => cleanups.forEach((fn) => fn());
   }, [pathname]);
 

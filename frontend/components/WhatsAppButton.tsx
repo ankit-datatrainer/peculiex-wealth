@@ -1,7 +1,10 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 
-const DEFAULT_NUMBER = "919999999999"; // Replace via NEXT_PUBLIC_WHATSAPP_NUMBER in .env.local
+// No fallback number on purpose. A chat button that opens a dead WhatsApp
+// thread is worse than no button at all: it burns the highest-intent moment on
+// the site. If NEXT_PUBLIC_WHATSAPP_NUMBER is unset we render the Contact page
+// link instead, which always works.
 const DEFAULT_MESSAGE =
   "Hi Finvoq team! I'd like to know more about investing through your platform.";
 // Replace via NEXT_PUBLIC_WHATSAPP_COMMUNITY in .env.local (the group/community invite link)
@@ -14,21 +17,22 @@ const WA_ICON = (
 );
 
 export default function WhatsAppButton() {
-  const number = (
-    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || DEFAULT_NUMBER
-  ).replace(/\D/g, "");
+  const number = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/\D/g, "");
   const message = encodeURIComponent(
     process.env.NEXT_PUBLIC_WHATSAPP_MESSAGE || DEFAULT_MESSAGE
   );
-  const chatHref = `https://wa.me/${number}?text=${message}`;
+  // A real Indian mobile in international form is 12 digits (91 + 10).
+  const configured = number.length >= 10;
+  const chatHref = configured
+    ? `https://wa.me/${number}?text=${message}`
+    : "/contact";
 
   return (
     <div className="whatsapp-root">
       <a
         href={chatHref}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Chat with us on WhatsApp"
+        {...(configured ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        aria-label={configured ? "Chat with us on WhatsApp" : "Contact us"}
         className="whatsapp-btn"
         style={{ textDecoration: 'none' }}
       >
@@ -36,7 +40,7 @@ export default function WhatsAppButton() {
           <span className="whatsapp-pulse" />
           <span style={{ position: "relative", display: "grid", placeItems: "center" }}>{WA_ICON}</span>
         </span>
-        <span className="whatsapp-btn-text">Chat with us</span>
+        <span className="whatsapp-btn-text">{configured ? "Chat with us" : "Contact us"}</span>
       </a>
     </div>
   );

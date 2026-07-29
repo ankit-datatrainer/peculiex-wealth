@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import ScrollGlobe from "./ScrollGlobe";
 import Logo from "../Logo";
+import CountUp from "../CountUp";
 import { useContent, imgSrc } from "@/lib/content";
 
 /** Render a CMS multi-line value, keeping the author's line breaks. */
@@ -143,21 +144,30 @@ const PARTNERS: Array<{ name: string; img: string }> = [
   { name: "Aditya Birla Capital", img: "/partners/20.png" }
 ];
 
+// Each card gets its own destination and its own link text: three cards that
+// all pointed at /news behind an identical "Read more" anchor were a
+// usability, SEO and screen-reader problem at once.
 const POSTS = [
   {
     tag: "Markets",
     date: "Live",
-    title: "Track every NSE & BSE share with real-time prices and watchlists"
+    title: "Track every NSE & BSE share with real-time prices and watchlists",
+    href: "/markets",
+    cta: "Open live markets"
   },
   {
     tag: "Insights",
     date: "Weekly",
-    title: "How our advisors curate unlisted opportunities before they list"
+    title: "How our advisors curate unlisted opportunities before they list",
+    href: "/unlisted",
+    cta: "Browse unlisted opportunities"
   },
   {
     tag: "Company",
     date: "Beta",
-    title: "Finvoq opens its doors: India's advisory-led investment marketplace"
+    title: "Finvoq opens its doors: India's advisory-led investment marketplace",
+    href: "/about",
+    cta: "About Finvoq"
   }
 ];
 
@@ -220,11 +230,11 @@ export default function HomeClone() {
         <section id="intro" className="sfc-hero">
           <div className="sfc-hero-inner">
             <h1 className="sfc-h1 sfc-up sfc-d1">
-              {c.t("hero", "titleA", "India's Curated Investment")}{" "}
+              {c.t("hero", "titleA", "India's curated investment")}{" "}
               <br className="sfc-h1-br" />
-              {c.t("hero", "titleB", "Marketplace meets")}{" "}
+              {c.t("hero", "titleB", "marketplace —")}{" "}
               <span className="sfc-h1-em">
-                {c.t("hero", "titleAccent", "Advisory.")}
+                {c.t("hero", "titleAccent", "with advice built in.")}
                 <span className="sfc-h1-underline sfc-d3" />
               </span>
             </h1>
@@ -286,7 +296,7 @@ export default function HomeClone() {
             <div />
             <Reveal>
               <h2 className="sfc-h2">{lines(c.t("screens", "oneTitle", "New era\nof investing"))}</h2>
-              <p className="sfc-lead">{c.t("screens", "oneBody", "We are on the verge of a new investing era, where opportunities once reserved for institutions open up to every serious investor in India.")}</p>
+              <p className="sfc-lead">{c.t("screens", "oneBody", "We’re on the verge of a new investing era, where opportunities once reserved for institutions open up to every serious investor in India.")}</p>
             </Reveal>
           </div>
         </section>
@@ -308,7 +318,7 @@ export default function HomeClone() {
             <div />
             <Reveal>
               <h2 className="sfc-h2">{lines(c.t("screens", "threeTitle", "Building\nyour future"))}</h2>
-              <p className="sfc-lead">{c.t("screens", "threeBody", "We connect India s leading asset managers with a clean, advisory-led platform: elegant infrastructure that takes your wealth to the future.")}</p>
+              <p className="sfc-lead">{c.t("screens", "threeBody", "We connect India's leading asset managers with a clean, advisory-led platform: elegant infrastructure that takes your wealth to the future.")}</p>
             </Reveal>
           </div>
         </section>
@@ -458,7 +468,7 @@ export default function HomeClone() {
           <div className="sfc-wrap sfc-about-grid">
             <div>
               <p className="sfc-eyebrow sfc-eyebrow-mint">{c.t("about", "eyebrow", "About Finvoq")}</p>
-              <h2 className="sfc-h2-serif">{c.t("about", "title", "We are bringing the discipline of private banking to every investor.")}</h2>
+              <h2 className="sfc-h2-serif">{c.t("about", "title", "We’re bringing the discipline of private banking to every investor.")}</h2>
             </div>
             <div className="sfc-about-copy">
               <p>
@@ -479,7 +489,7 @@ export default function HomeClone() {
             {c.list("about", "stats", STATS).map((s, i) => (
               <Reveal key={s.l} delay={i * 100}>
                 <div className="sfc-stat">
-                  <div className="sfc-stat-v">{s.v}</div>
+                  <div className="sfc-stat-v"><CountUp value={s.v} /></div>
                   <div className="sfc-stat-l">{s.l}</div>
                 </div>
               </Reveal>
@@ -491,7 +501,16 @@ export default function HomeClone() {
         <section id="investors" className="sfc-partners">
           <div className="sfc-wrap">
             <p className="sfc-eyebrow sfc-eyebrow-indigo">{c.t("partners", "eyebrow", "Partnered with")}</p>
-            <h2 className="sfc-h2-serif sfc-navy">{c.t("partners", "title", "India s leading asset managers and institutions.")}</h2>
+            <h2 className="sfc-h2-serif sfc-navy">{c.t("partners", "title", "India's leading asset managers and institutions.")}</h2>
+            {/* A logo wall with no caption reads as endorsement. State the
+                relationship plainly so it can't be misread. */}
+            <p className="sfc-partners-note">
+              {c.t(
+                "partners",
+                "note",
+                "We distribute products from these asset managers. Their marks are shown to identify the funds available on Finvoq and do not imply any endorsement of Finvoq by them."
+              )}
+            </p>
           </div>
           <div className="sfc-marquee">
             <div className="sfc-marquee-track">
@@ -528,14 +547,18 @@ export default function HomeClone() {
             <div className="sfc-news-grid">
               {c.list("news", "items", POSTS).map((p: any, i: number) => (
                 <Reveal key={p.title} delay={i * 100}>
-                  <Link href="/news" className="sfc-news-card">
+                  <Link
+                    href={p.href || "/news"}
+                    className="sfc-news-card"
+                    aria-label={`Read: ${p.title}`}
+                  >
                     <div className="sfc-news-meta">
                       <span>{p.tag}</span>
                       <span>{p.date}</span>
                     </div>
                     <h3>{p.title}</h3>
                     <span className="sfc-news-read">
-                      Read more <ArrowUpRight size={15} />
+                      {p.cta || "Read the full story"} <ArrowUpRight size={15} />
                     </span>
                   </Link>
                 </Reveal>
@@ -548,7 +571,7 @@ export default function HomeClone() {
         <footer id="signup" className="sfc-footer">
           <div className="sfc-wrap">
             <div className="sfc-footer-cta">
-              <h2 className="sfc-h2-serif sfc-footer-title">{c.t("footerCta", "title", "Build your wealth s future with us.")}</h2>
+              <h2 className="sfc-h2-serif sfc-footer-title">{c.t("footerCta", "title", "Build your wealth’s future with us.")}</h2>
               <div className="sfc-footer-form">
                 <label>{c.t("footerCta", "formLabel", "Get the weekly market brief")}</label>
                 <div className="sfc-footer-input">
@@ -577,12 +600,12 @@ export default function HomeClone() {
             <div className="sfc-footer-links">
               <div className="sfc-footer-brand">
                 <div className="sfc-footer-logo">
-                  {/* The footer stays navy in both themes, so pin the
-                      light-ink logo rather than following the site theme. */}
-                  <Logo width={176} height={70} forceDark />
+                  {/* Same logo variant as the footer on every other page, so
+                      the brand mark is consistent across the site. */}
+                  <Logo width={176} height={70} />
                 </div>
                 <p>
-                  {c.t("footerCta", "blurb", "India s premium investment marketplace. Multiple asset classes, one platform, advisory-led.")}
+                  {c.t("footerCta", "blurb", "India's premium investment marketplace. Multiple asset classes, one platform, advisory-led.")}
                 </p>
                 <div className="sfc-footer-reg">
                   <span className="sfc-dot" />{c.t("footerCta", "badge", "SEBI Registered Investment Distributor")}
@@ -1615,6 +1638,13 @@ export default function HomeClone() {
         }
         .sfc-partners .sfc-wrap {
           margin-bottom: 64px;
+        }
+        .sfc-partners-note {
+          max-width: 720px;
+          margin: 18px auto 0;
+          font-size: 0.86rem;
+          line-height: 1.6;
+          color: rgba(15, 23, 42, 0.62);
         }
         .sfc-marquee {
           position: relative;

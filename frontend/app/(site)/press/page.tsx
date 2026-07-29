@@ -21,7 +21,7 @@ export default function PressPage() {
         <h2>Press contact</h2>
         <p>
           For media enquiries, please email{" "}
-          <a href="mailto:press@finvoq.example.com">press@finvoq.example.com</a>. We aim to
+          <a href="mailto:press@finvoq.com">press@finvoq.com</a>. We aim to
           respond to journalists within four business hours during India trading days.
         </p>
 
@@ -49,7 +49,7 @@ export default function PressPage() {
         <h2>Brand assets</h2>
         <p>
           Logos, wordmarks, and approved colour palettes are available on request to
-          <a href="mailto:press@finvoq.example.com"> press@finvoq.example.com</a>. Please
+          <a href="mailto:press@finvoq.com"> press@finvoq.com</a>. Please
           do not modify the wordmark or apply colour treatments not in the brand kit.
         </p>
 

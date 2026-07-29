@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { fmtINR } from "@/lib/util";
 import { postJSON } from "@/lib/api";
 
@@ -12,7 +12,11 @@ function animateText(el: HTMLElement | SVGTextElement | null, from: number, to: 
   const step = (now: number) => {
     const t = Math.min(1, (now - start) / dur);
     const eased = 1 - Math.pow(1 - t, 3);
-    el.textContent = fmt(from + (to - from) * eased);
+    const txt = fmt(from + (to - from) * eased);
+    // Write into React's existing text node so React keeps ownership of it.
+    const first = el.firstChild;
+    if (first && first.nodeType === 3) first.nodeValue = txt;
+    else el.textContent = txt;
     if (t < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
@@ -22,7 +26,17 @@ export default function LumpsumCalc() {
   const [amt, setAmt] = useState(500000);
   const [rate, setRate] = useState(12);
   const [yr, setYr] = useState(10);
-  const [projection, setProjection] = useState<{year: number, invested: number, total: number}[]>([]);
+
+  // Derived during render (not in an effect) so the first paint / SSR HTML
+  // already shows the numbers for the default inputs.
+  const { total, gains, projection } = useMemo(() => {
+    const tot = amt * Math.pow(1 + rate / 100, yr);
+    const data: { year: number; invested: number; total: number }[] = [];
+    for (let i = 1; i <= yr; i++) {
+      data.push({ year: i, invested: amt, total: amt * Math.pow(1 + rate / 100, i) });
+    }
+    return { total: tot, gains: tot - amt, projection: data };
+  }, [amt, rate, yr]);
 
   const oInv = useRef<HTMLElement | null>(null);
   const oRet = useRef<HTMLElement | null>(null);
@@ -37,6 +51,7 @@ export default function LumpsumCalc() {
 
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shareErr, setShareErr] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
 
   useEffect(() => {
     [sliderAmt.current, sliderRate.current, sliderYr.current].forEach((el) => {
@@ -44,9 +59,6 @@ export default function LumpsumCalc() {
       const pct = ((+el.value - +el.min) / (+el.max - +el.min)) * 100;
       el.style.setProperty("--p", pct + "%");
     });
-    const total = amt * Math.pow(1 + rate / 100, yr);
-    const gains = total - amt;
-
     animateText(oInv.current, last.current.inv || amt, amt, fmtINR);
     animateText(oRet.current, last.current.ret || gains, gains, fmtINR);
     animateText(oTot.current, last.current.tot || total, total, fmtINR);
@@ -59,13 +71,7 @@ export default function LumpsumCalc() {
     dGain.current?.setAttribute("stroke-dasharray", `${(pGain * C).toFixed(2)} ${C}`);
     dGain.current?.setAttribute("stroke-dashoffset", `${(-pInv * C).toFixed(2)}`);
 
-    const data = [];
-    for (let i = 1; i <= yr; i++) {
-       const val = amt * Math.pow(1 + rate / 100, i);
-       data.push({ year: i, invested: amt, total: val });
-    }
-    setProjection(data);
-  }, [amt, rate, yr]);
+  }, [amt, rate, yr, total, gains]);
 
   const onShare = async () => {
     setShareErr(null);
@@ -74,7 +80,15 @@ export default function LumpsumCalc() {
         "/api/sip/share",
         { amount: amt, rate, years: yr, type: 'lumpsum' }
       );
-      setShareUrl(window.location.origin + "/sip/" + r.id);
+      const url = window.location.origin + "/sip/" + r.id;
+      setShareUrl(url);
+      try {
+        await navigator.clipboard.writeText(url);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 3000);
+      } catch {
+        /* clipboard unavailable — link is still shown below */
+      }
     } catch (e: any) {
       setShareErr(e?.message || "Could not create share link.");
     }
@@ -110,7 +124,8 @@ export default function LumpsumCalc() {
             </div>
 
             <div style={{ marginTop: "1.25rem", display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
-              <button type="button" onClick={onShare} className="btn btn-outline" data-magnetic>Share my projection</button>
+              <button type="button" onClick={onShare} className="btn btn-outline" data-magnetic>Copy projection link</button>
+              {shareCopied && <span style={{ color: "var(--color-primary)", fontSize: "0.85rem" }}>Link copied to clipboard</span>}
               {shareUrl && <a href={shareUrl} target="_blank" rel="noreferrer" style={{ color: "var(--color-primary)", fontSize: "0.9rem", wordBreak: "break-all" }}>{shareUrl}</a>}
               {shareErr && <span style={{ color: "var(--color-danger)", fontSize: "0.85rem" }}>{shareErr}</span>}
             </div>
@@ -121,16 +136,26 @@ export default function LumpsumCalc() {
           <div className="donut-wrap">
             <svg viewBox="0 0 220 220" className="donut">
               <circle cx="110" cy="110" r="92" stroke="rgba(255,255,255,0.05)" strokeWidth="22" fill="none"/>
-              <circle ref={dInv as any} cx="110" cy="110" r="92" stroke="var(--color-primary-highlight)" strokeWidth="22" fill="none" strokeDasharray="0 999" strokeLinecap="round" transform="rotate(-90 110 110)"/>
-              <circle ref={dGain as any} cx="110" cy="110" r="92" stroke="var(--color-primary)" strokeWidth="22" fill="none" strokeDasharray="0 999" strokeLinecap="round" transform="rotate(-90 110 110)"/>
-              <text ref={dTot as any} x="110" y="105" textAnchor="middle" fill="var(--color-text)" fontFamily="Instrument Serif" fontSize="22">₹0</text>
+              <circle ref={dInv as any} cx="110" cy="110" r="92" stroke="var(--color-primary-highlight)" strokeWidth="22" fill="none" strokeDasharray={`${((amt / total) * C).toFixed(2)} ${C}`} strokeLinecap="round" transform="rotate(-90 110 110)"/>
+              <circle ref={dGain as any} cx="110" cy="110" r="92" stroke="var(--color-primary)" strokeWidth="22" fill="none" strokeDasharray={`${((gains / total) * C).toFixed(2)} ${C}`} strokeDashoffset={`${((-amt / total) * C).toFixed(2)}`} strokeLinecap="round" transform="rotate(-90 110 110)"/>
+              <text ref={dTot as any} x="110" y="105" textAnchor="middle" fill="var(--color-text)" fontFamily="Instrument Serif" fontSize="22">{fmtINR(total)}</text>
               <text x="110" y="128" textAnchor="middle" fill="var(--color-text-faint)" fontSize="11" letterSpacing="2">TOTAL VALUE</text>
             </svg>
           </div>
           <div className="calc-stats">
-            <div className="cs-row"><span className="dotI" style={{backgroundColor: "var(--color-primary-highlight)"}}></span>You invest<strong ref={oInv as any}>₹0</strong></div>
-            <div className="cs-row"><span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>Est. returns<strong ref={oRet as any}>₹0</strong></div>
-            <div className="cs-row total"><span></span>Total value<strong ref={oTot as any}>₹0</strong></div>
+            <div className="cs-row"><span className="dotI" style={{backgroundColor: "var(--color-primary-highlight)"}}></span>You invest<strong ref={oInv as any}>{fmtINR(amt)}</strong></div>
+            <div className="cs-row"><span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>Est. returns<strong ref={oRet as any}>{fmtINR(gains)}</strong></div>
+            <div className="cs-row total"><span></span>Total value<strong ref={oTot as any}>{fmtINR(total)}</strong></div>
+          </div>
+
+          <p style={{ marginTop: "0.9rem", fontSize: "0.78rem", lineHeight: 1.5, color: "var(--color-text-faint)" }}>
+            Illustrative projection only. Returns are assumed, not guaranteed — actual
+            returns vary with market performance. This is not investment advice.
+          </p>
+
+          <div style={{ marginTop: "1.25rem", display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
+            <a href="/get-started" className="btn btn-primary" data-magnetic>Start investing</a>
+            <a href="/get-started" className="btn btn-outline" data-magnetic>Talk to Advisor</a>
           </div>
         </div>
       </div>

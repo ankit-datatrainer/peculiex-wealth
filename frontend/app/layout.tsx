@@ -19,10 +19,12 @@ export const metadata: Metadata = {
     description:
       "Listed and unlisted shares, mutual funds, PMS, AIF, bonds, and insurance. Curated by experts and executed in seconds.",
     siteName: "Finvoq",
-    locale: "en_IN"
+    locale: "en_IN",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Finvoq" }]
   },
   twitter: {
     card: "summary_large_image",
+    images: ["/opengraph-image"],
     title: "Finvoq: India's Investment Marketplace",
     description:
       "Listed, unlisted, mutual funds, PMS, AIF, bonds, insurance, curated by experts, executed in seconds."
@@ -30,11 +32,11 @@ export const metadata: Metadata = {
   icons: {
     icon: {
       url:
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%230a7d64'/%3E%3Ctext x='50' y='73' text-anchor='middle' font-size='66' font-family='Georgia,serif' font-weight='700' fill='white'%3Ef%3C/text%3E%3C/svg%3E",
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2313735d'/%3E%3Ctext x='50' y='73' text-anchor='middle' font-size='66' font-family='Georgia,serif' font-weight='700' fill='white'%3Ef%3C/text%3E%3C/svg%3E",
       type: "image/svg+xml"
     },
     apple:
-      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a7d64'/%3E%3Ctext x='50' y='73' text-anchor='middle' font-size='66' font-family='Georgia,serif' font-weight='700' fill='white'%3Ef%3C/text%3E%3C/svg%3E"
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2313735d'/%3E%3Ctext x='50' y='73' text-anchor='middle' font-size='66' font-family='Georgia,serif' font-weight='700' fill='white'%3Ef%3C/text%3E%3C/svg%3E"
   },
   robots: { index: true, follow: true }
 };

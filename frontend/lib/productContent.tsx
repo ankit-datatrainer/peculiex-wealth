@@ -1,3 +1,5 @@
+import { LAMF_RATE, LAMF_RATE_FOOTNOTE } from "./siteFacts";
+
 export type ProductContent = {
   slug: string;
   label: string;
@@ -236,7 +238,7 @@ export const PRODUCTS: Record<string, ProductContent> = {
       "Pledge your mutual fund units and get an instant overdraft at interest rates far below a personal loan, while your investments stay invested and keep compounding.",
     highlights: [
       { title: "Stay invested", body: "Your units are only pledged, never sold. You keep the upside, dividends, and long-term compounding while borrowing against them." },
-      { title: "Rates from ~X% p.a.", body: "Interest is charged only on the amount you use, not the full sanctioned limit: dramatically cheaper than personal loans or credit cards." },
+      { title: `Rates from ${LAMF_RATE}`, body: `Interest is charged only on the amount you use, not the full sanctioned limit: dramatically cheaper than personal loans or credit cards. ${LAMF_RATE_FOOTNOTE}` },
       { title: "Instant digital pledge", body: "Pledge equity or debt funds online via CAMS/KFintech in minutes. No paperwork, no branch visit, no income proof for most limits." },
       { title: "Overdraft, not EMI", body: "Draw and repay any amount, any time. Interest accrues only on the outstanding balance: ideal for short-term cash-flow gaps." },
       { title: "Loan-to-value up to 50–80%", body: "Borrow up to 80% against debt funds and up to 50% against equity funds, subject to lender norms and scheme eligibility." },

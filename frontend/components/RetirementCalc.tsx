@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { fmtINR } from "@/lib/util";
 import { postJSON } from "@/lib/api";
 
@@ -12,7 +12,11 @@ function animateText(el: HTMLElement | SVGTextElement | null, from: number, to: 
   const step = (now: number) => {
     const t = Math.min(1, (now - start) / dur);
     const eased = 1 - Math.pow(1 - t, 3);
-    el.textContent = fmt(from + (to - from) * eased);
+    const txt = fmt(from + (to - from) * eased);
+    // Write into React's existing text node so React keeps ownership of it.
+    const first = el.firstChild;
+    if (first && first.nodeType === 3) first.nodeValue = txt;
+    else el.textContent = txt;
     if (t < 1) requestAnimationFrame(step);
   };
   requestAnimationFrame(step);
@@ -22,7 +26,32 @@ export default function RetirementCalc() {
   const [currentAge, setCurrentAge] = useState(30);
   const [retireAge, setRetireAge] = useState(60);
   const [expenses, setExpenses] = useState(50000);
-  const [projection, setProjection] = useState<{year: number, invested: number, total: number}[]>([]);
+
+  // Derived during render (not in an effect) so the first paint / SSR HTML
+  // already shows the numbers for the default inputs.
+  const { corpus, sip, invested, gains, projection } = useMemo(() => {
+    const yearsToRetire = Math.max(1, retireAge - currentAge);
+    const inflation = 0.06;
+    const expectedReturn = 0.12;
+
+    // Monthly expenses at retirement
+    const expensesAtRetirement = expenses * Math.pow(1 + inflation, yearsToRetire);
+    // Required Corpus (Simple rule: 25x annual expenses at retirement)
+    const cor = expensesAtRetirement * 12 * 25;
+
+    const r = expectedReturn / 12;
+    const n = yearsToRetire * 12;
+    // SIP needed for Corpus
+    const s = r === 0 ? cor / n : (cor * r) / ((Math.pow(1 + r, n) - 1) * (1 + r));
+    const inv = s * n;
+    const data: { year: number; invested: number; total: number }[] = [];
+    for (let i = 1; i <= yearsToRetire; i++) {
+      const mn = i * 12;
+      const val = r === 0 ? s * mn : s * ((Math.pow(1 + r, mn) - 1) / r) * (1 + r);
+      data.push({ year: i, invested: s * mn, total: val });
+    }
+    return { corpus: cor, sip: s, invested: inv, gains: cor - inv, projection: data };
+  }, [currentAge, retireAge, expenses]);
 
   const oCorpus = useRef<HTMLElement | null>(null);
   const oSip = useRef<HTMLElement | null>(null);
@@ -40,6 +69,7 @@ export default function RetirementCalc() {
 
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [shareErr, setShareErr] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
 
   useEffect(() => {
     [sliderCurrentAge.current, sliderRetireAge.current, sliderExpenses.current].forEach((el) => {
@@ -48,22 +78,6 @@ export default function RetirementCalc() {
       el.style.setProperty("--p", pct + "%");
     });
     
-    const yearsToRetire = Math.max(1, retireAge - currentAge);
-    const inflation = 0.06;
-    const expectedReturn = 0.12;
-    
-    // Monthly expenses at retirement
-    const expensesAtRetirement = expenses * Math.pow(1 + inflation, yearsToRetire);
-    // Required Corpus (Simple rule: 25x annual expenses at retirement)
-    const corpus = expensesAtRetirement * 12 * 25;
-    
-    const r = expectedReturn / 12;
-    const n = yearsToRetire * 12;
-    // SIP needed for Corpus
-    const sip = r === 0 ? corpus / n : (corpus * r) / ((Math.pow(1 + r, n) - 1) * (1 + r));
-    const invested = sip * n;
-    const gains = corpus - invested;
-
     animateText(oCorpus.current, last.current.corpus || corpus, corpus, fmtINR);
     animateText(oSip.current, last.current.sip || sip, sip, fmtINR);
     animateText(oInv.current, last.current.inv || invested, invested, fmtINR);
@@ -77,14 +91,7 @@ export default function RetirementCalc() {
     dGain.current?.setAttribute("stroke-dasharray", `${(pGain * C).toFixed(2)} ${C}`);
     dGain.current?.setAttribute("stroke-dashoffset", `${(-pInv * C).toFixed(2)}`);
     
-    const data = [];
-    for (let i = 1; i <= yearsToRetire; i++) {
-       const mn = i * 12;
-       const val = r === 0 ? sip * mn : sip * ((Math.pow(1 + r, mn) - 1) / r) * (1 + r);
-       data.push({ year: i, invested: sip * mn, total: val });
-    }
-    setProjection(data);
-  }, [currentAge, retireAge, expenses]);
+  }, [currentAge, retireAge, expenses, corpus, sip, invested, gains]);
 
   const onShare = async () => {
     setShareErr(null);
@@ -93,7 +100,15 @@ export default function RetirementCalc() {
         "/api/sip/share",
         { currentAge, retireAge, expenses }
       );
-      setShareUrl(window.location.origin + "/sip/" + r.id);
+      const url = window.location.origin + "/sip/" + r.id;
+      setShareUrl(url);
+      try {
+        await navigator.clipboard.writeText(url);
+        setShareCopied(true);
+        setTimeout(() => setShareCopied(false), 3000);
+      } catch {
+        /* clipboard unavailable - link is still shown below */
+      }
     } catch (e: any) {
       setShareErr(e?.message || "Could not create share link.");
     }
@@ -137,7 +152,8 @@ export default function RetirementCalc() {
             </div>
 
             <div style={{ marginTop: "1.25rem", display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
-              <button type="button" onClick={onShare} className="btn btn-outline" data-magnetic>Share my projection</button>
+              <button type="button" onClick={onShare} className="btn btn-outline" data-magnetic>Copy projection link</button>
+              {shareCopied && <span style={{ color: "var(--color-primary)", fontSize: "0.85rem" }}>Link copied to clipboard</span>}
               {shareUrl && <a href={shareUrl} target="_blank" rel="noreferrer" style={{ color: "var(--color-primary)", fontSize: "0.9rem", wordBreak: "break-all" }}>{shareUrl}</a>}
               {shareErr && <span style={{ color: "var(--color-danger)", fontSize: "0.85rem" }}>{shareErr}</span>}
             </div>
@@ -148,18 +164,28 @@ export default function RetirementCalc() {
           <div className="donut-wrap">
             <svg viewBox="0 0 220 220" className="donut">
               <circle cx="110" cy="110" r="92" stroke="rgba(255,255,255,0.05)" strokeWidth="22" fill="none"/>
-              <circle ref={dInv as any} cx="110" cy="110" r="92" stroke="var(--color-primary-highlight)" strokeWidth="22" fill="none" strokeDasharray="0 999" strokeLinecap="round" transform="rotate(-90 110 110)"/>
-              <circle ref={dGain as any} cx="110" cy="110" r="92" stroke="var(--color-primary)" strokeWidth="22" fill="none" strokeDasharray="0 999" strokeLinecap="round" transform="rotate(-90 110 110)"/>
-              <text ref={dTot as any} x="110" y="105" textAnchor="middle" fill="var(--color-text)" fontFamily="Instrument Serif" fontSize="22">₹0</text>
+              <circle ref={dInv as any} cx="110" cy="110" r="92" stroke="var(--color-primary-highlight)" strokeWidth="22" fill="none" strokeDasharray={`${(Math.max(0, invested / corpus) * C).toFixed(2)} ${C}`} strokeLinecap="round" transform="rotate(-90 110 110)"/>
+              <circle ref={dGain as any} cx="110" cy="110" r="92" stroke="var(--color-primary)" strokeWidth="22" fill="none" strokeDasharray={`${(Math.max(0, gains / corpus) * C).toFixed(2)} ${C}`} strokeDashoffset={`${(-Math.max(0, invested / corpus) * C).toFixed(2)}`} strokeLinecap="round" transform="rotate(-90 110 110)"/>
+              <text ref={dTot as any} x="110" y="105" textAnchor="middle" fill="var(--color-text)" fontFamily="Instrument Serif" fontSize="22">{fmtINR(corpus)}</text>
               <text x="110" y="128" textAnchor="middle" fill="var(--color-text-faint)" fontSize="11" letterSpacing="2">REQUIRED CORPUS</text>
             </svg>
           </div>
           <div className="calc-stats">
             <div className="cs-row total" style={{ borderTop: "none", paddingTop: 0, marginBottom: "0.6rem" }}>
-              <span></span>Required SIP / month<strong ref={oSip as any}>₹0</strong>
+              <span></span>Required SIP / month<strong ref={oSip as any}>{fmtINR(sip)}</strong>
             </div>
-            <div className="cs-row"><span className="dotI" style={{backgroundColor: "var(--color-primary-highlight)"}}></span>You invest<strong ref={oInv as any}>₹0</strong></div>
-            <div className="cs-row"><span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>Est. returns<strong ref={oGain as any}>₹0</strong></div>
+            <div className="cs-row"><span className="dotI" style={{backgroundColor: "var(--color-primary-highlight)"}}></span>You invest<strong ref={oInv as any}>{fmtINR(invested)}</strong></div>
+            <div className="cs-row"><span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>Est. returns<strong ref={oGain as any}>{fmtINR(gains)}</strong></div>
+          </div>
+
+          <p style={{ marginTop: "0.9rem", fontSize: "0.78rem", lineHeight: 1.5, color: "var(--color-text-faint)" }}>
+            Illustrative projection only. Returns are assumed, not guaranteed — actual
+            returns vary with market performance. This is not investment advice.
+          </p>
+
+          <div style={{ marginTop: "1.25rem", display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
+            <a href="/get-started" className="btn btn-primary" data-magnetic>Start this SIP</a>
+            <a href="/get-started" className="btn btn-outline" data-magnetic>Talk to Advisor</a>
           </div>
         </div>
       </div>
