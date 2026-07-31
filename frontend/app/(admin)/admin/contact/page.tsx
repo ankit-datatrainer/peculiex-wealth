@@ -112,6 +112,7 @@ export default function AdminContactPage() {
         <div className="admin-modal" onClick={() => setOpen(null)}>
           <div
             className="admin-modal-body"
+            data-lenis-prevent
             onClick={(e) => e.stopPropagation()}
           >
             <header>

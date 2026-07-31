@@ -344,6 +344,7 @@ export default function AdminUnlistedPage() {
         <div className="admin-modal" onClick={closeForm}>
           <form
             className="admin-modal-body"
+            data-lenis-prevent
             onClick={(e) => e.stopPropagation()}
             onSubmit={onSubmit}
           >

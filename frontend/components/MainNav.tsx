@@ -122,7 +122,11 @@ export default function MainNav() {
           <Logo width={172} height={68} />
         </Link>
         <nav>
-          <ul className={`nav-links${mobileOpen ? " mobile-open" : ""}`} ref={linksRef}>
+          <ul
+            className={`nav-links${mobileOpen ? " mobile-open" : ""}`}
+            ref={linksRef}
+            data-lenis-prevent
+          >
             {mobileOpen && (
               <button
                 type="button"

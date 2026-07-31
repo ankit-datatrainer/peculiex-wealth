@@ -13,8 +13,22 @@ export default function SupportTicket() {
   useEffect(() => {
     if (!open) return;
     const onEsc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    // Click anywhere outside the panel (or its launcher) to dismiss it.
+    // Bound on mousedown so it fires before a click can land on the page
+    // underneath, and scoped to the root so clicking inside the form,
+    // selecting text, or hitting the launcher again all behave normally.
+    const onPointerDown = (e: MouseEvent | TouchEvent) => {
+      const root = rootRef.current;
+      if (root && !root.contains(e.target as Node)) setOpen(false);
+    };
     document.addEventListener("keydown", onEsc);
-    return () => document.removeEventListener("keydown", onEsc);
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("touchstart", onPointerDown, { passive: true });
+    return () => {
+      document.removeEventListener("keydown", onEsc);
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("touchstart", onPointerDown);
+    };
   }, [open]);
 
   const update = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -40,7 +54,12 @@ export default function SupportTicket() {
   return (
     <div className="support-ticket-root" ref={rootRef}>
       {open && (
-        <div className="support-panel" role="dialog" aria-label="Raise a support ticket">
+        <div
+          className="support-panel"
+          role="dialog"
+          aria-label="Raise a support ticket"
+          data-lenis-prevent
+        >
           <div className="support-panel-head">
             <div>
               <strong>Need help?</strong>

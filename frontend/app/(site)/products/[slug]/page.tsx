@@ -136,7 +136,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                 { title: "Life Care", img: "/life_care.png" },
                 { title: "Motor Care", img: "/motor_care.png" },
                 { title: "Home Care", img: "/home_care.png" },
-                { title: "Travel Care", img: "/travel_care.png" }
+                { title: "Business Insurance", img: "/business_insurance.png" }
               ].map((card, i) => (
                 <article key={i} className="insurance-card reveal">
                   <img src={card.img} alt={card.title} className="insurance-card-img" />

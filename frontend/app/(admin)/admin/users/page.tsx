@@ -214,6 +214,7 @@ export default function AdminUsersPage() {
         <div className="admin-modal" onClick={closeEdit}>
           <form
             className="admin-modal-body"
+            data-lenis-prevent
             onClick={(e) => e.stopPropagation()}
             onSubmit={onSave}
           >

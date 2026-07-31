@@ -176,7 +176,7 @@ export default function ContentManagerPage() {
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           />
-          <div className="cms-list-scroll">
+          <div className="cms-list-scroll" data-lenis-prevent>
             {shown.map((p) => (
               <button
                 key={p.key}

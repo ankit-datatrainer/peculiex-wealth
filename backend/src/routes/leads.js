@@ -3,6 +3,7 @@
 const { Router } = require("express");
 const { z } = require("zod");
 const { client, isLive } = require("../db");
+const { sendContactFormEmail } = require("../auth/mailer");
 
 const router = Router();
 
@@ -21,6 +22,21 @@ router.post("/", async (req, res) => {
     return res.status(400).json({ error: "Invalid form data", issues: parsed.error.issues });
   }
   const data = parsed.data;
+
+  // Send the professional email to finvoq@gmail.com
+  const messageBody = `Phone: ${data.phone}
+Interest: ${data.interest}
+Budget: ${data.budget}
+
+Message:
+${data.message || "No message provided."}`;
+
+  await sendContactFormEmail({
+    name: data.name,
+    email: data.email,
+    subject: `New Lead: ${data.interest}`,
+    message: messageBody
+  });
 
   if (!isLive()) {
     console.log("[leads] (no DB) lead received:", data);

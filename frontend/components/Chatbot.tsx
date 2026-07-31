@@ -28,6 +28,25 @@ const INITIAL_MESSAGE: Message = {
 export default function Chatbot() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
+  const chatbotRootRef = useRef<HTMLDivElement | null>(null);
+
+  // Dismiss on Escape or a click outside, matching the support widget.
+  useEffect(() => {
+    if (!open) return;
+    const onEsc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onPointerDown = (e: MouseEvent | TouchEvent) => {
+      const root = chatbotRootRef.current;
+      if (root && !root.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("keydown", onEsc);
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("touchstart", onPointerDown, { passive: true });
+    return () => {
+      document.removeEventListener("keydown", onEsc);
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("touchstart", onPointerDown);
+    };
+  }, [open]);
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -96,7 +115,7 @@ export default function Chatbot() {
   };
 
   return (
-    <div className="chatbot-root">
+    <div className="chatbot-root" ref={chatbotRootRef}>
       {open && (
         <div className="chatbot-window">
           <div className="chatbot-header">
@@ -113,7 +132,7 @@ export default function Chatbot() {
               <button className="chatbot-close-btn" onClick={() => setOpen(false)} aria-label="Close chat">✕</button>
             </div>
           </div>
-          <div className="chatbot-messages">
+          <div className="chatbot-messages" data-lenis-prevent>
             {messages.map((m) => (
               <div key={m.id} className={`chatbot-message ${m.sender}`}>
                 <p className="chatbot-msg-text">{m.text}</p>

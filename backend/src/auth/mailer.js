@@ -290,9 +290,91 @@ function renderWelcomeHtml({ name }) {
 </body></html>`;
 }
 
+async function sendContactFormEmail({ name, email, subject, message }) {
+  const to = "finvoq@gmail.com";
+  const mailSubject = `New Contact Form Submission: ${subject}`;
+  const text = renderContactFormText({ name, email, subject, message });
+  const html = renderContactFormHtml({ name, email, subject, message });
+
+  const t = tryLoadNodemailer();
+  if (!t) {
+    console.log(
+      "\n┌─────────────────────────────────────────────────────────┐"
+    );
+    console.log("│  📧  CONTACT FORM (dev / console fallback)             │");
+    console.log("├─────────────────────────────────────────────────────────┤");
+    console.log(`│  to:   ${to.padEnd(48)}│`);
+    console.log(`│  from: ${email.padEnd(48)}│`);
+    console.log(
+      "└─────────────────────────────────────────────────────────┘\n"
+    );
+    return { delivered: "console" };
+  }
+
+  try {
+    await t.sendMail({ from: SMTP_FROM, to, replyTo: email, subject: mailSubject, text, html });
+    return { delivered: "smtp" };
+  } catch (e) {
+    console.warn(
+      "[mailer] SMTP send failed for contact form, falling back to console:",
+      e.message
+    );
+    return { delivered: "console" };
+  }
+}
+
+function renderContactFormText({ name, email, subject, message }) {
+  return [
+    `New Contact Form Submission`,
+    `---------------------------`,
+    `Name: ${name}`,
+    `Email: ${email}`,
+    `Subject: ${subject}`,
+    ``,
+    `Message:`,
+    message
+  ].join("\n");
+}
+
+function renderContactFormHtml({ name, email, subject, message }) {
+  return `<!doctype html>
+<html><body style="margin:0;padding:0;background:#f4f7f6;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#131313">
+  <div style="max-width:600px;margin:0 auto;padding:40px 24px">
+    <div style="background:#ffffff;border-radius:16px;padding:40px 36px;box-shadow:0 4px 24px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.02);border-top: 6px solid #01696f;">
+      <h2 style="margin: 0 0 24px 0; color: #01696f; font-size: 22px; font-weight: 700; border-bottom: 1px solid #edf1f0; padding-bottom: 16px;">
+        New Contact Form Submission
+      </h2>
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px; font-size: 15px;">
+        <tr>
+          <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; width: 100px; color: #666; font-weight: 500;">Name</td>
+          <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; color: #111; font-weight: 600;">\${escapeHtml(name)}</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; color: #666; font-weight: 500;">Email</td>
+          <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; color: #111; font-weight: 600;">
+            <a href="mailto:\${escapeHtml(email)}" style="color: #01696f; text-decoration: none;">\${escapeHtml(email)}</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; color: #666; font-weight: 500;">Subject</td>
+          <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; color: #111; font-weight: 600;">\${escapeHtml(subject)}</td>
+        </tr>
+      </table>
+      
+      <div style="background: #f8faf9; padding: 20px; border-radius: 8px; border: 1px solid #e2e8e7; line-height: 1.6; font-size: 15px; color: #333; white-space: pre-wrap;">\${escapeHtml(message)}</div>
+      
+      <div style="margin-top: 32px; font-size: 13px; color: #888; text-align: center;">
+        This email was sent automatically from the Finvoq website contact form.
+      </div>
+    </div>
+  </div>
+</body></html>`;
+}
+
 module.exports = {
   sendOtpEmail,
   sendWelcomeEmail,
+  sendContactFormEmail,
   readDevOtp,
   smtpConfigured
 };

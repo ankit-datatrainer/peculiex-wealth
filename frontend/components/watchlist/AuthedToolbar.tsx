@@ -90,7 +90,7 @@ export default function AuthedToolbar({
         )}
 
         {showSuggestions && query.trim() && (
-          <div className="tb-suggest" role="listbox">
+          <div className="tb-suggest" role="listbox" data-lenis-prevent>
             {suggestions.length === 0 ? (
               <div className="tb-suggest-empty">
                 {searching ? "Searching all listed shares…" : "No matches found."}
