@@ -90,8 +90,9 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
         data-lenis-prevent
       >
         <button className="invest-modal__close" onClick={onClose} aria-label="Close">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M18 6L6 18M6 6l12 12" />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
 
@@ -99,98 +100,120 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
           <div className="invest-success">
             <div className="invest-success__icon">
               <svg viewBox="0 0 52 52" width="72" height="72">
-                <circle className="invest-success__circle" cx="26" cy="26" r="25" fill="none" stroke="var(--color-primary)" strokeWidth="2" />
-                <path className="invest-success__check" fill="none" stroke="var(--color-primary)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                <circle className="invest-success__circle" cx="26" cy="26" r="25" fill="none" stroke="var(--color-primary, #059669)" strokeWidth="2" />
+                <path className="invest-success__check" fill="none" stroke="var(--color-primary, #059669)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" d="M14.1 27.2l7.1 7.2 16.8-16.8" />
               </svg>
             </div>
-            <h3>Inquiry Submitted!</h3>
-            <p>Our team will reach out to you shortly regarding <strong>{company.name}</strong>.</p>
+            <h3>Allocation Request Received!</h3>
+            <p>Our private wealth desk will contact you shortly regarding <strong>{company.name}</strong>.</p>
             <button className="invest-modal__btn" onClick={onClose} style={{ marginTop: 24 }}>
-              Close
+              Done
             </button>
           </div>
         ) : (
           <>
+            {/* Header */}
             <div className="invest-modal__header">
-              <h3>{company.name} Unlisted Share Price Today</h3>
-              <div className="invest-modal__price-badge">
-                {fmtINR(company.price)} <span className="invest-modal__change">+0 (0%) 1Y</span>
+              <div className="invest-modal__header-top">
+                {company.logo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={company.logo_url} alt={company.name} className="invest-modal__logo" />
+                ) : null}
+                <div>
+                  <span className="invest-modal__sector-badge">{company.sector || "Unlisted Share"}</span>
+                  <h3 className="invest-modal__title">{company.name}</h3>
+                </div>
+              </div>
+              <div className="invest-modal__price-row">
+                <div className="invest-modal__price">
+                  {fmtINR(company.price)} <span className="invest-modal__unit-label">/ unit</span>
+                </div>
+                <span className="invest-modal__change-badge">+0 (0%) 1Y</span>
               </div>
             </div>
 
             <div className="invest-modal__body">
-              <div className="invest-modal__row">
-                <span>Price per Unit</span>
-                <strong>{fmtINR(company.price)}</strong>
-              </div>
-              <div className="invest-modal__row">
-                <span>Minimum no. of Units</span>
-                <strong>{company.min_units}</strong>
-              </div>
-              <div className="invest-modal__row invest-modal__row--input">
-                <span>Enter Units</span>
-                <input
-                  type="number"
-                  min={1}
-                  value={units}
-                  onChange={(e) => setUnits(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="invest-modal__units-input"
-                />
+              {/* Units Selector */}
+              <div className="invest-modal__calculator-card">
+                <div className="invest-modal__calc-row">
+                  <div>
+                    <label className="invest-modal__label">Number of Units</label>
+                    <span className="invest-modal__sublabel">Minimum required: {company.min_units} units</span>
+                  </div>
+                  <div className="invest-modal__input-wrapper">
+                    <input
+                      type="number"
+                      min={company.min_units || 1}
+                      value={units}
+                      onChange={(e) => setUnits(Math.max(1, parseInt(e.target.value) || 1))}
+                      className="invest-modal__units-input"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="invest-modal__divider" />
-
+              {/* WhatsApp Banner */}
               <div className="invest-modal__wa">
-                Best bulk price?{" "}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                  </svg>
+                  <span>Looking for bulk deal pricing?</span>
+                </div>
                 <a
-                  href={process.env.NEXT_PUBLIC_WHATSAPP_LINK || "/contact"}
+                  href={process.env.NEXT_PUBLIC_WHATSAPP_LINK || "https://wa.me/919999999999"}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="invest-modal__wa-link"
                 >
-                  <strong>Chat with us on WhatsApp!</strong>{" "}
-                  <svg width="18" height="18" viewBox="0 0 32 32" fill="#25D366" style={{ verticalAlign: "middle" }}>
-                    <path d="M16.001 3.2C9.043 3.2 3.4 8.842 3.4 15.8c0 2.227.581 4.4 1.683 6.314L3.2 28.8l6.864-1.802a12.59 12.59 0 0 0 5.937 1.51h.005c6.957 0 12.6-5.642 12.6-12.6 0-3.367-1.31-6.531-3.69-8.91A12.521 12.521 0 0 0 16.001 3.2z" />
-                  </svg>
+                  Chat on WhatsApp &rarr;
                 </a>
               </div>
 
-              <div className="invest-modal__row">
-                <span>Investment Amount</span>
-                <strong>{fmtINR(investmentAmount)}</strong>
-              </div>
-              <div className="invest-modal__row">
-                <span>Stamp Duty (0.015%)</span>
-                <strong>{fmtINR(stampDuty)}</strong>
-              </div>
-              <div className="invest-modal__row invest-modal__row--total">
-                <span>Final Amount</span>
-                <strong>{fmtINR(finalAmount)}</strong>
+              {/* Summary Card */}
+              <div className="invest-modal__summary-card">
+                <div className="invest-modal__summary-row">
+                  <span>Investment Amount</span>
+                  <strong>{fmtINR(investmentAmount)}</strong>
+                </div>
+                <div className="invest-modal__summary-row">
+                  <span>Government Stamp Duty (0.015%)</span>
+                  <strong>{fmtINR(stampDuty)}</strong>
+                </div>
+                <div className="invest-modal__summary-row invest-modal__summary-row--total">
+                  <span>Total Payable Amount</span>
+                  <strong className="invest-modal__total-price">{fmtINR(finalAmount)}</strong>
+                </div>
               </div>
 
-              <div className="invest-modal__divider" />
-
+              {/* Inquiry Form */}
               <form className="invest-modal__form" onSubmit={handleSubmit}>
-                <h4>Get in touch with us</h4>
-                <input
-                  type="text"
-                  placeholder="Full Name *"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-                <input
-                  type="email"
-                  placeholder="Email (optional)"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <input
-                  type="tel"
-                  placeholder="Phone Number *"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  required
-                />
+                <h4 className="invest-modal__form-title">Request Share Allocation</h4>
+                <div className="invest-modal__field-group">
+                  <input
+                    type="text"
+                    placeholder="Full Name *"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="invest-modal__input"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Phone Number *"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                    className="invest-modal__input"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email Address (optional)"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="invest-modal__input"
+                  />
+                </div>
                 {error && <p className="invest-modal__error">{error}</p>}
                 <button
                   type="submit"
@@ -200,13 +223,13 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
                   {submitting ? (
                     <span className="invest-modal__spinner" />
                   ) : (
-                    "Invest Now"
+                    "Submit Inquiry & Reserve Shares"
                   )}
                 </button>
               </form>
 
               <div className="invest-modal__note">
-                <strong>Please note:</strong> The settlement period is 15 working days from the transaction date.
+                🔒 <strong>Settlement terms:</strong> 100% verified transfer via your Demat account within standard 15 working days.
               </div>
             </div>
           </>

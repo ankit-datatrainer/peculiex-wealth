@@ -628,14 +628,6 @@ export default function AuthedView() {
           <span>
             {items.length} stock{items.length === 1 ? "" : "s"} on your list
           </span>
-          <div className="a-foot-actions">
-            <Link href="/unlisted" className="a-link">
-              Browse unlisted →
-            </Link>
-            <button type="button" className="a-clear" onClick={clearAll}>
-              Clear watchlist
-            </button>
-          </div>
         </div>
       )}
 

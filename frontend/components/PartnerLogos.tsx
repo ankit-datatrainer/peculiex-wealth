@@ -83,30 +83,23 @@ export default function PartnerLogos({ productSlug }: { productSlug: string }) {
           })}
         </div>
 
-        <div className="reveal">
+        <div className="reveal" style={{ textAlign: 'center' }}>
           <h2 className="stitle">
             The Trusted Wealth Partner <br /> For Growing Portfolios
           </h2>
-          <p className="sdesc">
+          <p className="sdesc" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
             Access institutional-grade investment products through our partnerships with India’s leading asset managers and financial institutions.
           </p>
           
-          <div className="partner-cta">
+          <div className="partner-cta" style={{ justifyContent: 'center' }}>
             <Link href="/contact" className="btn-primary">
               Book a Consultation
-            </Link>
-            <Link href="/about" className="btn-link">
-              Explore Platform Features
-              <svg viewBox="0 0 14 14" fill="none" width="16" height="16">
-                <path d="M1 7h12m0 0L8 2m5 5l-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
             </Link>
           </div>
         </div>
 
         {marqueePartners.length > 0 && (
           <div className="reveal">
-            <p className="partner-bottom-txt">And {marqueePartners.length}+ more leading institutions</p>
             <div className="partner-marquee-wrap">
               <div className="partner-marquee-track">
                 {[...marqueePartners, ...marqueePartners].map((p, i) => (

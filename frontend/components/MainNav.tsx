@@ -43,8 +43,7 @@ const NAV_ITEMS: NavItem[] = [
       { href: "/calculator", label: "SIP Calculator" },
       { href: "/calculator/lumpsum", label: "Lumpsum Calculator" },
       { href: "/calculator/retirement", label: "Retirement Calculator" },
-      { href: "/calculator/goal-planner", label: "Goal Planner" },
-      { href: "/resources/mutual-funds", label: "Mutual Fund Resources" }
+      { href: "/calculator/goal-planner", label: "Goal Planner" }
     ]
   },
   { href: "/news", label: "News" }
@@ -60,6 +59,7 @@ export default function MainNav() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const [closeHover, setCloseHover] = useState(false);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -77,6 +77,7 @@ export default function MainNav() {
     setMobileOpen(false);
     setMenuOpen(false);
     setOpenGroup(null);
+    setCloseHover(true);
   }, [pathname]);
 
   // Collapse any expanded accordion group when the mobile menu closes.
@@ -152,13 +153,15 @@ export default function MainNav() {
                       key={it.href}
                       className={`nav-has-dropdown nri-mega-menu-container${
                         openGroup === it.href ? " open" : ""
-                      }`}
+                      }${closeHover ? " disable-hover" : ""}`}
+                      onPointerLeave={() => setCloseHover(false)}
+                      onMouseEnter={() => setCloseHover(false)}
                     >
                       <div className="nav-parent-row">
                         <Link
                           href={it.href}
                           className={`nav-link nav-link-parent${isActive ? " active" : ""}`}
-                          onClick={() => setMobileOpen(false)}
+                          onClick={() => { setMobileOpen(false); setCloseHover(true); }}
                         >
                           {it.label}
                         </Link>
@@ -180,19 +183,19 @@ export default function MainNav() {
                           <div className="nri-column nri-left-col">
                             <span className="nri-col-label">Investment</span>
                             <ul className="nri-links">
-                              <li><Link href="/products/mutual-funds" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Mutual Funds</Link></li>
-                              <li><Link href="/products/pms" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Portfolio Management (PMS)</Link></li>
-                              <li><Link href="/products/aif" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Alternative Investments (AIF)</Link></li>
-                              <li><Link href="/unlisted" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Unlisted Shares</Link></li>
-                              <li><Link href="/products/gift-city" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Gift City Offshore</Link></li>
-                              <li><Link href="/products/bonds" className="nri-dropdown-link" onClick={() => setMobileOpen(false)}>Bonds & G-Sec</Link></li>
+                              <li><Link href="/products/mutual-funds" className="nri-dropdown-link" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Mutual Funds</Link></li>
+                              <li><Link href="/products/pms" className="nri-dropdown-link" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Portfolio Management (PMS)</Link></li>
+                              <li><Link href="/products/aif" className="nri-dropdown-link" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Alternative Investments (AIF)</Link></li>
+                              <li><Link href="/unlisted" className="nri-dropdown-link" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Unlisted Shares</Link></li>
+                              <li><Link href="/products/gift-city" className="nri-dropdown-link" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Gift City Offshore</Link></li>
+                              <li><Link href="/products/bonds" className="nri-dropdown-link" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Bonds & G-Sec</Link></li>
                             </ul>
                           </div>
                           {/* Right Column: Services */}
                           <div className="nri-column nri-right-col">
                             <span className="nri-col-label">NRI Services</span>
                             <div className="nri-services-grid">
-                              <Link href="/nri/tax-filing" className="nri-service-card" onClick={() => setMobileOpen(false)}>
+                              <Link href="/nri/tax-filing" className="nri-service-card" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>
                                 <div className="nri-icon-wrapper">
                                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="19" y1="5" x2="5" y2="19"/><circle cx="9" cy="9" r="2"/><circle cx="15" cy="15" r="2"/></svg>
                                 </div>
@@ -202,7 +205,7 @@ export default function MainNav() {
                                 </div>
                               </Link>
 
-                              <Link href="/nri/pan-application" className="nri-service-card" onClick={() => setMobileOpen(false)}>
+                              <Link href="/nri/pan-application" className="nri-service-card" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>
                                 <div className="nri-icon-wrapper">
                                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                                 </div>
@@ -211,7 +214,7 @@ export default function MainNav() {
                                   <p>Get your PAN card quickly and hassle-free</p>
                                 </div>
                               </Link>
-                              <Link href="/nri/update-citizenship" className="nri-service-card" onClick={() => setMobileOpen(false)}>
+                              <Link href="/nri/update-citizenship" className="nri-service-card" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>
                                 <div className="nri-icon-wrapper">
                                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="16"/><line x1="15" y1="22" x2="15" y2="16"/><line x1="9" y1="16" x2="15" y2="16"/><path d="M8 6h2v2H8V6zm6 0h2v2h-2V6zm-6 4h2v2H8v-2zm6 0h2v2h-2v-2zm-6 4h2v2H8v-2zm6 0h2v2h-2v-2z"/></svg>
                                 </div>
@@ -231,13 +234,15 @@ export default function MainNav() {
                 return (
                   <li
                     key={it.href}
-                    className={`nav-has-dropdown${openGroup === it.href ? " open" : ""}`}
+                    className={`nav-has-dropdown${openGroup === it.href ? " open" : ""}${closeHover ? " disable-hover" : ""}`}
+                    onPointerLeave={() => setCloseHover(false)}
+                    onMouseEnter={() => setCloseHover(false)}
                   >
                     <div className="nav-parent-row">
                       <Link
                         href={it.href}
                         className={`nav-link nav-link-parent${isActive ? " active" : ""}`}
-                        onClick={() => setMobileOpen(false)}
+                        onClick={() => { setMobileOpen(false); setCloseHover(true); }}
                       >
                         {it.label}
                       </Link>
@@ -267,7 +272,7 @@ export default function MainNav() {
                             <Link
                               href={c.href}
                               className="nav-dropdown-link"
-                              onClick={() => setMobileOpen(false)}
+                              onClick={() => { setMobileOpen(false); setCloseHover(true); }}
                             >
                               {c.label}
                             </Link>
@@ -283,7 +288,7 @@ export default function MainNav() {
                   <Link
                     href={it.href}
                     className={`nav-link${isActive ? " active" : ""}`}
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() => { setMobileOpen(false); setCloseHover(true); }}
                   >
                     {it.label}
                   </Link>
@@ -317,17 +322,17 @@ export default function MainNav() {
                     </div>
                   </div>
                   {user.role !== "superadmin" && (
-                    <Link href="/dashboard" className="btn btn-outline" style={{ width: "100%", justifyContent: "center" }} onClick={() => setMobileOpen(false)}>Dashboard</Link>
+                    <Link href="/dashboard" className="btn btn-outline" style={{ width: "100%", justifyContent: "center" }} onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Dashboard</Link>
                   )}
                   {isAdminUser(user) && (
-                    <Link href="/admin" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }} onClick={() => setMobileOpen(false)}>Admin Panel</Link>
+                    <Link href="/admin" className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }} onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Admin Panel</Link>
                   )}
                   <button className="btn btn-outline" style={{ width: "100%", color: "#dc2626", borderColor: "#fca5a5", justifyContent: "center", marginTop: "10px" }} onClick={onLogout}>Sign out</button>
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="btn btn-outline" style={{ width: "100%", justifyContent: "center" }} data-magnetic onClick={() => setMobileOpen(false)}>Login</Link>
-                  <Link href="/signup" className="btn btn-gold" style={{ width: "100%", justifyContent: "center" }} data-magnetic onClick={() => setMobileOpen(false)}>Open Account</Link>
+                  <Link href="/login" className="btn btn-outline" style={{ width: "100%", justifyContent: "center" }} data-magnetic onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Login</Link>
+                  <Link href="/signup" className="btn btn-gold" style={{ width: "100%", justifyContent: "center" }} data-magnetic onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Open Account</Link>
                 </>
               )}
             </li>
@@ -447,19 +452,21 @@ export default function MainNav() {
                       {user.email}
                     </div>
                   </div>
-                  <Link
-                    href="/watchlist"
-                    onClick={() => setMenuOpen(false)}
-                    style={{
-                      display: "block",
-                      padding: "0.7rem 1rem",
-                      fontSize: "0.88rem",
-                      color: "var(--color-text, #131313)",
-                      textDecoration: "none"
-                    }}
-                  >
-                    My watchlist
-                  </Link>
+                  {user.role !== "superadmin" && (
+                    <Link
+                      href="/watchlist"
+                      onClick={() => setMenuOpen(false)}
+                      style={{
+                        display: "block",
+                        padding: "0.7rem 1rem",
+                        fontSize: "0.88rem",
+                        color: "var(--color-text, #131313)",
+                        textDecoration: "none"
+                      }}
+                    >
+                      My watchlist
+                    </Link>
+                  )}
                   {user.role !== "superadmin" && (
                     <Link
                       href="/dashboard"

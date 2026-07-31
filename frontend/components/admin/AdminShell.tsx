@@ -262,7 +262,7 @@ export default function AdminShell({
       <aside className="admin-side">
         <div className="admin-brand">
           <Link href="/" className="admin-logo">
-            <Logo width={120} height={48} />
+            <Logo width={120} height={48} forceDark={true} />
           </Link>
           <span className="admin-brand-tag">
             {user.role === "superadmin"

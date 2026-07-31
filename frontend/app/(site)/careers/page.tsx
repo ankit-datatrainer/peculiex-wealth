@@ -70,15 +70,15 @@ export default function CareersPage() {
                 <div className="role-meta">
                   <span style={{ color: "var(--color-primary)" }}>{r.type}</span>
                 </div>
-                <a href="mailto:careers@finvoq.com">Apply →</a>
+                <a href="mailto:info@finvoq.com">Apply →</a>
               </div>
             ))}
           </div>
 
           <p style={{ color: "var(--color-text-muted)", marginTop: 40, fontSize: "0.95rem" }}>
             Don't see a fit but think you'd add value? Email{" "}
-            <a href="mailto:careers@finvoq.com" style={{ color: "var(--color-primary)" }}>
-              careers@finvoq.com
+            <a href="mailto:info@finvoq.com" style={{ color: "var(--color-primary)" }}>
+              info@finvoq.com
             </a>{" "}
             with what you'd want to build, and a link to your best work.
           </p>

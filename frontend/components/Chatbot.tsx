@@ -125,7 +125,9 @@ export default function Chatbot() {
                 className="chatbot-clear-btn" 
                 onClick={() => setMessages([INITIAL_MESSAGE])}
                 title="Clear chat history"
-                style={{ background: "none", border: "none", color: "var(--color-text-faint)", cursor: "pointer", fontSize: "14px" }}
+                style={{ background: "none", border: "none", color: "rgba(255, 255, 255, 0.8)", cursor: "pointer", fontSize: "14px", fontWeight: "500", transition: "color 0.2s" }}
+                onMouseEnter={(e) => e.currentTarget.style.color = "#fff"}
+                onMouseLeave={(e) => e.currentTarget.style.color = "rgba(255, 255, 255, 0.8)"}
               >
                 Clear
               </button>
@@ -156,15 +158,6 @@ export default function Chatbot() {
               </button>
             ))}
           </div>
-          <form className="chatbot-input-area" onSubmit={handleSend}>
-            <input 
-              type="text" 
-              placeholder="Ask a question..." 
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-            />
-            <button type="submit">Send</button>
-          </form>
         </div>
       )}
       

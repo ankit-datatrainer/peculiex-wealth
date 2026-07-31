@@ -56,14 +56,14 @@ export const YEARS_OPERATING = '10 yrs+';
 // which can never receive mail. These must be real, monitored mailboxes.
 export const CONTACT = {
   /** CONFIRM: general enquiries mailbox. */
-  email: 'hello@finvoq.com',
+  email: 'info@finvoq.com',
   /** CONFIRM: grievance officer mailbox (SEBI requires a monitored address). */
-  supportEmail: 'support@finvoq.com',
-  complianceEmail: 'compliance@finvoq.com',
-  careersEmail: 'careers@finvoq.com',
-  pressEmail: 'press@finvoq.com',
-  legalEmail: 'legal@finvoq.com',
-  privacyEmail: 'privacy@finvoq.com',
+  supportEmail: 'info@finvoq.com',
+  complianceEmail: 'info@finvoq.com',
+  careersEmail: 'info@finvoq.com',
+  pressEmail: 'info@finvoq.com',
+  legalEmail: 'info@finvoq.com',
+  privacyEmail: 'info@finvoq.com',
   /** CONFIRM: a real, answered landline. */
   phone: '',
   phoneDisplay: '',

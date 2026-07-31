@@ -103,7 +103,7 @@ export const LEGAL: Record<string, LegalDoc> = {
         <h2>11. Contact</h2>
         <p>
           Questions about these Terms? Email{" "}
-          <a href="mailto:legal@finvoq.com">legal@finvoq.com</a>.
+          <a href="mailto:info@finvoq.com">info@finvoq.com</a>.
         </p>
       </>
     )
@@ -173,7 +173,7 @@ export const LEGAL: Record<string, LegalDoc> = {
           <li><strong>Withdrawal:</strong> revoke consent for non-essential processing.</li>
         </ul>
         <p>
-          Email <a href="mailto:privacy@finvoq.com">privacy@finvoq.com</a>
+          Email <a href="mailto:info@finvoq.com">info@finvoq.com</a>
           {" "}to exercise any of these rights. We respond within 30 days.
         </p>
 
@@ -300,7 +300,7 @@ export const LEGAL: Record<string, LegalDoc> = {
         <h3>Stage 1: Customer support</h3>
         <p>
           Email{" "}
-          <a href="mailto:support@finvoq.com">support@finvoq.com</a> or
+          <a href="mailto:info@finvoq.com">info@finvoq.com</a> or
           message us through the in-app chat. Our team responds within{" "}
           <strong>one business day</strong> and aims to resolve straightforward issues within{" "}
           <strong>three business days</strong>.
@@ -316,7 +316,7 @@ export const LEGAL: Record<string, LegalDoc> = {
           </li>
           <li>
             <strong>Email:</strong>{" "}
-            <a href="mailto:compliance@finvoq.com">compliance@finvoq.com</a>
+            <a href="mailto:info@finvoq.com">info@finvoq.com</a>
           </li>
           <li>
             <strong>Phone:</strong> +91 22 4900 0000 · Mon–Fri 10am–6pm IST
