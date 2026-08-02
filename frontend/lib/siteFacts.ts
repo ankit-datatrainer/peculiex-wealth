@@ -110,8 +110,43 @@ export type RegulatoryRole = 'adviser' | 'distributor';
 // stay valid if this is ever switched back to 'adviser'.
 export const REGULATORY_ROLE = 'distributor' as RegulatoryRole;
 
-/** CONFIRM: still open — Finvoq's AMFI ARN. Nothing renders until this is set. */
-export const REGISTRATION_NUMBER = '';
+/** Confirmed by Finvoq 2026-08-02 — AMFI ARN of the distributor. */
+export const REGISTRATION_NUMBER = 'ARN-346787';
+
+// ── AMFI registration detail ───────────────────────────────────────────────
+/**
+ * The full registration record, as printed on the AMFI certificate. These are
+ * the facts a prospective investor (or an AMFI/SEBI inspection) checks us on,
+ * so they are stated verbatim and in exactly one place.
+ *
+ * Empty strings are dropped by REGULATORY_CREDENTIALS below, so an unset field
+ * is simply omitted rather than rendering a dangling label.
+ */
+export const EUIN = 'E660362';
+export const ARN_VALID_FROM = '01 Dec 2025';
+export const ARN_VALID_TO = '20 Nov 2028';
+export const ARN_VALIDITY = `${ARN_VALID_FROM} – ${ARN_VALID_TO}`;
+export const ENROLLMENT_DATE = '24 Apr 2026';
+export const APRN_CODE = 'APRN08920';
+export const EUIN_CODE = 'E17644';
+
+/**
+ * Render-ready registration rows. Labels match the certificate wording so a
+ * reader can tie each value back to the source document.
+ */
+export const REGULATORY_CREDENTIALS: { label: string; value: string }[] = [
+  { label: 'AMFI Regn. No.', value: REGISTRATION_NUMBER },
+  { label: 'EUIN', value: EUIN },
+  { label: 'ARN validity', value: ARN_VALIDITY },
+  { label: 'Enrollment date', value: ENROLLMENT_DATE },
+  { label: 'APRN code', value: APRN_CODE },
+  { label: 'EUIN code', value: EUIN_CODE },
+].filter((row) => row.value);
+
+/** Single-line form for the footer band and other tight spaces. */
+export const REGISTRATION_CODES_LINE = REGULATORY_CREDENTIALS.map(
+  (row) => `${row.label} ${row.value}`
+).join('  ·  ');
 
 export const REGULATORY_LABEL =
   REGULATORY_ROLE === 'adviser'

@@ -93,7 +93,7 @@ export default function Markets() {
         setGainers(data.gainers || []);
         setLosers(data.losers || []);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setMoversLoading(false));
   }, []);
 
@@ -101,7 +101,7 @@ export default function Markets() {
   useEffect(() => {
     fetcher<{ items: Index[] }>("/api/indices")
       .then((d) => { if (d?.items?.length) setIndices(d.items); })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const sparks = useMemo(() => {
@@ -112,6 +112,59 @@ export default function Markets() {
 
   return (
     <section id="markets" className="markets">
+      {/* Small-screen layout hardening (additive; desktop rules unchanged) */}
+      <style jsx global>{`
+        /* Overflow-safe tracks: identical rendering to repeat(3, 1fr) for normal content */
+        #markets .stock-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        #markets .index-card,
+        #markets .stock,
+        #markets .stock-link,
+        #markets .stock-link .stock-head > div,
+        #markets .stock-link .stock-head > div > div {
+          min-width: 0;
+        }
+        #markets .stock-link .stock-pill {
+          flex: 0 0 auto;
+          white-space: nowrap;
+        }
+        #markets .index-card strong,
+        #markets .stock-name,
+        #markets .stock-sym,
+        #markets .stock-price b {
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
+        @media (max-width: 900px) {
+          #markets .stock-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+        @media (max-width: 760px) {
+          /* extra specificity so this wins over the 900px rule above */
+          section#markets .stock-grid {
+            grid-template-columns: minmax(0, 1fr);
+          }
+          section#markets .stock-head {
+            padding-right: 34px;
+          }
+        }
+        @media (max-width: 400px) {
+          section#markets .indices-row {
+            grid-template-columns: minmax(0, 1fr);
+          }
+          section#markets .index-card strong {
+            font-size: 20px;
+          }
+          section#markets .stock-name {
+            font-size: 17px;
+          }
+          section#markets .stock-price b {
+            font-size: 22px;
+          }
+        }
+      `}</style>
       <div className="container">
         <div className="sec-head reveal">
           <div className="label"><span className="markets-live-dot" />{cms.t("hero", "label", "Live · NSE")}</div>
@@ -138,7 +191,7 @@ export default function Markets() {
 
         {/* Tabs + Search */}
         <div className="filter-bar reveal" style={{ flexWrap: "wrap", gap: "0.75rem" }}>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
             {(["all", "gainers", "losers"] as const).map((t) => (
               <button
                 key={t}
@@ -150,7 +203,7 @@ export default function Markets() {
               </button>
             ))}
           </div>
-          <div style={{ position: "relative", flex: "1 1 220px", maxWidth: 360 }}>
+          <div style={{ position: "relative", flex: "1 1 220px", minWidth: 0, maxWidth: 360 }}>
             <input
               type="text"
               placeholder="Search stocks by name or symbol..."
@@ -176,7 +229,7 @@ export default function Markets() {
         {/* Content based on tab */}
         {tab === "all" && (
           <>
-    {loading ? (
+            {loading ? (
               <div className="stock-grid">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <article className="stock" key={i} style={{ padding: "1.5rem", background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: "16px", height: "180px", display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -190,7 +243,6 @@ export default function Markets() {
                     <div style={{ width: 60, height: 24, background: "var(--color-border)", borderRadius: 4, animation: "pulse 1.5s infinite ease-in-out" }} />
                     <div style={{ flex: 1 }} />
                     <div style={{ width: "100%", height: 30, background: "var(--color-border)", borderRadius: 4, opacity: 0.5, animation: "pulse 1.5s infinite ease-in-out" }} />
-                    <style jsx>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }`}</style>
                   </article>
                 ))}
               </div>

@@ -44,7 +44,12 @@ const BatchSchema = z.object({
 router.get("/", async (req, res, next) => {
   try {
     const items = await listWatchlist(req.user.id);
-    res.json({ items });
+    // Filter out any NSE symbols - only return BSE shares
+    const bseItems = items.filter(item => {
+      const symbol = String(item.symbol || "").trim();
+      return !/\.NS$/i.test(symbol);
+    });
+    res.json({ items: bseItems });
   } catch (err) {
     next(err);
   }
@@ -65,6 +70,13 @@ router.post("/", async (req, res, next) => {
         parsed.error.errors[0]?.message || "Invalid watchlist payload";
       return res.status(400).json({ error: msg });
     }
+
+    // Block NSE symbols - only allow BSE
+    const symbol = String(parsed.data.symbol || "").trim();
+    if (/\.NS$/i.test(symbol)) {
+      return res.status(400).json({ error: "NSE symbols are not supported. Please add BSE-listed shares only." });
+    }
+
     const item = await addWatchlistItem(req.user.id, parsed.data);
     res.status(201).json({ item });
   } catch (err) {
@@ -82,6 +94,12 @@ router.post("/batch", async (req, res, next) => {
     const added = [];
     for (const it of parsed.data.items) {
       try {
+        // Block NSE symbols - only allow BSE
+        const symbol = String(it.symbol || "").trim();
+        if (/\.NS$/i.test(symbol)) {
+          console.warn("[watchlist/batch] skipping NSE symbol:", symbol);
+          continue;
+        }
         const item = await addWatchlistItem(req.user.id, it);
         added.push(item);
       } catch (e) {

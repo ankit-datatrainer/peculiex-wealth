@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import ContentBody from "@/components/ContentBody";
+import RegulatoryCredentials from "@/components/RegulatoryCredentials";
 import { pageMeta } from "@/lib/seo";
 import {
   ASSETS_ADVISED,
@@ -99,6 +100,11 @@ export default function AboutPage() {
           raised through <Link href="/legal/grievance">our grievance redressal process</Link>,
           with escalation to the SEBI SCORES portal at every stage.
         </p>
+
+        <RegulatoryCredentials
+          heading="Our AMFI registration"
+          intro="Verify these against the AMFI register before you invest. We publish them in full because a distributor who will not show you their ARN is a distributor you should not be dealing with."
+        />
 
         <hr />
 

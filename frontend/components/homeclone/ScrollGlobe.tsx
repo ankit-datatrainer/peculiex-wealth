@@ -21,8 +21,8 @@ import { useEffect, useRef } from "react";
  * Palette is intentionally fixed — homepage only, theme-independent.
  */
 
-const BLUE = [19, 115, 93]; // hero brand green  #13735D
-const NAVY = [9, 14, 36]; //   page base        ~ oklch(0.10 0.05 265)
+const HERO_BG = [255, 255, 255]; // hero ground — pure white
+const NAVY = [9, 14, 36]; //       page base   ~ oklch(0.10 0.05 265)
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
@@ -159,15 +159,27 @@ export default function ScrollGlobe() {
       return { s: 0, w: 0, h: 0, sc: 1 };
     };
 
-    // Screen-space layout: Rs is the projected on-screen radius
+    /* Screen-space layout: Rs is the projected on-screen radius.
+     *
+     * The hero dome's crest is positioned DIRECTLY rather than via a centre
+     * offset. The old form (cy = 1.46H) coupled the two: any change to the
+     * radius also moved the crest, so shrinking the dome silently raised or
+     * lowered where it broke the fold. Deriving cy from the wanted crest
+     * instead means radius and position can be tuned independently.
+     *
+     * HERO_CREST is a fraction of viewport height — 0.84 puts the crest just
+     * above the floating Ask-AI / support controls in the bottom corners.
+     */
+    const HERO_CREST = 0.84;
     const layoutAt = (p: number) => {
-      const RsHero = Math.max(W * 0.4, H * 0.46);
+      const RsHero = Math.max(W * 0.26, H * 0.3);
       const RsFull = Math.min(W, H) * 0.44;
+      const cyHero = H * HERO_CREST + RsHero;
       if (p < 1) {
         const k = smooth(p);
         return {
           cx: W / 2,
-          cy: lerp(H * 1.46, H * 0.52, k),
+          cy: lerp(cyHero, H * 0.52, k),
           Rs: lerp(RsHero, RsFull, k),
           rotX: lerp(0.42, 0.25, k),
           opacity: 1
@@ -220,12 +232,16 @@ export default function ScrollGlobe() {
       scrollProgress += (target - scrollProgress) * 0.08;
       const p = scrollProgress;
 
-      /* Page background painted here: hero blue cross-fades to deep navy as
-         the planet rises (reference frames 1→3), then stays navy. */
-      const mix = smooth((p - 0.5) / 0.48);
-      const bg = `rgb(${Math.round(lerp(BLUE[0], NAVY[0], mix))}, ${Math.round(
-        lerp(BLUE[1], NAVY[1], mix)
-      )}, ${Math.round(lerp(BLUE[2], NAVY[2], mix))})`;
+      /* Page background painted here: the white hero cross-fades to deep navy
+         as the planet rises, then stays navy for the story screens. Held at
+         pure white for most of the hero so the headline sits on clean paper,
+         then handed over quickly rather than dwelling in the grey midpoint. */
+      const mix = smooth((p - 0.62) / 0.32);
+      const bg = `rgb(${Math.round(
+        lerp(HERO_BG[0], NAVY[0], mix)
+      )}, ${Math.round(lerp(HERO_BG[1], NAVY[1], mix))}, ${Math.round(
+        lerp(HERO_BG[2], NAVY[2], mix)
+      )})`;
       ctx.globalCompositeOperation = "source-over";
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, W, H);

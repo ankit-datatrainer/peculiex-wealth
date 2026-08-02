@@ -257,6 +257,8 @@ export default function AuthedToolbar({
       <style jsx>{`
         .tb-wrap {
           position: relative;
+          max-width: 100%;
+          min-width: 0;
           z-index: 20;
           background: transparent;
           padding: 1.5rem 0 1rem;
@@ -271,7 +273,8 @@ export default function AuthedToolbar({
         .tb-search-wrap {
           position: relative;
           width: 100%;
-          max-width: 340px;
+          max-width: min(340px, 100%);
+          min-width: 0;
           order: 2;
         }
         
@@ -355,8 +358,9 @@ export default function AuthedToolbar({
         }
         .tb-suggest-row {
           width: 100%;
+          max-width: 100%;
           display: grid;
-          grid-template-columns: 1fr auto auto;
+          grid-template-columns: minmax(0, 1fr) auto auto;
           align-items: center;
           gap: 1rem;
           padding: 0.8rem 1rem;
@@ -381,6 +385,7 @@ export default function AuthedToolbar({
         .tb-suggest-left {
           display: flex;
           flex-direction: column;
+          min-width: 0;
         }
         .tb-suggest-sym {
           font-weight: 600;
@@ -388,17 +393,28 @@ export default function AuthedToolbar({
           display: inline-flex;
           align-items: center;
           gap: 0.5rem;
+          min-width: 0;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         .tb-suggest-name {
           font-size: 0.75rem;
           color: var(--color-text-muted, #6b6964);
           margin-top: 2px;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         .tb-suggest-right {
           display: flex;
           flex-direction: column;
           align-items: flex-end;
           font-size: 0.85rem;
+          min-width: 0;
+          white-space: nowrap;
         }
         .tb-up { color: var(--color-success, #13735d); font-size: 0.75rem; font-weight: 500; }
         .tb-dn { color: var(--color-danger, #dc2626); font-size: 0.75rem; font-weight: 500; }
@@ -435,10 +451,14 @@ export default function AuthedToolbar({
           flex-wrap: wrap;
           gap: 1.2rem;
           order: 1;
-          flex: 1;
+          flex: 1 1 auto;
+          min-width: 0;
+          max-width: 100%;
         }
         .tb-filters {
           display: flex;
+          min-width: 0;
+          max-width: 100%;
           gap: 0.25rem;
           background: var(--color-surface-offset, #fdfdfc);
           padding: 0.3rem;
@@ -532,6 +552,30 @@ export default function AuthedToolbar({
           }
           .tb-right {
             justify-content: space-between;
+            flex-wrap: wrap;
+            min-width: 0;
+          }
+        }
+
+        /* Narrow phones (360/390px): tighten paddings so the 4 filter chips
+           fit on two rows without any horizontal overflow. */
+        @media (max-width: 420px) {
+          .tb-wrap {
+            gap: 0.9rem;
+            padding: 1rem 0 0.75rem;
+          }
+          .tb-chip {
+            flex: 1 1 40%;
+            padding: 0.45rem 0.35rem;
+            font-size: 0.78rem;
+            min-width: 0;
+          }
+          .tb-suggest-row {
+            gap: 0.5rem;
+            padding: 0.7rem 0.75rem;
+          }
+          .tb-suggest-add {
+            padding: 0.25rem 0.45rem;
           }
         }
       `}</style>

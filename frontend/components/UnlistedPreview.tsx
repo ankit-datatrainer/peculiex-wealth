@@ -39,7 +39,7 @@ export default function UnlistedPreview() {
       .then((j) => {
         if (!killed && j?.items?.length) setItems(j.items.slice(0, 4));
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       killed = true;
     };
@@ -60,9 +60,25 @@ export default function UnlistedPreview() {
           </Link>
         </div>
 
+        {/* Small-screen hardening (additive; desktop rules unchanged) */}
+        <style jsx global>{`
+          .preview-sec .unl-card,
+          .preview-sec .unl-stat {
+            min-width: 0;
+          }
+          .preview-sec .unl-card h4,
+          .preview-sec .unl-card .sector,
+          .preview-sec .unl-stat strong {
+            overflow-wrap: anywhere;
+          }
+          /* overflow-safe tracks; identical to 1fr 1fr for normal content */
+          .preview-sec .unl-stats {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+          }
+        `}</style>
         <div
           className="unlisted-grid"
-          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}
+          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(240px, 100%), 1fr))" }}
         >
           {items.slice(0, 4).map((u) => {
             const sym = makeUnlistedSymbol(u.name);
@@ -97,9 +113,9 @@ export default function UnlistedPreview() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={
-                        u.logo_url
-                          ? u.logo_url
-                          : getCompanyLogo(u.domain)
+                      u.logo_url
+                        ? u.logo_url
+                        : getCompanyLogo(u.domain)
                     }
                     alt={`${u.name} logo`}
                     loading="lazy"

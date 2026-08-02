@@ -5,7 +5,14 @@ import { usePathname } from "next/navigation";
 import { postJSON } from "@/lib/api";
 import Logo from "./Logo";
 import { useContent, accent } from "@/lib/content";
-import { DEMAT_DISCLOSURE, SOCIAL_LINKS } from "@/lib/siteFacts";
+import {
+  DEMAT_DISCLOSURE,
+  REGISTRATION_CODES_LINE,
+  REGISTRATION_LINE,
+  REGISTRATION_NUMBER,
+  REGULATORY_LABEL,
+  SOCIAL_LINKS
+} from "@/lib/siteFacts";
 
 /** Render a *starred* CMS heading with the <em> accent the design uses. */
 function heading(text: string) {
@@ -127,7 +134,7 @@ export default function Footer() {
             )}
           </p>
           <div className="foot-reg">
-            <span className="status-dot"></span>{cms.t("footer", "badge", "SEBI Registered Investment Distributor")}
+            <span className="status-dot"></span>{cms.t("footer", "badge", REGISTRATION_LINE)}
           </div>
         </div>
 
@@ -239,11 +246,34 @@ export default function Footer() {
             </strong>{" "}
             Read all related documents carefully before investing. Past
             performance does not guarantee future returns. Finvoq Wealth Pvt.
-            Ltd. is a SEBI Registered Investment Distributor. {DEMAT_DISCLOSURE}
+            Ltd. is an {REGULATORY_LABEL}
+            {REGISTRATION_NUMBER ? ` (${REGISTRATION_NUMBER})` : ""}.{" "}
+            {DEMAT_DISCLOSURE}
           </p>
-          <p>
-            Risk Factors: Investments in Mutual Funds are subject to Market Risks. Read all scheme related documents carefully before investing. Mutual Fund Schemes do not assure or guarantee any returns. Past performances of any Mutual Fund Scheme may or may not be sustained in future. There is no guarantee that the investment objective of any suggested scheme shall be achieved. All existing and prospective investors are advised to check and evaluate the Exit loads and other cost structure (TER) applicable at the time of making the investment before finalizing on any investment decision for Mutual Funds schemes. We deal in Regular Plans only for Mutual Fund Schemes and earn a Trailing Commission on client investments. Disclosure For Commission earnings is made to clients at the time of investments. Option of Direct Plan for every Mutual Fund Scheme is available to investors offering advantage of lower expense ratio. We are not entitled to earn any commission on Direct plans. Hence we do not deal in Direct Plans.
-          </p>
+          {/* The full AMFI risk-factor text is ~200 words of mandated small
+              print. Collapsing it keeps the disclosure complete and one click
+              away, instead of ending every page in a wall of grey type. */}
+          <details className="foot-legal">
+            <summary>
+              <span>Full risk factors &amp; commission disclosure</span>
+              <svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true">
+                <path
+                  d="M2.5 4.5L6 8l3.5-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </summary>
+            <p>
+              Risk Factors: Investments in Mutual Funds are subject to Market Risks. Read all scheme related documents carefully before investing. Mutual Fund Schemes do not assure or guarantee any returns. Past performances of any Mutual Fund Scheme may or may not be sustained in future. There is no guarantee that the investment objective of any suggested scheme shall be achieved. All existing and prospective investors are advised to check and evaluate the Exit loads and other cost structure (TER) applicable at the time of making the investment before finalizing on any investment decision for Mutual Funds schemes. We deal in Regular Plans only for Mutual Fund Schemes and earn a Trailing Commission on client investments. Disclosure For Commission earnings is made to clients at the time of investments. Option of Direct Plan for every Mutual Fund Scheme is available to investors offering advantage of lower expense ratio. We are not entitled to earn any commission on Direct plans. Hence we do not deal in Direct Plans.
+            </p>
+          </details>
+          {REGISTRATION_CODES_LINE ? (
+            <p className="foot-codes">{REGISTRATION_CODES_LINE}</p>
+          ) : null}
         </div>
         {SOCIAL_LINKS.some((s) => s.href) && (
           <div className="foot-social" aria-label="Social links">
@@ -256,6 +286,13 @@ export default function Footer() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Oversized wordmark: anchors the bottom of the page and gives the
+          footer a deliberate end, rather than trailing off into small print.
+          Decorative only — the accessible brand name is in the logo above. */}
+      <div className="foot-wordmark" aria-hidden="true">
+        <span>Finvoq</span>
       </div>
 
       <div className="container foot-base">

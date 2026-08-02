@@ -236,6 +236,28 @@ async function countUsers() {
 
 // ---------- watchlist ----------
 
+/**
+ * Force a watchlist symbol into its explicit BSE form.
+ *
+ * The platform tracks BSE lines only. marketData.toYahoo() already resolves a
+ * bare Indian ticker to ".BO", so storing the suffix explicitly just makes the
+ * stored row say what it already means — and stops the UI having to guess an
+ * exchange from a bare ticker (which is how rows ended up labelled "NSE").
+ *
+ * Left untouched: unlisted placeholders ("UNL-…"), indices ("^BSESN") and
+ * currency/commodity pairs ("USDINR=X"), none of which are BSE equities.
+ */
+function toBseSymbol(rawSymbol, note) {
+  const sym = String(rawSymbol || "").trim().toUpperCase();
+  if (!sym) return "";
+  if (sym.startsWith("UNL-") || note === "unlisted") return sym;
+  if (sym.startsWith("^") || sym.includes("=")) return sym;
+  if (/\.BO$/i.test(sym)) return sym;
+  if (/\.NS$/i.test(sym)) return `${sym.replace(/\.NS$/i, "")}.BO`;
+  if (sym.includes(".")) return sym; // some other qualified market, leave alone
+  return `${sym}.BO`;
+}
+
 async function listWatchlist(userId) {
   if (!isLive()) {
     const map = mem.watchlists.get(userId);
@@ -254,7 +276,7 @@ async function listWatchlist(userId) {
 }
 
 async function addWatchlistItem(userId, payload) {
-  const symbol = String(payload.symbol || "").trim().toUpperCase();
+  const symbol = toBseSymbol(payload.symbol, payload.note);
   if (!symbol) throw new Error("symbol is required");
   const row = {
     id: newId(),
@@ -301,16 +323,20 @@ async function addWatchlistItem(userId, payload) {
 async function removeWatchlistItem(userId, symbol) {
   const sym = String(symbol || "").trim().toUpperCase();
   if (!sym) return false;
+  // Rows are stored in explicit BSE form, but a client holding an older bare
+  // ticker must still be able to remove its row — so try both spellings.
+  const variants = Array.from(new Set([sym, toBseSymbol(sym)])).filter(Boolean);
+
   if (!isLive()) {
     const map = mem.watchlists.get(userId);
     if (!map) return false;
-    return map.delete(sym);
+    return variants.some((v) => map.delete(v));
   }
   const { error, count } = await client
     .from(WATCHLIST_TABLE)
     .delete({ count: "exact" })
     .eq("user_id", userId)
-    .eq("symbol", sym);
+    .in("symbol", variants);
   if (error) throw new Error(error.message);
   return (count || 0) > 0;
 }

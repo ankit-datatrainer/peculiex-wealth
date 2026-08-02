@@ -135,8 +135,8 @@ const INDEX_ALIASES = {
 
 /**
  * Convert a user-friendly symbol into a Yahoo-compatible one.
- * "RELIANCE"   -> "RELIANCE.NS"
- * "RELIANCE.NS" -> "RELIANCE.NS"
+ * "RELIANCE"   -> "RELIANCE.BO"
+ * "RELIANCE.BO" -> "RELIANCE.BO"
  * "NIFTY"      -> "^NSEI"
  * "^NSEI"      -> "^NSEI"
  */
@@ -150,11 +150,10 @@ function toYahoo(symbol) {
   if (raw.startsWith("^") || raw.includes(".") || raw.includes("=")) {
     return raw;
   }
-  // Plain Indian ticker — assume NSE. This includes hyphenated tickers like
+  // Plain Indian ticker — assume BSE. This includes hyphenated tickers like
   // SME symbols ("GGBL-SM") and BSE series ("BOMOXY-B1"): a hyphen is NOT an
-  // exchange marker, so they still need a .NS suffix (the getQuote .NS→.BO
-  // fallback then covers the BSE-listed ones).
-  return `${upper}.NS`;
+  // exchange marker, so they still need a .BO suffix.
+  return `${upper}.BO`;
 }
 
 /** Drop ".NS"/".BO" so we can show clean labels in the UI. */
@@ -459,11 +458,11 @@ async function getQuotesBatchGroww(symbols) {
         "Accept": "application/json"
       },
       // Very short timeout so we fallback to Yahoo quickly if it hangs due to IP block
-      signal: AbortSignal.timeout(3000) 
+      signal: AbortSignal.timeout(3000)
     });
     if (!res.ok) return null;
     const data = await res.json();
-    
+
     // Assuming data format: { data: [ { symbol, ltp, close, ... } ] }
     const map = new Map();
     if (data && Array.isArray(data.data)) {
@@ -474,7 +473,7 @@ async function getQuotesBatchGroww(symbols) {
         const prev = q.close || q.previousClose || price;
         const change = price - prev;
         const changePercent = prev ? (change / prev) * 100 : 0;
-        
+
         map.set(ys, {
           symbol: q.symbol,
           yahooSymbol: ys,
@@ -770,43 +769,44 @@ async function search(query) {
     const j = await getJSON(url);
     const raw = (j?.quotes || []).filter((x) => x.symbol && (x.shortname || x.longname));
 
-    // Keep only Indian listed equities and ETFs — anything on NSE/BSE, i.e.
-    // a Yahoo symbol ending in .NS or .BO. This drops US tickers, foreign
-    // exchanges and mutual funds (whose codes look like "0P0000NQJX.BO"),
-    // giving the same universe a user sees on Groww or Zerodha.
+    // Keep Indian listed equities and ETFs only. This drops US tickers,
+    // foreign exchanges and mutual funds (whose codes look like
+    // "0P0000NQJX.BO"), giving the same universe a user sees on Groww.
     const isIndianListing = (x) => {
       const sym = String(x.symbol || "");
-      if (!/\.(NS|BO)$/i.test(sym)) return false; // must be NSE/BSE listed
+      if (!/\.(BO|NS)$/i.test(sym)) return false; // must be an Indian listing
       if (/^0P[0-9A-Z]+\./i.test(sym)) return false; // mutual-fund identifier
       const type = String(x.quoteType || "").toUpperCase();
       return type === "EQUITY" || type === "ETF";
     };
 
-    // Show BOTH listings of a dual-listed instrument so a user can watch the
-    // NSE or the BSE line. The NSE row keeps the plain ticker ("RTNINDIA");
-    // the BSE row carries a ".BO" suffix ("RTNINDIA.BO") so its symbol — and
-    // therefore its quote and live-tick subscription — resolves to BSE and
-    // never collides with the NSE row. `display` is the clean label the UI shows.
+    // The platform tracks BSE lines only, but Yahoo's search often returns a
+    // company's NSE listing and not its BSE one — dropping those made big
+    // names ("RELIANCE") unfindable. So an NSE hit is *rewritten* to the BSE
+    // line of the same ticker rather than discarded. A ".BO" hit always wins
+    // over a rewritten one for the same ticker.
     const bySymbol = new Map();
     for (const x of raw) {
       if (!isIndianListing(x)) continue;
       const disp = displaySymbol(x.symbol);
-      const isNse = /\.NS$/i.test(x.symbol);
-      const symbol = isNse ? disp : `${disp}.BO`;
-      if (bySymbol.has(symbol)) continue;
-      bySymbol.set(symbol, {
-        symbol,
+      const isBse = /\.BO$/i.test(String(x.symbol));
+      const existing = bySymbol.get(disp);
+      // First hit wins, except that a real BSE listing replaces a rewrite.
+      if (existing && !(isBse && existing.rewrittenFromNse)) continue;
+      bySymbol.set(disp, {
+        symbol: disp,
         display: disp,
-        yahooSymbol: x.symbol,
+        yahooSymbol: `${disp}.BO`,
         name: x.longname || x.shortname,
-        exchange: isNse ? "NSE" : "BSE",
-        type: String(x.quoteType || "").toUpperCase() === "ETF" ? "ETF" : "EQUITY"
+        exchange: "BSE",
+        type: String(x.quoteType || "").toUpperCase() === "ETF" ? "ETF" : "EQUITY",
+        rewrittenFromNse: !isBse
       });
     }
-    // Order each instrument's NSE row just before its BSE row for a tidy list.
-    results = Array.from(bySymbol.values()).sort((a, b) =>
-      a.display === b.display ? b.exchange.localeCompare(a.exchange) : 0
-    );
+    // Order list by display symbol for a tidy list.
+    results = Array.from(bySymbol.values())
+      .map(({ rewrittenFromNse, ...row }) => row)
+      .sort((a, b) => a.display.localeCompare(b.display));
   } catch (e) {
     console.warn("[markets] search failed:", e.message);
   }
@@ -1335,13 +1335,13 @@ async function getAllIndianSymbols() {
   let symbols = [];
 
   if (FINNHUB_KEY) {
-    const url = `${FINNHUB_BASE}/stock/symbol?exchange=NS&token=${FINNHUB_KEY}`;
+    const url = `${FINNHUB_BASE}/stock/symbol?exchange=BO&token=${FINNHUB_KEY}`;
     try {
       const j = await getJSON(url);
       symbols = (Array.isArray(j) ? j : [])
         .filter((s) => s.symbol && s.description && s.type === "Common Stock")
         .map((s) => ({
-          symbol: s.symbol.replace(/\.NS$/i, ""),
+          symbol: s.symbol.replace(/\.BO$/i, ""),
           name: s.description,
           type: s.type,
           currency: s.currency || "INR"
@@ -1404,7 +1404,7 @@ function parseArticleContent(html, url) {
   // Extract Hero Image (prefer og:image)
   let image = "";
   const ogImageMatch = html.match(/<meta[^>]*property="og:image"[^>]*content="([^"]+)"/i) ||
-                       html.match(/<meta[^>]*content="([^"]+)"[^>]*property="og:image"/i);
+    html.match(/<meta[^>]*content="([^"]+)"[^>]*property="og:image"/i);
   if (ogImageMatch) {
     image = ogImageMatch[1];
   }
@@ -1435,7 +1435,7 @@ function parseArticleContent(html, url) {
       .replace(/&nbsp;/g, " ");
 
     if (
-      pText.length > 60 && 
+      pText.length > 60 &&
       !pText.toLowerCase().includes("cookie") &&
       !pText.toLowerCase().includes("privacy policy") &&
       !pText.toLowerCase().includes("subscribe") &&
@@ -1447,7 +1447,7 @@ function parseArticleContent(html, url) {
 
   if (paragraphs.length === 0) {
     const metaDesc = html.match(/<meta[^>]*name="description"[^>]*content="([^"]+)"/i) ||
-                     html.match(/<meta[^>]*content="([^"]+)"[^>]*name="description"/i);
+      html.match(/<meta[^>]*content="([^"]+)"[^>]*name="description"/i);
     if (metaDesc) {
       paragraphs.push(metaDesc[1]);
     } else {
@@ -1462,7 +1462,7 @@ function parseArticleContent(html, url) {
     else if (domain.includes("moneycontrol")) source = "Moneycontrol";
     else if (domain.includes("bloomberg")) source = "Bloomberg";
     else source = domain;
-  } catch (e) {}
+  } catch (e) { }
 
   return {
     title: title || "Financial Update",
@@ -1483,7 +1483,7 @@ function isIndianMarketOpen() {
     hour: "2-digit",
     minute: "2-digit"
   });
-  
+
   const parts = formatter.formatToParts(new Date());
   let weekday = "";
   let hour = 0;
@@ -1493,15 +1493,15 @@ function isIndianMarketOpen() {
     if (p.type === "hour") hour = parseInt(p.value, 10);
     if (p.type === "minute") minute = parseInt(p.value, 10);
   }
-  
+
   if (weekday === "Sat" || weekday === "Sun") {
     return false;
   }
-  
+
   const timeInMinutes = hour * 60 + minute;
   const startInMinutes = 9 * 60 + 15; // 9:15 AM
   const endInMinutes = 15 * 60 + 30;  // 3:30 PM
-  
+
   return timeInMinutes >= startInMinutes && timeInMinutes <= endInMinutes;
 }
 
@@ -1512,7 +1512,7 @@ async function pollAndSimulateTicks(symbols) {
     const marketOpen = isIndianMarketOpen();
     quotes.forEach((q) => {
       if (!q || !q.symbol) return;
-      
+
       // Simulate price fluctuation ONLY while the market is open
       if (marketOpen && q.price != null) {
         const pct = (Math.random() - 0.5) * 0.003; // max ±0.15% per tick
@@ -1525,7 +1525,7 @@ async function pollAndSimulateTicks(symbols) {
         const ys = toYahoo(q.yahooSymbol || q.symbol);
         cacheSet(`quote:${ys}`, q, 30_000);
       }
-      
+
       broadcast("PRICE_TICK", q);
     });
   } catch (err) {
@@ -1555,7 +1555,7 @@ function startTickLoop() {
 
     function connectFyers() {
       console.log("[fyers] Starting Fyers WebSocket");
-      
+
       try {
         if (!fyersWs) {
           try {
@@ -1563,7 +1563,7 @@ function startTickLoop() {
           } catch (e) {
             fyersWs = new fyersDataSocket(`${appId}:${token}`);
           }
-          
+
           fyersWs.on("connect", () => {
             console.log("[fyers] WS connected");
             wsConnected = true;
@@ -1572,7 +1572,7 @@ function startTickLoop() {
               reconnectTimer = null;
             }
           });
-          
+
           fyersWs.on("message", (msg) => {
             const ticks = Array.isArray(msg) ? msg : [msg];
             ticks.forEach(data => {
@@ -1588,9 +1588,9 @@ function startTickLoop() {
               }
             });
           });
-          
+
           fyersWs.on("error", (e) => console.error("[fyers] WS Error:", e));
-          
+
           fyersWs.on("close", () => {
             console.log("[fyers] WS disconnected. Attempting reconnect...");
             wsConnected = false;
@@ -1601,7 +1601,7 @@ function startTickLoop() {
             }
           });
         }
- 
+
         fyersWs.connect();
       } catch (e) {
         console.error("[fyers] Failed to initialize/connect Fyers WebSocket:", e.message);

@@ -15,6 +15,7 @@ import { subscribeTicks } from "@/lib/markets";
 import { makeUnlistedSymbol } from "@/components/WatchlistButton";
 import {
   CURATED_BASKETS,
+  cleanSymbol,
   formatRelative,
   type Basket,
   type Filter,
@@ -69,6 +70,16 @@ function flashToast(msg: string) {
   }, 2200);
 }
 
+/**
+ * Identity key for a symbol, ignoring the exchange suffix.
+ *
+ * Saved rows carry the explicit BSE form ("MRF.BO") while the curated
+ * /api/stocks list uses bare tickers ("MRF"). Comparing the two directly would
+ * make an already-tracked share look untracked, so every dedupe and lookup
+ * goes through this.
+ */
+const symKey = (s: string) => cleanSymbol(s || "").toUpperCase();
+
 export default function AuthedView() {
   const { user } = useAuth();
 
@@ -80,10 +91,10 @@ export default function AuthedView() {
     let killed = false;
     fetcher<{ items: Stock[] }>("/api/stocks")
       .then((j) => !killed && j?.items?.length && setAllStocks(j.items))
-      .catch(() => {});
+      .catch(() => { });
     fetcher<{ items: Unl[] }>("/api/unlisted")
       .then((j) => !killed && j?.items?.length && setAllUnlisted(j.items))
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       killed = true;
     };
@@ -93,7 +104,7 @@ export default function AuthedView() {
 
   const stockMap = useMemo(() => {
     const m: Record<string, Stock> = {};
-    allStocks.forEach((s) => (m[s.sym] = s));
+    allStocks.forEach((s) => (m[symKey(s.sym)] = s));
     return m;
   }, [allStocks]);
 
@@ -113,7 +124,12 @@ export default function AuthedView() {
     setLoading(true);
     try {
       const r = await apiFetch<{ items: WatchlistItem[] }>("/api/watchlist");
-      setItems(r.items || []);
+      // Filter out any NSE symbols on the frontend as well
+      const bseItems = (r.items || []).filter(item => {
+        const symbol = String(item.symbol || "").trim();
+        return !/\.NS$/i.test(symbol);
+      });
+      setItems(bseItems);
     } catch (e: any) {
       setError(e?.message || "Could not load your watchlist.");
     } finally {
@@ -177,12 +193,13 @@ export default function AuthedView() {
   const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  /* ---------- live listed-share search (full NSE/BSE universe) ----------
+  /* ---------- live listed-share search (full BSE universe) ----------
      The curated /api/stocks list is only a handful of names. To let a user
-     add *any* listed share or ETF (the way Groww/Zerodha do), we also hit
+     add *any* BSE-listed share or ETF (similar to Groww/Zerodha), we hit
      the live search endpoint (debounced) and fold those hits into the
-     suggestion list below. Prices arrive from the live-quotes poll once the
-     share is added, so a hit needs only its symbol and name. */
+     suggestion list below. Only BSE shares (.BO) are returned by the API.
+     Prices arrive from the live-quotes poll once the share is added, so a
+     hit needs only its symbol and name. */
   const [liveHits, setLiveHits] = useState<Stock[]>([]);
   const [searching, setSearching] = useState(false);
 
@@ -227,7 +244,7 @@ export default function AuthedView() {
   }, [query]);
 
   const trackedSet = useMemo(
-    () => new Set(items.map((i) => i.symbol)),
+    () => new Set(items.map((i) => symKey(i.symbol))),
     [items]
   );
 
@@ -244,14 +261,14 @@ export default function AuthedView() {
   /* ---------- joined view ---------- */
   const watched = useMemo(() => {
     const rows = items.map((it) => {
-      const live = stockMap[it.symbol];
+      const live = stockMap[symKey(it.symbol)];
       const liveQuote = liveQuotes[it.symbol];
       const unl = unlistedMap[it.symbol];
       const isUnlisted =
         !!unl || it.symbol.startsWith("UNL-") || it.note === "unlisted";
       const price = liveQuote?.price ?? live?.price ?? unl?.price ?? null;
       const chg = liveQuote?.changePercent ?? live?.chg ?? null;
-      
+
       let vol = live?.vol ?? "—";
       let cap = live?.cap ?? "—";
       if (liveQuote?.volume) vol = formatCompact(liveQuote.volume);
@@ -308,7 +325,7 @@ export default function AuthedView() {
           chg: liveQuote?.changePercent ?? live?.chg ?? 0,
         };
       });
-      
+
     const gainers = liveItems.filter((s) => s.chg > 0).length;
     const losers = liveItems.filter((s) => s.chg < 0).length;
     const top = liveItems.reduce<any>(
@@ -336,19 +353,19 @@ export default function AuthedView() {
     // Curated matches first: they have live prices already and appear instantly.
     for (const s of allStocks) {
       if (
-        !trackedSet.has(s.sym) &&
+        !trackedSet.has(symKey(s.sym)) &&
         (s.sym.includes(q) || s.name.toUpperCase().includes(q))
       ) {
         out.push({ kind: "listed", data: s });
-        seen.add(s.sym);
+        seen.add(symKey(s.sym));
       }
     }
-    // Then the full live NSE/BSE universe, minus anything already shown.
-    // Watchlist search is listed-shares only — unlisted names are excluded.
+    // Then the full live BSE universe, minus anything already shown.
+    // Watchlist search is BSE-listed shares only — NSE and unlisted names are excluded.
     for (const s of liveHits) {
-      if (!trackedSet.has(s.sym) && !seen.has(s.sym)) {
+      if (!trackedSet.has(symKey(s.sym)) && !seen.has(symKey(s.sym))) {
         out.push({ kind: "listed", data: s });
-        seen.add(s.sym);
+        seen.add(symKey(s.sym));
       }
     }
     return out.slice(0, 12);
@@ -357,7 +374,14 @@ export default function AuthedView() {
   /* ---------- mutations ---------- */
   const addListed = useCallback(
     async (s: Stock) => {
-      if (trackedSet.has(s.sym)) return;
+      if (trackedSet.has(symKey(s.sym))) return;
+
+      // BSE-only platform: an explicit NSE line is never tracked.
+      if (/\.NS$/i.test(s.sym)) {
+        setError("Only BSE-listed shares can be added to your watchlist.");
+        return;
+      }
+
       setBusySym(s.sym);
       setError(null);
 
@@ -409,7 +433,7 @@ export default function AuthedView() {
 
   const addUnlisted = useCallback(
     async (u: Unl, symbol: string) => {
-      if (trackedSet.has(symbol)) return;
+      if (trackedSet.has(symKey(symbol))) return;
       setBusySym(symbol);
       setError(null);
       const tempItem: WatchlistItem = {
@@ -467,7 +491,9 @@ export default function AuthedView() {
 
   const importBasket = useCallback(
     async (basket: Basket) => {
-      const symbolsToAdd = basket.symbols.filter((s) => !trackedSet.has(s));
+      const symbolsToAdd = basket.symbols.filter(
+        (s) => !trackedSet.has(symKey(s))
+      );
       if (symbolsToAdd.length === 0) {
         setError(
           `Every stock in "${basket.title}" is already on your watchlist.`
@@ -477,7 +503,7 @@ export default function AuthedView() {
       setError(null);
       try {
         const itemsBody = symbolsToAdd.map((sym) => {
-          const live = stockMap[sym];
+          const live = stockMap[symKey(sym)];
           return {
             symbol: sym,
             name: live?.name || sym,
@@ -528,7 +554,7 @@ export default function AuthedView() {
               Stay Ahead of the Market with Your Personalized Watchlist
             </p>
           </div>
-          
+
           <div className="a-statgrid">
             <div className="stat-main">
               <div className="stat-label">Market Trend</div>
@@ -539,9 +565,9 @@ export default function AuthedView() {
                 </span>
               </div>
             </div>
-            
+
             <div className="stat-divider" />
-            
+
             <div className="stat-group">
               <div className="stat-item">
                 <div className="stat-label">Watchlist Assets</div>
@@ -646,13 +672,16 @@ export default function AuthedView() {
         }
         .a-title {
           font-family: var(--font-display, inherit);
-          font-size: 1.8rem;
+          /* caps at the original 1.8rem from ~470px up, so desktop is unchanged */
+          font-size: clamp(1.35rem, 5.5vw, 1.8rem);
           font-weight: 700;
           margin: 0 0 0.4rem;
           color: var(--color-text, #1e1c18);
           display: flex;
           align-items: center;
+          flex-wrap: wrap;
           gap: 12px;
+          overflow-wrap: anywhere;
         }
         .sdesc {
           font-size: 0.9rem;
@@ -665,6 +694,12 @@ export default function AuthedView() {
           align-items: center;
           gap: 3rem;
           flex-wrap: wrap;
+          min-width: 0;
+          max-width: 100%;
+        }
+        .stat-main {
+          min-width: 0;
+          max-width: 100%;
         }
         
         .stat-label {
@@ -676,16 +711,22 @@ export default function AuthedView() {
         }
         .stat-value-large {
           font-family: var(--font-display, inherit);
-          font-size: 2.2rem;
+          /* caps at the original 2.2rem from ~440px up */
+          font-size: clamp(1.6rem, 8vw, 2.2rem);
           font-weight: 700;
           color: var(--color-text, #1e1c18);
           display: flex;
           align-items: baseline;
-          gap: 1rem;
+          flex-wrap: wrap;
+          gap: 0.25rem 1rem;
+          min-width: 0;
+          max-width: 100%;
         }
         .stat-chg-large {
           font-size: 1rem;
           font-weight: 600;
+          min-width: 0;
+          overflow-wrap: anywhere;
         }
         .stat-chg-large.up { color: var(--color-success, #13735d); }
         .stat-chg-large.dn { color: var(--color-danger, #dc2626); }
@@ -699,10 +740,14 @@ export default function AuthedView() {
         .stat-group {
           display: flex;
           gap: 3rem;
+          flex-wrap: wrap;
+          min-width: 0;
+          max-width: 100%;
         }
         .stat-item {
           display: flex;
           flex-direction: column;
+          min-width: 0;
         }
         .stat-value {
           font-family: var(--font-display, inherit);
@@ -731,8 +776,36 @@ export default function AuthedView() {
           }
         }
 
+        /* Narrow phones: the three stat pills share the row without overflow. */
+        @media (max-width: 420px) {
+          .stat-group {
+            gap: 0.75rem 1rem;
+          }
+          .stat-item {
+            flex: 1 1 auto;
+          }
+          .stat-label {
+            font-size: 0.68rem;
+            letter-spacing: 0.04em;
+          }
+        }
+
+        /* Landscape phones (~812x375): the tall hero padding eats the whole
+           viewport, so trim it. */
+        @media (max-height: 480px) and (orientation: landscape) {
+          .a-hero {
+            padding-top: 84px;
+            padding-bottom: 1.25rem;
+          }
+          .a-hero-content {
+            gap: 1.25rem;
+          }
+        }
+
         .authed-wrap {
           padding: 0 0 6rem;
+          min-width: 0;
+          max-width: 100%;
         }
 
 
@@ -850,8 +923,8 @@ function Stat({
         borderRadius: 20,
         padding: compact ? "0.8rem 1rem" : "1rem 1.25rem",
         minWidth: 112,
-        boxShadow: hovered 
-          ? "0 14px 36px rgba(10, 160, 128, 0.03), 0 3px 8px rgba(10, 160, 128, 0.015)" 
+        boxShadow: hovered
+          ? "0 14px 36px rgba(10, 160, 128, 0.03), 0 3px 8px rgba(10, 160, 128, 0.015)"
           : "0 10px 30px rgba(28, 27, 24, 0.02), 0 2px 6px rgba(28, 27, 24, 0.01)",
         transition: "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
         transform: hovered ? "translateY(-2px)" : "translateY(0)"

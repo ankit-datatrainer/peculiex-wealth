@@ -67,9 +67,13 @@ export const CURATED_BASKETS: Basket[] = [
 /** Strip an exchange suffix for display: "RTNINDIA.BO" -> "RTNINDIA". */
 export const cleanSymbol = (s: string) => (s || "").replace(/\.(BO|NS)$/i, "");
 
-/** Which exchange a stored symbol resolves to (a ".BO" suffix means BSE). */
+/**
+ * Which exchange a stored symbol resolves to. BSE-only platform: a bare
+ * ticker is resolved to ".BO" by the backend, so it is a BSE line. Only an
+ * explicit ".NS" suffix is NSE, and those are rejected on the way in.
+ */
 export const exchangeOf = (s: string): "NSE" | "BSE" =>
-  /\.BO$/i.test(s || "") ? "BSE" : "NSE";
+  /\.NS$/i.test(s || "") ? "NSE" : "BSE";
 
 export function formatRelative(iso: string) {
   const dt = new Date(iso).getTime();

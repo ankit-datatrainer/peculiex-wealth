@@ -56,10 +56,11 @@ const PAGES = [
         key: "hero",
         label: "Hero",
         fields: [
-          f("titleA", "Headline (line 1)", "text", "India's Curated Investment"),
-          f("titleB", "Headline (line 2)", "text", "Marketplace meets"),
-          f("titleAccent", "Headline accent word", "text", "Advisory."),
+          f("titleA", "Headline (line 1)", "text", "Invest with clarity"),
+          f("titleB", "Headline (line 2)", "text", "across every"),
+          f("titleAccent", "Headline accent word", "text", "asset class."),
           f("portrait", "Advisor portrait", "image", "/homeclone-portrait.jpg"),
+          f("infinity", "Hero infinity mark (leave blank to use the drawn one)", "image", ""),
           f("linkLabel", "Left link text", "text", "Start investing"),
           f("linkHref", "Left link target", "url", "/get-started"),
           f("ctaGhost", "Secondary button", "text", "Explore"),
@@ -269,7 +270,7 @@ const PAGES = [
             "badge",
             "Registration badge",
             "text",
-            "SEBI Registered Investment Distributor"
+            "AMFI Registered Mutual Fund Distributor — ARN-346787"
           )
         ]
       }
@@ -983,7 +984,7 @@ const PAGES = [
         label: "WhatsApp Button",
         fields: [
           f("label", "Button Text", "text", "Join our WhatsApp Community"),
-          f("link", "WhatsApp Link", "url", "https://chat.whatsapp.com/your-invite-link")
+          f("link", "WhatsApp Link", "url", "https://chat.whatsapp.com/Iw7tEFsgfEp74Vbl5MwE5J")
         ]
       }
     ]
@@ -1045,7 +1046,7 @@ const PAGES = [
             "badge",
             "Registration badge",
             "text",
-            "SEBI Registered Investment Distributor"
+            "AMFI Registered Mutual Fund Distributor — ARN-346787"
           ),
           f("newsletterTitle", "Newsletter heading", "text", "Get the weekly market brief."),
           f(

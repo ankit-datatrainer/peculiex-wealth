@@ -11,7 +11,6 @@ import {
   LineChart,
   Menu,
   PieChart,
-  Play,
   Search,
   Settings,
   Share2,
@@ -19,9 +18,17 @@ import {
   Zap
 } from "lucide-react";
 import ScrollGlobe from "./ScrollGlobe";
+
 import Logo from "../Logo";
 import CountUp from "../CountUp";
 import { useContent, imgSrc } from "@/lib/content";
+import {
+  DEMAT_DISCLOSURE,
+  REGISTRATION_CODES_LINE,
+  REGISTRATION_LINE,
+  REGISTRATION_NUMBER,
+  REGULATORY_LABEL
+} from "@/lib/siteFacts";
 
 /** Render a CMS multi-line value, keeping the author's line breaks. */
 function lines(text: string) {
@@ -176,9 +183,13 @@ export default function HomeClone() {
   const [subscribed, setSubscribed] = useState(false);
   const emailRef = useRef<HTMLInputElement | null>(null);
   const heroTrackRef = useRef<HTMLDivElement | null>(null);
+  const heroRef = useRef<HTMLElement | null>(null);
   // Copy and imagery come from the super-admin content manager, falling back
   // to the values below whenever a field has not been edited.
   const c = useContent("home");
+  /* Optional uploaded artwork for the hero mark. Empty by default, in which
+     case the drawn <GoldInfinity /> is used instead. */
+  const heroInfinity = c.t("hero", "infinity", "").trim();
 
   /* Drive the hero choreography (giant "Platform" sweep, headline lift,
      device parallax) with a single CSS variable set from scroll progress. */
@@ -199,6 +210,51 @@ export default function HomeClone() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
+  }, []);
+
+  /* Green pigment that follows the cursor across the white hero.
+     The listener only records the last position; the CSS variables are
+     written once per frame, so a fast mouse can't cause a style write per
+     mousemove event (which is what makes cursor glows feel janky). */
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // A cursor glow is meaningless on touch, where there is no hover.
+    if (!window.matchMedia("(hover: hover)").matches) return;
+
+    let raf = 0;
+    let x = 0;
+    let y = 0;
+    let dirty = false;
+
+    const flush = () => {
+      raf = 0;
+      if (!dirty) return;
+      dirty = false;
+      el.style.setProperty("--sfc-mx", `${x.toFixed(1)}px`);
+      el.style.setProperty("--sfc-my", `${y.toFixed(1)}px`);
+    };
+
+    const onMove = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      x = e.clientX - r.left;
+      y = e.clientY - r.top;
+      dirty = true;
+      if (!raf) raf = requestAnimationFrame(flush);
+    };
+    const onEnter = () => el.style.setProperty("--sfc-glow", "1");
+    const onLeave = () => el.style.setProperty("--sfc-glow", "0");
+
+    el.addEventListener("pointermove", onMove, { passive: true });
+    el.addEventListener("pointerenter", onEnter);
+    el.addEventListener("pointerleave", onLeave);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerenter", onEnter);
+      el.removeEventListener("pointerleave", onLeave);
+    };
   }, []);
 
   const onSubscribe = async () => {
@@ -227,31 +283,55 @@ export default function HomeClone() {
       <div className="sfc-content">
         {/* ── Hero: SecuredFi reference clone: centred headline over the
                particle globe dome, portrait right, docs/CTA/share row ──── */}
-        <section id="intro" className="sfc-hero" data-nav-theme="dark">
+        <section
+          id="intro"
+          className="sfc-hero"
+          data-nav-theme="light"
+          ref={heroRef}
+        >
+          {/* Cursor-tracked green pigment. Decorative, so it is inert to
+              pointer events and never intercepts a click on the CTAs. */}
+          <span className="sfc-hero-pigment" aria-hidden="true" />
           <div className="sfc-hero-inner">
-            <h1 className="sfc-h1 sfc-up sfc-d1">
-              {c.t("hero", "titleA", "India's curated investment")}{" "}
-              <br className="sfc-h1-br" />
-              {c.t("hero", "titleB", "marketplace —")}{" "}
-              <span className="sfc-h1-em">
-                {c.t("hero", "titleAccent", "with advice built in.")}
-                <span className="sfc-h1-underline sfc-d3" />
-              </span>
-            </h1>
+            {/* Mark + headline share one flex child so the inner column keeps
+                its original two-child space-between rhythm. */}
+            {/* Headline left, animated mark right. Both live in one flex
+                child so the inner column keeps its two-child rhythm. */}
+            <div className="sfc-hero-lede">
+              <h1 className="sfc-h1 sfc-up sfc-d1">
+                {c.t("hero", "titleA", "Invest with clarity")}{" "}
+                <br className="sfc-h1-br" />
+                {c.t("hero", "titleB", "across every")}{" "}
+                <span className="sfc-h1-em">
+                  {c.t("hero", "titleAccent", "asset class.")}
+                </span>
+              </h1>
+              {/* Entrance lives on this wrapper, not on the mark itself: the
+                  canvas element is sized by its own stylesheet and the
+                  shorthand `animation` would collide with .sfc-up's. */}
+              {/* Upload an image in the content manager to override the drawn
+                  mark; blank falls back to the canvas render. */}
+              <div className="sfc-hero-mark sfc-up sfc-d2">
+                {heroInfinity ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={imgSrc(heroInfinity)}
+                    alt=""
+                    aria-hidden="true"
+                    className="sfc-hero-mark-img"
+                  />
+                ) : (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src="/golden_infinity.png"
+                    alt="Golden Infinity"
+                    className="sfc-hero-mark-img"
+                  />
+                )}
+              </div>
+            </div>
 
-            {/* Portrait floating on the right edge, mid-height */}
-            <a href="#platform" className="sfc-portrait sfc-up sfc-d2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={imgSrc(c.t("hero", "portrait", "/homeclone-portrait.jpg"))}
-                alt="Your Finvoq advisor"
-              />
-              <span className="sfc-portrait-play">
-                <Play size={15} fill="currentColor" />
-              </span>
-            </a>
-
-            {/* Bottom row: link left · buttons CENTER · share right */}
+            {/* Bottom row: link left · share right */}
             <div className="sfc-hero-bottom sfc-up sfc-d3">
               <Link
                 href={c.t("hero", "linkHref", "/get-started")}
@@ -260,18 +340,6 @@ export default function HomeClone() {
                 {c.t("hero", "linkLabel", "Start investing")}
               </Link>
 
-              <div className="sfc-hero-ctas">
-                <a href="#platform" className="sfc-btn-ghost">
-                  {c.t("hero", "ctaGhost", "Explore")} <ArrowDown size={15} />
-                </a>
-                <Link
-                  href={c.t("hero", "ctaPrimaryHref", "/signup")}
-                  className="sfc-btn-mint"
-                >
-                  {c.t("hero", "ctaPrimary", "Open Account")}
-                </Link>
-              </div>
-
               <button
                 type="button"
                 className="sfc-mini-link sfc-share"
@@ -279,7 +347,7 @@ export default function HomeClone() {
                   if (typeof navigator !== "undefined" && navigator.share) {
                     navigator
                       .share({ title: "Finvoq", url: window.location.href })
-                      .catch(() => {});
+                      .catch(() => { });
                   }
                 }}
               >
@@ -479,7 +547,7 @@ export default function HomeClone() {
               </p>
               <p>
                 Finvoq is a marketplace for real ownership across asset classes,
-                 not another trading app. Every product carries real diligence,
+                not another trading app. Every product carries real diligence,
                 clear costs and a human advisor behind it.
               </p>
             </div>
@@ -610,7 +678,7 @@ export default function HomeClone() {
                   {c.t("footerCta", "blurb", "India's premium investment marketplace. Multiple asset classes, one platform, advisory-led.")}
                 </p>
                 <div className="sfc-footer-reg">
-                  <span className="sfc-dot" />{c.t("footerCta", "badge", "SEBI Registered Investment Distributor")}
+                  <span className="sfc-dot" />{c.t("footerCta", "badge", REGISTRATION_LINE)}
                 </div>
               </div>
               <div>
@@ -715,26 +783,52 @@ export default function HomeClone() {
                 </strong>{" "}
                 Read all related documents carefully before investing. Past
                 performance does not guarantee future returns. Finvoq Wealth
-                Pvt. Ltd. is a SEBI Registered Investment Distributor. Demat
-                services are provided by SEBI registered portfolio management
-                distributor.
+                Pvt. Ltd. is an {REGULATORY_LABEL}
+                {REGISTRATION_NUMBER ? ` (${REGISTRATION_NUMBER})` : ""}.{" "}
+                {DEMAT_DISCLOSURE}
               </p>
-              <p>
-                Risk Factors: Investments in Mutual Funds are subject to
-                Market Risks. Read all scheme related documents carefully
-                before investing. Mutual Fund Schemes do not assure or
-                guarantee any returns. Past performances of any Mutual Fund
-                Scheme may or may not be sustained in future. There is no
-                guarantee that the investment objective of any suggested scheme
-                shall be achieved. We deal in Regular Plans only for Mutual
-                Fund Schemes and earn a Trailing Commission on client
-                investments. Disclosure for commission earnings is made to
-                clients at the time of investment. Option of Direct Plan for
-                every Mutual Fund Scheme is available to investors offering
-                advantage of lower expense ratio. We are not entitled to earn
-                any commission on Direct plans; hence we do not deal in Direct
-                Plans.
-              </p>
+              {/* Mandated risk-factor text, collapsed. Keeps the disclosure
+                  complete without ending the homepage in 200 words of grey. */}
+              <details className="sfc-footer-legal">
+                <summary>
+                  <span>Full risk factors &amp; commission disclosure</span>
+                  <svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true">
+                    <path
+                      d="M2.5 4.5L6 8l3.5-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </summary>
+                <p>
+                  Risk Factors: Investments in Mutual Funds are subject to
+                  Market Risks. Read all scheme related documents carefully
+                  before investing. Mutual Fund Schemes do not assure or
+                  guarantee any returns. Past performances of any Mutual Fund
+                  Scheme may or may not be sustained in future. There is no
+                  guarantee that the investment objective of any suggested scheme
+                  shall be achieved. We deal in Regular Plans only for Mutual
+                  Fund Schemes and earn a Trailing Commission on client
+                  investments. Disclosure for commission earnings is made to
+                  clients at the time of investment. Option of Direct Plan for
+                  every Mutual Fund Scheme is available to investors offering
+                  advantage of lower expense ratio. We are not entitled to earn
+                  any commission on Direct plans; hence we do not deal in Direct
+                  Plans.
+                </p>
+              </details>
+              {REGISTRATION_CODES_LINE ? (
+                <p className="sfc-footer-codes">{REGISTRATION_CODES_LINE}</p>
+              ) : null}
+            </div>
+
+            {/* Oversized wordmark closes the page deliberately. Decorative:
+                the accessible brand name is in the footer logo above. */}
+            <div className="sfc-footer-wordmark" aria-hidden="true">
+              <span>Finvoq</span>
             </div>
 
             <div className="sfc-footer-base">
@@ -758,6 +852,11 @@ export default function HomeClone() {
           --sfc-navy: oklch(0.16 0.07 265);
           --sfc-mint: oklch(0.9 0.13 155);
           --sfc-base: oklch(0.1 0.05 265);
+          /* Hero ground is white, so the hero needs its own dark ink and a
+             brand green for accents. The story screens below stay navy and
+             keep using #fff, hence these are hero-scoped in use. */
+          --sfc-ink: #0f2a2b;
+          --sfc-green: #13735d;
           position: relative;
           background-color: var(--sfc-base);
           color: #fff;
@@ -818,20 +917,68 @@ export default function HomeClone() {
           position: relative;
           min-height: 100vh;
           overflow: hidden;
+          /* Seeded off-centre so the pigment is already composed on load,
+             before the pointer has reported a position. */
+          --sfc-mx: 62%;
+          --sfc-my: 38%;
+          --sfc-glow: 0;
+        }
+        /* Green pigment following the cursor. Sits above the globe canvas
+           (which is fixed at z-index 0) but below the hero content at
+           z-index 2, so it tints the white ground and the dome without
+           washing out the headline. */
+        .sfc-hero-pigment {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          pointer-events: none;
+          opacity: var(--sfc-glow);
+          transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+          background:
+            radial-gradient(
+              circle 260px at var(--sfc-mx) var(--sfc-my),
+              rgba(19, 115, 93, 0.085),
+              rgba(19, 115, 93, 0.038) 42%,
+              transparent 72%
+            ),
+            radial-gradient(
+              circle 560px at var(--sfc-mx) var(--sfc-my),
+              rgba(19, 115, 93, 0.038),
+              transparent 70%
+            );
+        }
+        /* A faint static wash keeps the hero from reading as flat paper even
+           before the pointer arrives — and it is all a touch device gets. */
+        .sfc-hero::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          pointer-events: none;
+          background: radial-gradient(
+            120% 80% at 78% 18%,
+            rgba(19, 115, 93, 0.035),
+            transparent 62%
+          );
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .sfc-hero-pigment {
+            display: none;
+          }
         }
         .sfc-hero .sfc-hero-inner {
           position: relative;
           z-index: 2;
           max-width: 1400px;
           margin: 0 auto;
-          /* Fixed viewport height so the CTA row always sits in view at the
-             bottom: content is sized to fit, never to push it below fold. */
-          height: 100svh;
-          min-height: 620px;
+          min-height: 100svh;
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
-          padding: clamp(120px, 16svh, 170px) 24px 44px;
+          /* Top padding clears the fixed nav + ticker so the content
+             starts right below. */
+          padding: 128px 24px 30px;
+          justify-content: flex-start !important;
+          align-items: stretch;
         }
         @media (min-width: 768px) {
           .sfc-hero .sfc-hero-inner {
@@ -839,126 +986,91 @@ export default function HomeClone() {
             padding-right: 40px;
           }
         }
+        /* Headline left, animated mark right — opposite sides of the hero.
+           Single column below 900px, where two would crush both. */
+        .sfc-hero-lede {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1fr;
+          align-items: center;
+          gap: clamp(18px, 3vw, 48px);
+        }
+        @media (min-width: 900px) {
+          .sfc-hero-lede {
+            /* Mark gets slightly more than the headline so it can read as
+               large artwork rather than an accent beside the type. */
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+          }
+        }
+        .sfc-hero-mark {
+          justify-self: center;
+          width: clamp(340px, 52vw, 780px);
+          max-height: 48svh;
+        }
+        @media (min-width: 900px) {
+          .sfc-hero-mark {
+            justify-self: end;
+            /* Let the mark overhang the container's right padding a little so
+               it reads as artwork bleeding off the page, not a boxed image. */
+            margin-right: clamp(-40px, -2vw, 0px);
+          }
+        }
+        /* Uploaded artwork. Multiply drops the flat near-white matte that
+           these gold-on-white PNGs ship with, so the mark sits on the hero
+           without a visible pale rectangle around it — a plain <img> would
+           show its own background. */
+        .sfc-hero-mark-img {
+          display: block;
+          width: 100%;
+          height: auto;
+          max-height: 48svh;
+          object-fit: contain;
+          mix-blend-mode: multiply;
+        }
         .sfc-hero .sfc-h1 {
-          text-align: center;
+          text-align: left;
           text-wrap: balance;
-          font-size: clamp(2.3rem, 5vw, 5.4rem);
-          max-width: 1100px;
-          margin: clamp(8px, 4svh, 48px) auto 0;
+          font-size: clamp(2.8rem, 5.8vw, 6.2rem);
+          line-height: 1.08;
+          max-width: 26ch;
+          margin: 0;
         }
 
         /* ── Hero ink ──
-           The hero ground is deep green (#13735D) and the CTA row sits over
-           the dark globe dome, so the controls stay white/mint and get a
-           solid fill plus a soft shadow to hold their edge against both. */
+           The hero ground is pure white, so the headline and the two edge
+           mini-links take dark ink. */
         .sfc-hero .sfc-h1 {
-          color: #fff;
-          text-shadow: 0 2px 24px oklch(0.16 0.07 265 / 0.28);
+          color: var(--sfc-ink);
+          text-shadow: none;
         }
-        .sfc-hero .sfc-btn-ghost {
-          color: #fff;
-          border-color: rgba(255, 255, 255, 0.62);
-          background: rgba(255, 255, 255, 0.1);
-          backdrop-filter: blur(6px);
-          -webkit-backdrop-filter: blur(6px);
-        }
-        .sfc-hero .sfc-btn-ghost:hover {
-          background: rgba(255, 255, 255, 0.22);
-          border-color: #fff;
-        }
-        .sfc-hero .sfc-btn-mint {
-          box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.45);
+        .sfc-hero .sfc-h1-em {
+          color: var(--sfc-green);
         }
         .sfc-hero .sfc-mini-link {
-          color: #fff;
-          border-bottom-color: rgba(255, 255, 255, 0.65);
+          color: var(--sfc-ink);
+          border-bottom-color: rgba(15, 42, 43, 0.3);
         }
-        /* Keep the centred headline clear of the floating portrait: cap its
-           width so its right edge never reaches the portrait zone. The
-           portrait only renders ≥1100px, so the cap applies there too. */
-        @media (min-width: 1100px) {
-          .sfc-hero .sfc-h1 {
-            max-width: min(1100px, calc(100vw - 580px));
-          }
+        .sfc-hero .sfc-mini-link:hover {
+          color: var(--sfc-green);
+          border-bottom-color: var(--sfc-green);
         }
+        /* (The old ≥1100px width cap existed only to keep the centred
+           headline clear of the floating portrait, which the golden infinity
+           mark replaced — the headline is flush left now, so no cap.) */
         .sfc-h1-br {
-          display: none;
-        }
-        @media (min-width: 1024px) {
-          .sfc-h1-br {
-            display: block;
-          }
-        }
-        .sfc-portrait {
-          position: absolute;
-          right: clamp(16px, 4vw, 72px);
-          top: 44%;
-          transform: translateY(-50%);
-          display: none;
-          height: clamp(140px, 13vw, 190px);
-          width: clamp(140px, 13vw, 190px);
-          z-index: 3;
-        }
-        /* Only render where the capped headline leaves it clear space */
-        @media (min-width: 1100px) {
-          .sfc-portrait {
-            display: block;
-          }
-        }
-        /* Own entrance keyframes — generic sfcUp ends at transform:none,
-           which would erase this element's translateY(-50%) centring. */
-        .sfc-portrait.sfc-up {
-          animation-name: sfcPortraitIn;
-        }
-        @keyframes sfcPortraitIn {
-          from {
-            opacity: 0;
-            transform: translateY(calc(-50% + 22px));
-          }
-          to {
-            opacity: 1;
-            transform: translateY(-50%);
-          }
-        }
-        .sfc-portrait img {
-          height: 100%;
-          width: 100%;
-          border-radius: 50%;
-          object-fit: cover;
           display: block;
         }
-        .sfc-portrait-play {
-          position: absolute;
-          bottom: -4px;
-          right: -4px;
-          display: flex;
-          height: 40px;
-          width: 40px;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          background: #fff;
-          color: var(--sfc-navy);
-          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
-          transition: transform 0.25s ease;
-        }
-        .sfc-portrait:hover .sfc-portrait-play {
-          transform: scale(1.1);
-        }
         .sfc-hero-bottom {
-          /* link left · CTAs dead-centre · share right (reference layout) */
-          margin-top: auto;
+          margin-top: 40px;
           display: grid;
-          grid-template-columns: 1fr auto 1fr;
+          grid-template-columns: 1fr auto;
           align-items: end;
           gap: 16px;
-          padding-top: 64px;
         }
         .sfc-hb-left {
           justify-self: start;
-        }
-        .sfc-hero-bottom .sfc-hero-ctas {
-          justify-self: center;
         }
         .sfc-hero-bottom .sfc-share {
           justify-self: end;
@@ -986,9 +1098,9 @@ export default function HomeClone() {
            in view above the growing dome on small screens. */
         @media (max-width: 640px) {
           .sfc-hero .sfc-hero-inner {
-            padding: 118px 20px 32px;
+            padding: 120px 20px 60px;
             min-height: 560px;
-            justify-content: flex-start;
+            justify-content: center;
           }
           .sfc-hero .sfc-h1 {
             font-size: clamp(1.85rem, 8.4vw, 2.9rem);
@@ -1014,6 +1126,58 @@ export default function HomeClone() {
           .sfc-hero .sfc-h1 {
             font-size: 1.7rem;
           }
+          /* Narrowest phones: the mark's 280px floor left no gutter. */
+          .sfc-hero-mark {
+            width: min(280px, 84vw);
+          }
+        }
+        @media (max-width: 640px) {
+          .sfc-hero-mark {
+            width: min(330px, 84vw);
+          }
+        }
+
+        /* ── Short viewports ────────────────────────────────────────────
+           Landscape phones and short laptops are a WIDTH-query blind spot:
+           a phone on its side is ~812px wide but only ~375px tall, so it
+           picks up the desktop rules. Those pin the inner column to a
+           100svh height with a 620px min-height floor inside an
+           overflow-hidden section, which pushed the bottom row far below the
+           fold AND clipped it. Height-based queries let the hero size to its
+           content instead of to a fixed floor.
+
+           WARNING: this whole stylesheet is a template literal. Never put a
+           backtick in here, not even inside a comment: it terminates the
+           literal, and format-on-save then reparses ~1200 lines of CSS as
+           TypeScript and mangles every hyphenated property. */
+        @media (max-height: 700px) {
+          /* Preserve fixed-nav clearance on short screens. The hero may grow
+             beyond one viewport so the artwork remains visible rather than
+             being clipped or hidden. */
+          .sfc-hero .sfc-hero-inner {
+            padding-top: 132px;
+            padding-bottom: 26px;
+          }
+          .sfc-hero-lede {
+            gap: clamp(10px, 2vw, 22px);
+          }
+          .sfc-hero-bottom {
+            padding-top: 28px;
+          }
+        }
+        @media (max-height: 560px) {
+          /* Keep the infinity visible at a compact, responsive size instead
+             of removing the hero's primary artwork. */
+          .sfc-hero-mark {
+            display: block;
+            width: min(300px, 72vw);
+          }
+          .sfc-hero-lede {
+            grid-template-columns: 1fr;
+          }
+          .sfc-hero .sfc-h1 {
+            font-size: clamp(1.55rem, 4.2vw, 2.5rem);
+          }
         }
 
         /* ── Pinned platform panel + overlay handoff ──
@@ -1022,79 +1186,79 @@ export default function HomeClone() {
            (margin-top: -100vh) rises over the still-pinned panel. */
         .sfc-hero-track {
           --hp: 0;
-          position: relative;
-          height: 280vh;
-          z-index: 1;
+        position: relative;
+        height: 280vh;
+        z-index: 1;
         }
         .sfc-hero-track > .sfc-stars {
           position: fixed;
-          height: 100vh;
+        height: 100vh;
         }
         .sfc-hero-panel {
           position: sticky;
-          top: 0;
-          height: 100vh;
-          overflow: hidden;
-          margin: 0 10px;
-          border-radius: 0 0 44px 44px;
-          background-color: oklch(0.56 0.24 275);
-          box-shadow: 0 40px 90px oklch(0.1 0.05 265 / 0.55);
+        top: 0;
+        height: 100vh;
+        overflow: hidden;
+        margin: 0 10px;
+        border-radius: 0 0 44px 44px;
+        background-color: oklch(0.56 0.24 275);
+        box-shadow: 0 40px 90px oklch(0.1 0.05 265 / 0.55);
         }
         @media (min-width: 768px) {
           .sfc-hero-panel {
-            border-radius: 44px;
-            margin: 12px 12px 0;
-            height: calc(100vh - 12px);
+          border-radius: 44px;
+        margin: 12px 12px 0;
+        height: calc(100vh - 12px);
           }
         }
         /* Giant mint word — sweeps right-to-left with scroll */
         .sfc-giantword {
           position: absolute;
-          bottom: -0.28em;
-          left: 0;
-          z-index: 1;
-          font-size: clamp(220px, 34vw, 560px);
-          font-weight: 300;
-          letter-spacing: -0.045em;
-          line-height: 1;
-          white-space: nowrap;
-          color: var(--sfc-mint);
-          pointer-events: none;
-          opacity: min(1, calc(var(--hp) * 3));
-          transform: translateX(calc(30vw - var(--hp) * 95vw));
-          will-change: transform, opacity;
+        bottom: -0.28em;
+        left: 0;
+        z-index: 1;
+        font-size: clamp(220px, 34vw, 560px);
+        font-weight: 300;
+        letter-spacing: -0.045em;
+        line-height: 1;
+        white-space: nowrap;
+        color: var(--sfc-mint);
+        pointer-events: none;
+        opacity: min(1, calc(var(--hp) * 3));
+        transform: translateX(calc(30vw - var(--hp) * 95vw));
+        will-change: transform, opacity;
         }
         .sfc-hero-panel .sfc-hero-inner {
           position: relative;
-          z-index: 2;
-          max-width: 1400px;
-          margin: 0 auto;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          padding: clamp(120px, 18vh, 190px) 24px 40px;
-          transform: translateY(calc(var(--hp) * -14vh));
-          opacity: calc(1 - var(--hp) * 1.6);
-          will-change: transform, opacity;
+        z-index: 2;
+        max-width: 1400px;
+        margin: 0 auto;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        padding: clamp(120px, 18vh, 190px) 24px 40px;
+        transform: translateY(calc(var(--hp) * -14vh));
+        opacity: calc(1 - var(--hp) * 1.6);
+        will-change: transform, opacity;
         }
         @media (min-width: 768px) {
-          .sfc-hero-panel .sfc-hero-inner {
-            padding-left: clamp(40px, 5vw, 88px);
-            padding-right: 40px;
+          .sfc-hero-panel.sfc-hero-inner {
+          padding-left: clamp(40px, 5vw, 88px);
+        padding-right: 40px;
           }
         }
         .sfc-h1 {
           font-weight: 300;
-          color: #fff;
-          font-size: clamp(2.6rem, 5.6vw, 6rem);
-          line-height: 1.08;
-          letter-spacing: -0.02em;
-          margin: 0;
+        color: #fff;
+        font-size: clamp(2.6rem, 5.6vw, 6rem);
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+        margin: 0;
         }
         /* Panel composition: headline left-aligned, upper half */
         .sfc-hero-panel .sfc-h1 {
           text-align: left;
-          max-width: 13em;
+        max-width: 13em;
         }
         .sfc-hero-panel .sfc-hero-ctas {
           margin-top: clamp(28px, 4.5vh, 48px);
@@ -1102,274 +1266,274 @@ export default function HomeClone() {
         /* Device mockups, bottom-right, cropped by the panel edge */
         .sfc-devices {
           position: absolute;
-          z-index: 2;
-          right: max(-60px, -4vw);
-          bottom: -70px;
-          display: none;
-          transform: translateY(calc(var(--hp) * 10vh));
-          will-change: transform;
+        z-index: 2;
+        right: max(-60px, -4vw);
+        bottom: -70px;
+        display: none;
+        transform: translateY(calc(var(--hp) * 10vh));
+        will-change: transform;
         }
         @media (min-width: 900px) {
           .sfc-devices {
-            display: block;
+          display: block;
           }
         }
         .sfc-tablet {
           width: clamp(520px, 46vw, 760px);
-          border-radius: 34px;
-          background: #0b0b10;
-          padding: 16px;
-          box-shadow: 0 50px 100px oklch(0.1 0.05 265 / 0.5);
+        border-radius: 34px;
+        background: #0b0b10;
+        padding: 16px;
+        box-shadow: 0 50px 100px oklch(0.1 0.05 265 / 0.5);
         }
         .sfc-tablet-screen {
           display: flex;
-          gap: 14px;
-          border-radius: 22px;
-          background: #fbfaf7;
-          padding: 18px;
-          min-height: 380px;
-          color: var(--sfc-navy);
+        gap: 14px;
+        border-radius: 22px;
+        background: #fbfaf7;
+        padding: 18px;
+        min-height: 380px;
+        color: var(--sfc-navy);
         }
         .sfc-tab-side {
           display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 12px;
-          border-radius: 16px;
-          background: var(--sfc-indigo);
-          padding: 14px 10px;
-          color: #fff;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        border-radius: 16px;
+        background: var(--sfc-indigo);
+        padding: 14px 10px;
+        color: #fff;
         }
         .sfc-tab-logo {
           display: flex;
-          height: 30px;
-          width: 30px;
-          align-items: center;
-          justify-content: center;
-          border-radius: 10px;
-          background: rgba(255, 255, 255, 0.16);
-          margin-bottom: 6px;
+        height: 30px;
+        width: 30px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.16);
+        margin-bottom: 6px;
         }
         .sfc-tab-ico {
           display: flex;
-          height: 34px;
-          width: 34px;
-          align-items: center;
-          justify-content: center;
-          border-radius: 10px;
-          background: rgba(255, 255, 255, 0.12);
+        height: 34px;
+        width: 34px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.12);
         }
         .sfc-tab-main {
           flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          padding: 6px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 6px 8px;
         }
         .sfc-tab-head {
           display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
+        align-items: flex-start;
+        justify-content: space-between;
         }
         .sfc-tab-head b {
           display: block;
-          font-size: 22px;
-          font-weight: 600;
-          letter-spacing: -0.01em;
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
         }
         .sfc-tab-head span:not(.sfc-tab-search) {
           font-size: 11px;
-          color: oklch(0.16 0.07 265 / 0.5);
+        color: oklch(0.16 0.07 265 / 0.5);
         }
         .sfc-tab-search {
           display: flex;
-          height: 32px;
-          width: 32px;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          border: 1px solid oklch(0.16 0.07 265 / 0.15);
+        height: 32px;
+        width: 32px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid oklch(0.16 0.07 265 / 0.15);
         }
         .sfc-tab-tabs {
           display: flex;
-          border-radius: 12px;
-          background: oklch(0.16 0.07 265 / 0.06);
-          padding: 4px;
-          font-size: 11px;
-          letter-spacing: 0.14em;
-          font-weight: 600;
+        border-radius: 12px;
+        background: oklch(0.16 0.07 265 / 0.06);
+        padding: 4px;
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        font-weight: 600;
         }
         .sfc-tab-tabs span {
           flex: 1;
-          text-align: center;
-          padding: 8px 0;
-          border-radius: 9px;
-          color: oklch(0.16 0.07 265 / 0.45);
+        text-align: center;
+        padding: 8px 0;
+        border-radius: 9px;
+        color: oklch(0.16 0.07 265 / 0.45);
         }
         .sfc-tab-tabs span.on {
           background: #fff;
-          color: var(--sfc-navy);
-          box-shadow: 0 2px 8px oklch(0.16 0.07 265 / 0.12);
+        color: var(--sfc-navy);
+        box-shadow: 0 2px 8px oklch(0.16 0.07 265 / 0.12);
         }
         .sfc-tab-metric {
           border-radius: 14px;
-          border: 1px solid oklch(0.16 0.07 265 / 0.1);
-          background: #fff;
-          padding: 14px 16px;
+        border: 1px solid oklch(0.16 0.07 265 / 0.1);
+        background: #fff;
+        padding: 14px 16px;
         }
         .sfc-tab-metric label {
           display: block;
-          font-size: 10px;
-          letter-spacing: 0.16em;
-          color: oklch(0.16 0.07 265 / 0.5);
-          margin-bottom: 4px;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        color: oklch(0.16 0.07 265 / 0.5);
+        margin-bottom: 4px;
         }
         .sfc-tab-metric strong {
           font-size: clamp(30px, 3vw, 44px);
-          font-weight: 500;
-          letter-spacing: -0.02em;
+        font-weight: 500;
+        letter-spacing: -0.02em;
         }
         .sfc-tab-row {
           display: flex;
-          align-items: center;
-          justify-content: space-between;
-          border-radius: 12px;
-          background: #fff;
-          border: 1px solid oklch(0.16 0.07 265 / 0.08);
-          padding: 11px 16px;
-          font-size: 13px;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 12px;
+        background: #fff;
+        border: 1px solid oklch(0.16 0.07 265 / 0.08);
+        padding: 11px 16px;
+        font-size: 13px;
         }
         .sfc-tab-row span {
           font-size: 10px;
-          letter-spacing: 0.14em;
-          color: oklch(0.16 0.07 265 / 0.5);
+        letter-spacing: 0.14em;
+        color: oklch(0.16 0.07 265 / 0.5);
         }
         .sfc-tab-cta {
           margin-top: auto;
-          border-radius: 12px;
-          background: var(--sfc-indigo);
-          color: #fff;
-          text-align: center;
-          font-size: 12px;
-          letter-spacing: 0.2em;
-          font-weight: 600;
-          padding: 13px 0;
+        border-radius: 12px;
+        background: var(--sfc-indigo);
+        color: #fff;
+        text-align: center;
+        font-size: 12px;
+        letter-spacing: 0.2em;
+        font-weight: 600;
+        padding: 13px 0;
         }
         .sfc-phone {
           position: absolute;
-          left: -150px;
-          bottom: 26px;
-          width: 250px;
-          border-radius: 38px;
-          background: #0b0b10;
-          padding: 10px;
-          box-shadow: 0 40px 80px oklch(0.1 0.05 265 / 0.55);
+        left: -150px;
+        bottom: 26px;
+        width: 250px;
+        border-radius: 38px;
+        background: #0b0b10;
+        padding: 10px;
+        box-shadow: 0 40px 80px oklch(0.1 0.05 265 / 0.55);
         }
         .sfc-phone-screen {
           border-radius: 30px;
-          background: var(--sfc-indigo);
-          padding: 18px 16px 22px;
-          color: #fff;
-          min-height: 330px;
-          display: flex;
-          flex-direction: column;
+        background: var(--sfc-indigo);
+        padding: 18px 16px 22px;
+        color: #fff;
+        min-height: 330px;
+        display: flex;
+        flex-direction: column;
         }
         .sfc-ph-top {
           display: flex;
-          align-items: center;
-          gap: 8px;
-          margin-bottom: 22px;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 22px;
         }
         .sfc-ph-burger {
           display: flex;
-          height: 30px;
-          width: 30px;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          background: #fff;
-          color: var(--sfc-navy);
+        height: 30px;
+        width: 30px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #fff;
+        color: var(--sfc-navy);
         }
         .sfc-ph-ico {
           display: flex;
-          height: 26px;
-          width: 26px;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.14);
-          margin-left: auto;
+        height: 26px;
+        width: 26px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.14);
+        margin-left: auto;
         }
         .sfc-ph-ico + .sfc-ph-ico {
           margin-left: 0;
         }
         .sfc-ph-avatar {
           height: 26px;
-          width: 26px;
-          border-radius: 50%;
-          background: var(--sfc-mint);
+        width: 26px;
+        border-radius: 50%;
+        background: var(--sfc-mint);
         }
         .sfc-phone-screen label {
           font-size: 9px;
-          letter-spacing: 0.2em;
-          color: rgba(255, 255, 255, 0.65);
+        letter-spacing: 0.2em;
+        color: rgba(255, 255, 255, 0.65);
         }
         .sfc-phone-screen strong {
           font-size: 40px;
-          font-weight: 500;
-          letter-spacing: -0.02em;
-          margin-top: 2px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        margin-top: 2px;
         }
         .sfc-ph-chart {
           position: relative;
-          margin-top: 18px;
-          flex: 1;
+        margin-top: 18px;
+        flex: 1;
         }
         .sfc-ph-chart svg {
           position: absolute;
-          inset: 0;
-          height: 100%;
-          width: 100%;
+        inset: 0;
+        height: 100%;
+        width: 100%;
         }
         .sfc-ph-chip {
           position: absolute;
-          top: 8px;
-          left: 50%;
-          transform: translateX(-50%);
-          border-radius: 999px;
-          background: var(--sfc-mint);
-          color: var(--sfc-navy);
-          font-size: 11px;
-          font-weight: 600;
-          padding: 4px 12px;
-          z-index: 1;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 999px;
+        background: var(--sfc-mint);
+        color: var(--sfc-navy);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 12px;
+        z-index: 1;
         }
         .sfc-ph-dates {
           display: flex;
-          justify-content: space-between;
-          font-size: 8.5px;
-          letter-spacing: 0.12em;
-          color: rgba(255, 255, 255, 0.55);
-          margin-top: 12px;
+        justify-content: space-between;
+        font-size: 8.5px;
+        letter-spacing: 0.12em;
+        color: rgba(255, 255, 255, 0.55);
+        margin-top: 12px;
         }
 
         /* ── Overlay card — rises over the pinned hero ── */
         .sfc-overcard {
           position: relative;
-          z-index: 3;
-          margin-top: -100vh;
-          border-radius: 44px 44px 0 0;
-          background: #f6f4ef;
-          color: var(--sfc-navy);
-          padding: clamp(96px, 12vh, 150px) 0 128px;
-          box-shadow: 0 -30px 80px oklch(0.1 0.05 265 / 0.35);
+        z-index: 3;
+        margin-top: -100vh;
+        border-radius: 44px 44px 0 0;
+        background: #f6f4ef;
+        color: var(--sfc-navy);
+        padding: clamp(96px, 12vh, 150px) 0 128px;
+        box-shadow: 0 -30px 80px oklch(0.1 0.05 265 / 0.35);
         }
         .sfc-overcard .sfc-h2-serif {
           color: var(--sfc-navy);
         }
         .sfc-feature-grid-light {
           background: oklch(0.16 0.07 265 / 0.1);
-          border-color: oklch(0.16 0.07 265 / 0.1);
+        border-color: oklch(0.16 0.07 265 / 0.1);
         }
         .sfc-feature-grid-light .sfc-feature {
           background: #fff;
@@ -1385,73 +1549,73 @@ export default function HomeClone() {
         }
         .sfc-h1-em {
           position: relative;
-          display: inline-block;
-          font-style: italic;
+        display: inline-block;
+        font-style: italic;
         }
         .sfc-h1-underline {
           position: absolute;
-          left: 0;
-          right: 8px;
-          bottom: 6px;
-          height: 6px;
-          border-radius: 999px;
-          background: var(--sfc-mint);
-          transform: scaleX(0);
-          transform-origin: left;
-          animation: sfcUnderline 0.7s ease-out forwards;
-          animation-delay: 1s;
+        left: 0;
+        right: 8px;
+        bottom: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: var(--sfc-mint);
+        transform: scaleX(0);
+        transform-origin: left;
+        animation: sfcUnderline 0.7s ease-out forwards;
+        animation-delay: 1s;
         }
         @keyframes sfcUnderline {
           to {
-            transform: scaleX(1);
+          transform: scaleX(1);
           }
         }
         .sfc-mini-link {
           font-size: 10px;
-          letter-spacing: 0.25em;
-          text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.9);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.6);
-          padding-bottom: 4px;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          background: none;
-          cursor: pointer;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.9);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+        padding-bottom: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: none;
+        cursor: pointer;
         }
         .sfc-mini-link:hover {
           color: #fff;
         }
         .sfc-hero-ctas {
           display: flex;
-          align-items: center;
-          gap: 12px;
+        align-items: center;
+        gap: 12px;
         }
         .sfc-btn-ghost {
           display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          border-radius: 999px;
-          border: 1px solid rgba(255, 255, 255, 0.4);
-          padding: 12px 24px;
-          font-size: 14px;
-          font-weight: 500;
-          color: #fff;
-          transition: background 0.2s ease;
+        align-items: center;
+        gap: 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #fff;
+        transition: background 0.2s ease;
         }
         .sfc-btn-ghost:hover {
           background: rgba(255, 255, 255, 0.1);
         }
         .sfc-btn-mint {
           display: inline-flex;
-          align-items: center;
-          border-radius: 999px;
-          background: var(--sfc-mint);
-          padding: 12px 28px;
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--sfc-navy);
-          transition: filter 0.2s ease;
+        align-items: center;
+        border-radius: 999px;
+        background: var(--sfc-mint);
+        padding: 12px 28px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--sfc-navy);
+        transition: filter 0.2s ease;
         }
         .sfc-btn-mint:hover {
           filter: brightness(0.95);
@@ -1460,51 +1624,51 @@ export default function HomeClone() {
         /* ── Intro screens ── */
         .sfc-screen {
           position: relative;
-          min-height: 100vh;
-          overflow: hidden;
-          background: transparent;
+        min-height: 100vh;
+        overflow: hidden;
+        background: transparent;
         }
         .sfc-screen-grid {
           position: relative;
-          z-index: 2;
-          max-width: 1400px;
-          margin: 0 auto;
-          min-height: 100vh;
-          display: grid;
-          grid-template-columns: 1fr;
-          align-items: center;
-          padding: 128px 24px;
+        z-index: 2;
+        max-width: 1400px;
+        margin: 0 auto;
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1fr;
+        align-items: center;
+        padding: 128px 24px;
         }
         @media (min-width: 768px) {
           .sfc-screen-grid {
-            grid-template-columns: 1fr 1fr;
-            padding-left: 40px;
-            padding-right: 40px;
+          grid-template-columns: 1fr 1fr;
+        padding-left: 40px;
+        padding-right: 40px;
           }
         }
         .sfc-h2 {
           font-weight: 300;
-          font-size: clamp(2.5rem, 6vw, 6rem);
-          line-height: 1.05;
-          letter-spacing: -0.02em;
-          margin: 0;
+        font-size: clamp(2.5rem, 6vw, 6rem);
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        margin: 0;
         }
         .sfc-lead {
           margin-top: 32px;
-          max-width: 28rem;
-          font-size: 18px;
-          color: rgba(255, 255, 255, 0.75);
-          line-height: 1.65;
+        max-width: 28rem;
+        font-size: 18px;
+        color: rgba(255, 255, 255, 0.75);
+        line-height: 1.65;
         }
         .sfc-stars {
           pointer-events: none;
-          position: absolute;
-          inset: 0;
+        position: absolute;
+        inset: 0;
         }
         .sfc-stars span {
           position: absolute;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.6);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.6);
         }
 
         .sfc-sec-head {
@@ -1512,9 +1676,9 @@ export default function HomeClone() {
         }
         .sfc-eyebrow {
           font-size: 12px;
-          letter-spacing: 0.25em;
-          text-transform: uppercase;
-          margin: 0 0 16px;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        margin: 0 0 16px;
         }
         .sfc-eyebrow-indigo {
           color: oklch(0.72 0.17 275);
@@ -1524,80 +1688,80 @@ export default function HomeClone() {
         }
         .sfc-h2-serif {
           font-size: clamp(2.4rem, 5vw, 4.6rem);
-          line-height: 1.05;
-          letter-spacing: -0.02em;
-          font-weight: 400;
-          margin: 0;
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        font-weight: 400;
+        margin: 0;
         }
         .sfc-feature-grid {
           margin-top: 80px;
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 1px;
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 24px;
-          overflow: hidden;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
         }
         @media (min-width: 768px) {
           .sfc-feature-grid {
-            grid-template-columns: 1fr 1fr;
+          grid-template-columns: 1fr 1fr;
           }
         }
         .sfc-feature {
           background: rgba(255, 255, 255, 0.05);
-          padding: 48px 40px;
-          height: 100%;
-          transition: background 0.25s ease;
+        padding: 48px 40px;
+        height: 100%;
+        transition: background 0.25s ease;
         }
         .sfc-feature:hover {
           background: rgba(255, 255, 255, 0.1);
         }
         .sfc-feature-icon {
           height: 32px;
-          width: 32px;
-          color: var(--sfc-mint);
-          margin-bottom: 32px;
+        width: 32px;
+        color: var(--sfc-mint);
+        margin-bottom: 32px;
         }
         .sfc-feature h3 {
           font-size: 28px;
-          font-weight: 300;
-          margin: 0 0 12px;
+        font-weight: 300;
+        margin: 0 0 12px;
         }
         .sfc-feature p {
           color: rgba(255, 255, 255, 0.7);
-          line-height: 1.65;
-          max-width: 28rem;
-          margin: 0;
+        line-height: 1.65;
+        max-width: 28rem;
+        margin: 0;
         }
 
         /* ── About ── */
         .sfc-about {
           position: relative;
-          padding: 128px 0;
-          background-color: var(--sfc-navy);
+        padding: 128px 0;
+        background-color: var(--sfc-navy);
         }
         .sfc-about-grid {
           display: grid;
-          grid-template-columns: 1fr;
-          gap: 64px;
+        grid-template-columns: 1fr;
+        gap: 64px;
         }
         @media (min-width: 1024px) {
           .sfc-about-grid {
-            grid-template-columns: 1fr 1fr;
+          grid-template-columns: 1fr 1fr;
           }
         }
         .sfc-about-copy {
           display: flex;
-          flex-direction: column;
-          gap: 24px;
-          font-size: 18px;
-          color: rgba(255, 255, 255, 0.7);
-          line-height: 1.65;
+        flex-direction: column;
+        gap: 24px;
+        font-size: 18px;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.65;
         }
         @media (min-width: 1024px) {
           .sfc-about-copy {
-            padding-top: 80px;
+          padding-top: 80px;
           }
         }
         .sfc-about-copy p {
@@ -1605,74 +1769,74 @@ export default function HomeClone() {
         }
         .sfc-stats {
           margin-top: 96px;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 32px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
         }
         @media (min-width: 768px) {
           .sfc-stats {
-            grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(4, 1fr);
           }
         }
         .sfc-stat {
           border-top: 1px solid rgba(255, 255, 255, 0.15);
-          padding-top: 24px;
+        padding-top: 24px;
         }
         .sfc-stat-v {
           font-size: clamp(2.6rem, 4vw, 3.6rem);
-          font-weight: 400;
+        font-weight: 400;
         }
         .sfc-stat-l {
           margin-top: 8px;
-          font-size: 14px;
-          color: rgba(255, 255, 255, 0.6);
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.6);
         }
 
         /* ── Partners ── */
         .sfc-partners {
           background: #fff;
-          color: var(--sfc-navy);
-          padding: 128px 0;
+        color: var(--sfc-navy);
+        padding: 128px 0;
         }
         .sfc-navy {
           color: var(--sfc-navy);
-          max-width: 42rem;
+        max-width: 42rem;
         }
         .sfc-partners .sfc-wrap {
           margin-bottom: 64px;
         }
         .sfc-partners-note {
           max-width: 720px;
-          margin: 18px auto 0;
-          font-size: 0.86rem;
-          line-height: 1.6;
-          color: rgba(15, 23, 42, 0.62);
+        margin: 18px auto 0;
+        font-size: 0.86rem;
+        line-height: 1.6;
+        color: rgba(15, 23, 42, 0.62);
         }
         .sfc-marquee {
           position: relative;
-          overflow: hidden;
-          padding: 28px 0 44px;
-          /* Soft edge fade so tiles glide in/out instead of hard-cutting */
-          -webkit-mask-image: linear-gradient(
-            to right,
-            transparent,
-            #000 8%,
-            #000 92%,
-            transparent
-          );
-          mask-image: linear-gradient(
-            to right,
-            transparent,
-            #000 8%,
-            #000 92%,
-            transparent
-          );
+        overflow: hidden;
+        padding: 28px 0 44px;
+        /* Soft edge fade so tiles glide in/out instead of hard-cutting */
+        -webkit-mask-image: linear-gradient(
+        to right,
+        transparent,
+        #000 8%,
+        #000 92%,
+        transparent
+        );
+        mask-image: linear-gradient(
+        to right,
+        transparent,
+        #000 8%,
+        #000 92%,
+        transparent
+        );
         }
         .sfc-marquee-track {
           display: flex;
-          white-space: nowrap;
-          width: max-content;
-          animation: sfcMarquee 46s linear infinite;
+        white-space: nowrap;
+        width: max-content;
+        animation: sfcMarquee 46s linear infinite;
         }
         .sfc-marquee:hover .sfc-marquee-track {
           animation-play-state: paused;
@@ -1680,137 +1844,137 @@ export default function HomeClone() {
         /* Second row glides the opposite way, slightly slower */
         .sfc-marquee-rev {
           margin-top: 24px;
-          animation-direction: reverse;
-          animation-duration: 54s;
+        animation-direction: reverse;
+        animation-duration: 54s;
         }
         @keyframes sfcMarquee {
           from {
-            transform: translateX(0);
+          transform: translateX(0);
           }
-          to {
-            transform: translateX(-50%);
+        to {
+          transform: translateX(-50%);
           }
         }
         .sfc-marquee-item {
           display: flex;
-          align-items: center;
-          gap: 16px;
-          margin: 0 48px;
-          font-size: clamp(20px, 2.4vw, 30px);
-          color: oklch(0.16 0.07 265 / 0.45);
+        align-items: center;
+        gap: 16px;
+        margin: 0 48px;
+        font-size: clamp(20px, 2.4vw, 30px);
+        color: oklch(0.16 0.07 265 / 0.45);
         }
         /* Partner logo tiles — colorful while moving, zoom-in effect on hover. */
         .sfc-partner-tile {
           flex-shrink: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 104px;
-          width: 208px;
-          margin: 0 14px;
-          padding: 22px 30px;
-          background: linear-gradient(180deg, #ffffff 0%, #f8fafd 100%);
-          border: 1px solid oklch(0.16 0.07 265 / 0.1);
-          border-radius: 20px;
-          box-shadow:
-            0 2px 6px oklch(0.16 0.07 265 / 0.06),
-            0 12px 32px -14px oklch(0.16 0.07 265 / 0.16);
-          transition:
-            transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-            box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-            border-color 0.4s ease;
-          cursor: pointer;
-          position: relative;
-          z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 104px;
+        width: 208px;
+        margin: 0 14px;
+        padding: 22px 30px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafd 100%);
+        border: 1px solid oklch(0.16 0.07 265 / 0.1);
+        border-radius: 20px;
+        box-shadow:
+        0 2px 6px oklch(0.16 0.07 265 / 0.06),
+        0 12px 32px -14px oklch(0.16 0.07 265 / 0.16);
+        transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        border-color 0.4s ease;
+        cursor: pointer;
+        position: relative;
+        z-index: 1;
         }
         .sfc-partner-tile:hover {
           transform: translateY(-6px);
-          border-color: oklch(0.56 0.24 275 / 0.35);
-          box-shadow:
-            0 1px 2px oklch(0.16 0.07 265 / 0.05),
-            0 24px 48px -16px oklch(0.56 0.24 275 / 0.3);
+        border-color: oklch(0.56 0.24 275 / 0.35);
+        box-shadow:
+        0 1px 2px oklch(0.16 0.07 265 / 0.05),
+        0 24px 48px -16px oklch(0.56 0.24 275 / 0.3);
         }
         /* Logos always ride in full brand colour; hover just brings them
            forward with a springy zoom. */
         .sfc-partner-tile img {
           max-height: 100%;
-          max-width: 100%;
-          object-fit: contain;
-          display: block;
-          transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        max-width: 100%;
+        object-fit: contain;
+        display: block;
+        transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .sfc-partner-tile:hover img {
           transform: scale(1.16);
         }
         .sfc-dot {
           display: inline-block;
-          height: 6px;
-          width: 6px;
-          border-radius: 50%;
-          background: var(--sfc-mint);
-          flex-shrink: 0;
+        height: 6px;
+        width: 6px;
+        border-radius: 50%;
+        background: var(--sfc-mint);
+        flex-shrink: 0;
         }
 
         /* ── News ── */
         .sfc-news {
           position: relative;
-          padding: 128px 0;
+        padding: 128px 0;
         }
         .sfc-news-head {
           display: flex;
-          align-items: flex-end;
-          justify-content: space-between;
-          margin-bottom: 64px;
-          flex-wrap: wrap;
-          gap: 24px;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 64px;
+        flex-wrap: wrap;
+        gap: 24px;
         }
         .sfc-news-grid {
           display: grid;
-          grid-template-columns: 1fr;
-          gap: 32px;
+        grid-template-columns: 1fr;
+        gap: 32px;
         }
         @media (min-width: 768px) {
           .sfc-news-grid {
-            grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(3, 1fr);
           }
         }
         .sfc-news-card {
           display: block;
-          border-radius: 24px;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          background: rgba(255, 255, 255, 0.05);
-          padding: 32px;
-          height: 100%;
-          transition: background 0.25s ease;
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.05);
+        padding: 32px;
+        height: 100%;
+        transition: background 0.25s ease;
         }
         .sfc-news-card:hover {
           background: rgba(255, 255, 255, 0.1);
         }
         .sfc-news-meta {
           display: flex;
-          align-items: center;
-          justify-content: space-between;
-          font-size: 11px;
-          text-transform: uppercase;
-          letter-spacing: 0.15em;
-          color: rgba(255, 255, 255, 0.6);
-          margin-bottom: 32px;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 32px;
         }
         .sfc-news-card h3 {
           font-size: 24px;
-          font-weight: 400;
-          line-height: 1.3;
-          margin: 0 0 56px;
-          min-height: 6rem;
-          color: #fff;
+        font-weight: 400;
+        line-height: 1.3;
+        margin: 0 0 56px;
+        min-height: 6rem;
+        color: #fff;
         }
         .sfc-news-read {
           display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 14px;
-          color: var(--sfc-mint);
-          transition: gap 0.2s ease;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--sfc-mint);
+        transition: gap 0.2s ease;
         }
         .sfc-news-card:hover .sfc-news-read {
           gap: 12px;
@@ -1819,87 +1983,109 @@ export default function HomeClone() {
         /* ── Footer ── */
         .sfc-footer {
           position: relative;
-          padding: 96px 0 40px;
+        padding: 96px 0 32px;
+        /* Contains the oversized wordmark, which is intentionally wider
+           than its text box at small viewports. */
+        overflow: hidden;
+        isolation: isolate;
+        }
+        /* Ambient indigo bloom behind the CTA. Large and faint: it should
+           register as depth on the navy, never as a visible shape. */
+        .sfc-footer::after {
+          content: "";
+        position: absolute;
+        z-index: -1;
+        top: -14%;
+        left: 50%;
+        width: min(1200px, 130%);
+        aspect-ratio: 2 / 1;
+        transform: translateX(-50%);
+        background: radial-gradient(
+        ellipse at center,
+        var(--sfc-indigo) 0%,
+        transparent 70%
+        );
+        opacity: 0.16;
+        pointer-events: none;
         }
         .sfc-footer-cta {
           display: grid;
-          grid-template-columns: 1fr;
-          gap: 64px;
-          padding-bottom: 64px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        grid-template-columns: 1fr;
+        gap: 64px;
+        padding-bottom: 24px;
         }
         @media (min-width: 1024px) {
           .sfc-footer-cta {
-            grid-template-columns: 1.4fr 1fr;
+          grid-template-columns: 1.4fr 1fr;
           }
         }
         .sfc-footer-title {
           font-size: clamp(2.8rem, 6.4vw, 6.4rem);
-          line-height: 0.98;
+        line-height: 0.98;
         }
         .sfc-footer-form {
           display: flex;
-          flex-direction: column;
-          gap: 16px;
+        flex-direction: column;
+        gap: 16px;
         }
         @media (min-width: 1024px) {
           .sfc-footer-form {
-            padding-top: 32px;
+          padding-top: 32px;
           }
         }
         .sfc-footer-form label {
           font-size: 11px;
-          text-transform: uppercase;
-          letter-spacing: 0.2em;
-          color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: rgba(255, 255, 255, 0.6);
         }
         .sfc-footer-input {
           display: flex;
-          gap: 8px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-          padding-bottom: 8px;
+        gap: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        padding-bottom: 8px;
         }
         .sfc-footer-input input {
           flex: 1;
-          background: transparent;
-          border: 0;
-          outline: none;
-          font-size: 18px;
-          color: #fff;
-          min-width: 0;
+        background: transparent;
+        border: 0;
+        outline: none;
+        font-size: 18px;
+        color: #fff;
+        min-width: 0;
         }
         .sfc-footer-input input::placeholder {
           color: rgba(255, 255, 255, 0.4);
         }
         .sfc-footer-input button {
           border-radius: 999px;
-          background: var(--sfc-mint);
-          padding: 8px 24px;
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--sfc-navy);
-          border: 0;
-          cursor: pointer;
-          white-space: nowrap;
+        background: var(--sfc-mint);
+        padding: 8px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--sfc-navy);
+        border: 0;
+        cursor: pointer;
+        white-space: nowrap;
         }
         .sfc-footer-input button:hover {
           filter: brightness(0.95);
         }
         .sfc-footer-form > p {
           font-size: 12px;
-          color: rgba(255, 255, 255, 0.5);
-          margin: 0;
+        color: rgba(255, 255, 255, 0.5);
+        margin: 0;
         }
         .sfc-footer-links {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 40px 32px;
-          padding: 64px 0;
-          font-size: 14px;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px 32px;
+        padding: 40px 0 56px;
+        font-size: 14px;
         }
         @media (min-width: 1024px) {
           .sfc-footer-links {
-            grid-template-columns: 1.7fr 1fr 1fr 1fr 1fr;
+          grid-template-columns: 1.7fr 1fr 1fr 1fr 1fr;
           }
         }
         .sfc-footer-brand {
@@ -1907,95 +2093,233 @@ export default function HomeClone() {
         }
         @media (min-width: 1024px) {
           .sfc-footer-brand {
-            grid-column: span 1;
+          grid-column: span 1;
           }
         }
+        /* Soft-cornered card, not a pill: this label wraps to two lines at
+           most widths now that the ARN is appended, and a 999px radius fights
+           a wrapped line. */
         .sfc-footer-reg {
           display: inline-flex;
-          align-items: center;
-          gap: 9px;
-          margin-top: 18px;
-          padding: 8px 16px;
-          border-radius: 999px;
-          border: 1px solid rgba(255, 255, 255, 0.18);
-          background: rgba(255, 255, 255, 0.06);
-          font-size: 12px;
-          font-weight: 600;
-          color: rgba(255, 255, 255, 0.75);
+        align-items: flex-start;
+        gap: 9px;
+        margin-top: 20px;
+        padding: 10px 15px;
+        max-width: 21rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.05);
+        font-size: 11.5px;
+        font-weight: 600;
+        line-height: 1.5;
+        text-align: left;
+        color: rgba(255, 255, 255, 0.78);
+        backdrop-filter: blur(6px);
+        }
+        .sfc-footer-reg .sfc-dot {
+          flex: 0 0 auto;
+        margin-top: 5px;
         }
         .sfc-footer-disclaim {
           border-top: 1px solid rgba(255, 255, 255, 0.12);
-          padding: 28px 0 8px;
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
+        padding: 28px 0 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
         }
         .sfc-footer-disclaim p {
           margin: 0;
-          font-size: 11.5px;
-          line-height: 1.7;
-          color: rgba(255, 255, 255, 0.45);
+        font-size: 11.5px;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.45);
         }
         .sfc-footer-disclaim strong {
           color: rgba(255, 255, 255, 0.65);
+        }
+        /* Registration codes: slightly brighter than the disclaimer and
+           letter-spaced, so an investor can read a code off the navy ground. */
+        .sfc-footer-codes {
+          font-size: 11px;
+        letter-spacing: 0.04em;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.58) !important;
+        font-variant-numeric: tabular-nums;
         }
         .sfc-footer-made {
           display: none;
         }
         @media (min-width: 768px) {
           .sfc-footer-made {
-            display: inline;
+          display: inline;
           }
         }
         .sfc-footer-logo {
           display: flex;
-          align-items: center;
-          margin-bottom: 18px;
+        align-items: center;
+        margin-bottom: 18px;
         }
         .sfc-footer-logo img {
           height: 70px;
-          width: auto;
+        width: auto;
         }
         @media (max-width: 760px) {
           .sfc-footer-logo img {
-            height: 56px;
+          height: 56px;
           }
         }
         .sfc-footer-brand p {
           color: rgba(255, 255, 255, 0.6);
-          max-width: 24rem;
-          line-height: 1.6;
-          margin: 0;
+        max-width: 24rem;
+        line-height: 1.6;
+        margin: 0;
         }
         .sfc-footer-col-title {
-          color: rgba(255, 255, 255, 0.4);
-          text-transform: uppercase;
-          letter-spacing: 0.15em;
-          font-size: 11px;
-          margin-bottom: 16px;
+          color: rgba(255, 255, 255, 0.38);
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 10.5px;
+        font-weight: 700;
+        margin-bottom: 18px;
         }
         .sfc-footer-links ul {
           list-style: none;
-          margin: 0;
-          padding: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
         }
-        .sfc-footer-links a:hover {
+        /* Hairlines give the link columns a deliberate editorial grid, so the
+           shorter columns don't read as floating in empty space. */
+        @media (min-width: 1024px) {
+          .sfc-footer-links > div + div {
+          padding-left: 32px;
+        border-left: 1px solid rgba(255, 255, 255, 0.09);
+          }
+        }
+        .sfc-footer-links li a {
+          position: relative;
+        display: block;
+        width: fit-content;
+        max-width: 100%;
+        padding: 6px 0;
+        color: rgba(255, 255, 255, 0.62);
+        transition: color 0.28s cubic-bezier(0.2, 0.7, 0.2, 1),
+        transform 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .sfc-footer-links li a::before {
+          content: "";
+        position: absolute;
+        left: 0;
+        bottom: 4px;
+        width: 100%;
+        height: 1px;
+        background: currentColor;
+        transform: scaleX(0);
+        transform-origin: left center;
+        transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .sfc-footer-links li a:hover,
+        .sfc-footer-links li a:focus-visible {
           color: var(--sfc-mint);
+        transform: translateX(4px);
+        }
+        .sfc-footer-links li a:hover::before,
+        .sfc-footer-links li a:focus-visible::before {
+          transform: scaleX(1);
+        }
+
+        /* Collapsible mandated small print. */
+        .sfc-footer-legal summary {
+          display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        cursor: pointer;
+        list-style: none;
+        padding: 5px 12px 5px 13px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        font-size: 10.5px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+        transition: color 0.25s, border-color 0.25s, background 0.25s;
+        }
+        .sfc-footer-legal summary::-webkit-details-marker {
+          display: none;
+        }
+        .sfc-footer-legal summary:hover {
+          color: var(--sfc-mint);
+        border-color: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.08);
+        }
+        .sfc-footer-legal summary svg {
+          transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .sfc-footer-legal[open] summary svg {
+          transform: rotate(180deg);
+        }
+        .sfc-footer-legal[open] summary {
+          margin-bottom: 12px;
+        }
+        .sfc-footer-legal > p {
+          color: rgba(255, 255, 255, 0.38) !important;
+        }
+
+        /* Oversized wordmark: fills the container width at any viewport
+           without a media query, and fades out toward its baseline. */
+        .sfc-footer-wordmark {
+          padding: 12px 0 0;
+        /* Not so tight that the Q descender clips against the overflow
+           below — the gradient already fades the lower third. */
+        line-height: 0.9;
+        overflow: hidden;
+        user-select: none;
+        }
+        .sfc-footer-wordmark span {
+          display: block;
+        font-size: clamp(3.5rem, 15.5vw, 15rem);
+        font-weight: 600;
+        letter-spacing: -0.055em;
+        text-transform: uppercase;
+        background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(255, 255, 255, 0) 118%
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        opacity: 0.3;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .sfc-footer-links li a,
+        .sfc-footer-links li a::before {
+          transition: none;
+          }
+        .sfc-footer-links li a:hover {
+          transform: none;
+          }
         }
         .sfc-footer-base {
           display: flex;
-          align-items: center;
-          justify-content: space-between;
-          font-size: 12px;
-          color: rgba(255, 255, 255, 0.4);
-          padding-top: 16px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        font-size: 11.5px;
+        letter-spacing: 0.02em;
+        color: rgba(255, 255, 255, 0.38);
+        padding-top: 20px;
+        margin-top: 4px;
+        border-top: 1px solid rgba(255, 255, 255, 0.09);
         }
         .sfc-footer-base a {
           text-transform: uppercase;
-          letter-spacing: 0.2em;
+        letter-spacing: 0.2em;
         }
         .sfc-footer-base a:hover {
           color: #fff;
@@ -2009,20 +2333,38 @@ export default function HomeClone() {
         /* The nav keeps its own slim 1200px width here too, so the glass
            pill reads the same on the homepage as everywhere else. */
 
+        /* Nav ink over the white hero.
+           The nav is transparent until GlobalUX adds .scrolled past 30px, and
+           its ink normally follows the SITE theme. The hero ground is now
+           white in both themes, so in dark mode that ink would be light-on-
+           white for those first 30px. Pin it dark for that window only —
+           once .scrolled lands, the nav has its own opaque pill and can go
+           back to following the theme. Scoped to this component's global
+           style block, so it applies on the homepage and nowhere else. */
+        .dark .main-nav:not(.scrolled) .nav-links a,
+        .dark .main-nav:not(.scrolled) .nav-link,
+        .dark .main-nav:not(.scrolled) .nav-link-parent,
+        .dark .main-nav:not(.scrolled) .logo-text {
+          color: #0f2a2b;
+        }
+        .dark .main-nav:not(.scrolled) .nav-caret-btn {
+          color: #4a6b66;
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .sfc-up,
           .sfc-h1-underline {
-            animation: none;
-            opacity: 1;
-            transform: none;
+          animation: none;
+        opacity: 1;
+        transform: none;
           }
-          .sfc-reveal {
-            opacity: 1;
-            transform: none;
-            transition: none;
+        .sfc-reveal {
+          opacity: 1;
+        transform: none;
+        transition: none;
           }
-          .sfc-marquee-track {
-            animation: none;
+        .sfc-marquee-track {
+          animation: none;
           }
         }
       `}</style>

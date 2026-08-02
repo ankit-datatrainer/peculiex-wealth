@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import ContactForm from "@/components/ContactForm";
+import RegulatoryCredentials from "@/components/RegulatoryCredentials";
 import { CONTACT, CITY } from "@/lib/siteFacts";
 import { OG_IMAGE } from "@/lib/seo";
 
@@ -113,6 +114,18 @@ export default function ContactPage() {
               <div style={cardStyle}>
                 <div style={labelStyle}>Registered office</div>
                 <p style={{ margin: 0, lineHeight: 1.7 }}>{CITY}, India</p>
+              </div>
+
+              {/* Registration codes belong next to the contact routes: an
+                  investor verifying us on the AMFI register is doing it at
+                  exactly the moment they are deciding whether to get in touch. */}
+              <div style={cardStyle}>
+                <div style={labelStyle}>Regulatory registration</div>
+                <RegulatoryCredentials
+                  heading={null}
+                  variant="inline"
+                  note="Quote our EUIN on every transaction. It ties the advice you received to the person who gave it."
+                />
               </div>
             </aside>
           </div>

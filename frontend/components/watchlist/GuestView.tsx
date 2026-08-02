@@ -358,6 +358,9 @@ export default function GuestView() {
         .gv-wrap {
           display: flex;
           flex-direction: column;
+          width: 100%;
+          max-width: 100%;
+          min-width: 0;
         }
 
         /* ── HERO ── */
@@ -558,7 +561,7 @@ export default function GuestView() {
           border-top: 1px solid var(--color-divider, #e0ddd8);
           padding-top: 40px; position: relative; z-index: 2;
         }
-        .gv-stat-item { flex: 1; text-align: center; }
+        .gv-stat-item { flex: 1 1 0; min-width: 0; text-align: center; }
         .gv-snum {
           font-family: var(--font-display, 'Barlow', sans-serif);
           font-size: clamp(20px, 2.2vw, 28px);
@@ -577,6 +580,23 @@ export default function GuestView() {
         }
         .gv-stat-divider {
           width: 1px; height: 40px; background: var(--color-divider, #e0ddd8); flex-shrink: 0;
+        }
+
+        /* Tablet & phone: four stats in one row is too tight, so wrap to a
+           2x2 grid and drop the vertical rules. */
+        @media (max-width: 768px) {
+          .gv-stats-bar {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.5rem 1rem;
+            padding-left: 20px;
+            padding-right: 20px;
+            margin-top: 40px;
+          }
+          .gv-stat-divider { display: none; }
+        }
+        @media (max-width: 400px) {
+          .gv-slabel { font-size: 11px; letter-spacing: .02em; }
         }
 
         /* ── FEATURES ── */
@@ -658,10 +678,10 @@ export default function GuestView() {
           color: #fff; font-weight: 700; font-size: 0.78rem;
           display: flex; align-items: center; justify-content: center;
         }
-        .gv-unl-meta { flex: 1; display: flex; flex-direction: column; }
-        .gv-unl-meta strong { font-weight: 700; font-size: 0.95rem; color: var(--color-text, #1e1c18); }
-        .gv-unl-meta span { font-size: 0.78rem; color: var(--color-text-muted, #333333); margin-top: 2px; }
-        .gv-unl-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+        .gv-unl-meta { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; }
+        .gv-unl-meta strong { font-weight: 700; font-size: 0.95rem; color: var(--color-text, #1e1c18); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .gv-unl-meta span { font-size: 0.78rem; color: var(--color-text-muted, #333333); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .gv-unl-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 0; flex-shrink: 0; }
         .gv-unl-iv { font-weight: 600; font-size: 0.88rem; color: var(--color-text, #1e1c18); font-variant-numeric: tabular-nums; }
         .gv-unl-tag {
           font-size: 0.65rem; font-weight: 700; letter-spacing: .06em;
@@ -786,6 +806,36 @@ export default function GuestView() {
           transition: all .25s var(--ease-out);
         }
         .gv-cta-ghost:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.5); }
+
+        /* ── NARROW PHONES ── trim the 32px gutters and tall section padding
+           so nothing is pinched or pushed past the viewport edge. */
+        @media (max-width: 600px) {
+          .gv-hero { padding: 96px 0 48px; min-height: 0; }
+          .gv-hero-inner { padding: 0 20px; }
+          .gv-features { padding: 64px 0; }
+          .gv-features-grid { padding: 0 20px; }
+          .gv-features-head { margin-bottom: 32px; }
+          .gv-unlisted { padding: 64px 20px; }
+          .gv-how { padding: 64px 20px; }
+          .gv-testi { padding: 64px 20px; }
+          .gv-testi-card { padding: 1.5rem; }
+          .gv-cta-section { padding: 48px 20px; }
+          .gv-cta-content { padding: 2.5rem 1.25rem; }
+          .gv-cta-btns { flex-direction: column; align-items: stretch; }
+          .gv-cta-primary, .gv-cta-ghost { justify-content: center; }
+          .gv-ctas > :global(a) { flex: 1 1 100%; justify-content: center; }
+          .gv-sub { font-size: 1rem; }
+          .gv-unl-card { padding: 0.9rem 1rem; gap: 0.75rem; }
+          .gv-step { gap: 1rem; }
+          .gv-step-num { font-size: 2rem; }
+        }
+
+        /* Landscape phones (~812x375): the 100vh hero leaves no room for copy. */
+        @media (max-height: 480px) and (orientation: landscape) {
+          .gv-hero { min-height: 0; padding: 88px 0 40px; }
+          .gv-stage { height: 380px; }
+          .gv-stats-bar { margin-top: 32px; padding-top: 24px; }
+        }
       `}</style>
     </div>
   );

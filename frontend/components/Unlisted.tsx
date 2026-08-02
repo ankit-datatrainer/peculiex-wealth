@@ -39,7 +39,7 @@ export default function Unlisted() {
       .then((j) => {
         if (!killed && j?.items?.length) setItems(j.items);
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       killed = true;
     };
@@ -71,6 +71,75 @@ export default function Unlisted() {
   return (
     <>
       <section id="unlisted" className="unlisted-v2">
+        {/* Small-screen layout hardening (additive; desktop rules unchanged) */}
+        <style jsx global>{`
+          /* Never let a long company name / sector blow out a card */
+          #unlisted .ulv2-card,
+          #unlisted .ulv2-card__stat,
+          #unlisted .ulv2-card__stat strong {
+            min-width: 0;
+          }
+          #unlisted .ulv2-card__name,
+          #unlisted .ulv2-card__stat strong {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+          }
+          #unlisted .ulv2-card__stat {
+            gap: 12px;
+          }
+          #unlisted .ulv2-card__stat strong {
+            text-align: right;
+          }
+          #unlisted .ulv2-card__logo {
+            flex: 0 0 auto;
+          }
+          #unlisted .unlisted-search__input {
+            min-width: 0;
+          }
+          #unlisted .ul-feature-box h3,
+          #unlisted .ul-feature-box p {
+            overflow-wrap: anywhere;
+          }
+
+          /* Hero row: stack the three boxes below tablet width */
+          @media (max-width: 900px) {
+            #unlisted .unlisted-hero-layout {
+              gap: 20px !important;
+              margin-bottom: 32px !important;
+            }
+            #unlisted .unlisted-hero-layout > * {
+              flex: 1 1 100% !important;
+              min-width: 0;
+            }
+            /* section heading reads first on narrow screens */
+            #unlisted .unlisted-hero-layout > .sec-head {
+              order: -1;
+            }
+          }
+
+          @media (max-width: 480px) {
+            #unlisted .unlisted-grid-v2 {
+              grid-template-columns: minmax(0, 1fr);
+              gap: 16px;
+            }
+            #unlisted .ulv2-card {
+              padding: 18px;
+            }
+            #unlisted .ulv2-card__logo {
+              width: 56px;
+              height: 56px;
+            }
+            #unlisted .ul-feature-box {
+              padding: 18px !important;
+            }
+            #unlisted .unlisted-search {
+              padding: 4px 12px;
+            }
+            #unlisted .unlisted-search__input {
+              font-size: 0.95rem;
+            }
+          }
+        `}</style>
         <div className="container">
           <div className="unlisted-hero-layout" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '32px', marginBottom: '48px', flexWrap: 'wrap' }}>
             {/* Left Box */}
@@ -84,9 +153,9 @@ export default function Unlisted() {
             <div className="sec-head reveal" style={{ flex: '2 1 300px', textAlign: 'center', margin: 0 }}>
               <h2 className="stitle">{heading(cms.t("hero", "title", "Private market *opportunities*"))}</h2>
               <p className="sdesc" style={{ marginBottom: '24px' }}>{cms.t("hero", "subtitle", "Curated pre-IPO and unlisted share inventory with transparent pricing.")}</p>
-              
-              <a href={cms.t("whatsapp", "link", "https://chat.whatsapp.com/your-invite-link")} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#25D366', color: '#fff', padding: '10px 24px', borderRadius: '30px', fontWeight: 600, textDecoration: 'none', boxShadow: '0 4px 14px rgba(37, 211, 102, 0.3)', transition: 'transform 0.2s' }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+
+              <a href={cms.t("whatsapp", "link", "https://chat.whatsapp.com/your-invite-link")} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: '8px', background: '#25D366', color: '#fff', padding: '10px 24px', borderRadius: '30px', fontWeight: 600, textDecoration: 'none', boxShadow: '0 4px 14px rgba(37, 211, 102, 0.3)', transition: 'transform 0.2s', maxWidth: '100%', textAlign: 'center' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{ flex: '0 0 auto' }}>
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
                 </svg>
                 {cms.t("whatsapp", "label", "Join our WhatsApp Community")}

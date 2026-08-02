@@ -83,9 +83,20 @@ export default function AuthedCards({
       <style jsx>{`
         .cards-grid {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
+          /* minmax(0, 1fr) so a long symbol can never widen a track and push
+             the page sideways (grid items default to min-width: auto). */
+          grid-template-columns: repeat(2, minmax(0, 1fr));
           gap: 0.75rem;
           margin-top: 1rem;
+          max-width: 100%;
+        }
+
+        /* Very narrow phones (<=340px): a 2-up tile gets too cramped, so
+           fall back to a single full-width tile. */
+        @media (max-width: 340px) {
+          .cards-grid {
+            grid-template-columns: minmax(0, 1fr);
+          }
         }
         
         .c-card {
@@ -103,6 +114,9 @@ export default function AuthedCards({
           transition: all 0.2s var(--ease);
           color: var(--color-text, #1e1c18);
           min-height: 70px;
+          min-width: 0;
+          max-width: 100%;
+          overflow: hidden;
         }
         
         .c-card.card-up {
@@ -153,12 +167,20 @@ export default function AuthedCards({
           color: var(--color-text, #1e1c18);
           font-variant-numeric: tabular-nums;
           margin-bottom: 0.1rem;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .c-chg {
           font-size: 0.7rem;
           font-weight: 600;
           font-variant-numeric: tabular-nums;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         .c-chg.up {
           color: var(--color-success, #13735d);
@@ -191,7 +213,7 @@ export default function AuthedCards({
 
         @media (min-width: 640px) {
           .cards-grid {
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(min(140px, 100%), 1fr));
             gap: 1rem;
           }
           .c-card {

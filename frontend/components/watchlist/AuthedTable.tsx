@@ -44,125 +44,129 @@ export default function AuthedTable({
 
   return (
     <div className="t-wrap" role="region" aria-label="Watchlist list">
-      {/* Desktop Header */}
-      <div className="t-header desktop-only">
-        <div className="t-cell t-col-hash">#</div>
-        <div
-          className="t-cell t-col-asset t-sortable"
-          onClick={() => headerSort("alpha")}
-        >
-          Asset {sort === "alpha" && <Caret />}
+      {/* Horizontal scroll container: keeps the wide desktop row layout from
+          ever pushing the page sideways on narrow viewports. */}
+      <div className="t-scroll">
+        {/* Desktop Header */}
+        <div className="t-header desktop-only">
+          <div className="t-cell t-col-hash">#</div>
+          <div
+            className="t-cell t-col-asset t-sortable"
+            onClick={() => headerSort("alpha")}
+          >
+            Asset {sort === "alpha" && <Caret />}
+          </div>
+          <div className="t-cell t-col-num">Price</div>
+          <div
+            className="t-cell t-col-num t-sortable"
+            onClick={() => headerSort(sort === "topGain" ? "topLoss" : "topGain")}
+          >
+            Change{" "}
+            {(sort === "topGain" || sort === "topLoss") && (
+              <Caret down={sort === "topGain"} />
+            )}
+          </div>
+          <div className="t-cell t-col-num">Market Cap</div>
+          <div className="t-cell t-col-num">Volume</div>
+          <div className="t-cell t-col-chart">Last 24h</div>
+          <div className="t-cell t-col-actions"></div>
         </div>
-        <div className="t-cell t-col-num">Price</div>
-        <div
-          className="t-cell t-col-num t-sortable"
-          onClick={() => headerSort(sort === "topGain" ? "topLoss" : "topGain")}
-        >
-          Change{" "}
-          {(sort === "topGain" || sort === "topLoss") && (
-            <Caret down={sort === "topGain"} />
-          )}
-        </div>
-        <div className="t-cell t-col-num">Market Cap</div>
-        <div className="t-cell t-col-num">Volume</div>
-        <div className="t-cell t-col-chart">Last 24h</div>
-        <div className="t-cell t-col-actions"></div>
-      </div>
 
-      <div className="t-body">
-        {rows.map((w, index) => {
-          const up = (w.chg ?? 0) >= 0;
-          const optimistic = w.item.id.startsWith("tmp-");
-          const vals = sparks[w.item.symbol] || [];
+        <div className="t-body">
+          {rows.map((w, index) => {
+            const up = (w.chg ?? 0) >= 0;
+            const optimistic = w.item.id.startsWith("tmp-");
+            const vals = sparks[w.item.symbol] || [];
 
-          return (
-            <div
-              key={w.item.id}
-              className={`t-row ${optimistic ? "is-optim" : ""}`}
-              onClick={() => router.push(marketHref(w.item.symbol))}
-            >
-              {/* Desktop specific cells */}
-              <div className="t-cell t-col-hash desktop-only">{index + 1}</div>
+            return (
+              <div
+                key={w.item.id}
+                className={`t-row ${optimistic ? "is-optim" : ""}`}
+                onClick={() => router.push(marketHref(w.item.symbol))}
+              >
+                {/* Desktop specific cells */}
+                <div className="t-cell t-col-hash desktop-only">{index + 1}</div>
 
-              {/* Asset Info (Mobile Top Left, Desktop Col 2) */}
-              <div className="t-cell t-col-asset">
-                <div className="t-asset-info">
+                {/* Asset Info (Mobile Top Left, Desktop Col 2) */}
+                <div className="t-cell t-col-asset">
+                  <div className="t-asset-info">
 
-                  <div className="t-asset-text">
-                    <div className="t-asset-name">
-                      {w.isUnlisted ? w.name || "Unlisted" : cleanSymbol(w.item.symbol)}
-                      {!w.isUnlisted && (
-                        <span className="t-exch">{exchangeOf(w.item.symbol)}</span>
-                      )}
-                    </div>
-                    <div className="t-asset-sub">
-                      {w.isUnlisted ? w.sector || "Private Market" : w.name}
+                    <div className="t-asset-text">
+                      <div className="t-asset-name">
+                        {w.isUnlisted ? w.name || "Unlisted" : cleanSymbol(w.item.symbol)}
+                        {!w.isUnlisted && (
+                          <span className="t-exch">{exchangeOf(w.item.symbol)}</span>
+                        )}
+                      </div>
+                      <div className="t-asset-sub">
+                        {w.isUnlisted ? w.sector || "Private Market" : w.name}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Price & Vol (Mobile Center, Desktop split cols) */}
-              <div className="t-cell t-col-num t-price-block">
-                <div className="t-price-val">
-                  {w.price != null ? `${fmtINR2(w.price)}` : "—"}
+                {/* Price & Vol (Mobile Center, Desktop split cols) */}
+                <div className="t-cell t-col-num t-price-block">
+                  <div className="t-price-val">
+                    {w.price != null ? `${fmtINR2(w.price)}` : "—"}
+                  </div>
+                  {/* Vol only shown here on mobile */}
+                  <div className="t-vol-sub mobile-only">
+                    Vol: {w.vol}
+                  </div>
                 </div>
-                {/* Vol only shown here on mobile */}
-                <div className="t-vol-sub mobile-only">
-                  Vol: {w.vol}
-                </div>
-              </div>
 
-              {/* Change (Mobile Right, Desktop Col 4) */}
-              <div className="t-cell t-col-num t-chg-block">
-                <div className={`t-chg-abs ${up ? "up" : "dn"}`}>
-                  {w.chg != null ? `${up ? "+" : "−"}${Math.abs(w.chg * (w.price ? w.price / 100 : 0)).toFixed(2)}` : "—"}
+                {/* Change (Mobile Right, Desktop Col 4) */}
+                <div className="t-cell t-col-num t-chg-block">
+                  <div className={`t-chg-abs ${up ? "up" : "dn"}`}>
+                    {w.chg != null ? `${up ? "+" : "−"}${Math.abs(w.chg * (w.price ? w.price / 100 : 0)).toFixed(2)}` : "—"}
+                  </div>
+                  <div className={`t-chg-pct ${up ? "up" : "dn"}`}>
+                    {w.chg != null ? `${up ? "+" : "−"}${Math.abs(w.chg).toFixed(2)}%` : w.iv || "—"}
+                  </div>
                 </div>
-                <div className={`t-chg-pct ${up ? "up" : "dn"}`}>
-                  {w.chg != null ? `${up ? "+" : "−"}${Math.abs(w.chg).toFixed(2)}%` : w.iv || "—"}
+
+                {/* Desktop only columns */}
+                <div className="t-cell t-col-num desktop-only t-muted">{w.cap}</div>
+                <div className="t-cell t-col-num desktop-only t-muted">{w.vol}</div>
+
+                {/* Sparkline chart */}
+                <div className="t-cell t-col-chart desktop-only">
+                  {!w.isUnlisted && vals.length > 0 ? (
+                    <svg className="t-spark" viewBox="0 0 100 30" preserveAspectRatio="none">
+                      <path
+                        d={sparkPath(vals, 100, 30)}
+                        fill="none"
+                        stroke={up ? "var(--color-primary, #13735d)" : "var(--color-danger, #dc2626)"}
+                        strokeWidth="1.8"
+                      />
+                    </svg>
+                  ) : (
+                    <span className="t-muted">, </span>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div className="t-cell t-col-actions">
+                  <button
+                    type="button"
+                    className="t-remove"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRemove(w.item.symbol);
+                    }}
+                    disabled={busySym === w.item.symbol || optimistic}
+                    title="Remove"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+                    </svg>
+                  </button>
                 </div>
               </div>
-
-              {/* Desktop only columns */}
-              <div className="t-cell t-col-num desktop-only t-muted">{w.cap}</div>
-              <div className="t-cell t-col-num desktop-only t-muted">{w.vol}</div>
-              
-              {/* Sparkline chart */}
-              <div className="t-cell t-col-chart desktop-only">
-                {!w.isUnlisted && vals.length > 0 ? (
-                  <svg className="t-spark" viewBox="0 0 100 30" preserveAspectRatio="none">
-                    <path
-                      d={sparkPath(vals, 100, 30)}
-                      fill="none"
-                      stroke={up ? "var(--color-primary, #13735d)" : "var(--color-danger, #dc2626)"}
-                      strokeWidth="1.8"
-                    />
-                  </svg>
-                ) : (
-                  <span className="t-muted">, </span>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div className="t-cell t-col-actions">
-                <button
-                  type="button"
-                  className="t-remove"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemove(w.item.symbol);
-                  }}
-                  disabled={busySym === w.item.symbol || optimistic}
-                  title="Remove"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       <style jsx>{`
@@ -179,6 +183,20 @@ export default function AuthedTable({
 
         .desktop-only { display: flex; }
         .mobile-only { display: none; }
+
+        /* The desktop row layout needs ~760px to breathe. Below that the row
+           scrolls inside this container instead of widening the page. */
+        .t-scroll {
+          width: 100%;
+          max-width: 100%;
+          overflow-x: auto;
+          overflow-y: hidden;
+          -webkit-overflow-scrolling: touch;
+        }
+        .t-header,
+        .t-row {
+          min-width: 760px;
+        }
 
         .t-header {
           display: flex;
@@ -215,17 +233,19 @@ export default function AuthedTable({
           align-items: center;
         }
 
-        .t-col-hash { width: 40px; color: var(--color-text-muted, #6b6964); font-variant-numeric: tabular-nums; }
-        .t-col-asset { flex: 2; min-width: 150px; }
-        .t-col-num { flex: 1; justify-content: flex-end; text-align: right; font-variant-numeric: tabular-nums; }
-        .t-col-chart { flex: 1; justify-content: center; }
-        .t-col-actions { width: 40px; justify-content: flex-end; }
+        .t-col-hash { width: 40px; flex: 0 0 40px; color: var(--color-text-muted, #6b6964); font-variant-numeric: tabular-nums; }
+        .t-col-asset { flex: 2 1 0; min-width: 150px; }
+        .t-col-num { flex: 1 1 0; min-width: 0; justify-content: flex-end; text-align: right; font-variant-numeric: tabular-nums; }
+        .t-col-chart { flex: 1 1 0; min-width: 0; justify-content: center; }
+        .t-col-actions { width: 40px; flex: 0 0 40px; justify-content: flex-end; }
 
         /* Asset column */
         .t-asset-info {
           display: flex;
           align-items: center;
           gap: 12px;
+          min-width: 0;
+          max-width: 100%;
         }
         .t-logo-wrap {
           width: 28px;
@@ -256,12 +276,18 @@ export default function AuthedTable({
         .t-asset-text {
           display: flex;
           flex-direction: column;
+          min-width: 0;
+          flex: 1 1 auto;
         }
         .t-asset-name {
           font-family: var(--font-display, inherit);
           font-weight: 700;
           font-size: 0.95rem;
           color: var(--color-text, #1e1c18);
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         .t-exch {
           display: inline-block;
@@ -279,12 +305,17 @@ export default function AuthedTable({
           font-size: 0.75rem;
           color: var(--color-text-muted, #6b6964);
           margin-top: 2px;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         /* Number blocks */
         .t-price-block, .t-chg-block {
           display: flex;
           flex-direction: column;
+          min-width: 0;
         }
         .t-price-val {
           font-family: var(--font-display, inherit);
@@ -343,8 +374,16 @@ export default function AuthedTable({
             position: relative;
           }
           
-          .t-col-asset { flex: 1.5; }
-          .t-col-num { flex: 1; }
+          /* Mobile shows only 3 columns, so the row fits: drop the desktop
+             min-width and let the cells compress instead of scrolling. */
+          .t-header,
+          .t-row {
+            min-width: 0;
+          }
+          .t-scroll { overflow-x: hidden; }
+
+          .t-col-asset { flex: 1.5 1 0; min-width: 0; }
+          .t-col-num { flex: 1 1 0; min-width: 0; }
           
           .t-asset-text {
             /* Add left margin if logo was here, but logo is hidden */

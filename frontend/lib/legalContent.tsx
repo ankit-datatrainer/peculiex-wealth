@@ -1,4 +1,4 @@
-import { REGISTRATION_NUMBER } from "./siteFacts";
+import { EUIN, REGISTRATION_LINE } from "./siteFacts";
 
 export type LegalDoc = {
   slug: string;
@@ -337,7 +337,8 @@ export const LEGAL: Record<string, LegalDoc> = {
             https://scores.sebi.gov.in/
           </a>
           . You'll need our registration details:{" "}
-          <strong>AMFI Registered Mutual Fund Distributor{REGISTRATION_NUMBER ? `, ARN ${REGISTRATION_NUMBER}` : ""}</strong>.
+          <strong>{REGISTRATION_LINE}</strong>
+          {EUIN ? <> (EUIN {EUIN})</> : null}.
         </p>
 
         <h2>What information to include</h2>

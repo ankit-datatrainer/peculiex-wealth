@@ -38,6 +38,17 @@ export type WatchlistButtonProps = {
 
 type Listener = (set: Set<string>) => void;
 
+/**
+ * Watch-state key, ignoring the exchange suffix.
+ *
+ * Saved rows come back in explicit BSE form ("MRF.BO"), but host cards pass
+ * whatever symbol they hold — often a bare ticker ("MRF"). Keying the cache on
+ * the suffix-free form keeps the button's filled/unfilled state correct either
+ * way. Unlisted placeholders ("UNL-…") have no suffix and pass through.
+ */
+const watchKey = (sym: string) =>
+  (sym || "").replace(/\.(BO|NS)$/i, "").toUpperCase();
+
 const cache = {
   set: new Set<string>(),
   loaded: false,
@@ -48,11 +59,11 @@ const cache = {
     this.listeners.forEach((l) => l(this.set));
   },
   add(sym: string) {
-    this.set.add(sym);
+    this.set.add(watchKey(sym));
     this.notify();
   },
   remove(sym: string) {
-    this.set.delete(sym);
+    this.set.delete(watchKey(sym));
     this.notify();
   },
   reset() {
@@ -72,7 +83,7 @@ const cache = {
         const r = await apiFetch<{ items: { symbol: string }[] }>(
           "/api/watchlist"
         );
-        this.set = new Set((r.items || []).map((i) => i.symbol));
+        this.set = new Set((r.items || []).map((i) => watchKey(i.symbol)));
         this.loaded = true;
         this.notify();
       } catch {
@@ -209,7 +220,7 @@ export default function WatchlistButton({
   useEffect(() => {
     mounted.current = true;
     const apply = (set: Set<string>) => {
-      if (mounted.current) setIsWatched(set.has(symbol));
+      if (mounted.current) setIsWatched(set.has(watchKey(symbol)));
     };
     apply(cache.set);
     const unsub = cache.subscribe(apply);
@@ -275,8 +286,8 @@ export default function WatchlistButton({
     !user && ready
       ? "Login to save to your watchlist"
       : isWatched
-      ? "Remove from watchlist"
-      : "Add to watchlist";
+        ? "Remove from watchlist"
+        : "Add to watchlist";
 
   if (variant === "pill") {
     const style: CSSProperties = {

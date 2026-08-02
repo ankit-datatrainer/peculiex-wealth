@@ -14,9 +14,16 @@
  * Indices ("^NSEI") carry no suffix and pass through all three untouched.
  */
 
-/** "BHARTIARTL.NS" -> "NSE". Anything without a .BO suffix is treated as NSE. */
+/**
+ * Which exchange a stored symbol resolves to.
+ *
+ * The platform is BSE-only: the backend resolves every bare Indian ticker to
+ * a ".BO" (BSE) Yahoo symbol, so a bare "RELIANCE" is a BSE line, not an NSE
+ * one. Only an explicit ".NS" suffix means NSE, and those are rejected on the
+ * way in — this branch exists purely so legacy rows can't be mislabelled.
+ */
 export function exchangeOf(symbol: string): "NSE" | "BSE" {
-  return /\.BO$/i.test(symbol || "") ? "BSE" : "NSE";
+  return /\.NS$/i.test(symbol || "") ? "NSE" : "BSE";
 }
 
 /** "BHARTIARTL.NS" -> "BHARTIARTL". Safe to call on an already-clean symbol. */
