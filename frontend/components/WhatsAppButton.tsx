@@ -1,14 +1,11 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { WHATSAPP_LINK } from "@/lib/siteFacts";
 
-// No fallback number on purpose. A chat button that opens a dead WhatsApp
-// thread is worse than no button at all: it burns the highest-intent moment on
-// the site. If NEXT_PUBLIC_WHATSAPP_NUMBER is unset we render the Contact page
-// link instead, which always works.
-const DEFAULT_MESSAGE =
-  "Hi Finvoq team! I'd like to know more about investing through your platform.";
-// Replace via NEXT_PUBLIC_WHATSAPP_COMMUNITY in .env.local (the group/community invite link)
-const DEFAULT_COMMUNITY = "https://chat.whatsapp.com/";
+// Number and pre-filled message both come from lib/siteFacts, so this button,
+// the footer, /contact and the invest modal can never drift apart. If no number
+// is configured, whatsappLink() returns '' and we fall back to the Contact page
+// rather than opening a dead thread — a chat button that goes nowhere is worse
+// than no button, because it burns the highest-intent moment on the site.
 
 const WA_ICON = (
   <svg width="26" height="26" viewBox="0 0 32 32" fill="currentColor" role="img" aria-label="WhatsApp">
@@ -17,15 +14,8 @@ const WA_ICON = (
 );
 
 export default function WhatsAppButton() {
-  const number = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/\D/g, "");
-  const message = encodeURIComponent(
-    process.env.NEXT_PUBLIC_WHATSAPP_MESSAGE || DEFAULT_MESSAGE
-  );
-  // A real Indian mobile in international form is 12 digits (91 + 10).
-  const configured = number.length >= 10;
-  const chatHref = configured
-    ? `https://wa.me/${number}?text=${message}`
-    : "/contact";
+  const configured = Boolean(WHATSAPP_LINK);
+  const chatHref = configured ? WHATSAPP_LINK : "/contact";
 
   return (
     <div className="whatsapp-root">

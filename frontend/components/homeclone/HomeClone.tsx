@@ -27,8 +27,13 @@ import {
   REGISTRATION_CODES_LINE,
   REGISTRATION_LINE,
   REGISTRATION_NUMBER,
-  REGULATORY_LABEL
+  REGULATORY_LABEL,
+  CONTACT,
+  SOCIAL_LINKS,
+  WHATSAPP_DISPLAY,
+  WHATSAPP_LINK
 } from "@/lib/siteFacts";
+import { SOCIAL_ICON_PATHS } from "@/lib/socialIcons";
 
 /** Render a CMS multi-line value, keeping the author's line breaks. */
 function lines(text: string) {
@@ -680,6 +685,42 @@ export default function HomeClone() {
                 <div className="sfc-footer-reg">
                   <span className="sfc-dot" />{c.t("footerCta", "badge", REGISTRATION_LINE)}
                 </div>
+                {/* Direct routes + socials. The homepage footer had neither,
+                    so the highest-traffic page was the one page with no way
+                    to reach us without another click. */}
+                <ul className="sfc-footer-contact">
+                  {WHATSAPP_LINK ? (
+                    <li>
+                      <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15" aria-hidden="true">
+                          <path d={SOCIAL_ICON_PATHS.whatsapp} />
+                        </svg>
+                        WhatsApp {WHATSAPP_DISPLAY}
+                      </a>
+                    </li>
+                  ) : null}
+                  <li>
+                    <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+                  </li>
+                </ul>
+                {SOCIAL_LINKS.some((s) => s.href) ? (
+                  <div className="sfc-footer-social" aria-label="Social links">
+                    {SOCIAL_LINKS.filter((s) => s.href).map((s) => (
+                      <a
+                        key={s.id}
+                        href={s.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={s.label}
+                        title={s.label}
+                      >
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17" aria-hidden="true">
+                          <path d={SOCIAL_ICON_PATHS[s.id]} />
+                        </svg>
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
               </div>
               <div>
                 <div className="sfc-footer-col-title">Products</div>
@@ -1055,6 +1096,58 @@ export default function HomeClone() {
         .sfc-hero .sfc-mini-link:hover {
           color: var(--sfc-green);
           border-bottom-color: var(--sfc-green);
+        }
+
+        /* ── Dark theme hero ───────────────────────────────────────────────
+           ScrollGlobe paints the ground deep navy in dark mode (HERO_BG_DARK),
+           so every ink and blend decision above — all of which assumed white
+           paper — has to flip here. Ground and ink live in two different
+           systems (canvas vs CSS), so these two must be changed together. */
+        .dark .sfc-hero .sfc-h1 {
+          color: #f4f7f6;
+        }
+        .dark .sfc-hero .sfc-h1-em {
+          /* The #13735d brand green is a light-background colour; it goes muddy
+             on navy, so the hero accent lifts to the mint already used by the
+             story screens below. */
+          color: var(--sfc-mint);
+        }
+        .dark .sfc-hero .sfc-mini-link {
+          color: rgba(244, 247, 246, 0.86);
+          border-bottom-color: rgba(244, 247, 246, 0.32);
+        }
+        .dark .sfc-hero .sfc-mini-link:hover {
+          color: var(--sfc-mint);
+          border-bottom-color: var(--sfc-mint);
+        }
+        /* multiply knocks out the artwork's near-white matte on paper; on navy
+           it would knock out the gold instead. screen does the same job with
+           the polarity reversed. */
+        .dark .sfc-hero-mark-img {
+          mix-blend-mode: screen;
+        }
+        /* The pigment washes are tuned for white paper — near-invisible at 3.8%
+           over navy, so lift them and warm them toward the mint. */
+        .dark .sfc-hero-pigment {
+          background:
+            radial-gradient(
+              circle 260px at var(--sfc-mx) var(--sfc-my),
+              rgba(120, 235, 190, 0.13),
+              rgba(120, 235, 190, 0.06) 42%,
+              transparent 72%
+            ),
+            radial-gradient(
+              circle 560px at var(--sfc-mx) var(--sfc-my),
+              rgba(120, 235, 190, 0.06),
+              transparent 70%
+            );
+        }
+        .dark .sfc-hero::before {
+          background: radial-gradient(
+            120% 80% at 78% 18%,
+            rgba(120, 235, 190, 0.06),
+            transparent 62%
+          );
         }
         /* (The old ≥1100px width cap existed only to keep the centred
            headline clear of the floating portrait, which the golden infinity
@@ -2116,6 +2209,74 @@ export default function HomeClone() {
         color: rgba(255, 255, 255, 0.78);
         backdrop-filter: blur(6px);
         }
+        /* Direct routes + socials, under the registration badge. */
+        .sfc-footer-contact {
+          list-style: none;
+          margin: 16px 0 0;
+          padding: 0;
+          display: grid;
+          gap: 7px;
+        }
+        /* Scoped through .sfc-footer-links to outrank the .sfc-footer-links li a
+           nav-column link style — these rows sit inside that container but
+           are contact routes, not nav items, so they must not inherit its
+           block layout or its decorative ::before bullet. */
+        .sfc-footer-links .sfc-footer-contact a::before {
+          content: none;
+        }
+        .sfc-footer-links .sfc-footer-contact a {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 13px;
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.72);
+          text-decoration: none;
+          transition: color 0.2s ease;
+          overflow-wrap: anywhere;
+        }
+        .sfc-footer-links .sfc-footer-contact a:hover,
+        .sfc-footer-links .sfc-footer-contact a:focus-visible {
+          color: #fff;
+          transform: none;
+        }
+        .sfc-footer-contact svg {
+          flex: 0 0 auto;
+          color: #25d366;
+        }
+        .sfc-footer-social {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          margin-top: 16px;
+        }
+        .sfc-footer-links .sfc-footer-social a::before {
+          content: none;
+        }
+        .sfc-footer-links .sfc-footer-social a {
+          display: grid;
+          place-items: center;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          background: rgba(255, 255, 255, 0.05);
+          color: rgba(255, 255, 255, 0.78);
+          transition: color 0.2s ease, border-color 0.2s ease,
+            background 0.2s ease, transform 0.2s ease;
+        }
+        .sfc-footer-links .sfc-footer-social a:hover,
+        .sfc-footer-links .sfc-footer-social a:focus-visible {
+          color: #fff;
+          border-color: rgba(255, 255, 255, 0.42);
+          background: rgba(255, 255, 255, 0.12);
+          transform: translateY(-2px);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .sfc-footer-social a:hover {
+            transform: none;
+          }
+        }
         .sfc-footer-reg .sfc-dot {
           flex: 0 0 auto;
         margin-top: 5px;
@@ -2333,23 +2494,10 @@ export default function HomeClone() {
         /* The nav keeps its own slim 1200px width here too, so the glass
            pill reads the same on the homepage as everywhere else. */
 
-        /* Nav ink over the white hero.
-           The nav is transparent until GlobalUX adds .scrolled past 30px, and
-           its ink normally follows the SITE theme. The hero ground is now
-           white in both themes, so in dark mode that ink would be light-on-
-           white for those first 30px. Pin it dark for that window only —
-           once .scrolled lands, the nav has its own opaque pill and can go
-           back to following the theme. Scoped to this component's global
-           style block, so it applies on the homepage and nowhere else. */
-        .dark .main-nav:not(.scrolled) .nav-links a,
-        .dark .main-nav:not(.scrolled) .nav-link,
-        .dark .main-nav:not(.scrolled) .nav-link-parent,
-        .dark .main-nav:not(.scrolled) .logo-text {
-          color: #0f2a2b;
-        }
-        .dark .main-nav:not(.scrolled) .nav-caret-btn {
-          color: #4a6b66;
-        }
+        /* (The hero ground follows the theme now — see the dark-hero block
+           above — so the nav's own theme ink is correct over it in both
+           modes, and the old dark-ink pin for the pre-scroll window is gone.
+           Re-adding it would put dark ink on the dark hero.) */
 
         @media (prefers-reduced-motion: reduce) {
           .sfc-up,

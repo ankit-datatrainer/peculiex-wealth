@@ -2,7 +2,14 @@ import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import ContactForm from "@/components/ContactForm";
 import RegulatoryCredentials from "@/components/RegulatoryCredentials";
-import { CONTACT, CITY } from "@/lib/siteFacts";
+import {
+  CONTACT,
+  CITY,
+  SOCIAL_LINKS,
+  WHATSAPP_DISPLAY,
+  WHATSAPP_LINK,
+} from "@/lib/siteFacts";
+import { SOCIAL_ICON_PATHS } from "@/lib/socialIcons";
 import { OG_IMAGE } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -69,6 +76,35 @@ export default function ContactPage() {
 
             {/* Direct routes */}
             <aside style={{ display: "grid", gap: 16 }}>
+              {/* WhatsApp first: it is the fastest route to a human, and the
+                  link opens the thread with a message already typed. */}
+              {WHATSAPP_LINK ? (
+                <div style={cardStyle}>
+                  <div style={labelStyle}>WhatsApp</div>
+                  <a
+                    href={WHATSAPP_LINK}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      color: "var(--color-primary)",
+                      fontWeight: 600,
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="#25D366" width="18" height="18" aria-hidden="true">
+                      <path d={SOCIAL_ICON_PATHS.whatsapp} />
+                    </svg>
+                    {WHATSAPP_DISPLAY}
+                  </a>
+                  <p style={{ margin: "10px 0 0", fontSize: "0.85rem", color: "var(--color-text-muted)", lineHeight: 1.6 }}>
+                    Message us on WhatsApp for a quick answer — usually within the hour
+                    during working hours.
+                  </p>
+                </div>
+              ) : null}
+
               <div style={cardStyle}>
                 <div style={labelStyle}>Email</div>
                 <a href={`mailto:${CONTACT.email}`} style={{ color: "var(--color-primary)", fontWeight: 600 }}>
@@ -115,6 +151,37 @@ export default function ContactPage() {
                 <div style={labelStyle}>Registered office</div>
                 <p style={{ margin: 0, lineHeight: 1.7 }}>{CITY}, India</p>
               </div>
+
+              {SOCIAL_LINKS.some((s) => s.href) ? (
+                <div style={cardStyle}>
+                  <div style={labelStyle}>Follow us</div>
+                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                    {SOCIAL_LINKS.filter((s) => s.href).map((s) => (
+                      <a
+                        key={s.id}
+                        href={s.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={s.label}
+                        title={s.label}
+                        style={{
+                          display: "grid",
+                          placeItems: "center",
+                          width: 38,
+                          height: 38,
+                          borderRadius: "50%",
+                          border: "1px solid var(--color-border, rgba(0,0,0,0.1))",
+                          color: "var(--color-text-muted)",
+                        }}
+                      >
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17" aria-hidden="true">
+                          <path d={SOCIAL_ICON_PATHS[s.id]} />
+                        </svg>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
 
               {/* Registration codes belong next to the contact routes: an
                   investor verifying us on the AMFI register is doing it at

@@ -18,10 +18,17 @@ import { useEffect, useRef } from "react";
  *
  * The canvas also paints the page background (blue → navy) so the planet
  * reads as sitting ON the blue hero exactly like the reference.
- * Palette is intentionally fixed — homepage only, theme-independent.
+ *
+ * Everything from the story screens down is navy in both themes. Only the hero
+ * ground follows the site theme: white paper in light mode, deep navy in dark
+ * (see HERO_BG_DARK), because a pure-white hero under a dark-mode nav is the
+ * one place the fixed palette read as a bug rather than a choice.
  */
 
-const HERO_BG = [255, 255, 255]; // hero ground — pure white
+const HERO_BG_LIGHT = [255, 255, 255]; // hero ground, light theme — pure white
+/* Deliberately a shade lighter than NAVY: the planet's rim is rgb(7,11,30), so
+   an identical ground would swallow the sphere's silhouette entirely. */
+const HERO_BG_DARK = [13, 20, 46];
 const NAVY = [9, 14, 36]; //       page base   ~ oklch(0.10 0.05 265)
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -228,6 +235,19 @@ export default function ScrollGlobe() {
     let rafId = 0;
     let ry = 0;
 
+    /* Hero ground follows the theme. next-themes toggles a `dark` class on
+       <html>, so watch that attribute rather than prefers-color-scheme — the
+       user's explicit toggle must win over the OS setting. The value is read
+       into a variable (not per-frame) so the render loop stays allocation-free. */
+    const root = document.documentElement;
+    let heroBg = HERO_BG_LIGHT;
+    const syncTheme = () => {
+      heroBg = root.classList.contains("dark") ? HERO_BG_DARK : HERO_BG_LIGHT;
+    };
+    syncTheme();
+    const themeObserver = new MutationObserver(syncTheme);
+    themeObserver.observe(root, { attributes: true, attributeFilter: ["class"] });
+
     const render = () => {
       scrollProgress += (target - scrollProgress) * 0.08;
       const p = scrollProgress;
@@ -238,9 +258,9 @@ export default function ScrollGlobe() {
          then handed over quickly rather than dwelling in the grey midpoint. */
       const mix = smooth((p - 0.62) / 0.32);
       const bg = `rgb(${Math.round(
-        lerp(HERO_BG[0], NAVY[0], mix)
-      )}, ${Math.round(lerp(HERO_BG[1], NAVY[1], mix))}, ${Math.round(
-        lerp(HERO_BG[2], NAVY[2], mix)
+        lerp(heroBg[0], NAVY[0], mix)
+      )}, ${Math.round(lerp(heroBg[1], NAVY[1], mix))}, ${Math.round(
+        lerp(heroBg[2], NAVY[2], mix)
       )})`;
       ctx.globalCompositeOperation = "source-over";
       ctx.fillStyle = bg;
@@ -343,6 +363,7 @@ export default function ScrollGlobe() {
 
     return () => {
       cancelAnimationFrame(rafId);
+      themeObserver.disconnect();
       window.removeEventListener("resize", resize);
       window.removeEventListener("resize", measure);
       window.removeEventListener("scroll", onScroll);

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { postJSON } from "@/lib/api";
+import { whatsappLink } from "@/lib/siteFacts";
 
 type InvestModalProps = {
   open: boolean;
@@ -268,7 +269,13 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
                   <span>Looking for bulk deal pricing?</span>
                 </div>
                 <a
-                  href={process.env.NEXT_PUBLIC_WHATSAPP_LINK || "https://wa.me/919999999999"}
+                  href={
+                    // Pre-fill the share and quantity so the thread opens with
+                    // the context the desk needs, not a bare "Hi".
+                    whatsappLink(
+                      `Hi Finvoq team! I'd like bulk deal pricing on ${company.name} (${units} units).`
+                    ) || "/contact"
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                   className="invest-modal__wa-link"

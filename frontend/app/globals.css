@@ -13803,6 +13803,46 @@ section {
   border-color: rgba(69, 201, 166, 0.26);
 }
 
+/* ── Direct contact routes (WhatsApp / phone / email) ───── */
+.site-footer .foot-contact {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 7px;
+}
+
+/* .foot-brand carries .foot-col, so `.foot-col ul a` (the nav-column link
+   style, with its decorative ::before bullet and hover shift) also matches
+   these rows. Scope through .foot-col to outrank it — these are contact
+   routes, not nav items. */
+.site-footer .foot-col .foot-contact a::before {
+  content: none;
+}
+
+.site-footer .foot-col .foot-contact a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s var(--ease);
+  overflow-wrap: anywhere;
+}
+
+.site-footer .foot-col .foot-contact a:hover,
+.site-footer .foot-col .foot-contact a:focus-visible {
+  color: var(--color-primary);
+  transform: none;
+}
+
+.site-footer .foot-contact svg {
+  flex: 0 0 auto;
+  color: #25d366;
+}
+
 /* ── Disclosure band ────────────────────────────────────── */
 .foot-band {
   display: grid;

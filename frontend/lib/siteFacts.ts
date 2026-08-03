@@ -64,11 +64,46 @@ export const CONTACT = {
   pressEmail: 'info@finvoq.com',
   legalEmail: 'info@finvoq.com',
   privacyEmail: 'info@finvoq.com',
-  /** CONFIRM: a real, answered landline. */
-  phone: '',
-  phoneDisplay: '',
+  /** Confirmed by Finvoq 2026-08-03 — the WhatsApp/voice line. */
+  phone: '+919811295656',
+  phoneDisplay: '+91 98112 95656',
   hours: 'Monday to Friday, 9:30am – 6:30pm IST',
 } as const;
+
+// ── WhatsApp ───────────────────────────────────────────────────────────────
+/**
+ * One number, one pre-filled message, everywhere: the floating button, the
+ * contact page, the footer and the unlisted-share modal all build their link
+ * from here. Hard-coding a wa.me URL anywhere else is how the site ended up
+ * with a placeholder 9999999999 in the invest modal.
+ *
+ * NEXT_PUBLIC_WHATSAPP_NUMBER / _MESSAGE still win if set, so a staging
+ * environment can point the button somewhere harmless.
+ */
+const WHATSAPP_NUMBER_RAW =
+  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || CONTACT.phone;
+/** Digits only — wa.me rejects '+', spaces and dashes. */
+export const WHATSAPP_NUMBER = WHATSAPP_NUMBER_RAW.replace(/\D/g, '');
+export const WHATSAPP_DISPLAY = CONTACT.phoneDisplay;
+export const WHATSAPP_MESSAGE =
+  process.env.NEXT_PUBLIC_WHATSAPP_MESSAGE ||
+  "Hi Finvoq team! I'd like to know more about investing through your platform.";
+
+/**
+ * Build a wa.me link with a pre-filled first message. Pass `message` to tailor
+ * the opener to where the user clicked (e.g. a specific unlisted share), so the
+ * thread arrives with context instead of a bare "Hi".
+ *
+ * Returns '' when no number is configured, so callers can fall back to /contact
+ * rather than opening a dead thread.
+ */
+export function whatsappLink(message: string = WHATSAPP_MESSAGE): string {
+  if (WHATSAPP_NUMBER.length < 10) return '';
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
+/** Ready-made default link for the many places that just want "chat with us". */
+export const WHATSAPP_LINK = whatsappLink();
 
 // ── Product rates ──────────────────────────────────────────────────────────
 /**
@@ -91,10 +126,19 @@ export const LAMF_RATE_FOOTNOTE =
  * at href="#" — an empty social row reads as an abandoned company, so an unset
  * profile is hidden rather than shown dead. Fill a URL in to bring it back.
  */
-export const SOCIAL_LINKS: { id: 'linkedin' | 'x' | 'instagram'; label: string; href: string }[] = [
-  { id: 'linkedin', label: 'LinkedIn', href: '' },
+export const SOCIAL_LINKS: {
+  id: 'linkedin' | 'x' | 'instagram' | 'whatsapp';
+  label: string;
+  href: string;
+}[] = [
+  { id: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/company/finvoq/' },
+  {
+    id: 'instagram',
+    label: 'Instagram',
+    href: 'https://www.instagram.com/finvoq?igsh=Z2NjZmdxZW9rNHlx',
+  },
+  { id: 'whatsapp', label: 'WhatsApp', href: WHATSAPP_LINK },
   { id: 'x', label: 'X', href: '' },
-  { id: 'instagram', label: 'Instagram', href: '' },
 ];
 
 // ── Regulatory ─────────────────────────────────────────────────────────────
