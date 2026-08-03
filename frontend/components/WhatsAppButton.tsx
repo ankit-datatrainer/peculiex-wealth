@@ -1,11 +1,12 @@
 "use client";
-import { WHATSAPP_LINK } from "@/lib/siteFacts";
+import { useWhatsApp } from "@/lib/siteSettings";
 
-// Number and pre-filled message both come from lib/siteFacts, so this button,
-// the footer, /contact and the invest modal can never drift apart. If no number
-// is configured, whatsappLink() returns '' and we fall back to the Contact page
-// rather than opening a dead thread — a chat button that goes nowhere is worse
-// than no button, because it burns the highest-intent moment on the site.
+// Number, message and label are edited in the super-admin Content Manager
+// (Global → WhatsApp chat) and shared with the footer, /contact and the invest
+// modal, so they can never drift apart. If no number is configured we fall back
+// to the Contact page rather than opening a dead thread — a chat button that
+// goes nowhere is worse than no button, because it burns the highest-intent
+// moment on the site.
 
 const WA_ICON = (
   <svg width="26" height="26" viewBox="0 0 32 32" fill="currentColor" role="img" aria-label="WhatsApp">
@@ -14,15 +15,19 @@ const WA_ICON = (
 );
 
 export default function WhatsAppButton() {
-  const configured = Boolean(WHATSAPP_LINK);
-  const chatHref = configured ? WHATSAPP_LINK : "/contact";
+  const wa = useWhatsApp();
+  if (!wa.enabled) return null;
+
+  const configured = Boolean(wa.href);
+  const chatHref = configured ? wa.href : "/contact";
+  const label = configured ? wa.buttonLabel : "Contact us";
 
   return (
     <div className="whatsapp-root">
       <a
         href={chatHref}
         {...(configured ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-        aria-label={configured ? "Chat with us on WhatsApp" : "Contact us"}
+        aria-label={configured ? `${label} on WhatsApp` : "Contact us"}
         className="whatsapp-btn"
         style={{ textDecoration: 'none' }}
       >
@@ -30,7 +35,7 @@ export default function WhatsAppButton() {
           <span className="whatsapp-pulse" />
           <span style={{ position: "relative", display: "grid", placeItems: "center" }}>{WA_ICON}</span>
         </span>
-        <span className="whatsapp-btn-text">{configured ? "Chat with us" : "Contact us"}</span>
+        <span className="whatsapp-btn-text">{label}</span>
       </a>
     </div>
   );

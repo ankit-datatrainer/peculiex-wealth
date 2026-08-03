@@ -109,7 +109,18 @@ const PAGES = [
           f("metricValue", "Device metric value", "text", "18.20%"),
           f("phoneLabel", "Phone label", "text", "BALANCE"),
           f("phoneValue", "Phone balance", "text", "₹2.4Cr"),
-          f("phoneChip", "Phone chip", "text", "+18.2%")
+          f("phoneChip", "Phone chip", "text", "+18.2%"),
+          f("ctaGhost", "Secondary button", "text", "Explore"),
+          f("ctaGhostHref", "Secondary button target", "url", "#platform"),
+          f("ctaPrimary", "Primary button", "text", "Open Account"),
+          f("ctaPrimaryHref", "Primary button target", "url", "/signup"),
+          f("tabOne", "Device tab 1", "text", "INVEST"),
+          f("tabTwo", "Device tab 2", "text", "TRACK"),
+          f("rowOneLabel", "Device row 1 label", "text", "ASSET"),
+          f("rowOneValue", "Device row 1 value", "text", "Nifty 50 Index Fund"),
+          f("rowTwoLabel", "Device row 2 label", "text", "SIP DATE"),
+          f("rowTwoValue", "Device row 2 value", "text", "1st of every month"),
+          f("deviceCta", "Device button", "text", "DONE")
         ]
       },
       {
@@ -206,7 +217,42 @@ const PAGES = [
             "Heading",
             "textarea",
             "India's leading asset managers and institutions."
-          )
+          ),
+          f(
+            "note",
+            "Note under the heading",
+            "textarea",
+            "We distribute products from these asset managers. Their marks are shown to identify the funds available on Finvoq and do not imply any endorsement of Finvoq by them."
+          ),
+          {
+            key: "items",
+            label: "Partner logos",
+            type: "list",
+            hint:
+              "Split evenly across two marquee rows, so an even number of logos reads best.",
+            fields: [
+              f("name", "Name", "text", ""),
+              f("img", "Logo", "image", "")
+            ],
+            default: [
+              { name: "HDFC", img: "/partners/1.png" },
+              { name: "Canara Robeco", img: "/partners/2.png" },
+              { name: "Invesco", img: "/partners/3.png" },
+              { name: "ICICI Prudential", img: "/partners/4.png" },
+              { name: "Nippon India", img: "/partners/5.png" },
+              { name: "Motilal Oswal", img: "/partners/6.png" },
+              { name: "Quant", img: "/partners/7.png" },
+              { name: "SBI Mutual Fund", img: "/partners/8.png" },
+              { name: "Kotak Mutual Fund", img: "/partners/12.png" },
+              { name: "Tata Mutual Fund", img: "/partners/14.png" },
+              { name: "DSP Mutual Fund", img: "/partners/15.png" },
+              { name: "LIC Mutual Fund", img: "/partners/16.png" },
+              { name: "UTI Mutual Fund", img: "/partners/17.png" },
+              { name: "Axis Mutual Fund", img: "/partners/18.png" },
+              { name: "HSBC Mutual Fund", img: "/partners/19.png" },
+              { name: "Aditya Birla Capital", img: "/partners/20.png" }
+            ]
+          }
         ]
       },
       {
@@ -215,6 +261,7 @@ const PAGES = [
         fields: [
           f("title", "Heading", "text", "Latest from Finvoq."),
           f("linkLabel", "Link text", "text", "All news"),
+          f("linkHref", "Link target", "url", "/news"),
           {
             key: "items",
             label: "Cards",
@@ -222,26 +269,34 @@ const PAGES = [
             fields: [
               f("tag", "Tag", "text", ""),
               f("date", "Date badge", "text", ""),
-              f("title", "Headline", "textarea", "")
+              f("title", "Headline", "textarea", ""),
+              f("href", "Link target", "url", ""),
+              f("cta", "Link text", "text", "")
             ],
             default: [
               {
                 tag: "Markets",
                 date: "Live",
                 title:
-                  "Track every NSE & BSE share with real-time prices and watchlists"
+                  "Track every NSE & BSE share with real-time prices and watchlists",
+                href: "/markets",
+                cta: "Open live markets"
               },
               {
                 tag: "Insights",
                 date: "Weekly",
                 title:
-                  "How our advisors curate unlisted opportunities before they list"
+                  "How our advisors curate unlisted opportunities before they list",
+                href: "/unlisted",
+                cta: "Browse unlisted opportunities"
               },
               {
                 tag: "Company",
                 date: "Beta",
                 title:
-                  "Finvoq opens its doors: India's advisory-led investment marketplace"
+                  "Finvoq opens its doors: India's advisory-led investment marketplace",
+                href: "/about",
+                cta: "Read our story"
               }
             ]
           }
@@ -1029,9 +1084,173 @@ const PAGES = [
   /* ──────────────────────── Global chrome ──────────────────────── */
   {
     key: "global",
-    label: "Global (footer & contact)",
-    path: "/about",
+    label: "Global (nav, footer, WhatsApp & social)",
+    path: "/",
     sections: [
+      /* ── Navigation bar ──
+         Two flat lists rather than one nested one: the admin editor renders a
+         list's rows with plain inputs and has no widget for a list inside a
+         list. Children therefore name their parent by its exact top-level
+         label, which is also the thing an admin can see on the page. */
+      {
+        key: "nav",
+        label: "Navigation — menu items",
+        fields: [
+          {
+            key: "items",
+            label: "Top-level menu items",
+            type: "list",
+            fields: [
+              f("label", "Label", "text", ""),
+              f("href", "Link target", "url", "")
+            ],
+            default: [
+              { label: "Watchlist", href: "/watchlist" },
+              { label: "Products", href: "/products" },
+              { label: "Unlisted", href: "/unlisted" },
+              { label: "NRI Corner", href: "/nri" },
+              { label: "Calculators", href: "/calculator" },
+              { label: "News", href: "/news" }
+            ]
+          },
+          {
+            key: "dropdown",
+            label: "Dropdown links",
+            type: "list",
+            hint:
+              'Set "Parent menu item" to the exact label of the top-level item this link belongs under (e.g. Products).',
+            fields: [
+              f("parent", "Parent menu item", "text", ""),
+              f("label", "Label", "text", ""),
+              f("href", "Link target", "url", "")
+            ],
+            default: [
+              { parent: "Products", label: "Mutual Funds", href: "/products/mutual-funds" },
+              { parent: "Products", label: "Portfolio Management (PMS)", href: "/products/pms" },
+              { parent: "Products", label: "Alternative Investments (AIF)", href: "/products/aif" },
+              { parent: "Products", label: "Bonds & G-Sec", href: "/products/bonds" },
+              { parent: "Products", label: "Insurance", href: "/products/insurance" },
+              { parent: "Products", label: "Fixed Deposits", href: "/products/fixed-deposits" },
+              { parent: "Products", label: "Gift City", href: "/products/gift-city" },
+              { parent: "Calculators", label: "SIP Calculator", href: "/calculator" },
+              { parent: "Calculators", label: "Lumpsum Calculator", href: "/calculator/lumpsum" },
+              { parent: "Calculators", label: "Retirement Calculator", href: "/calculator/retirement" },
+              { parent: "Calculators", label: "Goal Planner", href: "/calculator/goal-planner" }
+            ]
+          },
+          f("loginLabel", "Login button", "text", "Login"),
+          f("signupLabel", "Sign-up button", "text", "Open Account"),
+          f("signupHref", "Sign-up button target", "url", "/signup")
+        ]
+      },
+      /* The NRI item opens a bespoke two-column mega menu, so its contents
+         live apart from the plain `dropdown` list above. */
+      {
+        key: "navNri",
+        label: "Navigation — NRI mega menu",
+        fields: [
+          f("investLabel", "Left column heading", "text", "Investment"),
+          {
+            key: "investLinks",
+            label: "Left column links",
+            type: "list",
+            fields: [
+              f("label", "Label", "text", ""),
+              f("href", "Link target", "url", "")
+            ],
+            default: [
+              { label: "Mutual Funds", href: "/products/mutual-funds" },
+              { label: "Portfolio Management (PMS)", href: "/products/pms" },
+              { label: "Alternative Investments (AIF)", href: "/products/aif" },
+              { label: "Unlisted Shares", href: "/unlisted" },
+              { label: "Gift City Offshore", href: "/products/gift-city" },
+              { label: "Bonds & G-Sec", href: "/products/bonds" }
+            ]
+          },
+          f("servicesLabel", "Right column heading", "text", "NRI Services"),
+          {
+            key: "services",
+            label: "Right column service cards",
+            type: "list",
+            fields: [
+              f("title", "Title", "text", ""),
+              f("body", "Description", "textarea", ""),
+              f("href", "Link target", "url", "")
+            ],
+            default: [
+              {
+                title: "India Tax Filing",
+                body: "File your income tax in India with expert support",
+                href: "/nri/tax-filing"
+              },
+              {
+                title: "Apply for PAN",
+                body: "Get your PAN card quickly and hassle-free",
+                href: "/nri/pan-application"
+              },
+              {
+                title: "Update Citizenship",
+                body: "Keep your records accurate across financial systems",
+                href: "/nri/update-citizenship"
+              }
+            ]
+          }
+        ]
+      },
+      /* ── WhatsApp ──
+         Drives the floating chat button, both footers, /contact and the
+         unlisted invest modal. One number, edited in one place. */
+      {
+        key: "whatsapp",
+        label: "WhatsApp chat",
+        fields: [
+          f("number", "Number (digits only, with country code)", "text", "919811295656", {
+            hint: "No '+', spaces or dashes. Example: 919811295656 for +91 98112 95656."
+          }),
+          f("display", "Number as displayed", "text", "+91 98112 95656"),
+          f(
+            "message",
+            "Pre-filled first message",
+            "textarea",
+            "Hi Finvoq team! I'd like to know more about investing through your platform."
+          ),
+          f("buttonLabel", "Floating button label", "text", "Chat with us"),
+          f("enabled", "Show the floating button", "select", "yes", {
+            options: ["yes", "no"]
+          })
+        ]
+      },
+      /* ── Social ──
+         A list, not one field per network, so a profile can be removed
+         outright: an icon row with a dead link reads worse than no row. */
+      {
+        key: "social",
+        label: "Social links",
+        fields: [
+          {
+            key: "items",
+            label: "Profiles",
+            type: "list",
+            hint: 'Platform must be one of: linkedin, instagram, x, whatsapp, facebook, youtube.',
+            fields: [
+              f("platform", "Platform", "select", "linkedin", {
+                options: ["linkedin", "instagram", "x", "whatsapp", "facebook", "youtube"]
+              }),
+              f("href", "Profile URL", "url", "", {
+                hint: "Leave blank on the WhatsApp row to use the number above."
+              })
+            ],
+            default: [
+              { platform: "linkedin", href: "https://www.linkedin.com/company/finvoq/" },
+              {
+                platform: "instagram",
+                href: "https://www.instagram.com/finvoq?igsh=Z2NjZmdxZW9rNHlx"
+              },
+              { platform: "whatsapp", href: "" }
+            ]
+          }
+        ]
+      },
       {
         key: "footer",
         label: "Site footer",
@@ -1059,14 +1278,85 @@ const PAGES = [
           f("madeIn", "Location line", "text", "Crafted with care · Delhi, India")
         ]
       },
+      /* Four link columns, one list each. Kept as separate lists rather than
+         one list with a "column" key so reordering inside a column is a
+         single move in the editor instead of a hunt through 25 mixed rows. */
+      {
+        key: "footerLinks",
+        label: "Footer link columns",
+        fields: [
+          f("col1Title", "Column 1 heading", "text", "Products"),
+          {
+            key: "col1",
+            label: "Column 1 links",
+            type: "list",
+            fields: [f("label", "Label", "text", ""), f("href", "Link target", "url", "")],
+            default: [
+              { label: "Equities", href: "/products/equities" },
+              { label: "Mutual Funds", href: "/products/mutual-funds" },
+              { label: "PMS", href: "/products/pms" },
+              { label: "AIF", href: "/products/aif" },
+              { label: "FDs", href: "/products/fixed-deposits" },
+              { label: "Bonds", href: "/products/bonds" },
+              { label: "Insurance", href: "/products/insurance" },
+              { label: "Unlisted", href: "/unlisted" }
+            ]
+          },
+          f("col2Title", "Column 2 heading", "text", "Company"),
+          {
+            key: "col2",
+            label: "Column 2 links",
+            type: "list",
+            fields: [f("label", "Label", "text", ""), f("href", "Link target", "url", "")],
+            default: [
+              { label: "About", href: "/about" },
+              { label: "Investor stories", href: "/stories" },
+              { label: "FAQ", href: "/faq" },
+              { label: "Get started", href: "/get-started" },
+              { label: "Careers", href: "/careers" },
+              { label: "Contact", href: "/contact" }
+            ]
+          },
+          f("col3Title", "Column 3 heading", "text", "Resources"),
+          {
+            key: "col3",
+            label: "Column 3 links",
+            type: "list",
+            fields: [f("label", "Label", "text", ""), f("href", "Link target", "url", "")],
+            default: [
+              { label: "News", href: "/news" },
+              { label: "SIP Calculator", href: "/calculator" },
+              { label: "Lumpsum Calculator", href: "/calculator/lumpsum" },
+              { label: "Goal Planner", href: "/calculator/goal-planner" },
+              { label: "Market Insights", href: "/insights" },
+              { label: "Glossary", href: "/glossary" }
+            ]
+          },
+          f("col4Title", "Column 4 heading", "text", "Legal"),
+          {
+            key: "col4",
+            label: "Column 4 links",
+            type: "list",
+            fields: [f("label", "Label", "text", ""), f("href", "Link target", "url", "")],
+            default: [
+              { label: "Terms of service", href: "/legal/terms" },
+              { label: "Privacy policy", href: "/legal/privacy" },
+              { label: "Risk disclosure", href: "/legal/risk-disclosure" },
+              { label: "Grievance redressal", href: "/legal/grievance" },
+              { label: "Investor charter", href: "/legal/investor-charter" }
+            ]
+          }
+        ]
+      },
       {
         key: "contact",
         label: "Contact details",
         fields: [
-          f("email", "Email", "text", "hello@finvoq.com"),
-          f("phone", "Phone", "text", "+91 22 4900 0000"),
-          f("hours", "Working hours", "text", "Mon–Fri 10am–6pm IST"),
-          f("address", "Address", "textarea", "Delhi, India")
+          f("email", "Email", "text", "info@finvoq.com"),
+          f("phone", "Phone (dial target)", "text", "+919811295656"),
+          f("phoneDisplay", "Phone (as displayed)", "text", "+91 98112 95656"),
+          f("hours", "Working hours", "text", "Monday to Friday, 9:30am – 6:30pm IST"),
+          f("address", "Registered office", "textarea", "Delhi, India")
         ]
       }
     ]

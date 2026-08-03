@@ -427,6 +427,9 @@ export default function ContentManagerPage() {
           color: var(--color-text-faint);
           margin-top: 4px;
         }
+        .cms-hint-top {
+          margin: -2px 0 8px;
+        }
         .cms-img-row {
           display: flex;
           gap: 12px;
@@ -670,6 +673,9 @@ function ListField({
   return (
     <div className="cms-field">
       <label>{field.label}</label>
+      {/* Shown above the rows, not below: a list can be long, and a rule like
+          "parent must match a top-level label" is useless after the fact. */}
+      {field.hint && <p className="cms-hint cms-hint-top">{field.hint}</p>}
       <div className="cms-list-rows">
         {rows.map((row, i) => (
           <div key={i} className="cms-row">

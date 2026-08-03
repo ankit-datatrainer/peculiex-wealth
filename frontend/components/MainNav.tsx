@@ -5,13 +5,18 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth, isAdminUser } from "@/lib/auth-context";
 import { ThemeToggle } from "./ThemeToggle";
 import Logo from "./Logo";
+import { useContent } from "@/lib/content";
+import { GLOBAL_PAGE, navFrom, nriMenuFrom } from "@/lib/siteSettings";
 
 type NavItem = {
   href: string;
   label: string;
-  children?: { href: string; label: string; disabled?: boolean }[];
+  children?: { href: string; label: string }[];
 };
 
+/* Fallback menu: what renders before the CMS responds, and if it never does.
+   The nav is the site's only means of getting anywhere, so it must never be
+   empty — hence a real list here rather than an empty array. */
 const NAV_ITEMS: NavItem[] = [
   { href: "/watchlist", label: "Watchlist" },
   {
@@ -49,13 +54,52 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/news", label: "News" }
 ];
 
+/* Fallbacks for the bespoke NRI mega menu, same role as NAV_ITEMS above. */
+const NRI_INVEST_FALLBACK = [
+  { label: "Mutual Funds", href: "/products/mutual-funds" },
+  { label: "Portfolio Management (PMS)", href: "/products/pms" },
+  { label: "Alternative Investments (AIF)", href: "/products/aif" },
+  { label: "Unlisted Shares", href: "/unlisted" },
+  { label: "Gift City Offshore", href: "/products/gift-city" },
+  { label: "Bonds & G-Sec", href: "/products/bonds" }
+];
+
+const NRI_SERVICES_FALLBACK = [
+  {
+    title: "India Tax Filing",
+    body: "File your income tax in India with expert support",
+    href: "/nri/tax-filing"
+  },
+  {
+    title: "Apply for PAN",
+    body: "Get your PAN card quickly and hassle-free",
+    href: "/nri/pan-application"
+  },
+  {
+    title: "Update Citizenship",
+    body: "Keep your records accurate across financial systems",
+    href: "/nri/update-citizenship"
+  }
+];
+
+const NRI_SERVICE_ICONS = [
+  <svg key="tax" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="19" y1="5" x2="5" y2="19"/><circle cx="9" cy="9" r="2"/><circle cx="15" cy="15" r="2"/></svg>,
+  <svg key="pan" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>,
+  <svg key="cit" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="16"/><line x1="15" y1="22" x2="15" y2="16"/><line x1="9" y1="16" x2="15" y2="16"/><path d="M8 6h2v2H8V6zm6 0h2v2h-2V6zm-6 4h2v2H8v-2zm6 0h2v2h-2v-2zm-6 4h2v2H8v-2zm6 0h2v2h-2v-2z"/></svg>
+];
+
 export default function MainNav() {
   const linksRef = useRef<HTMLUListElement | null>(null);
   const toggleRef = useRef<HTMLButtonElement | null>(null);
   const pathname = usePathname();
   const router = useRouter();
   const { user, ready, logout } = useAuth();
-  const navItems = NAV_ITEMS;
+  const cms = useContent(GLOBAL_PAGE);
+  const navItems = navFrom(cms, NAV_ITEMS);
+  const nri = nriMenuFrom(cms);
+  const loginLabel = cms.t("nav", "loginLabel", "Login");
+  const signupLabel = cms.t("nav", "signupLabel", "Open Account");
+  const signupHref = cms.t("nav", "signupHref", "/signup");
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
@@ -146,8 +190,13 @@ export default function MainNav() {
                 !it.href.includes("#") &&
                 (pathname === it.href ||
                   (it.href !== "/" && pathname.startsWith(it.href)));
-              if (it.children) {
-                if (it.label === "NRI Corner") {
+              // Keyed on the destination, not the label: the mega menu is the
+              // NRI section's bespoke layout, and it must survive an admin
+              // renaming the item. Its contents come from the navNri section,
+              // so it needs no rows in the shared `dropdown` list.
+              const isNriMega = it.href === "/nri" || it.href.startsWith("/nri/");
+              if (isNriMega || it.children) {
+                if (isNriMega) {
                   return (
                     <li
                       key={it.href}
@@ -181,49 +230,44 @@ export default function MainNav() {
                         <div className="nri-dropdown-inner">
                           {/* Left Column: Investment */}
                           <div className="nri-column nri-left-col">
-                            <span className="nri-col-label">Investment</span>
+                            <span className="nri-col-label">{nri.investLabel}</span>
                             <ul className="nri-links">
-                              <li><Link href="/products/mutual-funds" className="nri-dropdown-link" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Mutual Funds</Link></li>
-                              <li><Link href="/products/pms" className="nri-dropdown-link" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Portfolio Management (PMS)</Link></li>
-                              <li><Link href="/products/aif" className="nri-dropdown-link" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Alternative Investments (AIF)</Link></li>
-                              <li><Link href="/unlisted" className="nri-dropdown-link" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Unlisted Shares</Link></li>
-                              <li><Link href="/products/gift-city" className="nri-dropdown-link" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Gift City Offshore</Link></li>
-                              <li><Link href="/products/bonds" className="nri-dropdown-link" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Bonds & G-Sec</Link></li>
+                              {(nri.investLinks.length ? nri.investLinks : NRI_INVEST_FALLBACK).map((l) => (
+                                <li key={`${l.href}-${l.label}`}>
+                                  <Link
+                                    href={l.href}
+                                    className="nri-dropdown-link"
+                                    onClick={() => { setMobileOpen(false); setCloseHover(true); }}
+                                  >
+                                    {l.label}
+                                  </Link>
+                                </li>
+                              ))}
                             </ul>
                           </div>
                           {/* Right Column: Services */}
                           <div className="nri-column nri-right-col">
-                            <span className="nri-col-label">NRI Services</span>
+                            <span className="nri-col-label">{nri.servicesLabel}</span>
                             <div className="nri-services-grid">
-                              <Link href="/nri/tax-filing" className="nri-service-card" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>
-                                <div className="nri-icon-wrapper">
-                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="19" y1="5" x2="5" y2="19"/><circle cx="9" cy="9" r="2"/><circle cx="15" cy="15" r="2"/></svg>
-                                </div>
-                                <div className="nri-service-text">
-                                  <h4>India Tax Filing</h4>
-                                  <p>File your income tax in India with expert support</p>
-                                </div>
-                              </Link>
-
-                              <Link href="/nri/pan-application" className="nri-service-card" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>
-                                <div className="nri-icon-wrapper">
-                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                                </div>
-                                <div className="nri-service-text">
-                                  <h4>Apply for PAN</h4>
-                                  <p>Get your PAN card quickly and hassle-free</p>
-                                </div>
-                              </Link>
-                              <Link href="/nri/update-citizenship" className="nri-service-card" onClick={() => { setMobileOpen(false); setCloseHover(true); }}>
-                                <div className="nri-icon-wrapper">
-                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="16"/><line x1="15" y1="22" x2="15" y2="16"/><line x1="9" y1="16" x2="15" y2="16"/><path d="M8 6h2v2H8V6zm6 0h2v2h-2V6zm-6 4h2v2H8v-2zm6 0h2v2h-2v-2zm-6 4h2v2H8v-2zm6 0h2v2h-2v-2z"/></svg>
-                                </div>
-                                <div className="nri-service-text">
-                                  <h4>Update Citizenship</h4>
-                                  <p>Keep your records accurate across financial systems</p>
-                                </div>
-                              </Link>
-
+                              {(nri.services.length ? nri.services : NRI_SERVICES_FALLBACK).map((s, i) => (
+                                <Link
+                                  key={`${s.href}-${s.title}`}
+                                  href={s.href}
+                                  className="nri-service-card"
+                                  onClick={() => { setMobileOpen(false); setCloseHover(true); }}
+                                >
+                                  <div className="nri-icon-wrapper">
+                                    {/* Icons stay in code and cycle by position: they are
+                                        artwork, not copy, so the CMS edits the words and
+                                        leaves the drawing alone. */}
+                                    {NRI_SERVICE_ICONS[i % NRI_SERVICE_ICONS.length]}
+                                  </div>
+                                  <div className="nri-service-text">
+                                    <h4>{s.title}</h4>
+                                    <p>{s.body}</p>
+                                  </div>
+                                </Link>
+                              ))}
                             </div>
                           </div>
                         </div>
@@ -259,24 +303,15 @@ export default function MainNav() {
                       </button>
                     </div>
                     <ul className="nav-dropdown">
-                      {it.children.map((c) => (
+                      {(it.children || []).map((c) => (
                         <li key={c.label}>
-                          {c.disabled ? (
-                            <span
-                              className="nav-dropdown-link"
-                              style={{ opacity: 0.5, cursor: "default" }}
-                            >
-                              {c.label}
-                            </span>
-                          ) : (
-                            <Link
-                              href={c.href}
-                              className="nav-dropdown-link"
-                              onClick={() => { setMobileOpen(false); setCloseHover(true); }}
-                            >
-                              {c.label}
-                            </Link>
-                          )}
+                          <Link
+                            href={c.href}
+                            className="nav-dropdown-link"
+                            onClick={() => { setMobileOpen(false); setCloseHover(true); }}
+                          >
+                            {c.label}
+                          </Link>
                         </li>
                       ))}
                     </ul>
@@ -331,8 +366,8 @@ export default function MainNav() {
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="btn btn-outline" style={{ width: "100%", justifyContent: "center" }} data-magnetic onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Login</Link>
-                  <Link href="/signup" className="btn btn-gold" style={{ width: "100%", justifyContent: "center" }} data-magnetic onClick={() => { setMobileOpen(false); setCloseHover(true); }}>Open Account</Link>
+                  <Link href="/login" className="btn btn-outline" style={{ width: "100%", justifyContent: "center" }} data-magnetic onClick={() => { setMobileOpen(false); setCloseHover(true); }}>{loginLabel}</Link>
+                  <Link href={signupHref} className="btn btn-gold" style={{ width: "100%", justifyContent: "center" }} data-magnetic onClick={() => { setMobileOpen(false); setCloseHover(true); }}>{signupLabel}</Link>
                 </>
               )}
             </li>
@@ -541,10 +576,10 @@ export default function MainNav() {
           ) : (
             <>
               <Link href="/login" className="btn btn-outline" data-magnetic>
-                Login
+                {loginLabel}
               </Link>
-              <Link href="/signup" className="btn btn-gold" data-magnetic>
-                Open Account
+              <Link href={signupHref} className="btn btn-gold" data-magnetic>
+                {signupLabel}
               </Link>
             </>
           )}

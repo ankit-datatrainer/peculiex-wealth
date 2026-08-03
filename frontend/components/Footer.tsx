@@ -6,17 +6,70 @@ import { postJSON } from "@/lib/api";
 import Logo from "./Logo";
 import { useContent, accent } from "@/lib/content";
 import {
-  CONTACT,
-  WHATSAPP_DISPLAY,
-  WHATSAPP_LINK,
   DEMAT_DISCLOSURE,
   REGISTRATION_CODES_LINE,
   REGISTRATION_LINE,
   REGISTRATION_NUMBER,
-  REGULATORY_LABEL,
-  SOCIAL_LINKS
+  REGULATORY_LABEL
 } from "@/lib/siteFacts";
 import { SOCIAL_ICON_PATHS } from "@/lib/socialIcons";
+import {
+  contactFrom,
+  footerColumnsFrom,
+  socialFrom,
+  whatsappFrom,
+  type FooterColumn
+} from "@/lib/siteSettings";
+
+/* Link columns as they ship. The CMS replaces these wholesale; they remain so
+   a footer still navigates if the content API is unreachable. */
+const FOOTER_COLUMNS: FooterColumn[] = [
+  {
+    title: "Products",
+    links: [
+      { label: "Equities", href: "/products/equities" },
+      { label: "Mutual Funds", href: "/products/mutual-funds" },
+      { label: "PMS", href: "/products/pms" },
+      { label: "AIF", href: "/products/aif" },
+      { label: "FDs", href: "/products/fixed-deposits" },
+      { label: "Bonds", href: "/products/bonds" },
+      { label: "Insurance", href: "/products/insurance" },
+      { label: "Unlisted", href: "/unlisted" }
+    ]
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Investor stories", href: "/stories" },
+      { label: "FAQ", href: "/faq" },
+      { label: "Get started", href: "/get-started" },
+      { label: "Careers", href: "/careers" },
+      { label: "Contact", href: "/contact" }
+    ]
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "News", href: "/news" },
+      { label: "SIP Calculator", href: "/calculator" },
+      { label: "Lumpsum Calculator", href: "/calculator/lumpsum" },
+      { label: "Goal Planner", href: "/calculator/goal-planner" },
+      { label: "Market Insights", href: "/insights" },
+      { label: "Glossary", href: "/glossary" }
+    ]
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Terms of service", href: "/legal/terms" },
+      { label: "Privacy policy", href: "/legal/privacy" },
+      { label: "Risk disclosure", href: "/legal/risk-disclosure" },
+      { label: "Grievance redressal", href: "/legal/grievance" },
+      { label: "Investor charter", href: "/legal/investor-charter" }
+    ]
+  }
+];
 
 /** Render a *starred* CMS heading with the <em> accent the design uses. */
 function heading(text: string) {
@@ -28,6 +81,10 @@ function heading(text: string) {
 
 export default function Footer() {
   const cms = useContent("global");
+  const columns = footerColumnsFrom(cms, FOOTER_COLUMNS);
+  const social = socialFrom(cms);
+  const whatsapp = whatsappFrom(cms);
+  const contact = contactFrom(cms);
   const pathname = usePathname();
   const year = new Date().getFullYear();
   const [submitting, setSubmitting] = useState(false);
@@ -138,127 +195,41 @@ export default function Footer() {
           {/* Direct routes in the footer: the number is the fastest path to a
               human, and burying it on /contact costs the high-intent click. */}
           <ul className="foot-contact">
-            {WHATSAPP_LINK ? (
+            {whatsapp.href ? (
               <li>
-                <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+                <a href={whatsapp.href} target="_blank" rel="noopener noreferrer">
                   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="15" height="15">
                     <path d={SOCIAL_ICON_PATHS.whatsapp} />
                   </svg>
-                  WhatsApp {WHATSAPP_DISPLAY}
+                  WhatsApp {whatsapp.display}
                 </a>
               </li>
             ) : null}
             {/* Same number as the WhatsApp row above, so it is labelled by
                 what the tap does rather than repeated as a bare figure. */}
-            {CONTACT.phoneDisplay ? (
+            {contact.phoneDisplay ? (
               <li>
-                <a href={`tel:${CONTACT.phone}`}>Call {CONTACT.phoneDisplay}</a>
+                <a href={`tel:${contact.phone}`}>Call {contact.phoneDisplay}</a>
               </li>
             ) : null}
             <li>
-              <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+              <a href={`mailto:${contact.email}`}>{contact.email}</a>
             </li>
           </ul>
         </div>
 
-        <div className="foot-col">
-          <h4>Products</h4>
-          <ul>
-            <li>
-              <a href="/products/equities">Equities</a>
-            </li>
-            <li>
-              <a href="/products/mutual-funds">Mutual Funds</a>
-            </li>
-            <li>
-              <a href="/products/pms">PMS</a>
-            </li>
-            <li>
-              <a href="/products/aif">AIF</a>
-            </li>
-            <li>
-              <a href="/products/fixed-deposits">FDs</a>
-            </li>
-            <li>
-              <a href="/products/bonds">Bonds</a>
-            </li>
-            <li>
-              <a href="/products/insurance">Insurance</a>
-            </li>
-            <li>
-              <a href="/unlisted">Unlisted</a>
-            </li>
-          </ul>
-        </div>
-
-        <div className="foot-col">
-          <h4>Company</h4>
-          <ul>
-            <li>
-              <a href="/about">About</a>
-            </li>
-            <li>
-              <a href="/stories">Investor stories</a>
-            </li>
-            <li>
-              <a href="/faq">FAQ</a>
-            </li>
-            <li>
-              <a href="/get-started">Get started</a>
-            </li>
-            <li>
-              <a href="/careers">Careers</a>
-            </li>
-            <li>
-              <a href="/contact">Contact</a>
-            </li>
-          </ul>
-        </div>
-
-        <div className="foot-col">
-          <h4>Resources</h4>
-          <ul>
-            <li>
-              <a href="/news">News</a>
-            </li>
-            <li>
-              <a href="/calculator">SIP Calculator</a>
-            </li>
-            <li>
-              <a href="/calculator/lumpsum">Lumpsum Calculator</a>
-            </li>
-            <li>
-              <a href="/calculator/goal-planner">Goal Planner</a>
-            </li>
-            <li>
-              <a href="/insights">Market Insights</a>
-            </li>
-            <li>
-              <a href="/glossary">Glossary</a>
-            </li>
-          </ul>
-        </div>
-
-        <div className="foot-col">
-          <h4>Legal</h4>
-          <ul>
-            <li>
-              <a href="/legal/terms">Terms of service</a>
-            </li>
-            <li>
-              <a href="/legal/privacy">Privacy policy</a>
-            </li>
-            <li>
-              <a href="/legal/risk-disclosure">Risk disclosure</a>
-            </li>
-            <li>
-              <a href="/legal/grievance">Grievance redressal</a>
-            </li>
-            <li>
-              <a href="/legal/investor-charter">Investor charter</a>
-            </li>
-          </ul>
-        </div>
+        {columns.map((col) => (
+          <div className="foot-col" key={col.title}>
+            <h4>{col.title}</h4>
+            <ul>
+              {col.links.map((l) => (
+                <li key={`${l.href}-${l.label}`}>
+                  <a href={l.href}>{l.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
 
       <div className="container foot-band">
@@ -298,10 +269,10 @@ export default function Footer() {
             <p className="foot-codes">{REGISTRATION_CODES_LINE}</p>
           ) : null}
         </div>
-        {SOCIAL_LINKS.some((s) => s.href) && (
+        {social.length > 0 && (
           <div className="foot-social" aria-label="Social links">
-            {SOCIAL_LINKS.filter((s) => s.href).map((s) => (
-              <a key={s.id} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}>
+            {social.map((s) => (
+              <a key={s.id} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}>
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="18" height="18">
                   <path d={SOCIAL_ICON_PATHS[s.id]} />
                 </svg>

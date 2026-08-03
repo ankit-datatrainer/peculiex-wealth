@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { postJSON } from "@/lib/api";
-import { whatsappLink } from "@/lib/siteFacts";
+import { useWhatsApp } from "@/lib/siteSettings";
 
 type InvestModalProps = {
   open: boolean;
@@ -24,6 +24,7 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const wa = useWhatsApp();
 
   useEffect(() => {
     if (open) {
@@ -272,7 +273,7 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
                   href={
                     // Pre-fill the share and quantity so the thread opens with
                     // the context the desk needs, not a bare "Hi".
-                    whatsappLink(
+                    wa.link(
                       `Hi Finvoq team! I'd like bulk deal pricing on ${company.name} (${units} units).`
                     ) || "/contact"
                   }

@@ -27,13 +27,16 @@ import {
   REGISTRATION_CODES_LINE,
   REGISTRATION_LINE,
   REGISTRATION_NUMBER,
-  REGULATORY_LABEL,
-  CONTACT,
-  SOCIAL_LINKS,
-  WHATSAPP_DISPLAY,
-  WHATSAPP_LINK
+  REGULATORY_LABEL
 } from "@/lib/siteFacts";
 import { SOCIAL_ICON_PATHS } from "@/lib/socialIcons";
+import {
+  contactFrom,
+  footerColumnsFrom,
+  socialFrom,
+  whatsappFrom,
+  type FooterColumn
+} from "@/lib/siteSettings";
 
 /** Render a CMS multi-line value, keeping the author's line breaks. */
 function lines(text: string) {
@@ -102,6 +105,57 @@ function Reveal({
     </div>
   );
 }
+
+/* Footer link columns as they ship; the CMS (Global → Footer link columns)
+   replaces these wholesale. Kept so the footer still navigates if the content
+   API is unreachable. */
+const HOME_FOOTER_COLUMNS: FooterColumn[] = [
+  {
+    title: "Products",
+    links: [
+      { label: "Equities", href: "/products/equities" },
+      { label: "Mutual Funds", href: "/products/mutual-funds" },
+      { label: "PMS", href: "/products/pms" },
+      { label: "AIF", href: "/products/aif" },
+      { label: "FDs", href: "/products/fixed-deposits" },
+      { label: "Bonds", href: "/products/bonds" },
+      { label: "Insurance", href: "/products/insurance" },
+      { label: "Unlisted", href: "/unlisted" }
+    ]
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "/about" },
+      { label: "Investor stories", href: "/stories" },
+      { label: "FAQ", href: "/faq" },
+      { label: "Get started", href: "/get-started" },
+      { label: "Careers", href: "/careers" },
+      { label: "Contact", href: "/contact" }
+    ]
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "News", href: "/news" },
+      { label: "SIP Calculator", href: "/calculator" },
+      { label: "Lumpsum Calculator", href: "/calculator/lumpsum" },
+      { label: "Goal Planner", href: "/calculator/goal-planner" },
+      { label: "Market Insights", href: "/insights" },
+      { label: "Glossary", href: "/glossary" }
+    ]
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Terms of service", href: "/legal/terms" },
+      { label: "Privacy policy", href: "/legal/privacy" },
+      { label: "Risk disclosure", href: "/legal/risk-disclosure" },
+      { label: "Grievance redressal", href: "/legal/grievance" },
+      { label: "Investor charter", href: "/legal/investor-charter" }
+    ]
+  }
+];
 
 /* Fallbacks: what renders until a super admin edits these in the CMS. */
 const FEATURES = [
@@ -192,6 +246,14 @@ export default function HomeClone() {
   // Copy and imagery come from the super-admin content manager, falling back
   // to the values below whenever a field has not been edited.
   const c = useContent("home");
+  /* Site chrome (nav/footer/WhatsApp/social) lives on the `global` page, so
+     editing the number or a footer column updates this footer and the one on
+     every other page from a single place in the Content Manager. */
+  const g = useContent("global");
+  const footerColumns = footerColumnsFrom(g, HOME_FOOTER_COLUMNS);
+  const social = socialFrom(g);
+  const whatsapp = whatsappFrom(g);
+  const contact = contactFrom(g);
   /* Optional uploaded artwork for the hero mark. Empty by default, in which
      case the drawn <GoldInfinity /> is used instead. */
   const heroInfinity = c.t("hero", "infinity", "").trim();
@@ -410,11 +472,11 @@ export default function HomeClone() {
               </h1>
 
               <div className="sfc-hero-ctas sfc-up sfc-d2">
-                <a href="#platform" className="sfc-btn-ghost">
-                  Explore <ArrowDown size={15} />
+                <a href={c.t("platform", "ctaGhostHref", "#platform")} className="sfc-btn-ghost">
+                  {c.t("platform", "ctaGhost", "Explore")} <ArrowDown size={15} />
                 </a>
-                <Link href="/signup" className="sfc-btn-mint">
-                  Open Account
+                <Link href={c.t("platform", "ctaPrimaryHref", "/signup")} className="sfc-btn-mint">
+                  {c.t("platform", "ctaPrimary", "Open Account")}
                 </Link>
               </div>
             </div>
@@ -448,22 +510,22 @@ export default function HomeClone() {
                       </span>
                     </div>
                     <div className="sfc-tab-tabs">
-                      <span className="on">INVEST</span>
-                      <span>TRACK</span>
+                      <span className="on">{c.t("platform", "tabOne", "INVEST")}</span>
+                      <span>{c.t("platform", "tabTwo", "TRACK")}</span>
                     </div>
                     <div className="sfc-tab-metric">
                       <label>{c.t("platform", "metricLabel", "PORTFOLIO XIRR")}</label>
                       <strong>{c.t("platform", "metricValue", "18.20%")}</strong>
                     </div>
                     <div className="sfc-tab-row">
-                      <span>ASSET</span>
-                      <b>Nifty 50 Index Fund</b>
+                      <span>{c.t("platform", "rowOneLabel", "ASSET")}</span>
+                      <b>{c.t("platform", "rowOneValue", "Nifty 50 Index Fund")}</b>
                     </div>
                     <div className="sfc-tab-row">
-                      <span>SIP DATE</span>
-                      <b>1st of every month</b>
+                      <span>{c.t("platform", "rowTwoLabel", "SIP DATE")}</span>
+                      <b>{c.t("platform", "rowTwoValue", "1st of every month")}</b>
                     </div>
-                    <div className="sfc-tab-cta">DONE</div>
+                    <div className="sfc-tab-cta">{c.t("platform", "deviceCta", "DONE")}</div>
                   </div>
                 </div>
               </div>
@@ -545,15 +607,18 @@ export default function HomeClone() {
             </div>
             <div className="sfc-about-copy">
               <p>
-                Our team has spent a decade inside India&apos;s wealth industry
-                building portfolios for families and institutions. We&apos;re
-                rebuilding that experience as a platform any investor can walk
-                into: advisory-led, transparent, and SEBI-registered.
+                {c.t(
+                  "about",
+                  "bodyOne",
+                  "Our team has spent a decade inside India's wealth industry building portfolios for families and institutions. We're rebuilding that experience as a platform any investor can walk into: advisory-led, transparent, and SEBI-registered."
+                )}
               </p>
               <p>
-                Finvoq is a marketplace for real ownership across asset classes,
-                not another trading app. Every product carries real diligence,
-                clear costs and a human advisor behind it.
+                {c.t(
+                  "about",
+                  "bodyTwo",
+                  "Finvoq is a marketplace for real ownership across asset classes, not another trading app. Every product carries real diligence, clear costs and a human advisor behind it."
+                )}
               </p>
             </div>
           </div>
@@ -585,26 +650,39 @@ export default function HomeClone() {
               )}
             </p>
           </div>
-          <div className="sfc-marquee">
-            <div className="sfc-marquee-track">
-              {[...PARTNERS.slice(0, 8), ...PARTNERS.slice(0, 8)].map(
-                (p, i) => (
-                  <div key={i} className="sfc-partner-tile" title={p.name}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={p.img} alt={p.name} loading="lazy" />
-                  </div>
-                )
-              )}
-            </div>
-            <div className="sfc-marquee-track sfc-marquee-rev">
-              {[...PARTNERS.slice(8), ...PARTNERS.slice(8)].map((p, i) => (
-                <div key={i} className="sfc-partner-tile" title={p.name}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={p.img} alt={p.name} loading="lazy" />
+          {/* Split down the middle so both marquee rows stay full however many
+              logos an admin adds — a fixed slice(0,8) left the second row
+              empty as soon as the list shrank. */}
+          {(() => {
+            const logos = c.list<{ name: string; img: string }>(
+              "partners",
+              "items",
+              PARTNERS
+            ).filter((p) => p.img?.trim());
+            const half = Math.ceil(logos.length / 2);
+            const rowA = logos.slice(0, half);
+            const rowB = logos.slice(half).length ? logos.slice(half) : rowA;
+            return (
+              <div className="sfc-marquee">
+                <div className="sfc-marquee-track">
+                  {[...rowA, ...rowA].map((p, i) => (
+                    <div key={i} className="sfc-partner-tile" title={p.name}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={imgSrc(p.img)} alt={p.name} loading="lazy" />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
+                <div className="sfc-marquee-track sfc-marquee-rev">
+                  {[...rowB, ...rowB].map((p, i) => (
+                    <div key={i} className="sfc-partner-tile" title={p.name}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={imgSrc(p.img)} alt={p.name} loading="lazy" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </section>
 
         {/* ── News ─────────────────────────────────────────────────────── */}
@@ -612,8 +690,8 @@ export default function HomeClone() {
           <div className="sfc-wrap">
             <div className="sfc-news-head">
               <h2 className="sfc-h2-serif">{c.t("news", "title", "Latest from Finvoq.")}</h2>
-              <Link href="/news" className="sfc-mini-link">
-                All news
+              <Link href={c.t("news", "linkHref", "/news")} className="sfc-mini-link">
+                {c.t("news", "linkLabel", "All news")}
               </Link>
             </div>
 
@@ -689,23 +767,23 @@ export default function HomeClone() {
                     so the highest-traffic page was the one page with no way
                     to reach us without another click. */}
                 <ul className="sfc-footer-contact">
-                  {WHATSAPP_LINK ? (
+                  {whatsapp.href ? (
                     <li>
-                      <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+                      <a href={whatsapp.href} target="_blank" rel="noopener noreferrer">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15" aria-hidden="true">
                           <path d={SOCIAL_ICON_PATHS.whatsapp} />
                         </svg>
-                        WhatsApp {WHATSAPP_DISPLAY}
+                        WhatsApp {whatsapp.display}
                       </a>
                     </li>
                   ) : null}
                   <li>
-                    <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+                    <a href={`mailto:${contact.email}`}>{contact.email}</a>
                   </li>
                 </ul>
-                {SOCIAL_LINKS.some((s) => s.href) ? (
+                {social.length > 0 ? (
                   <div className="sfc-footer-social" aria-label="Social links">
-                    {SOCIAL_LINKS.filter((s) => s.href).map((s) => (
+                    {social.map((s) => (
                       <a
                         key={s.id}
                         href={s.href}
@@ -722,101 +800,18 @@ export default function HomeClone() {
                   </div>
                 ) : null}
               </div>
-              <div>
-                <div className="sfc-footer-col-title">Products</div>
-                <ul>
-                  <li>
-                    <Link href="/products/equities">Equities</Link>
-                  </li>
-                  <li>
-                    <Link href="/products/mutual-funds">Mutual Funds</Link>
-                  </li>
-                  <li>
-                    <Link href="/products/pms">PMS</Link>
-                  </li>
-                  <li>
-                    <Link href="/products/aif">AIF</Link>
-                  </li>
-                  <li>
-                    <Link href="/products/fixed-deposits">FDs</Link>
-                  </li>
-                  <li>
-                    <Link href="/products/bonds">Bonds</Link>
-                  </li>
-                  <li>
-                    <Link href="/products/insurance">Insurance</Link>
-                  </li>
-                  <li>
-                    <Link href="/unlisted">Unlisted</Link>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <div className="sfc-footer-col-title">Company</div>
-                <ul>
-                  <li>
-                    <Link href="/about">About</Link>
-                  </li>
-                  <li>
-                    <Link href="/stories">Investor stories</Link>
-                  </li>
-                  <li>
-                    <Link href="/faq">FAQ</Link>
-                  </li>
-                  <li>
-                    <Link href="/get-started">Get started</Link>
-                  </li>
-                  <li>
-                    <Link href="/careers">Careers</Link>
-                  </li>
-                  <li>
-                    <Link href="/contact">Contact</Link>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <div className="sfc-footer-col-title">Resources</div>
-                <ul>
-                  <li>
-                    <Link href="/news">News</Link>
-                  </li>
-                  <li>
-                    <Link href="/calculator">SIP Calculator</Link>
-                  </li>
-                  <li>
-                    <Link href="/calculator/lumpsum">Lumpsum Calculator</Link>
-                  </li>
-                  <li>
-                    <Link href="/calculator/goal-planner">Goal Planner</Link>
-                  </li>
-                  <li>
-                    <Link href="/insights">Market Insights</Link>
-                  </li>
-                  <li>
-                    <Link href="/glossary">Glossary</Link>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <div className="sfc-footer-col-title">Legal</div>
-                <ul>
-                  <li>
-                    <Link href="/legal/terms">Terms of service</Link>
-                  </li>
-                  <li>
-                    <Link href="/legal/privacy">Privacy policy</Link>
-                  </li>
-                  <li>
-                    <Link href="/legal/risk-disclosure">Risk disclosure</Link>
-                  </li>
-                  <li>
-                    <Link href="/legal/grievance">Grievance redressal</Link>
-                  </li>
-                  <li>
-                    <Link href="/legal/investor-charter">Investor charter</Link>
-                  </li>
-                </ul>
-              </div>
+              {footerColumns.map((col) => (
+                <div key={col.title}>
+                  <div className="sfc-footer-col-title">{col.title}</div>
+                  <ul>
+                    {col.links.map((l) => (
+                      <li key={`${l.href}-${l.label}`}>
+                        <Link href={l.href}>{l.label}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
 
             <div className="sfc-footer-disclaim">
