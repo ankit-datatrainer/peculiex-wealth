@@ -77,16 +77,14 @@ export const CONTACT = {
  * from here. Hard-coding a WhatsApp URL anywhere else is how the site ended up
  * with a placeholder 9999999999 in the invest modal.
  *
- * NEXT_PUBLIC_WHATSAPP_NUMBER / _MESSAGE still win if set, so a staging
- * environment can point the button somewhere harmless.
+ * Deliberately literal, not read from process.env: the VPS had a stale
+ * NEXT_PUBLIC_WHATSAPP_NUMBER baked into an old build from before the rebrand,
+ * and env vars are invisible from a git diff, so a value like that can drift
+ * for months with nobody noticing. A literal here shows up in `git blame`.
  */
-const WHATSAPP_NUMBER_RAW =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || CONTACT.phone;
-/** Digits only — the API rejects '+', spaces and dashes. */
-export const WHATSAPP_NUMBER = WHATSAPP_NUMBER_RAW.replace(/\D/g, '');
+export const WHATSAPP_NUMBER = '919811295656';
 export const WHATSAPP_DISPLAY = CONTACT.phoneDisplay;
 export const WHATSAPP_MESSAGE =
-  process.env.NEXT_PUBLIC_WHATSAPP_MESSAGE ||
   "Hi Finvoq team! I'd like to know more about investing through your platform.";
 
 /**
