@@ -74,7 +74,7 @@ export const CONTACT = {
 /**
  * One number, one pre-filled message, everywhere: the floating button, the
  * contact page, the footer and the unlisted-share modal all build their link
- * from here. Hard-coding a wa.me URL anywhere else is how the site ended up
+ * from here. Hard-coding a WhatsApp URL anywhere else is how the site ended up
  * with a placeholder 9999999999 in the invest modal.
  *
  * NEXT_PUBLIC_WHATSAPP_NUMBER / _MESSAGE still win if set, so a staging
@@ -82,7 +82,7 @@ export const CONTACT = {
  */
 const WHATSAPP_NUMBER_RAW =
   process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || CONTACT.phone;
-/** Digits only — wa.me rejects '+', spaces and dashes. */
+/** Digits only — the API rejects '+', spaces and dashes. */
 export const WHATSAPP_NUMBER = WHATSAPP_NUMBER_RAW.replace(/\D/g, '');
 export const WHATSAPP_DISPLAY = CONTACT.phoneDisplay;
 export const WHATSAPP_MESSAGE =
@@ -90,16 +90,27 @@ export const WHATSAPP_MESSAGE =
   "Hi Finvoq team! I'd like to know more about investing through your platform.";
 
 /**
- * Build a wa.me link with a pre-filled first message. Pass `message` to tailor
- * the opener to where the user clicked (e.g. a specific unlisted share), so the
- * thread arrives with context instead of a bare "Hi".
+ * Build a whatsapp.com/send link with a pre-filled first message. Pass
+ * `message` to tailor the opener to where the user clicked (e.g. a specific
+ * unlisted share), so the thread arrives with context instead of a bare "Hi".
+ *
+ * Uses api.whatsapp.com/send/ (the format Finvoq specified) rather than the
+ * shorter wa.me redirect — same destination, but this is the exact link they
+ * gave us, so every surface should match it byte-for-byte apart from the
+ * per-click message.
  *
  * Returns '' when no number is configured, so callers can fall back to /contact
  * rather than opening a dead thread.
  */
 export function whatsappLink(message: string = WHATSAPP_MESSAGE): string {
   if (WHATSAPP_NUMBER.length < 10) return '';
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  const params = new URLSearchParams({
+    phone: WHATSAPP_NUMBER,
+    text: message,
+    type: 'phone_number',
+    app_absent: '0',
+  });
+  return `https://api.whatsapp.com/send/?${params.toString()}`;
 }
 
 /** Ready-made default link for the many places that just want "chat with us". */

@@ -769,6 +769,9 @@ export default function HomeClone() {
                   <li>
                     <Link href="/careers">Careers</Link>
                   </li>
+                  <li>
+                    <Link href="/contact">Contact</Link>
+                  </li>
                 </ul>
               </div>
               <div>
