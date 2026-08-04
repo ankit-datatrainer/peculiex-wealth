@@ -29,8 +29,11 @@ export default function TerminalPage({ params }: Props) {
         // Map the symbol to TradingView format
         let tvSymbol = symbol;
         if (!tvSymbol.includes(":")) {
-          if (["NIFTY", "BANKNIFTY", "FINNIFTY", "MIDCPNIFTY", "SENSEX", "BANKEX"].includes(symbol)) {
-            tvSymbol = symbol === "SENSEX" || symbol === "BANKEX" ? `BSE:${symbol}` : `NSE:${symbol}`;
+          // BSE indices only. The NSE families (NIFTY, BANKNIFTY, FINNIFTY,
+          // MIDCPNIFTY) are no longer quoted anywhere on the site, so they are
+          // not charted here either.
+          if (["SENSEX", "BANKEX"].includes(symbol)) {
+            tvSymbol = `BSE:${symbol}`;
           } else {
             // Use the exchange the symbol actually came from.
             tvSymbol = `${exchange}:${symbol}`;

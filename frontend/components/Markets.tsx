@@ -29,11 +29,10 @@ type Quote = {
 };
 type Index = { id: string; name: string; price: number; chg: number };
 
+/* BSE only. NIFTY 50, BANK NIFTY and INDIA VIX are NSE indices and are no
+   longer quoted anywhere on the site; SENSEX is the BSE benchmark. */
 const FALLBACK_INDICES: Index[] = [
-  { id: "ix-nifty", name: "NIFTY 50", price: 22530.7, chg: 1.35 },
-  { id: "ix-sensex", name: "SENSEX", price: 74119.39, chg: 0.92 },
-  { id: "ix-bank", name: "BANK NIFTY", price: 48650.15, chg: -0.34 },
-  { id: "ix-vix", name: "India VIX", price: 13.28, chg: -2.1 }
+  { id: "ix-sensex", name: "SENSEX", price: 74119.39, chg: 0.92 }
 ];
 
 type Tab = "all" | "gainers" | "losers";
@@ -167,9 +166,9 @@ export default function Markets() {
       `}</style>
       <div className="container">
         <div className="sec-head reveal">
-          <div className="label"><span className="markets-live-dot" />{cms.t("hero", "label", "Live · NSE")}</div>
+          <div className="label"><span className="markets-live-dot" />{cms.t("hero", "label", "Live · BSE")}</div>
           <h2 className="stitle">{heading(cms.t("hero", "title", "Market *Opportunities*"))}</h2>
-          <p className="sdesc">{cms.t("hero", "subtitle", "All Indian stocks listed on NSE. Search any stock, or view today s top gainers and losers.")}</p>
+          <p className="sdesc">{cms.t("hero", "subtitle", "All Indian stocks listed on BSE. Search any stock, or view today s top gainers and losers.")}</p>
         </div>
 
         {/* Indices */}
@@ -283,7 +282,7 @@ export default function Markets() {
                               </span>
                               <div>
                                 <div className="stock-name">{q.name}</div>
-                                <div className="stock-sym">{q.symbol} · NSE</div>
+                                <div className="stock-sym">{q.symbol} · BSE</div>
                               </div>
                             </div>
                             <span className={`stock-pill ${up ? "up" : "dn"}`}>
@@ -373,7 +372,7 @@ export default function Markets() {
                             </span>
                             <div>
                               <div className="stock-name">{q.name}</div>
-                              <div className="stock-sym">{q.symbol} · NSE</div>
+                              <div className="stock-sym">{q.symbol} · BSE</div>
                             </div>
                           </div>
                           <span className={`stock-pill ${up ? "up" : "dn"}`}>

@@ -83,7 +83,7 @@ export default function GuestView() {
               <em>listed</em> &amp; unlisted.
             </h1>
             <p className="gv-sub">
-              Live NSE prices, pre-IPO valuations, sparkline trends. Your
+              Live BSE prices, pre-IPO valuations, sparkline trends. Your
               personal portfolio radar, beautifully synced across all devices.
             </p>
             <div className="gv-chips">
@@ -203,7 +203,7 @@ export default function GuestView() {
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12h4l2-7 4 14 2-7h6" /></svg>
             </div>
             <h3>Live Price Feed</h3>
-            <p>Real-time NSE data refreshing automatically. No page reloads, no stale numbers.</p>
+            <p>Real-time BSE data refreshing automatically. No page reloads, no stale numbers.</p>
           </div>
           <div className="gv-feat-card">
             <div className="gv-feat-icon" style={{ background: "#2563eb14", color: "#2563eb" }}>

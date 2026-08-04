@@ -5,7 +5,12 @@ import { displaySymbol, marketHref } from "@/lib/symbol";
 
 type Tick = { name: string; price: number; chg: number };
 
-const SYMBOLS = ["RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS", "SBIN.NS", "BHARTIARTL.NS", "ITC.NS", "LT.NS", "BAJFINANCE.NS"];
+/* BSE (".BO") only. The site does not quote NSE anywhere: the watchlist API
+   already rejects ".NS" symbols on the way in, and this ticker was the last
+   place still asking Yahoo for NSE prices. Every name below is dual-listed, so
+   switching exchange changes the source of the quote, not which companies
+   appear. */
+const SYMBOLS = ["RELIANCE.BO", "TCS.BO", "INFY.BO", "HDFCBANK.BO", "ICICIBANK.BO", "SBIN.BO", "BHARTIARTL.BO", "ITC.BO", "LT.BO", "BAJFINANCE.BO"];
 
 const arrowSVG = (up: boolean) =>
   `<svg class="trend-icon" aria-hidden="true"><use href="#i-arrow-${

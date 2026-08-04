@@ -3,7 +3,7 @@
 /**
  * marketData — single source of truth for live equity prices.
  *
- * Primary source:  Yahoo Finance (free, unauthenticated, supports NSE/BSE)
+ * Primary source:  Yahoo Finance (free, unauthenticated; we request BSE)
  * Secondary:       Finnhub (uses FINNHUB_API_KEY) — used for company news.
  *                  Finnhub free tier does NOT cover Indian exchanges.
  *
@@ -13,9 +13,9 @@
  *
  * Symbols accepted by the public helpers can be either:
  *   - Plain Indian ticker: "RELIANCE", "TCS", "HDFCBANK"
- *     (auto-suffixed with .NS when calling Yahoo)
- *   - Already-suffixed:    "RELIANCE.NS", "TCS.BO"
- *   - Index alias:         "NIFTY", "SENSEX", "BANKNIFTY", "VIX"
+ *     (auto-suffixed with .BO when calling Yahoo — the site is BSE-only)
+ *   - Already-suffixed:    "TCS.BO" (".NS" is accepted but never offered)
+ *   - Index alias:         "SENSEX" (NSE indices are filtered out on read)
  *   - Yahoo special:       "^NSEI", "USDINR=X", "BTC-INR" — passed through
  */
 
@@ -154,6 +154,24 @@ function toYahoo(symbol) {
   // SME symbols ("GGBL-SM") and BSE series ("BOMOXY-B1"): a hyphen is NOT an
   // exchange marker, so they still need a .BO suffix.
   return `${upper}.BO`;
+}
+
+/**
+ * True for anything sourced from NSE — a ".NS" ticker, an NSE index (NIFTY,
+ * BANK NIFTY, INDIA VIX) in either alias or Yahoo form, or a Fyers "NSE:" key.
+ *
+ * The site quotes BSE only. The watchlist API already rejects ".NS" on write,
+ * but ticker and index rows can also come from database tables seeded before
+ * that rule existed, so reads are filtered through this too — otherwise one
+ * stale row silently puts NSE back on the homepage.
+ */
+function isNseSymbol(symbol) {
+  if (!symbol) return false;
+  const s = String(symbol).trim().toUpperCase();
+  if (/\.NS$/.test(s) || s.startsWith("NSE:")) return true;
+  if (["^NSEI", "^NSEBANK", "^INDIAVIX"].includes(s)) return true;
+  // Name form, as stored in the ticker_items / indices tables.
+  return /\bNIFTY\b/.test(s) || /\bINDIA VIX\b/.test(s) || s === "VIX";
 }
 
 /** Drop ".NS"/".BO" so we can show clean labels in the UI. */
@@ -1096,7 +1114,7 @@ async function getGeneralNews() {
 
 /* ---------- Fallback NSE symbol list (used when no Finnhub key) ---------- */
 
-const FALLBACK_NSE_SYMBOLS = [
+const FALLBACK_SYMBOLS = [
   { symbol: "RELIANCE", name: "Reliance Industries Ltd", currency: "INR" },
   { symbol: "TCS", name: "Tata Consultancy Services Ltd", currency: "INR" },
   { symbol: "HDFCBANK", name: "HDFC Bank Ltd", currency: "INR" },
@@ -1352,7 +1370,7 @@ async function getAllIndianSymbols() {
   }
 
   if (!symbols.length) {
-    symbols = FALLBACK_NSE_SYMBOLS;
+    symbols = FALLBACK_SYMBOLS;
   }
 
   cacheSet(key, symbols, 24 * 60 * 60_000);
@@ -1644,6 +1662,7 @@ module.exports = {
   toYahoo,
   displaySymbol,
   exchangeFor,
+  isNseSymbol,
   getQuote,
   getQuotes,
   getCandles,

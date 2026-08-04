@@ -23,7 +23,7 @@ const TOOLS: Tool[] = [
   {
     href: "/markets",
     title: "Live Markets",
-    body: "Track indices, equities and real-time quotes across NSE & BSE with charts and watchlists.",
+    body: "Track indices, equities and real-time quotes on BSE with charts and watchlists.",
     cta: "Open markets",
     icon: "i-trending-up"
   },

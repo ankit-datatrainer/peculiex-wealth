@@ -119,7 +119,7 @@ export const PRODUCTS: Record<string, ProductContent> = {
     ],
     howItWorks: [
       { step: "01", title: "Browse the live-yield desk", body: "Filter by maturity, rating, and post-tax yield. Compare a G-Sec to a tax-free bond to a corporate FD side by side." },
-      { step: "02", title: "Lock in the rate", body: "Place a buy order and lock the YTM. Settlement happens via RBI's NDS-OM or BSE/NSE bond platform: fully regulated." },
+      { step: "02", title: "Lock in the rate", body: "Place a buy order and lock the YTM. Settlement happens via RBI's NDS-OM or the BSE bond platform: fully regulated." },
       { step: "03", title: "Earn coupon income", body: "Coupons credit directly to your bank, semi-annually or annually depending on the issue." },
       { step: "04", title: "Hold or trade", body: "Hold to maturity for full principal, or sell on the exchange before maturity. Your call." }
     ],
@@ -203,12 +203,12 @@ export const PRODUCTS: Record<string, ProductContent> = {
     label: "Listed Equities",
     title: <>Direct shares, with <em>research that holds up.</em></>,
     subtitle:
-      "Trade and invest in NSE/BSE-listed equities with live price feeds, watchlists, sparklines, and curated research, backed by execution at exchange best-bid.",
+      "Trade and invest in BSE-listed equities with live price feeds, watchlists, sparklines, and curated research, backed by execution at exchange best-bid.",
     highlights: [
       { title: "Live market data", body: "Real-time bid/ask, depth, and intraday sparklines on every stock card. No 15-minute delay." },
       { title: "Curated coverage", body: "We track ~250 stocks across NIFTY, NEXT 50, midcap, and high-quality smallcap. Quarterly updates after every result." },
       { title: "Smart watchlist", body: "Persistent watchlist that follows you across devices, with custom alerts on price, P/E, or earnings dates." },
-      { title: "Direct execution", body: "Orders route to NSE/BSE via SEBI-registered partner brokers: no aggregator latency, no markup." },
+      { title: "Direct execution", body: "Orders route to BSE via SEBI-registered partner brokers: no aggregator latency, no markup." },
       { title: "Tax-loss harvesting hints", body: "Year-end suggestions to offset gains by realising losses on positions we'd planned to exit anyway." },
       { title: "Quality scoring", body: "Each stock is scored on profitability, balance sheet, and capital-allocation discipline: not just price momentum." }
     ],

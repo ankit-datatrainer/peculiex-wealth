@@ -177,7 +177,7 @@ const FEATURES = [
   {
     icon: "zap",
     title: "Real-time execution",
-    desc: "From research to investing, completed in seconds. Live NSE & BSE prices, no paperwork, no waiting."
+    desc: "From research to investing, completed in seconds. Live BSE prices, no paperwork, no waiting."
   }
 ];
 
@@ -217,7 +217,7 @@ const POSTS = [
   {
     tag: "Markets",
     date: "Live",
-    title: "Track every NSE & BSE share with real-time prices and watchlists",
+    title: "Track every BSE share with real-time prices and watchlists",
     href: "/markets",
     cta: "Open live markets"
   },

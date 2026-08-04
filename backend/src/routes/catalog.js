@@ -53,7 +53,12 @@ function mergeQuote(row, quote) {
 
 /* ---------- ticker ---------- */
 router.get("/ticker", async (_req, res) => {
-  const seedItems = await fromTable("ticker_items", seed.TICKER);
+  // Filtered, not just seeded: these rows can come from the database, which on
+  // an existing deployment still holds the NSE indices this site no longer
+  // quotes. See md.isNseSymbol.
+  const seedItems = (await fromTable("ticker_items", seed.TICKER)).filter(
+    (t) => !md.isNseSymbol(t.name)
+  );
   // Pull live snapshot for every ticker entry in parallel.
   const symbols = seedItems.map((t) => t.name); // names get aliased inside marketData
   let live = [];
@@ -79,7 +84,9 @@ router.get("/ticker", async (_req, res) => {
 
 /* ---------- indices ---------- */
 router.get("/indices", async (_req, res) => {
-  const seedItems = await fromTable("indices", seed.INDICES);
+  const seedItems = (await fromTable("indices", seed.INDICES)).filter(
+    (i) => !md.isNseSymbol(i.name)
+  );
   let live = [];
   try {
     live = await md.getQuotes(seedItems.map((i) => i.name));

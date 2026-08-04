@@ -476,7 +476,7 @@ export default function Dashboard() {
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     </div>
                     <h4>Market Hours</h4>
-                    <p>NSE/BSE trading hours: <strong>9:15 AM – 3:30 PM IST</strong></p>
+                    <p>BSE trading hours: <strong>9:15 AM – 3:30 PM IST</strong></p>
                     <small>Monday to Friday (except holidays)</small>
                   </div>
                   <div className="ud-card ud-insight-card">

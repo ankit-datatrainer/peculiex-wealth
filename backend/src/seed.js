@@ -1,10 +1,11 @@
 "use strict";
 
+/* BSE only — NIFTY 50, BANK NIFTY and INDIA VIX are NSE indices and the site
+   does not quote NSE. SENSEX is the BSE benchmark and stays. The ticker and
+   indices routes also filter NSE out at read time, so a stale row left in the
+   database cannot put them back. */
 const TICKER = [
-  { name: "NIFTY 50", price: 22530.7, chg: 1.35 },
   { name: "SENSEX", price: 74119.39, chg: 0.92 },
-  { name: "BANK NIFTY", price: 48650.15, chg: -0.34 },
-  { name: "INDIA VIX", price: 13.28, chg: -2.1 },
   { name: "GOLD MCX", price: 72480, chg: -0.28 },
   { name: "SILVER MCX", price: 84120, chg: 0.45 },
   { name: "USDINR", price: 83.42, chg: 0.12 },
@@ -14,10 +15,7 @@ const TICKER = [
 ];
 
 const INDICES = [
-  { id: "ix-nifty", name: "NIFTY 50", price: 22530.7, chg: 1.35 },
-  { id: "ix-sensex", name: "SENSEX", price: 74119.39, chg: 0.92 },
-  { id: "ix-bank", name: "BANK NIFTY", price: 48650.15, chg: -0.34 },
-  { id: "ix-vix", name: "India VIX", price: 13.28, chg: -2.1 }
+  { id: "ix-sensex", name: "SENSEX", price: 74119.39, chg: 0.92 }
 ];
 
 const STOCKS = [
