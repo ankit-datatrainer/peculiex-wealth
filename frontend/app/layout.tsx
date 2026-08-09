@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./dashboard.css";
+// Last, so the responsive layer overrides the two above at equal specificity
+// without needing !important. See app/responsive/_tokens.css.
+import "./responsive/index.css";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://finvoq.com";
@@ -42,6 +45,14 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
+  // Stated explicitly rather than relying on the framework default: this is
+  // the switch that makes every media query in the app apply on a phone at
+  // all. maximumScale/userScalable are deliberately NOT set — blocking pinch
+  // zoom fails WCAG 1.4.4 and is the usual reason a mobile site is unusable
+  // for anyone who needs to magnify it.
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover", // lets the safe-area-inset-* vars report real values
   themeColor: "#13735d",
   colorScheme: "light"
 };

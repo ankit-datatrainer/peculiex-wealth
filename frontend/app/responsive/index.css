@@ -1,0 +1,12 @@
+/* Responsive layer barrel.
+   Imported once from app/layout.tsx, AFTER globals.css and dashboard.css, so
+   everything here overrides at equal specificity without !important.
+   Order below is cascade order: tokens first, then area files. */
+@import "./_tokens.css";
+@import "./chrome.css";
+@import "./home.css";
+@import "./markets.css";
+@import "./calculators.css";
+@import "./products.css";
+@import "./dashboard.css";
+@import "./content.css";

@@ -1,0 +1,128 @@
+/* ============================================================================
+   Responsive layer — shared tokens and breakpoint contract
+   ----------------------------------------------------------------------------
+   Why this layer exists
+   --------------------
+   globals.css is ~300 KB and carries about seventy media queries spread over a
+   dozen ad-hoc breakpoints (480, 560, 640, 760, 768, 820, 860, 900, 920, 960,
+   991, 1024, 1100, 1200, 1248, 1280, 1440). Rewriting that in place would be
+   a very large, very risky diff, and it is the file every part of the site
+   depends on.
+
+   So responsive fixes land here instead: a thin layer imported AFTER
+   globals.css, split one file per feature area. Later import position means
+   these rules win at equal specificity without needing !important, each area
+   is independently reviewable, and two people (or two agents) working on
+   different areas never touch the same file.
+
+   Breakpoint contract
+   -------------------
+   Three device classes, named the way the brief describes them:
+
+     phone     <= 599px      single column, stacked, thumb-reachable
+     tablet    600 - 1023px  two columns where it helps, still touch-first
+     desktop   >= 1024px     the existing design, unchanged
+
+   Rules are written mobile-first where practical (min-width), and max-width
+   is used only to override a desktop-first rule that already exists in
+   globals.css. Existing breakpoints in globals.css are deliberately left
+   alone: this layer overrides outcomes, it does not renumber the old queries.
+
+   House rules for anything added to this layer
+   --------------------------------------------
+   1. Never let the page scroll sideways. Constrain the child; do not paper
+      over it with `overflow-x: hidden` on body, which also kills
+      position: sticky and hides the actual bug.
+   2. Touch targets are at least 44x44 CSS px (WCAG 2.5.5 AA, iOS HIG).
+      Grow the hit area with padding, not the glyph.
+   3. Body text never renders below 12px; 16px on form inputs, because iOS
+      Safari zooms the whole page when a focused input is smaller.
+   4. Wide content (tables, charts, code) scrolls inside its own container
+      with `overflow-x: auto`, never the page body.
+   5. Use the safe-area variables below on anything pinned to a screen edge,
+      so notched phones don't clip it.
+   ========================================================================= */
+
+:root {
+  /* Reference values only — CSS cannot use custom properties inside a media
+     query condition, so the numbers are repeated literally in @media rules.
+     They live here so the contract is written down in one place. */
+  --bp-phone-max: 599px;
+  --bp-tablet-min: 600px;
+  --bp-tablet-max: 1023px;
+  --bp-desktop-min: 1024px;
+
+  /* Minimum comfortable touch target. */
+  --tap-min: 44px;
+
+  /* Gutters scale with the viewport instead of stepping at each breakpoint. */
+  --gutter: clamp(16px, 5vw, 40px);
+
+  /* Notch / home-indicator insets; 0 on hardware without them. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+/* ---------------------------------------------------------------------------
+   Sitewide guards
+   ------------------------------------------------------------------------ */
+
+/* A page that scrolls sideways on a phone is the single most common responsive
+   defect, and the usual "fix" (overflow-x: hidden on body) breaks sticky
+   positioning and hides the real cause. Clip at the viewport element instead,
+   which is safe, and let the audit harness keep finding the actual culprits. */
+html {
+  overflow-x: clip;
+}
+
+/* Media should never be able to widen its column. */
+img,
+video,
+canvas,
+svg,
+iframe {
+  max-width: 100%;
+}
+
+/* Long unbroken strings (URLs, ISINs, wallet-style IDs) are a classic source
+   of overflow on narrow screens. */
+@media (max-width: 599px) {
+  p,
+  li,
+  dd,
+  dt,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  figcaption,
+  blockquote,
+  label,
+  td,
+  th {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* iOS Safari zooms the viewport when a focused input renders below 16px.
+   Setting the floor here removes that jump on every form in the app. */
+@media (max-width: 1023px) {
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1rem);
+  }
+}
+
+/* Respect the notch on anything pinned to an edge. Individual components add
+   their own padding on top of these. */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .whatsapp-root,
+  .support-root {
+    padding-bottom: var(--safe-bottom);
+  }
+}
