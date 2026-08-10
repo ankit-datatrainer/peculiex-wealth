@@ -578,3 +578,78 @@
     animation: none;
   }
 }
+
+/* ===========================================================================
+   Touch-target and legibility floors
+   ---------------------------------------------------------------------------
+   Found by the audit harness after the main pass: a handful of controls and
+   labels still sat under the 44px / 12px floors on phone and tablet. Desktop
+   keeps its existing sizes — a mouse does not need a 44px target, and growing
+   these there would visibly change the design.
+   ======================================================================== */
+
+/* Theme toggle. Sized here rather than inline in ThemeToggle.tsx so this
+   media query can reach it; the placeholder slot must match to avoid a layout
+   shift when the component hydrates. */
+.theme-toggle,
+.theme-toggle-slot {
+  width: 36px;
+  height: 36px;
+}
+
+@media (max-width: 1023px) {
+  .theme-toggle,
+  .theme-toggle-slot {
+    width: var(--tap-min);
+    height: var(--tap-min);
+  }
+
+  /* Nav caret (the dropdown chevron beside a parent item) measured 17x17.
+     Grow the hit area with padding so the glyph itself is unchanged. */
+  .nav-caret-btn {
+    min-width: var(--tap-min);
+    min-height: var(--tap-min);
+    display: inline-grid;
+    place-items: center;
+  }
+
+  /* Buttons that landed a pixel or two short of the floor. */
+  .btn,
+  .btn-outline,
+  .btn-primary,
+  .btn-gold,
+  .btn-ghost {
+    min-height: var(--tap-min);
+  }
+
+  /* The logo is the "home" link and was 40px tall on phone. */
+  a.logo {
+    min-height: var(--tap-min);
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Cookie banner actions are the first thing a phone user must tap. */
+  #cookieAccept,
+  #cookieDecline {
+    min-height: var(--tap-min);
+  }
+}
+
+/* Legibility floor. The ticker rendered its prices at 10.5px on a phone, and
+   the footer registration codes at 11px. 12px is the floor set in
+   _tokens.css; the ticker stays visually compact via letter-spacing rather
+   than by shrinking below it. */
+@media (max-width: 599px) {
+  .ticker-item,
+  .ticker-name,
+  .ticker-price,
+  .ticker-chg {
+    font-size: 12px;
+  }
+
+  .foot-codes,
+  .site-footer .foot-codes {
+    font-size: 12px;
+  }
+}

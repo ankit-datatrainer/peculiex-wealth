@@ -16,19 +16,22 @@ export function ThemeToggle() {
   }, []);
 
   if (!mounted) {
-    return <div style={{ width: 36, height: 36 }} />;
+    // Must match the button's rendered size below, or the nav shifts on hydrate.
+    return <div className="theme-toggle-slot" />;
   }
 
   const isDark = resolvedTheme === "dark";
 
   return (
+    // Sized in CSS (.theme-toggle) rather than inline: the responsive layer
+    // grows this to the 44px touch minimum below 1024px, and an inline style
+    // would win over any stylesheet rule short of !important.
     <button
+      className="theme-toggle"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
       style={{
-        width: 36,
-        height: 36,
         display: "grid",
         placeItems: "center",
         borderRadius: "50%",
