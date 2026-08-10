@@ -33,6 +33,9 @@
   --fw-rung-2: 118px;
   /* + chatbot launcher (44) + 12 */
   /* Height the cookie banner is capped to on touch layouts. */
+  /* Upper bound for the consent sheet's own height clamp ONLY. Never use
+     this to offset the floating widgets: the sheet's real height varies
+     with its text, and guessing it is what put the stack mid-screen. */
   --cookie-h: 240px;
 }
 
@@ -411,39 +414,36 @@
   }
 }
 
-/* Cookie banner on screen: lift the whole stack above it in one move. */
-@media (max-width: 599px) {
+/* ---------------------------------------------------------------------------
+   Cookie banner on screen
+   ---------------------------------------------------------------------------
+   The previous approach lifted the whole stack by a hardcoded --cookie-h
+   (240px) estimate. On a short phone that is catastrophic: at 320x645 it put
+   `bottom: 262px` on the WhatsApp button, landing the entire stack in the
+   middle of the screen on top of the page content, which is exactly the bug
+   this replaces.
 
-  body:has(.cookie-banner.show) {
-    --fw-base: calc(var(--safe-bottom) + 12px + var(--cookie-h) + 10px);
-  }
+   Guessing the sheet's height cannot work — it depends on text length, font
+   scaling and locale. So the widgets simply stand down while the consent
+   sheet is up. It is a bottom sheet demanding a one-time decision, it already
+   occupies the corner the widgets live in, and it disappears on first tap.
+   After that the stack sits where it should: pinned to the bottom.
+   ------------------------------------------------------------------------ */
+@media (max-width: 1023px) {
 
-  /* globals pins these two with !important inside its own :has() rule. */
+  body:has(.cookie-banner.show) .whatsapp-root,
+  body:has(.cookie-banner.show) .support-ticket-root,
+  body:has(.cookie-banner.show) .chatbot-root,
   body:has(.cookie-banner.show) .back-top {
-    bottom: calc(var(--fw-base) + var(--fw-rung-2)) !important;
-  }
-
-  body:has(.cookie-banner.show) .chatbot-root {
-    bottom: calc(var(--fw-base) + var(--fw-rung-1)) !important;
+    /* visibility, not display: keeps the elements in the a11y tree's normal
+       order and avoids a layout/paint jump when the sheet is dismissed. */
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
   }
 }
 
-/* Tablet keeps the roomier desktop-style corners; it only needs the banner
-   (420px wide, bottom-right) to stop sitting on the right-hand widgets. */
-@media (min-width: 600px) and (max-width: 1023px) {
 
-  body:has(.cookie-banner.show) .whatsapp-btn {
-    bottom: calc(var(--safe-bottom) + var(--cookie-h) + 24px) !important;
-  }
-
-  body:has(.cookie-banner.show) .chatbot-root {
-    bottom: calc(var(--safe-bottom) + var(--cookie-h) + 92px) !important;
-  }
-
-  body:has(.cookie-banner.show) .back-top {
-    bottom: calc(var(--safe-bottom) + var(--cookie-h) + 158px) !important;
-  }
-}
 
 
 /* ===========================================================================

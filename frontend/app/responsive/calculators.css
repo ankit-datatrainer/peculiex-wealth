@@ -461,3 +461,55 @@
     min-height: 44px;
   }
 }
+
+/* ===========================================================================
+   Calculator heading — clear the fixed chrome
+   ---------------------------------------------------------------------------
+   .calc-sec is the first element on every calculator page and ships with no
+   top padding, while the ticker bar and nav above it are BOTH position:fixed
+   and therefore out of flow. The heading was rendering underneath them:
+   measured at 320x645 the eyebrow sat at y=29-48 while the chrome occupied
+   y=0-101, so it was completely hidden until you scrolled.
+
+   This is not a phone-only bug — at 1440x900 the eyebrow was at y=115 against
+   a nav reaching y=125, so it was clipped there too. Fixed at every width.
+
+   All five calculators (SIP, lumpsum, retirement, goal planner, reckoner)
+   share .calc-sec, so this one rule covers them.
+   ======================================================================== */
+:root {
+  /* Ticker (44) + nav (57). Measured, not guessed. */
+  --chrome-h: 101px;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --chrome-h: 125px;
+  }
+}
+
+.calc-sec {
+  padding-top: calc(var(--chrome-h) + clamp(18px, 4vw, 34px));
+  padding-bottom: clamp(28px, 7vw, 56px);
+}
+
+@media (max-width: 1023px) {
+  /* The eyebrow ("Mutual Funds") sat flush against the heading. */
+  .calc-left > .label {
+    margin-bottom: 10px;
+  }
+
+  .calc-left > .stitle {
+    margin-bottom: 10px;
+    /* Stops the accent word dropping to a lonely orphan line at 320px. */
+    text-wrap: balance;
+  }
+
+  .calc-left > .sdesc {
+    margin-bottom: 22px;
+  }
+
+  .calc-sec .sec-head {
+    padding-top: clamp(12px, 4vw, 24px);
+  }
+}
