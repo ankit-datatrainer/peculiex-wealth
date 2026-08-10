@@ -153,6 +153,7 @@ export default function AdminUsersPage() {
         ) : users.length === 0 ? (
           <div className="admin-empty">No users found.</div>
         ) : (
+          <div className="admin-table-scroll" data-lenis-prevent>
           <table className="admin-table">
             <thead>
               <tr>
@@ -207,6 +208,7 @@ export default function AdminUsersPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

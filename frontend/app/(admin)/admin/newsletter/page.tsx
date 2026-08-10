@@ -84,6 +84,7 @@ export default function AdminNewsletterPage() {
             sign-ups: connect Supabase to enable.)
           </div>
         ) : (
+          <div className="admin-table-scroll" data-lenis-prevent>
           <table className="admin-table">
             <thead>
               <tr>
@@ -120,6 +121,7 @@ export default function AdminNewsletterPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

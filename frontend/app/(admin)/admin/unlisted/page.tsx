@@ -269,6 +269,7 @@ export default function AdminUnlistedPage() {
             No unlisted shares match your filter.
           </div>
         ) : (
+          <div className="admin-table-scroll" data-lenis-prevent>
           <table className="admin-table">
             <thead>
               <tr>
@@ -337,6 +338,7 @@ export default function AdminUnlistedPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

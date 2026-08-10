@@ -1,3 +1,580 @@
 /* Responsive layer — chrome.
    See _tokens.css for the breakpoint contract and house rules.
-   Owned by one workstream: keep edits to this area inside this file. */
+   Owned by one workstream: keep edits to this area inside this file.
+
+   Scope: the furniture that wraps every page — ticker, nav (incl. the mobile
+   drawer and the NRI mega menu), footer, cookie banner and the floating
+   widgets in the bottom corners.
+
+   Everything below is either inside a max-width query at or under 1023px, or
+   is a no-op at desktop width. The >= 1024px rendering is deliberately
+   untouched.
+   ========================================================================= */
+
+
+/* ===========================================================================
+   0. Floating-widget stack geometry
+   ---------------------------------------------------------------------------
+   WhatsApp, the chatbot launcher, back-to-top and the support fab are four
+   independently positioned `position: fixed` elements that each hard-coded
+   their own `bottom`. On a phone they landed on top of one another, and the
+   cookie banner sat on top of all four.
+
+   They now share one origin (--fw-base) and one rung height, so the stack can
+   be lifted as a unit when the cookie banner is on screen. The variables are
+   only *consumed* below 1024px; declaring them here costs nothing on desktop.
+   ======================================================================== */
+:root {
+  /* Distance from the bottom edge of the screen to the first rung. */
+  --fw-base: calc(var(--safe-bottom) + 12px);
+  /* Vertical space each rung occupies, gap included. */
+  --fw-rung-1: 62px;
+  /* whatsapp (52) + 10 */
+  --fw-rung-2: 118px;
+  /* + chatbot launcher (44) + 12 */
+  /* Height the cookie banner is capped to on touch layouts. */
+  --cookie-h: 240px;
+}
+
+
+/* ===========================================================================
+   1. Ticker bar
+   ---------------------------------------------------------------------------
+   The marquee track is several thousand px wide by design. It is only safe
+   because the bar clips it; belt-and-braces that here so no later rule can
+   turn the bar into a page-widening element.
+   ======================================================================== */
+.ticker-bar {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 599px) {
+
+  /* Nothing inside the bar may set its own width — the track is measured by
+     content and the items must stay on one line for the marquee to work. */
+  .ticker-track {
+    will-change: transform;
+  }
+}
+
+
+/* ===========================================================================
+   2. MainNav — hamburger, drawer, dropdowns, NRI mega menu
+   ======================================================================== */
+
+/* --- 2a. The hamburger itself -------------------------------------------
+   18px bars in 8px of padding gave a 36x31 button. Grow the hit area with
+   padding only, so the glyph is pixel-identical. */
+@media (max-width: 1023px) {
+  .mobile-toggle {
+    width: var(--tap-min);
+    height: var(--tap-min);
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+}
+
+/* --- 2b. Drawer shell ---------------------------------------------------- */
+.nav-links.mobile-open {
+  /* dvh already set in globals; add the notch insets on the sides too, and
+     make sure the panel can never scroll sideways. */
+  padding-left: var(--safe-left) !important;
+  padding-right: var(--safe-right) !important;
+  overflow-x: hidden !important;
+}
+
+/* Every direct child is a full-width row; nothing in it may exceed the
+   drawer's content box. */
+.nav-links.mobile-open>li {
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.nav-links.mobile-open * {
+  max-width: 100%;
+}
+
+/* Close button: clear the notch, and keep it clear of the drawer's own
+   scroll (it is position: fixed, so it stays put while the list scrolls). */
+.mobile-close-btn {
+  top: calc(var(--safe-top) + 14px);
+  right: calc(var(--safe-right) + 14px);
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+}
+
+/* --- 2c. Parent row: tapping the label navigates, tapping the caret
+       expands. Both need a real target, and the caret must not be so wide
+       that it swallows the end of a long label. -------------------------- */
+@media (max-width: 1023px) {
+
+  .nav-links.mobile-open .nav-caret-btn,
+  .nav-links.mobile-open .nav-parent-row .nav-caret-btn {
+    width: var(--tap-min);
+    height: var(--tap-min);
+    flex: 0 0 var(--tap-min);
+    margin-right: 8px;
+    /* The caret is a button inside a row whose sibling is a link — make sure
+       a touch that lands on it never bubbles into the link's box. */
+    touch-action: manipulation;
+  }
+
+  .nav-links.mobile-open .nav-parent-row .nav-link-parent {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* Second-level links were 39px tall. */
+  .nav-links.mobile-open .nav-dropdown-link,
+  .nav-links.mobile-open .nri-dropdown-link {
+    min-height: var(--tap-min);
+    display: flex !important;
+    align-items: center;
+    padding: 10px 14px !important;
+    box-sizing: border-box;
+  }
+}
+
+/* --- 2d. NRI mega menu ---------------------------------------------------
+   The desktop layout is two fixed-width columns (220 + 280) side by side in
+   a 720px-wide panel. Inside the phone drawer those fixed widths made a slab
+   wider than the viewport. Below 1024px the columns become fluid and stack;
+   the desktop rule above 1024px is untouched. */
+@media (max-width: 1023px) {
+
+  .nri-mega-dropdown {
+    min-width: 0 !important;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .nri-dropdown-inner {
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  .nri-column,
+  .nri-left-col,
+  .nri-right-col {
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
+    flex: 1 1 auto;
+    border-right: 0;
+    padding-right: 0;
+  }
+
+  .nav-links.mobile-open .nri-mega-dropdown {
+    /* globals sets 20px of left padding on the nested panel; keep the right
+       side padded too so cards don't run into the screen edge. */
+    padding-right: 12px !important;
+    box-sizing: border-box;
+  }
+
+  /* Service cards: full-width rows, 44px minimum, text wraps instead of
+     forcing the card wide. */
+  .nav-links.mobile-open .nri-service-card {
+    width: 100%;
+    min-height: var(--tap-min);
+    align-items: center;
+    box-sizing: border-box;
+  }
+
+  .nav-links.mobile-open .nri-service-text {
+    min-width: 0;
+  }
+
+  .nav-links.mobile-open .nri-service-text h4,
+  .nav-links.mobile-open .nri-service-text p {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* --- 2e. Mobile-only auth block at the foot of the drawer ---------------- */
+@media (max-width: 1023px) {
+
+  .nav-links.mobile-open .mobile-only .btn {
+    min-height: var(--tap-min);
+    box-sizing: border-box;
+  }
+
+  /* The drawer is padded for the home indicator already; add a little more
+     so the last button is never flush against it. */
+  .nav-links.mobile-open .mobile-only {
+    padding-bottom: 12px;
+  }
+}
+
+
+/* ===========================================================================
+   3. Footer
+   ---------------------------------------------------------------------------
+   Grid children are: .foot-brand, then the four link columns.
+   desktop  1.85fr + 4 columns
+   tablet   brand full width, links 2 up
+   phone    brand full width, links 1 up
+   ======================================================================== */
+@media (max-width: 1023px) {
+
+  .foot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 20px;
+  }
+
+  .foot-brand {
+    grid-column: 1 / -1;
+    max-width: 100%;
+    padding-right: 0;
+  }
+
+  /* The editorial hairlines assume a known column count. At two up, every
+     even child starts a row, so it must not carry a left rule. */
+  .foot-grid .foot-col+.foot-col {
+    padding-left: 20px;
+  }
+
+  .foot-grid .foot-col:nth-child(even) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  /* Link rows: real tap targets on every touch layout, not only where the
+     coarse-pointer query happens to match. */
+  .foot-col ul a {
+    min-height: var(--tap-min);
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Contact routes were 33px tall. */
+  .site-footer .foot-col .foot-contact a {
+    min-height: var(--tap-min);
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .site-footer .foot-contact {
+    gap: 2px;
+  }
+
+  .foot-social a {
+    min-width: var(--tap-min);
+    min-height: var(--tap-min);
+  }
+
+  .foot-legal summary {
+    min-height: var(--tap-min);
+    display: flex;
+    align-items: center;
+  }
+
+  /* Newsletter: the pill becomes a stacked card below 760px in globals. Make
+     sure neither the field nor the button can push the card wide. */
+  .fn-form {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .fn-form input {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: var(--tap-min);
+  }
+
+  .fn-form button {
+    min-height: var(--tap-min);
+    max-width: 100%;
+  }
+
+  /* The success note is absolutely positioned under the field; keep it from
+     spilling past the card on narrow columns. */
+  .fn-msg {
+    max-width: calc(100% - 12px);
+  }
+}
+
+@media (max-width: 599px) {
+
+  .foot-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 26px;
+  }
+
+  /* One column: no hairlines at all, they only make sense between siblings
+     that sit on the same row. */
+  .foot-grid .foot-col+.foot-col {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid var(--color-divider);
+    padding-top: 22px;
+  }
+
+  .foot-col h4 {
+    margin-bottom: 10px;
+  }
+
+  /* The oversized wordmark is decorative and already clipped; make sure the
+     clip is on a box that cannot widen the page. */
+  .foot-wordmark {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .site-footer .foot-base {
+    text-align: left;
+  }
+
+  /* Stacked card: the note can take its own line under the button. */
+  .fn-msg {
+    position: static;
+    max-width: 100%;
+    margin-top: 8px;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+
+/* ===========================================================================
+   4. Floating widgets — one stack, no overlaps
+   ---------------------------------------------------------------------------
+   Right-hand column, bottom-up: WhatsApp, chatbot launcher, back-to-top.
+   Support keeps the bottom-left corner to itself.
+   ======================================================================== */
+@media (max-width: 599px) {
+
+  .whatsapp-btn {
+    right: calc(var(--safe-right) + 12px) !important;
+    bottom: var(--fw-base) !important;
+    width: 52px;
+    min-width: 52px;
+    height: 52px;
+  }
+
+  .whatsapp-btn-icon-wrap {
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+  }
+
+  /* The label reveal on :hover expands the pill leftwards, away from the
+     stack — harmless, but it must not reach past the opposite edge. */
+  .whatsapp-btn:hover {
+    max-width: calc(100vw - 24px);
+  }
+
+  /* A tap on touch leaves a sticky :hover in some engines; there is no room
+     for the expanded pill next to the support launcher, so keep it compact. */
+  @media (hover: none) {
+    .whatsapp-btn:hover {
+      width: 52px;
+      padding: 0;
+    }
+  }
+
+  .chatbot-root {
+    right: calc(var(--safe-right) + 12px) !important;
+    bottom: calc(var(--fw-base) + var(--fw-rung-1)) !important;
+    left: auto;
+    max-width: calc(100vw - 24px);
+  }
+
+  .chatbot-toggle {
+    min-height: var(--tap-min);
+    padding: 8px 14px;
+  }
+
+  .back-top {
+    right: calc(var(--safe-right) + 12px) !important;
+    bottom: calc(var(--fw-base) + var(--fw-rung-2)) !important;
+    width: var(--tap-min);
+    height: var(--tap-min);
+  }
+
+  .support-ticket-root {
+    left: calc(var(--safe-left) + 12px);
+    right: auto;
+    bottom: var(--fw-base);
+    /* Never let the launcher grow into the right-hand column. */
+    max-width: calc(100vw - 100px);
+  }
+
+  .support-fab {
+    min-height: var(--tap-min);
+    padding: 10px 18px;
+    max-width: 100%;
+  }
+}
+
+/* Cookie banner on screen: lift the whole stack above it in one move. */
+@media (max-width: 599px) {
+
+  body:has(.cookie-banner.show) {
+    --fw-base: calc(var(--safe-bottom) + 12px + var(--cookie-h) + 10px);
+  }
+
+  /* globals pins these two with !important inside its own :has() rule. */
+  body:has(.cookie-banner.show) .back-top {
+    bottom: calc(var(--fw-base) + var(--fw-rung-2)) !important;
+  }
+
+  body:has(.cookie-banner.show) .chatbot-root {
+    bottom: calc(var(--fw-base) + var(--fw-rung-1)) !important;
+  }
+}
+
+/* Tablet keeps the roomier desktop-style corners; it only needs the banner
+   (420px wide, bottom-right) to stop sitting on the right-hand widgets. */
+@media (min-width: 600px) and (max-width: 1023px) {
+
+  body:has(.cookie-banner.show) .whatsapp-btn {
+    bottom: calc(var(--safe-bottom) + var(--cookie-h) + 24px) !important;
+  }
+
+  body:has(.cookie-banner.show) .chatbot-root {
+    bottom: calc(var(--safe-bottom) + var(--cookie-h) + 92px) !important;
+  }
+
+  body:has(.cookie-banner.show) .back-top {
+    bottom: calc(var(--safe-bottom) + var(--cookie-h) + 158px) !important;
+  }
+}
+
+
+/* ===========================================================================
+   5. Chatbot & support panels — must fit 390x844 and scroll internally
+   ======================================================================== */
+@media (max-width: 1023px) {
+
+  .chatbot-window {
+    width: min(360px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
+    /* Leave room for the launcher rung below and the nav + ticker above. */
+    height: min(480px, calc(100dvh - var(--fw-base) - 180px));
+    max-height: calc(100dvh - var(--fw-base) - 150px);
+    box-sizing: border-box;
+  }
+
+  /* .chatbot-messages already carries data-lenis-prevent and overflow-y:auto;
+     it just needs a floor so the options row cannot squeeze it away. */
+  .chatbot-messages {
+    min-height: 90px;
+    overscroll-behavior: contain;
+  }
+
+  /* Seven pills wrap to three rows on a phone and were eating the transcript.
+     Capped and scrollable — the wrapper carries data-lenis-prevent (added in
+     Chatbot.tsx) so Lenis does not swallow the wheel/touch events. */
+  .chatbot-options {
+    flex: 0 0 auto;
+    max-height: 84px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .chatbot-option-pill {
+    min-height: 32px;
+  }
+
+  .chatbot-close-btn,
+  .chatbot-clear-btn {
+    min-width: var(--tap-min);
+    min-height: var(--tap-min);
+  }
+
+  .support-panel {
+    width: min(340px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
+    max-height: calc(100dvh - var(--fw-base) - 130px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    box-sizing: border-box;
+  }
+
+  .support-close {
+    width: var(--tap-min);
+    height: var(--tap-min);
+  }
+
+  .support-form input,
+  .support-form textarea {
+    min-height: var(--tap-min);
+    box-sizing: border-box;
+  }
+
+  .support-form .btn {
+    min-height: var(--tap-min);
+  }
+}
+
+@media (max-width: 599px) {
+
+  /* Anchor the panel to the launcher's corner rather than letting it hang
+     off the left edge on the narrowest phones. */
+  .support-panel {
+    left: 0;
+    right: auto;
+  }
+}
+
+
+/* ===========================================================================
+   6. Cookie banner
+   ---------------------------------------------------------------------------
+   It is bottom-anchored so it cannot cover the nav, but on a phone the
+   stacked layout grew tall enough to own most of the screen. Cap it, let it
+   scroll inside itself, and give the two buttons proper targets.
+   ======================================================================== */
+@media (max-width: 1023px) {
+
+  .cookie-banner {
+    max-height: var(--cookie-h);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    box-sizing: border-box;
+  }
+
+  .cb-actions .btn {
+    min-height: var(--tap-min);
+    padding: 10px 16px !important;
+  }
+}
+
+@media (max-width: 599px) {
+
+  .cookie-banner {
+    left: calc(var(--safe-left) + 10px);
+    right: calc(var(--safe-right) + 10px);
+    bottom: calc(var(--safe-bottom) + 10px);
+    width: auto;
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .cb-icon {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+  }
+
+  .cb-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+
+/* ===========================================================================
+   7. Reduced motion
+   ======================================================================== */
+@media (prefers-reduced-motion: reduce) {
+
+  .ticker-track {
+    animation: none;
+  }
+}

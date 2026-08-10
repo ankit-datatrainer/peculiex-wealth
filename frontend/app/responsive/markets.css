@@ -1,3 +1,229 @@
 /* Responsive layer — markets.
    See _tokens.css for the breakpoint contract and house rules.
-   Owned by one workstream: keep edits to this area inside this file. */
+   Owned by one workstream: keep edits to this area inside this file.
+
+   Scope: /markets, /markets/[symbol], /markets/[symbol]/terminal, /watchlist.
+
+   Everything below is wrapped in a max-width query at or under 1023px, so the
+   desktop rendering (>= 1024px) is byte-for-byte the one that shipped. The few
+   unconditional rules are overflow guards that are no-ops on a wide screen.
+
+   Selectors carry an id or two classes on purpose: the components in this area
+   mix global classes (globals.css), styled-jsx scoped classes and inline
+   styles, and this file has to win against the first two without !important. */
+
+/* ==========================================================================
+   1. /markets — index strip, gainers/losers tabs, stock grid
+   ========================================================================== */
+
+/* The stock grid, index strip and card internals already use minmax(0, 1fr)
+   tracks (set in Markets.tsx). What is left here is touch sizing. */
+@media (max-width: 1023px) {
+  /* Tab pills ("All Stocks" / "Top Gainers" / "Top Losers") and the pagination
+     buttons are 31px tall from globals.css. Grow the hit area, not the glyph:
+     padding + min-height, font-size untouched. */
+  #markets .chip {
+    min-height: var(--tap-min, 44px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Star / watchlist button sits absolutely in the card corner at 32px.
+     Scoped to this area so the same component keeps its size elsewhere. */
+  #markets .wl-star-btn,
+  .stock-page-actions .wl-star-btn,
+  .t-wrap .wl-star-btn {
+    width: var(--tap-min, 44px);
+    height: var(--tap-min, 44px);
+  }
+
+  /* The card's tappable body must clear the enlarged star. */
+  #markets .stock .stock-head {
+    padding-right: 52px;
+  }
+}
+
+/* ==========================================================================
+   2. /markets/[symbol] — header, key stats, chart
+   ========================================================================== */
+
+@media (max-width: 1023px) {
+  /* Breadcrumb is a 17px-tall text link; give it a real touch row. */
+  .stock-page-crumbs a {
+    display: inline-block;
+    min-height: var(--tap-min, 44px);
+    line-height: var(--tap-min, 44px);
+  }
+
+  /* Price + change + LIVE pill are laid out by an inline flex style with no
+     wrap; a long price and a long change string overflow on a phone. */
+  .stock-page-head-groww .stock-page-price-block-groww {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+
+  /* Name / logo / watch button: let the button drop under the name. */
+  .stock-page-head-groww .stock-page-head-groww-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 12px;
+    justify-content: space-between;
+  }
+  .stock-page-head-groww .stock-page-id {
+    flex: 1 1 220px;
+    min-width: 0;
+  }
+
+  /* Wrap the whole detail column tighter so 24px card gutters don't eat the
+     phone's usable width. */
+  .stock-page .stock-page-card {
+    padding: 18px 16px;
+  }
+}
+
+@media (max-width: 599px) {
+  /* minmax(160px, …) needs 342px of inner width for two columns; below that
+     the last column silently overflows the card. */
+  .stock-page .stock-page-stats,
+  .stock-page .stock-page-about-row {
+    grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
+    gap: 10px 16px;
+  }
+
+  /* Long external links (website row, news links) must not widen the card. */
+  .stock-page .stock-page-stat-value,
+  .stock-page .stock-page-news-headline {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ---- PriceChart -------------------------------------------------------- */
+
+/* The chart footer is an inline `display:flex; justify-content:space-between`
+   with six timeframe pills plus a Terminal link — about 420px of content on a
+   358px-wide phone card. Inline styles set no wrap, so add it here. */
+@media (max-width: 1023px) {
+  .pchart .pchart-footer {
+    flex-wrap: wrap;
+    gap: 10px 12px;
+  }
+  .pchart .pchart-tabs-bottom {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  .pchart .pchart-tab-pill,
+  .pchart .pchart-terminal-btn {
+    min-height: var(--tap-min, 44px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Guard: the SVG is CSS-sized to 100% of its wrapper, but keep it from ever
+   being the element that widens the page if that ever changes. */
+.pchart .pchart-canvas-wrap,
+.pchart .pchart-svg {
+  max-width: 100%;
+}
+
+/* The tooltip is absolutely positioned from a pixel offset computed against
+   the chart width; clamp it so it cannot poke out of a narrow card. */
+@media (max-width: 599px) {
+  .pchart .pchart-tooltip {
+    max-width: calc(100% - 12px);
+  }
+  .pchart .pchart-summary {
+    flex-wrap: wrap;
+    gap: 4px 12px;
+  }
+}
+
+/* ==========================================================================
+   3. /markets/[symbol]/terminal — TradingView embed
+   ========================================================================== */
+
+/* The widget replaces its container's contents with an iframe it sizes itself
+   (autosize: true). Pin both to the column width so a wide default can never
+   push the document sideways. */
+#tv_chart_container {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+#tv_chart_container > iframe,
+#tv_chart_container iframe {
+  width: 100% !important;
+  max-width: 100%;
+}
+
+/* The terminal page is its own full-height shell outside the site chrome; its
+   header markup carries no classes, so reach it through the chart container. */
+@media (max-width: 1023px) {
+  body:has(#tv_chart_container) header {
+    padding-left: max(16px, var(--safe-left));
+    padding-right: max(16px, var(--safe-right));
+    gap: 12px;
+  }
+  body:has(#tv_chart_container) header a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tap-min, 44px);
+  }
+  /* TradingView's own toolbars need vertical room; below this the widget
+     collapses to an unusable strip on a phone in landscape. */
+  body:has(#tv_chart_container) main {
+    min-height: 360px;
+  }
+}
+
+/* ==========================================================================
+   4. /watchlist — logged-out marketing page (GuestView)
+   ========================================================================== */
+
+@media (max-width: 1023px) {
+  /* Both bottom CTAs render as 26px-tall inline boxes on touch widths because
+     the shared `a` reset flattens the padded inline-flex. Restore the block
+     box and give them a full touch row. */
+  .gv-cta-btns .gv-cta-primary,
+  .gv-cta-btns .gv-cta-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tap-min, 44px);
+    box-sizing: border-box;
+  }
+
+  /* Hero pill row scrolls horizontally inside itself — make sure it is the
+     scroller and not the page. */
+  .gv-copy .gv-chips {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .gv-copy .gv-chips > * {
+    flex: 0 0 auto;
+  }
+}
+
+/* ==========================================================================
+   5. /watchlist — signed-in view (AuthedView + toolbar/table/cards)
+   ========================================================================== */
+
+/* The authed shell, its toolbar and the two result views own their own
+   styled-jsx; only cross-cutting guards live here. */
+.authed-wrap,
+.authed-wrap * {
+  min-width: 0;
+}
+
+@media (max-width: 1023px) {
+  /* The error banner's dismiss × is a bare 1.2rem glyph. */
+  .authed-wrap .a-error button {
+    min-width: var(--tap-min, 44px);
+    min-height: var(--tap-min, 44px);
+  }
+}

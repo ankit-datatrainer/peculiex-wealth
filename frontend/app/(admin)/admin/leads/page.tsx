@@ -79,6 +79,7 @@ export default function AdminLeadsPage() {
               : "No leads yet."}
           </div>
         ) : (
+          <div className="admin-table-scroll" data-lenis-prevent>
           <table className="admin-table">
             <thead>
               <tr>
@@ -134,6 +135,7 @@ export default function AdminLeadsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

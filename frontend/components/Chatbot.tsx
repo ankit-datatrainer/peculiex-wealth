@@ -147,7 +147,9 @@ export default function Chatbot() {
             ))}
             <div ref={messagesEndRef} />
           </div>
-          <div className="chatbot-options">
+          {/* Capped and scrollable on phones (see responsive/chrome.css), so it
+              needs the Lenis opt-out the transcript above already carries. */}
+          <div className="chatbot-options" data-lenis-prevent>
             {KNOWLEDGE_BASE.map(item => (
               <button 
                 key={item.label} 

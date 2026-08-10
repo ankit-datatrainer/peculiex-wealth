@@ -209,6 +209,24 @@ export default function LoginPrompt({
           color: var(--color-text-muted, #333333);
           margin: 0;
         }
+        /* Touch: the close affordance needs a 44px hit area (WCAG 2.5.5),
+           and the card needs to stop wasting 2rem of a 390px screen on
+           side padding. */
+        @media (max-width: 599px) {
+          .lp-backdrop {
+            padding: 0.75rem;
+          }
+          .lp-card {
+            padding: 2rem 1.25rem 1.4rem;
+            border-radius: 18px;
+          }
+          .lp-close {
+            top: 8px;
+            right: 8px;
+            width: 44px;
+            height: 44px;
+          }
+        }
       `}</style>
     </div>,
     document.body

@@ -1,3 +1,796 @@
 /* Responsive layer — dashboard.
    See _tokens.css for the breakpoint contract and house rules.
-   Owned by one workstream: keep edits to this area inside this file. */
+   Owned by one workstream: keep edits to this area inside this file.
+
+   Covers two surfaces:
+     1. /dashboard  — the investor's own dashboard (.ud-*)
+     2. /admin/*    — the super-admin panel (.admin-*, .cms-*)
+
+   Everything below 1024px only. There is deliberately not a single rule
+   here that applies at >= 1024px except the `display:none` that keeps the
+   new phone/tablet chrome out of the desktop render, so the desktop
+   layout is exactly what it was before this file was written.
+   ========================================================================= */
+
+/* ===========================================================================
+   1. ADMIN — phone/tablet top bar + off-canvas sidebar drawer
+   ---------------------------------------------------------------------------
+   globals.css turns the 264px sidebar into a horizontal icon rail below
+   960px. That rail is 667px wide inside a 390px viewport: it overflows,
+   the labels are hidden so the icons are unlabelled, and the user card and
+   sign-out controls are display:none. Replaced here with a real drawer.
+
+   Markup for the bar and the scrim comes from components/admin/AdminMobileNav,
+   which renders nothing at all on desktop.
+   ======================================================================== */
+
+/* Desktop: the mobile chrome does not exist. */
+.admin-mbar,
+.admin-mbar-scrim {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  /* ── the fixed top bar ─────────────────────────────────────────────── */
+  .admin-mbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 70;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: calc(56px + var(--safe-top));
+    padding: var(--safe-top) 12px 0;
+    padding-left: max(12px, var(--safe-left));
+    padding-right: max(12px, var(--safe-right));
+    background: #0c1f24;
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .admin-mbar-toggle {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 10px;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .admin-mbar-toggle:focus-visible {
+    outline: 2px solid #f6c66f;
+    outline-offset: 2px;
+  }
+
+  .admin-mbar-bars {
+    display: grid;
+    gap: 4px;
+    width: 18px;
+  }
+
+  .admin-mbar-bars span {
+    display: block;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition: transform 0.18s ease, opacity 0.18s ease;
+  }
+
+  /* Hamburger morphs into a close glyph while the drawer is open. */
+  :root[data-admin-drawer="open"] .admin-mbar-bars span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+  :root[data-admin-drawer="open"] .admin-mbar-bars span:nth-child(2) {
+    opacity: 0;
+  }
+  :root[data-admin-drawer="open"] .admin-mbar-bars span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .admin-mbar-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── scrim ─────────────────────────────────────────────────────────── */
+  .admin-mbar-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 75;
+    background: rgba(6, 16, 19, 0.55);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .admin-mbar-scrim[data-open="true"] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ── the shell gets out of the way of the fixed bar ────────────────── */
+  .admin-shell {
+    grid-template-columns: 1fr;
+    padding-top: calc(56px + var(--safe-top));
+  }
+
+  /* ── the sidebar becomes the drawer ────────────────────────────────── */
+  .admin-side {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 80;
+    width: min(86vw, 300px);
+    height: 100%;
+    max-height: 100%;
+    /* reset the icon-rail rules from globals.css */
+    flex-direction: column;
+    align-items: stretch;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: calc(18px + var(--safe-top)) 16px calc(18px + var(--safe-bottom));
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.24s ease, visibility 0s linear 0.24s;
+  }
+
+  :root[data-admin-drawer="open"] .admin-side {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.24s ease, visibility 0s;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
+  }
+
+  /* The drawer is a real menu again: labels back, footer back, 44px rows. */
+  .admin-brand {
+    margin: 0 0 22px;
+    flex-shrink: 0;
+  }
+
+  .admin-nav {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 2px;
+  }
+
+  .admin-nav-item {
+    padding: 12px 12px;
+    min-height: 44px;
+    white-space: normal;
+  }
+
+  .admin-nav-item span:not(.admin-nav-ico) {
+    display: inline;
+  }
+
+  .admin-side-foot {
+    display: block;
+  }
+
+  .admin-side-link {
+    padding: 11px 6px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Stop the page behind the drawer scrolling under the finger. */
+  :root[data-admin-drawer="open"] body {
+    overflow: hidden;
+  }
+
+  /* ── main column ───────────────────────────────────────────────────── */
+  .admin-main {
+    padding: 20px 20px 56px;
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 599px) {
+  .admin-main {
+    padding: 16px 14px 48px;
+  }
+
+  .admin-page-head h1 {
+    font-size: 1.4rem;
+  }
+
+  .admin-page-sub {
+    font-size: 0.86rem;
+  }
+
+  .admin-page,
+  .admin-page-head {
+    gap: 14px;
+  }
+}
+
+/* ===========================================================================
+   2. ADMIN — data tables
+   ---------------------------------------------------------------------------
+   Every table page renders `.admin-card.admin-table-wrap > .admin-table-scroll
+   > table.admin-table`. The wrap card clips (border radius); the scroller
+   inside it takes the sideways travel so the page never does. The scroller
+   carries data-lenis-prevent in the JSX, because Lenis owns the wheel.
+   ======================================================================== */
+
+.admin-table-scroll {
+  max-width: 100%;
+}
+
+@media (max-width: 1023px) {
+  .admin-table-wrap {
+    /* keep the rounded corners, but let the inner scroller be the clipper */
+    overflow: hidden;
+  }
+
+  .admin-table-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  /* Below this the columns collapse into unreadable slivers; scrolling is
+     the honest answer for an operational table with 6-8 columns. */
+  .admin-table {
+    min-width: 680px;
+  }
+
+  .admin-msg-cell {
+    max-width: 260px;
+  }
+
+  /* Row action buttons are the smallest hit targets in the panel. */
+  .admin-icon-btn {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .admin-status {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+
+  /* Toolbars: the search field should own its own line. */
+  .admin-toolbar {
+    gap: 10px;
+  }
+
+  .admin-toolbar .admin-input {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .admin-input {
+    min-height: 44px;
+    font-size: max(16px, 1rem);
+  }
+
+  .admin-chip {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  .admin-kpi-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .admin-card {
+    padding: 18px 16px;
+  }
+
+  .admin-quick .btn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 599px) {
+  .admin-table {
+    min-width: 620px;
+    font-size: 0.84rem;
+  }
+
+  .admin-table thead th,
+  .admin-table tbody td {
+    padding: 10px 12px;
+  }
+
+  .admin-kpi {
+    padding: 14px 16px;
+  }
+
+  .admin-kpi-value {
+    font-size: 1.7rem;
+  }
+
+  /* Row action buttons wrap instead of forcing the table wider. */
+  .admin-row-actions {
+    white-space: normal;
+  }
+
+  .admin-row-actions .admin-icon-btn {
+    margin: 2px 0 2px 4px;
+  }
+}
+
+/* ===========================================================================
+   3. ADMIN — modals
+   ---------------------------------------------------------------------------
+   `.admin-modal` is a fixed grid overlay with 24px padding and a 720px
+   body capped at 90vh. On a 390x844 screen the padding eats the width and
+   the sticky footer scrolls away with the content.
+   ======================================================================== */
+
+@media (max-width: 1023px) {
+  .admin-modal {
+    padding: 12px;
+    padding-top: max(12px, var(--safe-top));
+    padding-bottom: max(12px, var(--safe-bottom));
+    align-items: end;
+  }
+
+  .admin-modal-body {
+    max-width: 100%;
+    max-height: calc(100dvh - 24px);
+    padding: 18px 16px;
+    gap: 14px;
+    border-radius: 16px;
+    overscroll-behavior: contain;
+  }
+
+  .admin-modal-body h2 {
+    font-size: 1.1rem;
+  }
+
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .admin-field input,
+  .admin-field select,
+  .admin-field textarea {
+    min-height: 44px;
+    font-size: max(16px, 1rem);
+    padding: 11px 12px;
+  }
+
+  .admin-field textarea {
+    min-height: 96px;
+  }
+
+  .admin-color-input input[type="color"] {
+    width: 56px;
+    height: 44px;
+  }
+
+  .admin-modal-foot {
+    position: sticky;
+    bottom: calc(-18px - var(--safe-bottom));
+    background: #fff;
+    margin: 0 -16px -18px;
+    padding: 14px 16px calc(14px + var(--safe-bottom));
+    flex-wrap: wrap;
+  }
+
+  .admin-modal-foot .btn {
+    flex: 1 1 auto;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 599px) {
+  .admin-modal {
+    padding: 0;
+  }
+
+  .admin-modal-body {
+    max-height: 100dvh;
+    height: 100dvh;
+    border-radius: 0;
+    padding: calc(16px + var(--safe-top)) 14px 16px;
+  }
+
+  .admin-modal-foot {
+    margin: 0 -14px -16px;
+    padding: 12px 14px calc(12px + var(--safe-bottom));
+  }
+
+  .admin-no-access {
+    padding: 24px 18px;
+  }
+
+  .admin-no-access-actions {
+    flex-direction: column;
+  }
+
+  .admin-no-access-actions .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+}
+
+/* ===========================================================================
+   4. ADMIN — Content Manager (/admin/content)
+   ---------------------------------------------------------------------------
+   The page's own rules live in a styled-jsx `global` block, which is
+   injected into <head> after this stylesheet. Equal specificity would lose
+   that race, so every override here is scoped through the `.cms` root to
+   win on specificity instead of order.
+   ======================================================================== */
+
+@media (max-width: 1023px) {
+  .cms .cms-body {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* Sticky is wrong once the picker is a full-width block above the editor:
+     it would pin a 300px slab over the form the user is typing into. */
+  .cms .cms-list {
+    position: static;
+    top: auto;
+    padding: 10px;
+  }
+
+  .cms .cms-list-scroll {
+    /* Short enough that the editor is still on screen, tall enough to show
+       four or five pages. Carries data-lenis-prevent in the JSX. */
+    max-height: 40vh;
+  }
+
+  .cms .cms-page {
+    min-height: 44px;
+    justify-content: center;
+    padding: 8px 12px;
+  }
+
+  .cms .cms-section-head {
+    min-height: 48px;
+    gap: 12px;
+    text-align: left;
+  }
+
+  .cms .cms-caret {
+    flex: 0 0 auto;
+    width: 24px;
+    text-align: center;
+    font-size: 1.3rem;
+  }
+
+  .cms .cms-fields {
+    padding: 14px 12px;
+  }
+
+  .cms .cms-field textarea,
+  .cms .cms-field input,
+  .cms .cms-field select {
+    min-height: 44px;
+    font-size: max(16px, 1rem);
+  }
+
+  .cms .cms-field textarea {
+    min-height: 110px;
+  }
+
+  /* Upload row: preview above the controls so the URL field gets the
+     full width instead of 72px-worth of thumbnail plus a sliver. */
+  .cms .cms-img-row {
+    flex-wrap: wrap;
+  }
+
+  .cms .cms-img-controls {
+    flex: 1 1 200px;
+  }
+
+  .cms .cms-mini {
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .cms .cms-row-btns {
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .cms .cms-row-head {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .cms .cms-toolbar {
+    gap: 12px;
+  }
+
+  .cms .cms-actions {
+    width: 100%;
+  }
+
+  .cms .cms-actions .btn {
+    flex: 1 1 auto;
+    min-height: 44px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 599px) {
+  .cms .cms-head h1 {
+    font-size: 1.35rem;
+  }
+
+  .cms .cms-list-scroll {
+    max-height: 34vh;
+  }
+
+  .cms .cms-img-prev {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+/* ===========================================================================
+   5. ADMIN — factsheet HTML editor (/admin/factsheet-html)
+   ======================================================================== */
+
+@media (max-width: 1023px) {
+  .admin-main textarea {
+    max-width: 100%;
+    font-size: max(16px, 0.9rem);
+  }
+
+  .admin-main pre,
+  .admin-main code {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* ===========================================================================
+   6. /dashboard — the investor dashboard (.ud-*)
+   ---------------------------------------------------------------------------
+   Two structural problems below 1024px:
+
+     a) `.ud-shell` is a fixed-height (100vh - 160px) box whose right pane
+        scrolls internally. Nested scroll inside page scroll is miserable on
+        a phone; the page itself should scroll.
+     b) `.ud-sidebar` is `display:none` below 768px — and it holds the tab
+        switcher, so Portfolio / Markets / Watchlist / Settings become
+        unreachable on a phone. It becomes a scrolling tab strip instead.
+   ======================================================================== */
+
+@media (max-width: 1023px) {
+  .ud-shell {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 0;
+  }
+
+  /* (b) the tab strip */
+  .ud-sidebar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-divider);
+    scrollbar-width: none;
+  }
+
+  .ud-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* The identity card and the footer links duplicate what the header and
+     the quick actions already offer; in a 56px-tall strip they are noise. */
+  .ud-user-card,
+  .ud-sidebar-footer {
+    display: none;
+  }
+
+  .ud-nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 6px;
+    flex: 0 0 auto;
+  }
+
+  .ud-nav-item {
+    width: auto;
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 10px 14px;
+    white-space: nowrap;
+    font-size: 13.5px;
+  }
+
+  /* (a) let the page scroll, not the pane */
+  .ud-main {
+    overflow: visible;
+    padding: 22px 20px 28px;
+  }
+
+  .ud-card {
+    padding: 18px 16px;
+  }
+
+  .ud-header-actions .btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+@media (max-width: 599px) {
+  .ud-section {
+    padding-bottom: 28px;
+  }
+
+  .ud-main {
+    padding: 18px 14px 24px;
+  }
+
+  .ud-greeting {
+    font-size: 22px;
+  }
+
+  .ud-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ud-header-actions {
+    width: 100%;
+  }
+
+  .ud-header-actions .btn {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+
+  /* Two KPI tiles per row reads better at 390px than one full-width tile
+     with an enormous amount of dead space to the right of the number. */
+  .ud-kpis {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .ud-kpi {
+    padding: 14px 14px;
+  }
+
+  .ud-kpi-value {
+    font-size: 22px;
+  }
+
+  .ud-kpi-label {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .ud-quick-actions {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .ud-action-btn {
+    padding: 16px 8px;
+    min-height: 44px;
+  }
+
+  .ud-card-head {
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  /* Watchlist / holdings rows: the 4-column grid cannot hold a logo, a
+     name, a price, a percentage and a range at 358px. Stack it into a
+     two-part row — identity on the left, numbers right-aligned. */
+  .ud-wl-thead {
+    display: none;
+  }
+
+  .ud-wl-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 4px;
+    min-height: 56px;
+  }
+
+  .ud-wl-stock {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .ud-wl-stock strong,
+  .ud-wl-stock small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 46vw;
+  }
+
+  .ud-wl-price-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex: 0 0 auto;
+    text-align: right;
+  }
+
+  .ud-wl-price-col small {
+    font-size: 11px;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  .ud-wl-spark {
+    display: none;
+  }
+
+  /* Chart keeps its aspect but stops being a letterbox slit. */
+  .ud-chart-svg {
+    height: 150px;
+  }
+
+  /* Settings: label above value instead of a squeezed two-column row. */
+  .ud-setting-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 14px 0;
+  }
+
+  .ud-setting-row > div {
+    width: 100%;
+    max-width: 100% !important;
+  }
+
+  .ud-setting-row input {
+    width: 100%;
+    min-height: 44px;
+    font-size: max(16px, 1rem);
+  }
+
+  .ud-setting-row .btn {
+    min-height: 44px;
+  }
+
+  .ud-login-prompt {
+    padding: 36px 20px;
+    margin: 32px auto;
+  }
+
+  .ud-prompt-actions {
+    flex-direction: column;
+  }
+
+  .ud-prompt-actions .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+}

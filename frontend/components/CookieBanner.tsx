@@ -46,6 +46,9 @@ export default function CookieBanner() {
       aria-live="polite"
       aria-label="Cookie consent"
       ref={ref}
+      /* Height-capped with its own scroll on touch layouts, so Lenis must not
+         swallow the wheel/touch events inside it. */
+      data-lenis-prevent
     >
       <div className="cb-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none">

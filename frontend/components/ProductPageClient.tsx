@@ -134,7 +134,7 @@ export default function ProductPageClient({ slug, product: p }: Props) {
       <PageHero label={p.label} title={p.title} subtitle={p.subtitle} page={cmsKey} />
 
       {/* Metrics row */}
-      <section style={{ padding: "0 0 80px" }}>
+      <section className="product-metrics-sec" style={{ padding: "0 0 80px" }}>
         <div className="container">
           <div
             className="premium-metrics-grid"
@@ -195,7 +195,7 @@ export default function ProductPageClient({ slug, product: p }: Props) {
       <FactsheetEmbed slug={slug} label={p.label} />
 
       {/* Highlights */}
-      <section style={{ padding: "0 0 100px" }}>
+      <section className="product-highlights-sec" style={{ padding: "0 0 100px" }}>
         <div className="container">
           <div className="sec-head reveal">
             <div className="label">{highlightEyebrow}</div>
@@ -221,7 +221,7 @@ export default function ProductPageClient({ slug, product: p }: Props) {
                 gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                 gap: "20px"
               }}
-              className="reveal-stagger"
+              className="reveal-stagger product-why-grid"
             >
               {highlights.map((h) => (
                 <article
@@ -240,7 +240,7 @@ export default function ProductPageClient({ slug, product: p }: Props) {
       </section>
 
       {/* How it works */}
-      <section style={{ padding: "0 0 100px" }}>
+      <section className="product-how-sec" style={{ padding: "0 0 100px" }}>
         <div className="container">
           <div className="sec-head reveal">
             <div className="label">{howEyebrow}</div>
@@ -264,7 +264,7 @@ export default function ProductPageClient({ slug, product: p }: Props) {
       </section>
 
       {/* Closing CTA */}
-      <section style={{ padding: "0 0 140px" }}>
+      <section className="product-closing-sec" style={{ padding: "0 0 140px" }}>
         <div className="container" style={{ textAlign: "center", maxWidth: 760, margin: "0 auto" }}>
           <h2
             className="premium-closing-title"
@@ -289,7 +289,7 @@ export default function ProductPageClient({ slug, product: p }: Props) {
 
       {/* LAMF cross-sell: appears only on mutual funds page */}
       {slug === "mutual-funds" && (
-        <section style={{ padding: "0 0 110px" }}>
+        <section className="product-lamf-sec" style={{ padding: "0 0 110px" }}>
           <div className="container">
             <div className="lamf-band reveal">
               <div className="lamf-band-text">
@@ -315,10 +315,11 @@ export default function ProductPageClient({ slug, product: p }: Props) {
 
       {/* Related products */}
       {relatedSlugs.length > 0 && (
-        <section style={{ padding: "0 0 120px", borderTop: "1px solid var(--color-divider)" }}>
+        <section className="product-related-sec" style={{ padding: "0 0 120px", borderTop: "1px solid var(--color-divider)" }}>
           <div className="container" style={{ paddingTop: 60 }}>
             <div className="label" style={{ marginBottom: 16 }}>You might also like</div>
             <div
+              className="product-related-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",

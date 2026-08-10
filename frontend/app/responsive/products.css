@@ -1,3 +1,416 @@
 /* Responsive layer — products.
    See _tokens.css for the breakpoint contract and house rules.
-   Owned by one workstream: keep edits to this area inside this file. */
+   Owned by one workstream: keep edits to this area inside this file.
+
+   Scope: the product detail template (ProductPageClient), the unlisted-shares
+   grid + invest modal, the factsheet card/embed and the shared PageHero.
+
+   Two ground rules the file sticks to:
+
+   1. Anything that could move a pixel is written inside a max-width query, so
+      desktop (>= 1024px) is untouched by construction. The handful of rules
+      outside a query are overflow guards (`min-width: 0`, `overflow-wrap`)
+      that change nothing until content would otherwise blow a box open.
+   2. `!important` appears only where the declaration it overrides is an inline
+      style on a CMS-driven component. Those cannot be beaten by specificity,
+      and rewriting them into JSX would move layout decisions back out of this
+      layer.
+   ========================================================================= */
+
+
+/* ---------------------------------------------------------------------------
+   Overflow guards — all widths, no visual change
+   ------------------------------------------------------------------------ */
+
+/* Grid and flex children default to min-width:auto, which makes a long word or
+   a wide number push the track wider than its share instead of wrapping. */
+.premium-metrics-grid,
+.premium-metric-card,
+.product-why-grid,
+.product-why-grid > .why-card,
+.product-related-grid,
+.premium-related-card,
+.insurance-card-grid,
+.insurance-card,
+.factsheet-card-body,
+.lamf-band-text,
+.steps li,
+.steps li > div {
+  min-width: 0;
+}
+
+/* Metric values are unbroken strings ("₹25,00,000", "12.4% CAGR"). */
+.premium-metric-value,
+.premium-metric-label,
+.premium-related-title,
+.premium-related-desc {
+  overflow-wrap: anywhere;
+}
+
+/* `minmax(240px, 1fr)` still lays a 240px track inside a 200px container and
+   overflows it. min() clamps the floor to the container; above the floor the
+   result is byte-identical to the original track list. */
+@media (max-width: 1023px) {
+  .premium-metrics-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)) !important;
+  }
+
+  .product-why-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)) !important;
+  }
+
+  .product-related-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)) !important;
+  }
+
+  /* globals.css already pins this to two columns under 520px; the clamp is for
+     the band above that, and the phone block further down re-states the
+     two-column intent for the whole <= 599px class. */
+  .insurance-card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(230px, 100%), 1fr));
+  }
+}
+
+@media (max-width: 599px) {
+  .insurance-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .insurance-card-footer {
+    padding: 12px 14px;
+    font-size: 0.85rem;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Shared page hero (PageHero.tsx)
+   ------------------------------------------------------------------------ */
+
+/* The headline size lives in PageHero.tsx, as clamp(1.8rem, 5vw, 3.6rem). Only
+   the floor changed (it was 2.4rem): at 1024px 5vw already resolves to 3.2rem,
+   so the floor cannot engage anywhere on desktop and that render is unchanged.
+   Below ~768px it takes over and holds the headline at 28.8px instead of the
+   38.4px that used to wrap "Alternative Investment Funds" onto four lines. */
+@media (max-width: 599px) {
+  .page-hero .stitle {
+    line-height: 1.15;
+  }
+
+  .page-hero .sdesc {
+    font-size: 1rem;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Product detail — metrics row
+   ------------------------------------------------------------------------ */
+
+@media (max-width: 599px) {
+  /* auto-fit lands on two 180px tracks at 390px with nothing to spare; pin it
+     to two even tracks so the cards can't be forced past the container. */
+  .premium-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .premium-metric-card {
+    padding: 18px 10px !important;
+  }
+
+  .premium-metric-value {
+    font-size: 1.45rem !important;
+    line-height: 1.15;
+  }
+
+  .premium-metric-label {
+    font-size: 0.66rem !important;
+    letter-spacing: 0.04em !important;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Product detail — highlight cards, steps, related, section rhythm
+   ------------------------------------------------------------------------ */
+
+@media (max-width: 599px) {
+  .product-why-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 14px !important;
+  }
+
+  .product-why-grid > .why-card {
+    padding: 20px;
+  }
+
+  .product-related-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  /* The number badge is a fixed 50px track below 700px; 44px leaves the copy
+     column ~30px wider without dropping the badge under the tap minimum. */
+  .product-how-sec .steps li {
+    grid-template-columns: 44px 1fr;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .product-how-sec .step-no {
+    width: 44px;
+    height: 44px;
+    font-size: 21px;
+  }
+
+  .product-how-sec .steps h4 {
+    font-size: 17px;
+  }
+
+  /* The template's section spacing is authored for a 1440px canvas (80–140px
+     of trailing padding). At 390px that is most of a screen of nothing between
+     every band. Inline padding, hence !important. */
+  .product-metrics-sec {
+    padding: 0 0 44px !important;
+  }
+
+  .product-highlights-sec,
+  .product-how-sec {
+    padding: 0 0 56px !important;
+  }
+
+  .product-closing-sec {
+    padding: 0 0 72px !important;
+  }
+
+  .product-lamf-sec {
+    padding: 0 0 64px !important;
+  }
+
+  .product-related-sec {
+    padding: 0 0 72px !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  /* Both CTAs go full width so neither is a 35px-tall thumb target. */
+  .lamf-band-cta {
+    width: 100%;
+  }
+
+  .lamf-band-cta .btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Factsheet card + HTML embed
+   ------------------------------------------------------------------------ */
+
+@media (max-width: 1023px) {
+  /* .factsheet-card-actions .btn is 9px/0.86rem → ~35px tall. */
+  .factsheet-card-actions .btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 599px) {
+  .factsheet-card {
+    padding: 22px 16px;
+  }
+
+  .factsheet-card-actions {
+    width: 100%;
+  }
+
+  .factsheet-card-actions .btn {
+    flex: 1 1 auto;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Unlisted shares — card grid, search, hot-deal band
+   ------------------------------------------------------------------------ */
+
+/* Long company names ("Hero Fincorp Financial Services") must wrap inside the
+   card, never widen it. The component ships the same guard in styled-jsx; this
+   repeats it here so the rule survives independently of injection order. */
+.ulv2-card,
+.ulv2-card__stat,
+.ulv2-card__stat strong {
+  min-width: 0;
+}
+
+.ulv2-card__name,
+.ulv2-card__stat strong {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1023px) {
+  /* 12px padding + a ~19px glyph is a 27px target. */
+  .unlisted-search__clear {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  /* 12px + 1rem lands at ~43px — one pixel under the floor. */
+  .ulv2-card__invest {
+    min-height: 44px;
+  }
+
+  .unlisted-v2 .ul-feature-box {
+    min-width: 0;
+  }
+
+  /* 10px of vertical padding around a 19px line is a 39px target. */
+  .ul-wa-cta {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 599px) {
+  /* Top padding is nav clearance and is left exactly as it was; only the
+     trailing 80px, which is dead space above the footer, comes down. */
+  .unlisted-v2 {
+    padding: 140px 0 56px;
+  }
+
+  .unlisted-grid-v2 {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .unlisted-search {
+    margin-bottom: 24px;
+  }
+
+  .unlisted-count {
+    margin-bottom: 24px;
+  }
+
+  .unlisted-empty {
+    padding: 40px 16px;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Invest modal
+   ------------------------------------------------------------------------ */
+
+@media (max-width: 1023px) {
+  /* 34px circle → 44px, and the header gains the matching clearance so the
+     title never slides under it. */
+  .invest-modal__close {
+    width: 44px;
+    height: 44px;
+    top: 12px;
+    right: 12px;
+  }
+
+  .invest-modal__header-top {
+    padding-right: 52px;
+  }
+
+  .invest-modal__wa-link,
+  .invest-modal__btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* On a wide screen the whole dialog is the scroll container, which is fine:
+   at 90vh very little of it is ever off-screen. On a phone — and on a 390px
+   -tall landscape phone especially — the dialog is several screens long, and
+   because .invest-modal__close is absolutely positioned it scrolls away with
+   the header, leaving nothing but the overlay to dismiss by.
+
+   So below 600px wide (or 540px tall) the dialog becomes a flex column with a
+   fixed header and a scrolling body. The close button then stays pinned over
+   the header for the whole scroll, and the header keeps the price visible
+   while the user works through the form.
+
+   The body carries data-lenis-prevent in InvestModal.tsx — without it Lenis
+   swallows the wheel event and this new scroll container never moves. */
+@media (max-width: 599px), (max-height: 540px) {
+  .invest-modal {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .invest-modal__header {
+    flex: 0 0 auto;
+  }
+
+  .invest-modal__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* The success state has no header/body pair — let it scroll as one piece. */
+  .invest-modal--success {
+    display: block;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 599px) {
+  .invest-modal__note {
+    text-align: left;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Unlisted detail page (/unlisted/<company>)
+   ------------------------------------------------------------------------ */
+
+.unl-detail-head,
+.unl-detail-title,
+.unl-stat {
+  min-width: 0;
+}
+
+.unl-detail-title h1,
+.unl-stat strong {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1023px) {
+  .unl-detail-cta .btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 599px) {
+  .unl-detail-cta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .unl-detail-cta .btn {
+    width: 100%;
+  }
+}

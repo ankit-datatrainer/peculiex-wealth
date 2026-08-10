@@ -165,13 +165,13 @@ export default function LumpsumCalc() {
             <h3 style={{ fontSize: "1.5rem", fontWeight: 500 }}>Wealth Progression</h3>
             <p style={{ color: "var(--color-text-faint)", fontSize: "0.95rem" }}>Projected growth over {yr} years</p>
          </div>
-         <div className="chart-container" style={{ position: "relative", height: "300px", width: "100%", overflow: "visible", display: "flex", alignItems: "flex-end", gap: "3px" }}>
+         <div className="chart-container" style={{ position: "relative", width: "100%", overflow: "visible", display: "flex", alignItems: "flex-end", gap: "3px" }}>
             {projection.map((pt, i) => {
               const hInvested = maxVal > 0 ? (pt.invested / maxVal) * 100 : 0;
               const hGains = maxVal > 0 ? ((pt.total - pt.invested) / maxVal) * 100 : 0;
               
               return (
-                <div key={i} className="chart-bar-group" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", height: "100%", position: "relative" }}>
+                <div key={i} className="chart-bar-group" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", height: "100%" }}>
                   <div className="chart-tooltip">
                      <strong>Year {pt.year}</strong><br/>
                      Total: {fmtINR(pt.total)}<br/>

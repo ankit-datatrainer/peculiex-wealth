@@ -61,6 +61,7 @@ export default function AdminContactPage() {
             No messages yet. (In seed mode submissions are not persisted.)
           </div>
         ) : (
+          <div className="admin-table-scroll" data-lenis-prevent>
           <table className="admin-table">
             <thead>
               <tr>
@@ -105,6 +106,7 @@ export default function AdminContactPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

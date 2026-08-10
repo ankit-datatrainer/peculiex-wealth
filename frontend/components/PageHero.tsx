@@ -47,7 +47,10 @@ export default function PageHero({ label, title, subtitle, align = "left", page 
             style={center ? { margin: "0 auto 22px" } : { margin: "0 0 22px" }}
           />
           <div className="label">{cmsLabel || label}</div>
-          <h1 className="stitle" style={{ fontSize: "clamp(2.4rem, 5vw, 3.6rem)" }}>
+          {/* Floor is 1.8rem, not 2.4rem: 5vw already resolves to 3.2rem at the
+              1024px desktop breakpoint, so the floor only ever engages on
+              phones/small tablets and the desktop render is unchanged. */}
+          <h1 className="stitle" style={{ fontSize: "clamp(1.8rem, 5vw, 3.6rem)" }}>
             {cmsTitle ? renderAccented(cmsTitle) : title}
           </h1>
           {(cmsSubtitle || subtitle) && (

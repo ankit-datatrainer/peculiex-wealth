@@ -1,3 +1,463 @@
 /* Responsive layer — calculators.
    See _tokens.css for the breakpoint contract and house rules.
-   Owned by one workstream: keep edits to this area inside this file. */
+   Owned by one workstream: keep edits to this area inside this file.
+
+   Covers: /calculator, /calculator/lumpsum, /calculator/goal-planner,
+   /calculator/retirement, /calculator/reverse-sip, /reckoner and
+   /resources/mutual-funds, plus the homepage SIP preview, the MF-performance
+   widget and the pricing grid.
+
+   Nothing here changes a formula, a default value or any copy — only how the
+   existing markup is sized and laid out. Desktop (>= 1024px) is deliberately
+   left byte-for-byte identical: every rule below either lives inside a
+   `max-width: 1023px` query, or restores the pre-existing desktop value.
+   ========================================================================= */
+
+/* ---------------------------------------------------------------------------
+   1. The wealth-progression bar chart
+   ---------------------------------------------------------------------------
+   THE OVERFLOW BUG.  Each bar carries a `.chart-tooltip` that is absolutely
+   positioned against its own bar (`left: 50%; translateX(-50%)`) and is
+   `white-space: nowrap`, so it is ~136px wide however narrow the bar is. The
+   tooltip is only *visually* hidden (`visibility: hidden`), so it is still laid
+   out and still counted in the document's scroll width. On the last bar, half
+   the tooltip hangs past the right edge of the page:
+
+       390px viewport  ->  /calculator 401px, /calculator/lumpsum 398px,
+                           /goal-planner and /reverse-sip 406px
+       820px viewport  ->  /calculator/retirement 831px
+
+   which is exactly the horizontal overflow the audit measured. The fix is to
+   stop the tooltip being anchored to a 5px-wide bar on small screens: below
+   1024px `.chart-bar-group` becomes `position: static`, so the tooltip anchors
+   to `.chart-container` instead and is pinned to that container's own edges.
+   It can then never be wider than the chart. Desktop keeps the per-bar tooltip.
+
+   `position: relative` used to be an inline style on `.chart-bar-group`; it
+   moved into this file (in the four calculator components) purely so a media
+   query can override it without `!important`. */
+.chart-bar-group {
+  position: relative;
+}
+
+/* Also lifted out of the components' inline styles (same 300px as before) so a
+   media query can shorten the chart on small screens. */
+.chart-container {
+  height: 300px;
+}
+
+@media (max-width: 1023px) {
+  /* Anchor the tooltip to the chart, not to the individual bar. */
+  .chart-container .chart-bar-group {
+    position: static;
+  }
+
+  .chart-container .chart-tooltip {
+    top: 4px;
+    left: 0;
+    right: 0;
+    transform: none;
+    white-space: normal;
+    text-align: center;
+    font-size: 0.75rem;
+    padding: 8px 10px;
+  }
+
+  .chart-container .chart-bar-group:hover .chart-tooltip {
+    transform: translateY(-2px);
+  }
+
+  /* The little caret pointed at a specific bar; the tooltip no longer sits
+     over one, so it would point at nothing. */
+  .chart-container .chart-tooltip::after {
+    display: none;
+  }
+
+  /* 40px of chrome each side leaves almost no chart on a 390px screen. */
+  .calc-graph {
+    padding: 24px 16px;
+    border-radius: 16px;
+  }
+
+  .calc-graph .graph-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .calc-graph .chart-container {
+    height: 220px;
+  }
+
+  .calc-graph .chart-axis {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 599px) {
+  .calc-graph {
+    padding: 20px 14px;
+  }
+
+  .calc-graph .chart-container {
+    height: 190px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   2. Range sliders — 44px of touch area
+   ---------------------------------------------------------------------------
+   The visible track is 6px tall, which is nowhere near a thumb-sized target.
+   Rather than fatten the track, the input box grows to 44px and the gradient is
+   clipped back to the 6px content box with `background-clip: content-box`.
+   A 22px outer radius minus 19px of padding leaves a 3px content radius, i.e.
+   the track still renders as a perfectly rounded 6px pill. The 1px border has
+   to go, otherwise it would outline the full 44px box. */
+@media (max-width: 1023px) {
+  .range {
+    box-sizing: border-box;
+    height: 44px;
+    padding: 19px 0;
+    border: 0;
+    border-radius: 22px;
+    background-clip: content-box;
+    /* Let the browser own horizontal drags; the page still scrolls vertically. */
+    touch-action: pan-y;
+  }
+
+  /* The reckoner's sliders are native (no appearance: none), so the padding
+     trick does not apply — the browser centres its own track in the box. */
+  .reckoner-item input[type="range"] {
+    box-sizing: border-box;
+    height: 44px;
+    touch-action: pan-y;
+  }
+
+  /* Slightly larger thumb: easier to grab, still inside the 44px box. */
+  .range::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  .range::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* min/max captions: 11px is below the 12px floor, and on the narrowest
+     screens the two ends can meet in the middle. */
+  .range-meta {
+    font-size: 12px;
+    gap: 12px;
+  }
+
+  .range-meta span {
+    white-space: nowrap;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   3. Slider labels — the caption and its value must not collide
+   ------------------------------------------------------------------------ */
+@media (max-width: 1023px) {
+  .slider-head {
+    flex-wrap: wrap;
+    gap: 4px 12px;
+  }
+
+  .slider-head span {
+    min-width: 0;
+  }
+
+  .slider-head strong {
+    font-size: 20px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 599px) {
+  .calc-card {
+    margin-top: 24px;
+    padding: 18px 16px;
+  }
+
+  .slider-row {
+    margin-bottom: 22px;
+  }
+
+  .slider-head span {
+    font-size: 13px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   4. Result panel — donut, summary rows, CTAs
+   ------------------------------------------------------------------------ */
+@media (max-width: 1023px) {
+  /* The donut is drawn from a 220x220 viewBox; let it shrink with the card
+     instead of forcing 220px into whatever is left. */
+  .donut {
+    width: min(220px, 100%);
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  /* Long rupee figures were being squeezed by the fixed 18px dot column. */
+  .cs-row {
+    grid-template-columns: 12px minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .cs-row strong {
+    white-space: nowrap;
+  }
+
+  /* Every call to action in the calculator reaches 44px. */
+  .calc-card .btn,
+  .calc-right .btn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 599px) {
+  .calc-right {
+    padding: 18px 16px;
+  }
+
+  .donut-wrap {
+    margin-bottom: 18px;
+  }
+
+  .cs-row {
+    font-size: 13px;
+  }
+
+  .cs-row strong {
+    font-size: 17px;
+  }
+
+  .cs-row.total strong {
+    font-size: 18px;
+  }
+
+  /* Stacked, full-width CTAs are easier to hit than two wrapped pills. */
+  .calc-right .btn {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   5. Homepage SIP preview (CalculatorPreview)
+   ---------------------------------------------------------------------------
+   The component ships its own 720px query for the two-column shell; these rules
+   only handle spacing and tap targets below it. The 32px padding moved out of
+   the component's inline style (unchanged value) so it can be tightened here. */
+.cp-shell {
+  padding: 32px;
+}
+
+@media (max-width: 1023px) {
+  .cp-shell .btn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 599px) {
+  .cp-shell {
+    padding: 20px 16px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   6. Marcom & Centricity reckoner
+   ---------------------------------------------------------------------------
+   Eight sliders sit above the score card in source order. On a phone that
+   means scrolling past all of them to see the number they produce, so the
+   result card is pulled to the top and the sliders follow it. */
+@media (max-width: 1023px) {
+  /* globals.css only unstacks at 820px; force one column across the whole
+     tablet range so `order` below moves the card up rather than sideways. */
+  .reckoner {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .reckoner-result {
+    order: -1;
+    position: static;
+  }
+
+  .reckoner-item {
+    margin-bottom: 12px;
+  }
+
+  /* The caption wraps; keep the score glued to it rather than letting the
+     flex row squeeze the text to one character per line. */
+  .reckoner-label {
+    gap: 12px;
+    font-size: 0.9rem;
+  }
+
+  .reckoner-label b {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 599px) {
+  .reckoner-result {
+    padding: 20px 16px;
+  }
+
+  .reckoner-score {
+    width: 128px;
+    height: 128px;
+  }
+
+  .reckoner-score-num {
+    font-size: 2.5rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   7. MF Resources (/resources/mutual-funds)
+   ---------------------------------------------------------------------------
+   Below 991px globals.css already unstacks the sidebar into a full-width block,
+   but eight stacked buttons then push the actual tool a screen and a half down.
+   Turn it into a horizontally scrolling tab strip instead — the strip scrolls
+   inside itself, never the page (house rule 4). */
+@media (max-width: 1023px) {
+  /* globals.css unstacks at 991px; extend that to the full tablet range so the
+     rules below never apply to a sidebar that is still a column. */
+  .mf-layout {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .mf-sidebar {
+    width: 100%;
+    position: static;
+    padding: 12px;
+  }
+
+  .mf-sidebar-title {
+    padding: 0 4px 10px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+
+  .mf-sidebar-nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 4px;
+  }
+
+  .mf-nav-item {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 10px 16px;
+    white-space: nowrap;
+    border-left: 0;
+    border-bottom: 3px solid transparent;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .mf-nav-item.active {
+    border-left-color: transparent;
+    border-bottom-color: var(--color-success);
+  }
+
+  /* iOS Safari zooms the page when a focused control is under 16px; .mf-input
+     sets 0.95rem, which beats the sitewide floor in _tokens.css. */
+  .mf-input,
+  .mf-content input,
+  .mf-content select,
+  .mf-content textarea {
+    font-size: 16px;
+    min-height: 44px;
+  }
+
+  .mf-btn-primary {
+    min-height: 44px;
+    width: 100%;
+  }
+
+  .mf-radio-item {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 599px) {
+  .mf-content {
+    padding: 18px 14px;
+  }
+
+  .mf-tool-header {
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+  }
+
+  .mf-tool-header h2 {
+    font-size: 1.3rem;
+  }
+
+  /* Two side-by-side comparison columns are unreadable at 390px. */
+  .mf-compare-cols {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .mf-result-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mf-result-card {
+    padding: 14px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   8. MF performance widget
+   ------------------------------------------------------------------------ */
+@media (max-width: 1023px) {
+  .mfperf-toggle {
+    display: flex;
+    width: 100%;
+  }
+
+  .mfperf-tab {
+    flex: 1;
+    min-height: 44px;
+  }
+
+  .mfperf-foot .btn {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 599px) {
+  .mfperf-card {
+    padding: 16px 14px;
+  }
+
+  .mfperf-row {
+    gap: 10px;
+  }
+
+  .mfperf-foot .btn {
+    width: 100%;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   9. Pricing cards
+   ---------------------------------------------------------------------------
+   globals.css already drops the grid to one column at 1100px and retunes the
+   card padding at 760px, so the only thing missing is the tap target. */
+@media (max-width: 1023px) {
+  .pricing-grid .pc-cta {
+    min-height: 44px;
+  }
+}

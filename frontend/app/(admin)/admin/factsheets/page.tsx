@@ -119,6 +119,7 @@ export default function AdminFactsheetsPage() {
         {loading ? (
           <div className="admin-loading">Loading factsheets…</div>
         ) : (
+          <div className="admin-table-scroll" data-lenis-prevent>
           <table className="admin-table">
             <thead>
               <tr>
@@ -197,6 +198,7 @@ export default function AdminFactsheetsPage() {
               })}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

@@ -49,7 +49,6 @@ export default function CalculatorPreview() {
             background: "var(--color-surface-2)",
             border: "1px solid var(--color-divider)",
             borderRadius: 20,
-            padding: 32,
             alignItems: "center"
           }}
           className="cp-shell"

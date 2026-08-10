@@ -183,3 +183,123 @@ html[data-theme="dark"] .product-visual {
   height: 60px;
   fill: currentColor;
 }
+
+/* ===========================================================================
+   Responsive — /products marketplace listing
+   ---------------------------------------------------------------------------
+   Lives here rather than in app/responsive/products.css because these
+   selectors are defined in this file and only this file; keeping the override
+   next to the rule it overrides removes any question about which stylesheet
+   the bundler emits first. Everything sits inside a max-width query, so the
+   >= 1024px rendering is untouched.
+   ======================================================================== */
+
+@media (max-width: 1023px) {
+  .products-page {
+    padding: 104px 0 72px;
+  }
+
+  .products-hero {
+    margin-bottom: 56px;
+  }
+
+  .products-list {
+    gap: 80px;
+  }
+
+  /* 400px of empty tile is a whole phone screen of nothing. */
+  .product-visual {
+    min-height: 280px;
+    padding: 32px;
+  }
+
+  .product-content .btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 599px) {
+  .products-page {
+    padding: 96px 0 48px;
+  }
+
+  /* .container already contributes 14px of gutter at this width; the extra
+     20px here was costing 40px of the 390px viewport. */
+  .products-hero,
+  .products-list {
+    padding: 0;
+  }
+
+  .products-hero {
+    margin-bottom: 44px;
+  }
+
+  .products-hero h1 {
+    font-size: clamp(2rem, 8vw, 2.5rem);
+  }
+
+  .products-hero p {
+    font-size: 1rem;
+  }
+
+  .products-hero .label {
+    margin-bottom: 18px;
+  }
+
+  .products-list {
+    gap: 56px;
+  }
+
+  .product-row {
+    gap: 28px;
+  }
+
+  .product-content h2 {
+    font-size: clamp(1.6rem, 6.5vw, 2rem);
+  }
+
+  .product-content .subtitle {
+    font-size: 1.02rem;
+    margin-bottom: 24px;
+  }
+
+  .product-metrics {
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .metric-item {
+    padding: 14px;
+    border-radius: 12px;
+    min-width: 0;
+  }
+
+  .metric-val {
+    font-size: 1.4rem;
+    overflow-wrap: anywhere;
+  }
+
+  .product-features {
+    margin-bottom: 28px;
+  }
+
+  .product-visual {
+    min-height: 190px;
+    padding: 24px;
+    border-radius: 18px;
+  }
+
+  .visual-icon {
+    width: 84px;
+    height: 84px;
+    border-radius: 22px;
+  }
+
+  .visual-icon svg {
+    width: 42px;
+    height: 42px;
+  }
+}

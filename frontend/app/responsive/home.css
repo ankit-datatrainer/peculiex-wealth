@@ -1,3 +1,302 @@
 /* Responsive layer — home.
    See _tokens.css for the breakpoint contract and house rules.
-   Owned by one workstream: keep edits to this area inside this file. */
+   Owned by one workstream: keep edits to this area inside this file.
+
+   ---------------------------------------------------------------------------
+   Scope: the homepage only (components/homeclone/HomeClone.tsx, all classes
+   prefixed `sfc-`). Desktop (>=1024px) is deliberately untouched — every rule
+   below sits inside a max-width query.
+
+   Specificity note
+   ----------------
+   HomeClone ships its styles in a `<style jsx global>` block, which styled-jsx
+   injects into <head> at runtime, i.e. AFTER the stylesheet <link> that pulls
+   this file in. Later position would win at equal specificity, so every
+   selector here is prefixed with the page root `.sfc` to outrank its
+   counterpart by one class. Do not drop that prefix.
+   ========================================================================= */
+
+/* ===========================================================================
+   Phone + tablet (<= 1023px)
+   ======================================================================== */
+@media (max-width: 1023px) {
+  /* 1. Hero height.
+     100vh on a mobile browser is the LARGE viewport: with the toolbars shown
+     the bottom of the hero is under the chrome. svh is the small viewport, so
+     the section is fully visible in the worst case and merely gains a little
+     slack when the toolbars retract.
+     The inner column is deliberately NOT touched here: it already uses svh,
+     and below 640px it intentionally falls back to a 560px content floor so
+     a short screen can size to its content. */
+  .sfc .sfc-hero {
+    min-height: 100svh;
+  }
+
+  /* 2. Touch targets.
+     The edge mini-links ("START INVESTING" / "SHARE" / "ALL NEWS") are 10px
+     uppercase with a hairline underline — about 20px tall, well under the
+     44px floor. Grow the HIT AREA with a transparent pseudo-element instead
+     of padding, because the underline is the element's own border-bottom and
+     padding would push it away from the text. */
+  .sfc .sfc-mini-link {
+    position: relative;
+  }
+  .sfc .sfc-mini-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: var(--tap-min, 44px);
+    min-width: var(--tap-min, 44px);
+  }
+
+  /* Newsletter submit and the social pills are both below the floor. */
+  .sfc .sfc-footer-input button {
+    min-height: var(--tap-min, 44px);
+  }
+  .sfc .sfc-footer-links .sfc-footer-social a {
+    width: var(--tap-min, 44px);
+    height: var(--tap-min, 44px);
+  }
+  /* Footer nav links: 14px text on 6px padding is ~33px. */
+  .sfc .sfc-footer-links li a {
+    padding: 12px 0;
+  }
+  .sfc .sfc-footer-legal summary {
+    min-height: var(--tap-min, 44px);
+  }
+}
+
+/* ===========================================================================
+   Tablet only (600 - 1023px)
+   ======================================================================== */
+@media (min-width: 600px) and (max-width: 1023px) {
+  /* Grids: desktop counts are too dense once the container drops under
+     ~1000px. 3 -> 2 for news; stats keep four columns but the numerals have
+     to shrink or "₹182Cr+" runs past its 160px column. */
+  .sfc .sfc-news-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sfc .sfc-stat-v {
+    font-size: clamp(1.9rem, 3.6vw, 2.8rem);
+  }
+
+  /* The pinned platform panel scrolls for 280vh with the copy faded out after
+     ~62% of it, which on a 1180px-tall tablet is roughly 800px of scrolling
+     past an empty blue panel. Shorten the track and let the copy hold on
+     longer so the pin stays purposeful. */
+  .sfc .sfc-hero-track {
+    height: 220vh;
+  }
+  .sfc .sfc-hero-panel .sfc-hero-inner {
+    opacity: calc(1 - var(--hp) * 1.25);
+  }
+}
+
+/* ===========================================================================
+   Phone only (<= 599px)
+   ======================================================================== */
+@media (max-width: 599px) {
+  /* -- Hero ---------------------------------------------------------------
+     The headline already clamps; what it lacked was a hard stop against the
+     20px gutter, so a long CMS word could not be trimmed by the section's
+     overflow:hidden without first widening the flex row. */
+  .sfc .sfc-hero .sfc-h1 {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .sfc .sfc-hero-lede {
+    min-width: 0;
+  }
+  /* The mark is an <img> at 84vw; cap it against the gutter explicitly and
+     keep it from eating the whole screen on a tall phone. */
+  .sfc .sfc-hero-mark,
+  .sfc .sfc-hero-mark-img {
+    max-width: 100%;
+    max-height: 34svh;
+  }
+
+  /* Bottom row is a single centred column here, but `.sfc-hero-bottom
+     .sfc-share { justify-self: end }` (0,2,0) outranked the container's
+     justify-items and pinned Share to the right edge on its own line. */
+  .sfc .sfc-hero-bottom .sfc-share {
+    justify-self: center;
+  }
+
+  /* -- Story screens ------------------------------------------------------
+     Each .sfc-screen-grid holds an empty <div> spacer plus the copy. At one
+     column the spacer became a full grid row, so the copy sat in the BOTTOM
+     half of a 100vh screen and the top half scrolled by blank — the audit
+     found a whole viewport with zero visible content. Drop the spacer and
+     the copy centres in the screen. */
+  .sfc .sfc-screen-grid > div:empty {
+    display: none;
+  }
+  .sfc .sfc-screen-grid {
+    padding: 96px 20px;
+  }
+  .sfc .sfc-h2 {
+    font-size: clamp(2.1rem, 9.6vw, 3.2rem);
+  }
+  .sfc .sfc-lead {
+    margin-top: 22px;
+    font-size: 16px;
+  }
+
+  /* -- Pinned platform panel ---------------------------------------------
+     Same dead-scroll problem as tablet, worse: 280vh of track on an 844px
+     phone is ~1500px of pinned scrolling and the copy is gone for the last
+     900px of it. Shorten the track, hold the copy nearly to the end.
+     height/margin-top are kept in the SAME unit (svh) on both the panel and
+     the overlay card that pulls up over it — mixing vh and svh here would
+     misalign the handoff by the height of the browser toolbar. */
+  .sfc .sfc-hero-track {
+    height: 190vh;
+  }
+  .sfc .sfc-hero-panel {
+    height: 100svh;
+    margin: 0 8px;
+    border-radius: 0 0 28px 28px;
+  }
+  .sfc .sfc-overcard {
+    margin-top: -100svh;
+  }
+  .sfc .sfc-hero-panel .sfc-hero-inner {
+    padding: clamp(96px, 15vh, 140px) 20px 36px;
+    opacity: calc(1 - var(--hp) * 1.15);
+  }
+  .sfc .sfc-hero-panel .sfc-h1 {
+    font-size: clamp(2rem, 8.6vw, 2.9rem);
+  }
+  .sfc .sfc-hero-panel .sfc-hero-ctas {
+    margin-top: 28px;
+  }
+  .sfc .sfc-hero-ctas .sfc-btn-ghost,
+  .sfc .sfc-hero-ctas .sfc-btn-mint {
+    min-height: var(--tap-min, 44px);
+  }
+
+  /* The sweeping word floors at 220px, which on a 390px screen renders one
+     and a half letters. It is clipped by the panel so it never widened the
+     page, but it also never read as a word. A 30vw floor keeps the sweep
+     legible; the 220px floor only ever binds below ~647px, so desktop is
+     untouched either way. */
+  .sfc .sfc-giantword {
+    font-size: clamp(104px, 30vw, 220px);
+    bottom: -0.22em;
+  }
+
+  /* -- Overlay card + feature grid ---------------------------------------- */
+  .sfc .sfc-overcard {
+    padding: clamp(72px, 10vh, 110px) 0 88px;
+    border-radius: 28px 28px 0 0;
+  }
+  .sfc .sfc-h2-serif {
+    font-size: clamp(1.9rem, 7.6vw, 2.6rem);
+  }
+  .sfc .sfc-feature-grid {
+    margin-top: 44px;
+    border-radius: 18px;
+  }
+  .sfc .sfc-feature {
+    padding: 30px 22px;
+  }
+  .sfc .sfc-feature-icon {
+    margin-bottom: 18px;
+  }
+  .sfc .sfc-feature h3 {
+    font-size: 21px;
+  }
+  .sfc .sfc-feature p {
+    font-size: 15px;
+  }
+
+  /* -- About + stats ------------------------------------------------------ */
+  .sfc .sfc-about {
+    padding: 88px 0;
+  }
+  .sfc .sfc-about-grid {
+    gap: 32px;
+  }
+  .sfc .sfc-about-copy {
+    font-size: 16px;
+    gap: 18px;
+  }
+  .sfc .sfc-stats {
+    margin-top: 56px;
+    gap: 26px 20px;
+  }
+  .sfc .sfc-stat-v {
+    font-size: clamp(1.8rem, 7vw, 2.6rem);
+  }
+
+  /* -- Partners marquee ---------------------------------------------------
+     The track is width:max-content inside an overflow:hidden rail, so it can
+     never widen the page; the tiles were simply oversized for the screen —
+     208px tiles meant under two logos visible at a time. */
+  .sfc .sfc-partners {
+    padding: 88px 0;
+  }
+  .sfc .sfc-partners .sfc-wrap {
+    margin-bottom: 32px;
+  }
+  .sfc .sfc-marquee {
+    padding: 18px 0 28px;
+  }
+  .sfc .sfc-marquee-rev {
+    margin-top: 14px;
+  }
+  .sfc .sfc-partner-tile {
+    height: 76px;
+    width: 146px;
+    margin: 0 8px;
+    padding: 14px 18px;
+    border-radius: 14px;
+  }
+
+  /* -- News --------------------------------------------------------------- */
+  .sfc .sfc-news {
+    padding: 88px 0;
+  }
+  .sfc .sfc-news-head {
+    margin-bottom: 36px;
+    gap: 16px;
+  }
+  .sfc .sfc-news-grid {
+    gap: 20px;
+  }
+  .sfc .sfc-news-card {
+    padding: 24px;
+    border-radius: 18px;
+  }
+  .sfc .sfc-news-meta {
+    margin-bottom: 20px;
+  }
+  /* 6rem of reserved headline height plus a 56px gap left each card mostly
+     empty once it was the only card on the row. */
+  .sfc .sfc-news-card h3 {
+    font-size: 20px;
+    min-height: 0;
+    margin: 0 0 24px;
+  }
+
+  /* -- Footer ------------------------------------------------------------- */
+  .sfc .sfc-footer {
+    padding: 72px 0 28px;
+  }
+  .sfc .sfc-footer-cta {
+    gap: 36px;
+  }
+  .sfc .sfc-footer-title {
+    font-size: clamp(2.1rem, 9vw, 3.2rem);
+  }
+  .sfc .sfc-footer-links {
+    gap: 32px 20px;
+    padding: 32px 0 40px;
+  }
+  .sfc .sfc-footer-input input {
+    font-size: max(16px, 1rem);
+  }
+}

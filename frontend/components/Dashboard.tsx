@@ -230,7 +230,10 @@ export default function Dashboard() {
       <div className="container">
         <div className="ud-shell">
           {/* ─── Sidebar ─── */}
-          <aside className="ud-sidebar">
+          {/* Below 1024px this collapses into a horizontally scrolling tab
+              strip (see app/responsive/dashboard.css); data-lenis-prevent
+              keeps Lenis from swallowing that scroll. */}
+          <aside className="ud-sidebar" data-lenis-prevent>
             <div className="ud-user-card">
               <div className="ud-avatar" style={{ background: "#13735d" }}>
                 {initials}

@@ -125,7 +125,9 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
           }
           .invest-modal__header-top {
             gap: 10px;
-            padding-right: 44px;
+            /* Clears the close button, which the responsive layer grows to the
+               44px tap minimum below 1024px. */
+            padding-right: 52px;
           }
           .invest-modal__title {
             font-size: 1.08rem;
@@ -241,7 +243,11 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
               </div>
             </div>
 
-            <div className="invest-modal__body">
+            {/* Below 600px wide / 540px tall the responsive layer turns this
+                into the dialog's scroll container (fixed header, scrolling
+                body). Lenis hijacks wheel events site-wide, so the attribute
+                has to be here too or the container never scrolls. */}
+            <div className="invest-modal__body" data-lenis-prevent>
               {/* Units Selector */}
               <div className="invest-modal__calculator-card">
                 <div className="invest-modal__calc-row">
