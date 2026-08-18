@@ -1046,15 +1046,9 @@ export default function HomeClone() {
         @media (min-width: 900px) {
           .sfc-hero-mark {
             justify-self: end;
-            /* Let the mark overhang the container's right padding a little so
-               it reads as artwork bleeding off the page, not a boxed image. */
             margin-right: clamp(-40px, -2vw, 0px);
           }
         }
-        /* Uploaded artwork. Multiply drops the flat near-white matte that
-           these gold-on-white PNGs ship with, so the mark sits on the hero
-           without a visible pale rectangle around it — a plain <img> would
-           show its own background. */
         .sfc-hero-mark-img {
           display: block;
           width: 100%;
@@ -1070,58 +1064,52 @@ export default function HomeClone() {
           line-height: 1.08;
           max-width: 26ch;
           margin: 0;
-        }
-
-        /* ── Hero ink ──
-           The hero ground is pure white, so the headline and the two edge
-           mini-links take dark ink. */
-        .sfc-hero .sfc-h1 {
-          color: var(--sfc-ink);
+          color: #0f2a2b !important;
           text-shadow: none;
         }
         .sfc-hero .sfc-h1-em {
-          color: var(--sfc-green);
+          color: #13735d !important;
         }
         .sfc-hero .sfc-mini-link {
-          color: var(--sfc-ink);
+          color: #0f2a2b;
           border-bottom-color: rgba(15, 42, 43, 0.3);
         }
         .sfc-hero .sfc-mini-link:hover {
-          color: var(--sfc-green);
-          border-bottom-color: var(--sfc-green);
+          color: #13735d;
+          border-bottom-color: #13735d;
         }
 
-        /* ── Dark theme hero ───────────────────────────────────────────────
-           ScrollGlobe paints the ground deep navy in dark mode (HERO_BG_DARK),
-           so every ink and blend decision above — all of which assumed white
-           paper — has to flip here. Ground and ink live in two different
-           systems (canvas vs CSS), so these two must be changed together. */
-        .dark .sfc-hero .sfc-h1 {
-          color: #f4f7f6;
+        /* ── Dark theme hero ─────────────────────────────────────────────── */
+        .dark .sfc-hero .sfc-h1,
+        :global(.dark) .sfc-hero .sfc-h1,
+        :global(html.dark) .sfc-hero .sfc-h1 {
+          color: #f4f7f6 !important;
         }
-        .dark .sfc-hero .sfc-h1-em {
-          /* The #13735d brand green is a light-background colour; it goes muddy
-             on navy, so the hero accent lifts to the mint already used by the
-             story screens below. */
-          color: var(--sfc-mint);
+        .dark .sfc-hero .sfc-h1-em,
+        :global(.dark) .sfc-hero .sfc-h1-em,
+        :global(html.dark) .sfc-hero .sfc-h1-em {
+          color: var(--sfc-mint) !important;
         }
-        .dark .sfc-hero .sfc-mini-link {
+        .dark .sfc-hero .sfc-mini-link,
+        :global(.dark) .sfc-hero .sfc-mini-link,
+        :global(html.dark) .sfc-hero .sfc-mini-link {
           color: rgba(244, 247, 246, 0.86);
           border-bottom-color: rgba(244, 247, 246, 0.32);
         }
-        .dark .sfc-hero .sfc-mini-link:hover {
+        .dark .sfc-hero .sfc-mini-link:hover,
+        :global(.dark) .sfc-hero .sfc-mini-link:hover,
+        :global(html.dark) .sfc-hero .sfc-mini-link:hover {
           color: var(--sfc-mint);
           border-bottom-color: var(--sfc-mint);
         }
-        /* multiply knocks out the artwork's near-white matte on paper; on navy
-           it would knock out the gold instead. screen does the same job with
-           the polarity reversed. */
-        .dark .sfc-hero-mark-img {
+        .dark .sfc-hero-mark-img,
+        :global(.dark) .sfc-hero-mark-img,
+        :global(html.dark) .sfc-hero-mark-img {
           mix-blend-mode: screen;
         }
-        /* The pigment washes are tuned for white paper — near-invisible at 3.8%
-           over navy, so lift them and warm them toward the mint. */
-        .dark .sfc-hero-pigment {
+        .dark .sfc-hero-pigment,
+        :global(.dark) .sfc-hero-pigment,
+        :global(html.dark) .sfc-hero-pigment {
           background:
             radial-gradient(
               circle 260px at var(--sfc-mx) var(--sfc-my),
@@ -1135,16 +1123,15 @@ export default function HomeClone() {
               transparent 70%
             );
         }
-        .dark .sfc-hero::before {
+        .dark .sfc-hero::before,
+        :global(.dark) .sfc-hero::before,
+        :global(html.dark) .sfc-hero::before {
           background: radial-gradient(
             120% 80% at 78% 18%,
             rgba(120, 235, 190, 0.06),
             transparent 62%
           );
         }
-        /* (The old ≥1100px width cap existed only to keep the centred
-           headline clear of the floating portrait, which the golden infinity
-           mark replaced — the headline is flush left now, so no cap.) */
         .sfc-h1-br {
           display: block;
         }
@@ -1161,16 +1148,6 @@ export default function HomeClone() {
         .sfc-hero-bottom .sfc-share {
           justify-self: end;
         }
-        @media (max-width: 767px) {
-          .sfc-hero-bottom {
-            grid-template-columns: 1fr;
-            justify-items: center;
-            gap: 20px;
-          }
-          .sfc-hb-left {
-            justify-self: center;
-          }
-        }
         .sfc-share {
           display: none;
         }
@@ -1180,22 +1157,51 @@ export default function HomeClone() {
           }
         }
 
-        /* ── Mobile hero tuning: keep the headline readable and the CTA row
-           in view above the growing dome on small screens. */
-        @media (max-width: 640px) {
+        /* ── Mobile hero tuning: crisp, centered, and proportional on all phones */
+        @media (max-width: 768px) {
           .sfc-hero .sfc-hero-inner {
-            padding: 120px 20px 60px;
-            min-height: 560px;
-            justify-content: center;
+            padding: 86px 16px 20px;
+            min-height: auto;
+            justify-content: flex-start !important;
+            align-items: center;
+          }
+          .sfc-hero-lede {
+            grid-template-columns: 1fr;
+            gap: 14px;
+            align-items: center;
+            text-align: center;
+          }
+          .sfc-hero-headline-wrap {
+            align-items: center;
+            text-align: center;
+            width: 100%;
           }
           .sfc-hero .sfc-h1 {
-            font-size: clamp(1.85rem, 8.4vw, 2.9rem);
-            line-height: 1.12;
-            margin-top: 6px;
-            max-width: 20ch;
+            text-align: center;
+            font-size: clamp(1.85rem, 7.8vw, 2.6rem);
+            line-height: 1.14;
+            max-width: 100%;
+            margin: 0 auto;
+          }
+          .sfc-h1-br {
+            display: inline;
+          }
+          .sfc-hero-mark {
+            width: min(280px, 78vw);
+            max-height: 28svh;
+            margin: 6px auto 0;
+            justify-self: center;
           }
           .sfc-hero-bottom {
-            padding-top: 40px;
+            margin-top: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+          }
+          .sfc-hb-left {
+            justify-self: center;
           }
           .sfc-hero-ctas {
             width: 100%;
@@ -1204,22 +1210,16 @@ export default function HomeClone() {
           }
           .sfc-hero-ctas .sfc-btn-ghost,
           .sfc-hero-ctas .sfc-btn-mint {
-            padding: 11px 22px;
+            padding: 10px 20px;
             font-size: 13px;
           }
         }
         @media (max-width: 380px) {
           .sfc-hero .sfc-h1 {
-            font-size: 1.7rem;
+            font-size: 1.65rem;
           }
-          /* Narrowest phones: the mark's 280px floor left no gutter. */
           .sfc-hero-mark {
-            width: min(280px, 84vw);
-          }
-        }
-        @media (max-width: 640px) {
-          .sfc-hero-mark {
-            width: min(330px, 84vw);
+            width: min(240px, 80vw);
           }
         }
 

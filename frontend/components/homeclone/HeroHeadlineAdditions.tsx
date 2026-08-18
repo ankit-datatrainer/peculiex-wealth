@@ -121,8 +121,8 @@ export default function HeroHeadlineAdditions() {
           display: flex;
           align-items: center;
           gap: 20px;
-          padding-top: 8px;
-          margin-top: 4px;
+          padding-top: 4px;
+          margin-top: 2px;
         }
 
         .hero-metric-item {
@@ -159,9 +159,22 @@ export default function HeroHeadlineAdditions() {
           background: rgba(255, 255, 255, 0.12);
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
+          .hero-headline-enhancement {
+            align-items: center;
+            text-align: center;
+            margin-top: 10px;
+            gap: 10px;
+            max-width: 100%;
+          }
+          .hero-trust-pill {
+            align-self: center;
+            font-size: 11px;
+            padding: 5px 12px;
+          }
           .hero-metrics-strip {
-            gap: 12px;
+            justify-content: center;
+            gap: 14px;
           }
           .hero-metric-num {
             font-size: 14px;
