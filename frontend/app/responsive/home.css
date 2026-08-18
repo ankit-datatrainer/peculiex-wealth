@@ -104,12 +104,17 @@
      20px gutter, so a long CMS word could not be trimmed by the section's
      overflow:hidden without first widening the flex row. */
   .sfc .sfc-hero .sfc-h1 {
+    font-family: var(--font-display), 'Hanken Grotesk', system-ui, -apple-system, sans-serif !important;
+    font-weight: 300 !important;
+    letter-spacing: -0.02em !important;
     max-width: 100%;
     overflow-wrap: anywhere;
     color: #0f2a2b !important;
   }
   .sfc .sfc-hero .sfc-h1 .sfc-h1-em,
   .sfc .sfc-hero .sfc-h1-em {
+    font-family: inherit !important;
+    font-weight: inherit !important;
     color: #13735d !important;
   }
   .sfc .sfc-hero .sfc-mini-link {

@@ -1058,6 +1058,9 @@ export default function HomeClone() {
           mix-blend-mode: multiply;
         }
         .sfc-hero .sfc-h1 {
+          font-family: var(--font-display), 'Hanken Grotesk', system-ui, -apple-system, sans-serif !important;
+          font-weight: 300 !important;
+          letter-spacing: -0.02em;
           text-align: left;
           text-wrap: balance;
           font-size: clamp(2.8rem, 5.8vw, 6.2rem);
@@ -1068,6 +1071,8 @@ export default function HomeClone() {
           text-shadow: none;
         }
         .sfc-hero .sfc-h1-em {
+          font-family: inherit !important;
+          font-weight: inherit !important;
           color: #13735d !important;
         }
         .sfc-hero .sfc-mini-link {
@@ -1177,6 +1182,9 @@ export default function HomeClone() {
             width: 100%;
           }
           .sfc-hero .sfc-h1 {
+            font-family: var(--font-display), 'Hanken Grotesk', system-ui, -apple-system, sans-serif !important;
+            font-weight: 300 !important;
+            letter-spacing: -0.02em !important;
             text-align: center;
             font-size: clamp(1.85rem, 7.8vw, 2.6rem);
             line-height: 1.14;
@@ -1185,6 +1193,8 @@ export default function HomeClone() {
             color: #0f2a2b !important;
           }
           .sfc-hero .sfc-h1-em {
+            font-family: inherit !important;
+            font-weight: inherit !important;
             color: #13735d !important;
           }
           .sfc-h1-br {
