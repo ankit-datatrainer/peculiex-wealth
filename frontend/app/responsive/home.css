@@ -106,6 +106,27 @@
   .sfc .sfc-hero .sfc-h1 {
     max-width: 100%;
     overflow-wrap: anywhere;
+    color: #0f2a2b !important;
+  }
+  .sfc .sfc-hero .sfc-h1 .sfc-h1-em,
+  .sfc .sfc-hero .sfc-h1-em {
+    color: #13735d !important;
+  }
+  .sfc .sfc-hero .sfc-mini-link {
+    color: #13735d !important;
+  }
+  html.dark .sfc .sfc-hero .sfc-h1,
+  .dark .sfc .sfc-hero .sfc-h1 {
+    color: #f4f7f6 !important;
+  }
+  html.dark .sfc .sfc-hero .sfc-h1 .sfc-h1-em,
+  html.dark .sfc .sfc-hero .sfc-h1-em,
+  .dark .sfc .sfc-hero .sfc-h1-em {
+    color: #78ebbe !important;
+  }
+  html.dark .sfc .sfc-hero .sfc-mini-link,
+  .dark .sfc .sfc-hero .sfc-mini-link {
+    color: #78ebbe !important;
   }
   .sfc .sfc-hero-lede {
     min-width: 0;
@@ -115,12 +136,10 @@
   .sfc .sfc-hero-mark,
   .sfc .sfc-hero-mark-img {
     max-width: 100%;
-    max-height: 34svh;
+    max-height: 28svh;
   }
 
-  /* Bottom row is a single centred column here, but `.sfc-hero-bottom
-     .sfc-share { justify-self: end }` (0,2,0) outranked the container's
-     justify-items and pinned Share to the right edge on its own line. */
+  /* Bottom row is a single centred column here */
   .sfc .sfc-hero-bottom .sfc-share {
     justify-self: center;
   }

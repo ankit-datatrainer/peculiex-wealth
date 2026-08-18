@@ -1160,14 +1160,14 @@ export default function HomeClone() {
         /* ── Mobile hero tuning: crisp, centered, and proportional on all phones */
         @media (max-width: 768px) {
           .sfc-hero .sfc-hero-inner {
-            padding: 86px 16px 20px;
+            padding: 84px 16px 20px;
             min-height: auto;
             justify-content: flex-start !important;
             align-items: center;
           }
           .sfc-hero-lede {
             grid-template-columns: 1fr;
-            gap: 14px;
+            gap: 12px;
             align-items: center;
             text-align: center;
           }
@@ -1182,36 +1182,63 @@ export default function HomeClone() {
             line-height: 1.14;
             max-width: 100%;
             margin: 0 auto;
+            color: #0f2a2b !important;
+          }
+          .sfc-hero .sfc-h1-em {
+            color: #13735d !important;
           }
           .sfc-h1-br {
             display: inline;
           }
           .sfc-hero-mark {
-            width: min(280px, 78vw);
-            max-height: 28svh;
+            width: min(260px, 72vw);
+            max-height: 24svh;
             margin: 6px auto 0;
             justify-self: center;
           }
           .sfc-hero-bottom {
             margin-top: 14px;
+            margin-bottom: 24px;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
             width: 100%;
+            position: relative;
+            z-index: 10;
+          }
+          .sfc-hero-bottom .sfc-mini-link {
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.16em !important;
+            padding: 7px 16px !important;
+            border-radius: 999px !important;
+            background: rgba(19, 115, 93, 0.09) !important;
+            border: 1px solid rgba(19, 115, 93, 0.25) !important;
+            color: #13735d !important;
+            text-decoration: none !important;
+            box-shadow: 0 2px 8px rgba(19, 115, 93, 0.08);
+          }
+          .sfc-hero-bottom .sfc-share {
+            display: inline-flex !important;
+            background: rgba(15, 42, 43, 0.05) !important;
+            border: 1px solid rgba(15, 42, 43, 0.15) !important;
+            color: #0f2a2b !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+          }
+          :global(.dark) .sfc-hero-bottom .sfc-mini-link {
+            background: rgba(120, 235, 190, 0.14) !important;
+            border: 1px solid rgba(120, 235, 190, 0.35) !important;
+            color: #78ebbe !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+          }
+          :global(.dark) .sfc-hero-bottom .sfc-share {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: #f4f7f6 !important;
           }
           .sfc-hb-left {
             justify-self: center;
-          }
-          .sfc-hero-ctas {
-            width: 100%;
-            justify-content: center;
-            flex-wrap: wrap;
-          }
-          .sfc-hero-ctas .sfc-btn-ghost,
-          .sfc-hero-ctas .sfc-btn-mint {
-            padding: 10px 20px;
-            font-size: 13px;
           }
         }
         @media (max-width: 380px) {
@@ -1219,7 +1246,7 @@ export default function HomeClone() {
             font-size: 1.65rem;
           }
           .sfc-hero-mark {
-            width: min(240px, 80vw);
+            width: min(230px, 75vw);
           }
         }
 
