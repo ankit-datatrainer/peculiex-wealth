@@ -18,6 +18,8 @@ import {
   Zap
 } from "lucide-react";
 import ScrollGlobe from "./ScrollGlobe";
+import HeroInfinityStage from "./HeroInfinityStage";
+import HeroHeadlineAdditions from "./HeroHeadlineAdditions";
 
 import Logo from "../Logo";
 import CountUp from "../CountUp";
@@ -365,36 +367,23 @@ export default function HomeClone() {
             {/* Headline left, animated mark right. Both live in one flex
                 child so the inner column keeps its two-child rhythm. */}
             <div className="sfc-hero-lede">
-              <h1 className="sfc-h1 sfc-up sfc-d1">
-                {c.t("hero", "titleA", "Invest with clarity")}{" "}
-                <br className="sfc-h1-br" />
-                {c.t("hero", "titleB", "across every")}{" "}
-                <span className="sfc-h1-em">
-                  {c.t("hero", "titleAccent", "asset class.")}
-                </span>
-              </h1>
-              {/* Entrance lives on this wrapper, not on the mark itself: the
-                  canvas element is sized by its own stylesheet and the
-                  shorthand `animation` would collide with .sfc-up's. */}
-              {/* Upload an image in the content manager to override the drawn
-                  mark; blank falls back to the canvas render. */}
+              <div className="sfc-hero-headline-wrap">
+                <h1 className="sfc-h1 sfc-up sfc-d1">
+                  {c.t("hero", "titleA", "Invest with clarity")}{" "}
+                  <br className="sfc-h1-br" />
+                  {c.t("hero", "titleB", "across every")}{" "}
+                  <span className="sfc-h1-em">
+                    {c.t("hero", "titleAccent", "asset class.")}
+                  </span>
+                </h1>
+
+                {/* Trust Radar & Micro-Metrics Strip */}
+                <HeroHeadlineAdditions />
+              </div>
+
+              {/* Golden Infinity Artwork */}
               <div className="sfc-hero-mark sfc-up sfc-d2">
-                {heroInfinity ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={imgSrc(heroInfinity)}
-                    alt=""
-                    aria-hidden="true"
-                    className="sfc-hero-mark-img"
-                  />
-                ) : (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src="/golden_infinity.png"
-                    alt="Golden Infinity"
-                    className="sfc-hero-mark-img"
-                  />
-                )}
+                <HeroInfinityStage heroInfinity={heroInfinity} />
               </div>
             </div>
 
@@ -468,7 +457,7 @@ export default function HomeClone() {
             <div className="sfc-hero-inner">
               <h1 className="sfc-h1 sfc-up sfc-d1">
                 {c.t("platform", "titleA", "All-in-one investment")}{" "}
-                <span className="sfc-h1-em">{c.t("platform", "titleAccent", "platform")}<span className="sfc-h1-underline sfc-d3" /></span>{" "}{c.t("platform", "titleB", "for serious Indian investors")}
+                <span className="sfc-h1-em">{c.t("platform", "titleAccent", "platform")}</span>{" "}{c.t("platform", "titleB", "for serious Indian investors")}
               </h1>
 
               <div className="sfc-hero-ctas sfc-up sfc-d2">
@@ -1015,7 +1004,7 @@ export default function HomeClone() {
           flex-direction: column;
           /* Top padding clears the fixed nav + ticker so the content
              starts right below. */
-          padding: 128px 24px 30px;
+          padding: 108px 24px 24px;
           justify-content: flex-start !important;
           align-items: stretch;
         }
@@ -1042,8 +1031,14 @@ export default function HomeClone() {
                large artwork rather than an accent beside the type. */
             grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
           }
+        .sfc-hero-headline-wrap {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          width: 100%;
         }
         .sfc-hero-mark {
+          position: relative;
           justify-self: center;
           width: clamp(340px, 52vw, 780px);
           max-height: 48svh;
@@ -1154,7 +1149,7 @@ export default function HomeClone() {
           display: block;
         }
         .sfc-hero-bottom {
-          margin-top: 40px;
+          margin-top: 24px;
           display: grid;
           grid-template-columns: 1fr auto;
           align-items: end;
@@ -1246,7 +1241,7 @@ export default function HomeClone() {
              beyond one viewport so the artwork remains visible rather than
              being clipped or hidden. */
           .sfc-hero .sfc-hero-inner {
-            padding-top: 132px;
+            padding-top: 108px;
             padding-bottom: 26px;
           }
           .sfc-hero-lede {
