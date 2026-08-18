@@ -1,43 +1,97 @@
 /* Responsive layer — home.
    See _tokens.css for the breakpoint contract and house rules.
-   Owned by one workstream: keep edits to this area inside this file.
-
-   ---------------------------------------------------------------------------
-   Scope: the homepage only (components/homeclone/HomeClone.tsx, all classes
-   prefixed `sfc-`). Desktop (>=1024px) is deliberately untouched — every rule
-   below sits inside a max-width query.
-
-   Specificity note
-   ----------------
-   HomeClone ships its styles in a `<style jsx global>` block, which styled-jsx
-   injects into <head> at runtime, i.e. AFTER the stylesheet <link> that pulls
-   this file in. Later position would win at equal specificity, so every
-   selector here is prefixed with the page root `.sfc` to outrank its
-   counterpart by one class. Do not drop that prefix.
+   Scope: the homepage only (components/homeclone/HomeClone.tsx, all classes prefixed `sfc-`).
    ========================================================================= */
 
 /* ===========================================================================
    Phone + tablet (<= 1023px)
    ======================================================================== */
 @media (max-width: 1023px) {
-  /* 1. Hero height.
-     100vh on a mobile browser is the LARGE viewport: with the toolbars shown
-     the bottom of the hero is under the chrome. svh is the small viewport, so
-     the section is fully visible in the worst case and merely gains a little
-     slack when the toolbars retract.
-     The inner column is deliberately NOT touched here: it already uses svh,
-     and below 640px it intentionally falls back to a 560px content floor so
-     a short screen can size to its content. */
+  /* 1. Hero height & clean container */
   .sfc .sfc-hero {
-    min-height: 100svh;
+    min-height: auto;
   }
 
-  /* 2. Touch targets.
-     The edge mini-links ("START INVESTING" / "SHARE" / "ALL NEWS") are 10px
-     uppercase with a hairline underline — about 20px tall, well under the
-     44px floor. Grow the HIT AREA with a transparent pseudo-element instead
-     of padding, because the underline is the element's own border-bottom and
-     padding would push it away from the text. */
+  /* 2. Consistent typography with desktop */
+  .sfc .sfc-hero .sfc-h1,
+  .sfc .sfc-h1,
+  .sfc .sfc-h2,
+  .sfc .sfc-h2-serif {
+    font-family: var(--font-display, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif) !important;
+  }
+
+  /* 3. Pinned platform panel: avoid sticky scroll text collisions on touch devices */
+  .sfc .sfc-hero-track {
+    height: auto !important;
+    position: relative !important;
+    padding-top: 32px !important;
+  }
+  .sfc .sfc-hero-panel {
+    position: relative !important;
+    top: auto !important;
+    height: auto !important;
+    min-height: auto !important;
+    margin: 0 10px 24px !important;
+    border-radius: 28px !important;
+    padding: 48px 24px 40px !important;
+    background: oklch(0.56 0.24 275) !important;
+    overflow: hidden !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25) !important;
+  }
+  .sfc .sfc-hero-panel .sfc-hero-inner {
+    transform: none !important;
+    opacity: 1 !important;
+    padding: 0 !important;
+    height: auto !important;
+  }
+  .sfc .sfc-hero-panel .sfc-h1 {
+    font-size: clamp(1.85rem, 6.5vw, 2.7rem) !important;
+    max-width: 100% !important;
+    line-height: 1.15 !important;
+    text-align: left !important;
+  }
+  .sfc .sfc-giantword {
+    display: none !important;
+  }
+  .sfc .sfc-devices {
+    display: none !important;
+  }
+
+  /* 4. Overlay card: flows naturally without crashing into the hero panel */
+  .sfc .sfc-overcard {
+    margin-top: 0 !important;
+    position: relative !important;
+    z-index: 3 !important;
+    border-radius: 28px !important;
+    background: #f6f4ef !important;
+    color: var(--sfc-navy, #0f2a2b) !important;
+    padding: 56px 20px 72px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06) !important;
+  }
+  .dark .sfc .sfc-overcard,
+  html.dark .sfc .sfc-overcard {
+    background: #0d1522 !important;
+    color: #f4f7f6 !important;
+  }
+  .dark .sfc .sfc-overcard .sfc-h2-serif,
+  html.dark .sfc .sfc-overcard .sfc-h2-serif {
+    color: #f4f7f6 !important;
+  }
+  .dark .sfc .sfc-overcard .sfc-feature,
+  html.dark .sfc .sfc-overcard .sfc-feature {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+  .dark .sfc .sfc-overcard .sfc-feature h3,
+  html.dark .sfc .sfc-overcard .sfc-feature h3 {
+    color: #f4f7f6 !important;
+  }
+  .dark .sfc .sfc-overcard .sfc-feature p,
+  html.dark .sfc .sfc-overcard .sfc-feature p {
+    color: rgba(244, 247, 246, 0.72) !important;
+  }
+
+  /* 5. Touch targets */
   .sfc .sfc-mini-link {
     position: relative;
   }
@@ -52,20 +106,333 @@
     min-width: var(--tap-min, 44px);
   }
 
-  /* Newsletter submit and the social pills are both below the floor. */
+  /* 6. Footer mobile layout & styling */
+  .sfc .sfc-footer {
+    padding: 56px 0 32px !important;
+    background: #070d18 !important;
+  }
+  .sfc .sfc-footer-cta {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 20px !important;
+    padding: 28px 18px !important;
+    margin-bottom: 32px !important;
+  }
+  .sfc .sfc-footer-title {
+    font-size: clamp(1.75rem, 6.5vw, 2.4rem) !important;
+    line-height: 1.18 !important;
+  }
+  .sfc .sfc-footer-input {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+  .sfc .sfc-footer-input input {
+    height: 48px !important;
+    border-radius: 12px !important;
+    font-size: 16px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    padding: 0 16px !important;
+    color: #fff !important;
+  }
   .sfc .sfc-footer-input button {
-    min-height: var(--tap-min, 44px);
+    height: 48px !important;
+    border-radius: 12px !important;
+    min-height: 48px !important;
+    font-weight: 600 !important;
+    background: #78ebbe !important;
+    color: #061019 !important;
+    border: none !important;
+    font-size: 14.5px !important;
+    cursor: pointer !important;
   }
-  .sfc .sfc-footer-links .sfc-footer-social a {
-    width: var(--tap-min, 44px);
-    height: var(--tap-min, 44px);
+
+  .sfc .sfc-footer-main {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 36px !important;
+    padding: 16px 0 36px !important;
   }
-  /* Footer nav links: 14px text on 6px padding is ~33px. */
-  .sfc .sfc-footer-links li a {
-    padding: 12px 0;
+  .sfc .sfc-footer-brand {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .sfc .sfc-footer-logo img {
+    height: 54px !important;
+    width: auto !important;
+  }
+  .sfc .sfc-footer-blurb {
+    font-size: 13.5px !important;
+    line-height: 1.55 !important;
+    color: rgba(255, 255, 255, 0.65) !important;
+    margin-top: 10px !important;
+  }
+  .sfc .sfc-footer-reg {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-top: 14px !important;
+    padding: 8px 14px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 10px !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+  .sfc .sfc-footer-reg .sfc-dot {
+    width: 7px !important;
+    height: 7px !important;
+    border-radius: 50% !important;
+    background: #78ebbe !important;
+    box-shadow: 0 0 8px #78ebbe !important;
+  }
+
+  .sfc .sfc-footer-contact {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    margin: 18px 0 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+    list-style-type: none !important;
+    width: 100% !important;
+  }
+  .sfc .sfc-footer-contact li {
+    list-style: none !important;
+    list-style-type: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .sfc .sfc-contact-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 9px 16px !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: rgba(255, 255, 255, 0.88) !important;
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    transition: all 0.2s ease !important;
+  }
+  .sfc .sfc-contact-pill:hover {
+    background: rgba(120, 235, 190, 0.12) !important;
+    border-color: rgba(120, 235, 190, 0.35) !important;
+    color: #78ebbe !important;
+    transform: translateY(-1px) !important;
+  }
+  .sfc .sfc-contact-pill svg {
+    flex: 0 0 auto !important;
+    color: #25d366 !important;
+  }
+
+  .sfc .sfc-footer-social {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    margin: 18px 0 0 !important;
+  }
+  .sfc .sfc-footer-social a {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: none !important;
+    transition: all 0.25s ease !important;
+  }
+  .sfc .sfc-footer-social a:hover {
+    color: #78ebbe !important;
+    border-color: #78ebbe !important;
+    background: rgba(120, 235, 190, 0.15) !important;
+    transform: translateY(-2px) !important;
+  }
+  .sfc .sfc-footer-social svg {
+    width: 18px !important;
+    height: 18px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Symmetrical 2-column grid for links on mobile */
+  .sfc .sfc-footer-cols-wrap {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 28px 16px !important;
+    width: 100% !important;
+  }
+  .sfc .sfc-footer-col {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .sfc .sfc-footer-col-title {
+    color: rgba(255, 255, 255, 0.45) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.14em !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    margin-bottom: 12px !important;
+    padding-bottom: 6px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+  .sfc .sfc-footer-nav-list {
+    list-style: none !important;
+    list-style-type: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+  .sfc .sfc-footer-nav-list li {
+    list-style: none !important;
+    list-style-type: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .sfc .sfc-footer-nav-list li a {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 5px 0 !important;
+    font-size: 13.5px !important;
+    color: rgba(255, 255, 255, 0.65) !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+  }
+  .sfc .sfc-footer-nav-list li a:hover {
+    color: #78ebbe !important;
+    transform: translateX(3px) !important;
+  }
+
+  .sfc .sfc-footer-disclaim {
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding-top: 20px !important;
+    margin-top: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  .sfc .sfc-footer-disclaim p {
+    font-size: 11.5px !important;
+    line-height: 1.6 !important;
+    color: rgba(255, 255, 255, 0.45) !important;
+    margin: 0 !important;
+  }
+  .sfc .sfc-footer-disclaim strong {
+    color: rgba(255, 255, 255, 0.75) !important;
   }
   .sfc .sfc-footer-legal summary {
-    min-height: var(--tap-min, 44px);
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 7px 14px !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    width: fit-content !important;
+    cursor: pointer !important;
+  }
+  /* -- Partners section: clean wide white background and styled logo tiles -- */
+  .sfc .sfc-partners {
+    background: #ffffff !important;
+    color: #0b121b !important;
+    padding: 80px 0 92px !important;
+    position: relative !important;
+    width: 100% !important;
+    overflow: hidden !important;
+  }
+  .sfc .sfc-partners .sfc-wrap {
+    margin-bottom: 32px !important;
+    text-align: center !important;
+  }
+  .sfc .sfc-partners .sfc-eyebrow,
+  .sfc .sfc-partners .sfc-eyebrow-indigo {
+    color: #4338ca !important;
+    background: rgba(79, 70, 229, 0.08) !important;
+    display: inline-block !important;
+    padding: 4px 14px !important;
+    border-radius: 999px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    margin-bottom: 12px !important;
+  }
+  .sfc .sfc-partners .sfc-h2-serif,
+  .sfc .sfc-partners .sfc-navy {
+    color: #0b121b !important;
+    font-family: var(--font-display, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif) !important;
+    font-size: clamp(1.9rem, 6.5vw, 2.7rem) !important;
+    line-height: 1.18 !important;
+    background: none !important;
+    margin: 0 auto !important;
+    max-width: 42rem !important;
+  }
+  .sfc .sfc-partners-note {
+    color: rgba(15, 23, 42, 0.65) !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    margin: 14px auto 0 !important;
+    max-width: 620px !important;
+  }
+  .sfc .sfc-marquee {
+    padding: 18px 0 32px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent) !important;
+    mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent) !important;
+  }
+  .sfc .sfc-marquee-track {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    width: max-content !important;
+    animation: sfcMarquee 32s linear infinite !important;
+  }
+  .sfc .sfc-marquee-rev {
+    margin-top: 16px !important;
+    animation-direction: reverse !important;
+    animation-duration: 38s !important;
+  }
+  .sfc .sfc-partner-tile {
+    flex: 0 0 auto !important;
+    flex-shrink: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 80px !important;
+    width: 168px !important;
+    margin: 0 10px !important;
+    padding: 14px 20px !important;
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.1) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04) !important;
+  }
+  .sfc .sfc-partner-tile img {
+    max-height: 100% !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    display: block !important;
   }
 }
 
@@ -73,25 +440,17 @@
    Tablet only (600 - 1023px)
    ======================================================================== */
 @media (min-width: 600px) and (max-width: 1023px) {
-  /* Grids: desktop counts are too dense once the container drops under
-     ~1000px. 3 -> 2 for news; stats keep four columns but the numerals have
-     to shrink or "₹182Cr+" runs past its 160px column. */
   .sfc .sfc-news-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .sfc .sfc-stat-v {
     font-size: clamp(1.9rem, 3.6vw, 2.8rem);
   }
-
-  /* The pinned platform panel scrolls for 280vh with the copy faded out after
-     ~62% of it, which on a 1180px-tall tablet is roughly 800px of scrolling
-     past an empty blue panel. Shorten the track and let the copy hold on
-     longer so the pin stays purposeful. */
-  .sfc .sfc-hero-track {
-    height: 220vh;
+  .sfc .sfc-footer-input {
+    flex-direction: row !important;
   }
-  .sfc .sfc-hero-panel .sfc-hero-inner {
-    opacity: calc(1 - var(--hp) * 1.25);
+  .sfc .sfc-footer-cols-wrap {
+    grid-template-columns: repeat(4, 1fr) !important;
   }
 }
 
@@ -99,17 +458,16 @@
    Phone only (<= 599px)
    ======================================================================== */
 @media (max-width: 599px) {
-  /* -- Hero ---------------------------------------------------------------
-     The headline already clamps; what it lacked was a hard stop against the
-     20px gutter, so a long CMS word could not be trimmed by the section's
-     overflow:hidden without first widening the flex row. */
+  /* -- Hero -- */
   .sfc .sfc-hero .sfc-h1 {
-    font-family: var(--font-display), 'Hanken Grotesk', system-ui, -apple-system, sans-serif !important;
+    font-family: var(--font-display, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif) !important;
     font-weight: 300 !important;
     letter-spacing: -0.02em !important;
     max-width: 100%;
     overflow-wrap: anywhere;
     color: #0f2a2b !important;
+    font-size: clamp(1.85rem, 7.8vw, 2.5rem) !important;
+    line-height: 1.15 !important;
   }
   .sfc .sfc-hero .sfc-h1 .sfc-h1-em,
   .sfc .sfc-hero .sfc-h1-em {
@@ -136,191 +494,185 @@
   .sfc .sfc-hero-lede {
     min-width: 0;
   }
-  /* The mark is an <img> at 84vw; cap it against the gutter explicitly and
-     keep it from eating the whole screen on a tall phone. */
   .sfc .sfc-hero-mark,
   .sfc .sfc-hero-mark-img {
     max-width: 100%;
     max-height: 28svh;
   }
 
-  /* Bottom row is a single centred column here */
+  /* Bottom row is a single centred column */
   .sfc .sfc-hero-bottom .sfc-share {
     justify-self: center;
   }
 
-  /* -- Story screens ------------------------------------------------------
-     Each .sfc-screen-grid holds an empty <div> spacer plus the copy. At one
-     column the spacer became a full grid row, so the copy sat in the BOTTOM
-     half of a 100vh screen and the top half scrolled by blank — the audit
-     found a whole viewport with zero visible content. Drop the spacer and
-     the copy centres in the screen. */
+  /* -- Story screens -- */
   .sfc .sfc-screen-grid > div:empty {
     display: none;
   }
   .sfc .sfc-screen-grid {
-    padding: 96px 20px;
+    padding: 72px 20px;
   }
   .sfc .sfc-h2 {
-    font-size: clamp(2.1rem, 9.6vw, 3.2rem);
+    font-size: clamp(1.9rem, 8.5vw, 2.8rem);
   }
   .sfc .sfc-lead {
-    margin-top: 22px;
-    font-size: 16px;
+    margin-top: 18px;
+    font-size: 15px;
+    line-height: 1.6;
   }
 
-  /* -- Pinned platform panel ---------------------------------------------
-     Same dead-scroll problem as tablet, worse: 280vh of track on an 844px
-     phone is ~1500px of pinned scrolling and the copy is gone for the last
-     900px of it. Shorten the track, hold the copy nearly to the end.
-     height/margin-top are kept in the SAME unit (svh) on both the panel and
-     the overlay card that pulls up over it — mixing vh and svh here would
-     misalign the handoff by the height of the browser toolbar. */
-  .sfc .sfc-hero-track {
-    height: 190vh;
-  }
-  .sfc .sfc-hero-panel {
-    height: 100svh;
-    margin: 0 8px;
-    border-radius: 0 0 28px 28px;
-  }
-  .sfc .sfc-overcard {
-    margin-top: -100svh;
-  }
-  .sfc .sfc-hero-panel .sfc-hero-inner {
-    padding: clamp(96px, 15vh, 140px) 20px 36px;
-    opacity: calc(1 - var(--hp) * 1.15);
-  }
-  .sfc .sfc-hero-panel .sfc-h1 {
-    font-size: clamp(2rem, 8.6vw, 2.9rem);
-  }
-  .sfc .sfc-hero-panel .sfc-hero-ctas {
-    margin-top: 28px;
-  }
-  .sfc .sfc-hero-ctas .sfc-btn-ghost,
-  .sfc .sfc-hero-ctas .sfc-btn-mint {
-    min-height: var(--tap-min, 44px);
-  }
-
-  /* The sweeping word floors at 220px, which on a 390px screen renders one
-     and a half letters. It is clipped by the panel so it never widened the
-     page, but it also never read as a word. A 30vw floor keeps the sweep
-     legible; the 220px floor only ever binds below ~647px, so desktop is
-     untouched either way. */
-  .sfc .sfc-giantword {
-    font-size: clamp(104px, 30vw, 220px);
-    bottom: -0.22em;
-  }
-
-  /* -- Overlay card + feature grid ---------------------------------------- */
-  .sfc .sfc-overcard {
-    padding: clamp(72px, 10vh, 110px) 0 88px;
-    border-radius: 28px 28px 0 0;
-  }
-  .sfc .sfc-h2-serif {
-    font-size: clamp(1.9rem, 7.6vw, 2.6rem);
-  }
+  /* -- Feature grid -- */
   .sfc .sfc-feature-grid {
-    margin-top: 44px;
+    margin-top: 36px;
     border-radius: 18px;
   }
   .sfc .sfc-feature {
-    padding: 30px 22px;
+    padding: 24px 20px;
   }
   .sfc .sfc-feature-icon {
-    margin-bottom: 18px;
+    margin-bottom: 16px;
   }
   .sfc .sfc-feature h3 {
-    font-size: 21px;
+    font-size: 20px;
   }
   .sfc .sfc-feature p {
-    font-size: 15px;
+    font-size: 14.5px;
   }
 
-  /* -- About + stats ------------------------------------------------------ */
+  /* -- About + stats -- */
   .sfc .sfc-about {
-    padding: 88px 0;
+    padding: 72px 0;
   }
   .sfc .sfc-about-grid {
-    gap: 32px;
+    gap: 28px;
   }
   .sfc .sfc-about-copy {
-    font-size: 16px;
-    gap: 18px;
-  }
-  .sfc .sfc-stats {
-    margin-top: 56px;
-    gap: 26px 20px;
-  }
-  .sfc .sfc-stat-v {
-    font-size: clamp(1.8rem, 7vw, 2.6rem);
-  }
-
-  /* -- Partners marquee ---------------------------------------------------
-     The track is width:max-content inside an overflow:hidden rail, so it can
-     never widen the page; the tiles were simply oversized for the screen —
-     208px tiles meant under two logos visible at a time. */
-  .sfc .sfc-partners {
-    padding: 88px 0;
-  }
-  .sfc .sfc-partners .sfc-wrap {
-    margin-bottom: 32px;
-  }
-  .sfc .sfc-marquee {
-    padding: 18px 0 28px;
-  }
-  .sfc .sfc-marquee-rev {
-    margin-top: 14px;
-  }
-  .sfc .sfc-partner-tile {
-    height: 76px;
-    width: 146px;
-    margin: 0 8px;
-    padding: 14px 18px;
-    border-radius: 14px;
-  }
-
-  /* -- News --------------------------------------------------------------- */
-  .sfc .sfc-news {
-    padding: 88px 0;
-  }
-  .sfc .sfc-news-head {
-    margin-bottom: 36px;
+    font-size: 15px;
     gap: 16px;
   }
-  .sfc .sfc-news-grid {
-    gap: 20px;
+  .sfc .sfc-stats {
+    margin-top: 48px;
+    gap: 24px 16px;
   }
-  .sfc .sfc-news-card {
-    padding: 24px;
-    border-radius: 18px;
-  }
-  .sfc .sfc-news-meta {
-    margin-bottom: 20px;
-  }
-  /* 6rem of reserved headline height plus a 56px gap left each card mostly
-     empty once it was the only card on the row. */
-  .sfc .sfc-news-card h3 {
-    font-size: 20px;
-    min-height: 0;
-    margin: 0 0 24px;
+  .sfc .sfc-stat-v {
+    font-size: clamp(1.7rem, 6.8vw, 2.4rem);
   }
 
-  /* -- Footer ------------------------------------------------------------- */
-  .sfc .sfc-footer {
-    padding: 72px 0 28px;
+  /* -- Partners marquee -- */
+  .sfc .sfc-partners {
+    background: #ffffff !important;
+    color: #0b121b !important;
+    padding: 72px 0 80px !important;
+    position: relative !important;
+    width: 100% !important;
+    overflow: hidden !important;
   }
-  .sfc .sfc-footer-cta {
-    gap: 36px;
+  .sfc .sfc-partners .sfc-wrap {
+    margin-bottom: 28px !important;
+    text-align: center !important;
   }
-  .sfc .sfc-footer-title {
-    font-size: clamp(2.1rem, 9vw, 3.2rem);
+  .sfc .sfc-partners .sfc-eyebrow,
+  .sfc .sfc-partners .sfc-eyebrow-indigo {
+    color: #4338ca !important;
+    background: rgba(79, 70, 229, 0.08) !important;
+    display: inline-block !important;
+    padding: 4px 12px !important;
+    border-radius: 999px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    margin-bottom: 12px !important;
   }
-  .sfc .sfc-footer-links {
-    gap: 32px 20px;
-    padding: 32px 0 40px;
+  .sfc .sfc-partners .sfc-h2-serif,
+  .sfc .sfc-partners .sfc-navy {
+    color: #0b121b !important;
+    font-family: var(--font-display, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif) !important;
+    font-size: clamp(1.85rem, 6.5vw, 2.6rem) !important;
+    line-height: 1.18 !important;
+    background: none !important;
+    margin: 0 auto !important;
+    max-width: 38rem !important;
   }
-  .sfc .sfc-footer-input input {
-    font-size: max(16px, 1rem);
+  .sfc .sfc-partners-note {
+    color: rgba(15, 23, 42, 0.65) !important;
+    font-size: 13.5px !important;
+    line-height: 1.6 !important;
+    margin: 14px auto 0 !important;
+    max-width: 600px !important;
+  }
+  .sfc .sfc-marquee {
+    padding: 16px 0 28px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent) !important;
+    mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent) !important;
+  }
+  @keyframes sfcMarquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .sfc .sfc-marquee-track {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    width: max-content !important;
+    animation: sfcMarquee 32s linear infinite !important;
+  }
+  .sfc .sfc-marquee-rev {
+    margin-top: 14px !important;
+    animation: sfcMarquee 38s linear infinite reverse !important;
+  }
+  .sfc .sfc-partner-tile {
+    flex: 0 0 auto !important;
+    flex-shrink: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 76px !important;
+    width: 156px !important;
+    margin: 0 8px !important;
+    padding: 14px 18px !important;
+    background: #ffffff !important;
+    border: 1px solid rgba(15, 23, 42, 0.1) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04) !important;
+  }
+  .sfc .sfc-partner-tile img {
+    max-height: 100% !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    display: block !important;
+  }
+
+  /* -- News -- */
+  .sfc .sfc-news {
+    padding: 72px 0;
+  }
+  .sfc .sfc-news-head {
+    margin-bottom: 28px;
+    gap: 14px;
+  }
+  .sfc .sfc-news-grid {
+    gap: 18px;
+  }
+  .sfc .sfc-news-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+  .sfc .sfc-news-meta {
+    margin-bottom: 16px;
+  }
+  .sfc .sfc-news-card h3 {
+    font-size: 18px;
+    min-height: 0;
+    margin: 0 0 20px;
   }
 }

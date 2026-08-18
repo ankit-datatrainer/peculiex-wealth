@@ -11,21 +11,107 @@ export default function GlobalUX() {
 
     const cleanups: Array<() => void> = [];
 
-    /* nav scroll state — on mobile the pill also hides on scroll-down and
-       reappears on scroll-up, so it never sits fixed on top of page content
-       (e.g. the footer) while you're scrolling through the page. */
+    /* nav scroll state:
+       1. The stock ticker (.ticker-bar) stays fixed and sticky at top: 0 at all times.
+       2. The header (.main-nav) automatically hides on scroll-down to give full screen real estate to page content.
+       3. The header automatically reveals on scroll-up, when near the top of the page,
+          when the user hovers near top (or over the ticker bar), or when clicking/calling actions.
+    */
     const nav = document.getElementById("mainNav");
-    let lastY = window.scrollY;
+    const ticker = document.querySelector(".ticker-bar");
+    let lastY = typeof window !== "undefined" ? window.scrollY : 0;
+
+    const showNav = () => {
+      if (!nav) return;
+      nav.classList.remove("nav-hidden");
+    };
+
+    const hideNav = () => {
+      if (!nav) return;
+      // Do not hide if the mobile menu, account dropdown, or submenu is actively open
+      if (
+        nav.classList.contains("mobile-open") ||
+        document.querySelector(".nav-links.mobile-open") ||
+        nav.querySelector(".nav-has-dropdown.open") ||
+        document.querySelector("[data-account-menu] [role='menu']")
+      ) {
+        return;
+      }
+      nav.classList.add("nav-hidden");
+    };
+
     const onScroll = () => {
       if (!nav) return;
       const y = window.scrollY;
       nav.classList.toggle("scrolled", y > 30);
-      nav.classList.remove("nav-hidden");
+
+      // Always show nav when near the top of the page
+      if (y <= 50) {
+        showNav();
+        lastY = y;
+        return;
+      }
+
+      const diff = y - lastY;
+
+      // Scrolling down by more than 8px past the threshold hides the header
+      if (diff > 8 && y > 80) {
+        hideNav();
+      }
+      // Scrolling up by more than 8px reveals the header
+      else if (diff < -8) {
+        showNav();
+      }
+
       lastY = y;
     };
+
     addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     cleanups.push(() => removeEventListener("scroll", onScroll));
+
+    // Reveal nav when hovering or clicking the top stock ticker
+    if (ticker) {
+      const onTickerClick = () => showNav();
+      const onTickerEnter = () => showNav();
+      ticker.addEventListener("click", onTickerClick);
+      ticker.addEventListener("mouseenter", onTickerEnter);
+      cleanups.push(() => {
+        ticker.removeEventListener("click", onTickerClick);
+        ticker.removeEventListener("mouseenter", onTickerEnter);
+      });
+    }
+
+    // Reveal nav when cursor moves near the top screen edge (within 55px)
+    const onMouseMove = (e: MouseEvent) => {
+      if (e.clientY <= 55) {
+        showNav();
+      }
+    };
+    addEventListener("mousemove", onMouseMove, { passive: true });
+    cleanups.push(() => removeEventListener("mousemove", onMouseMove));
+
+    // Reveal nav on any call trigger, phone link, or show-nav trigger click
+    const onGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (
+        target.closest("[data-show-nav]") ||
+        target.closest(".mobile-toggle") ||
+        target.closest(".ticker-bar") ||
+        target.closest("a[href^='tel:']") ||
+        target.closest(".whatsapp-btn")
+      ) {
+        showNav();
+      }
+    };
+    document.addEventListener("click", onGlobalClick);
+    cleanups.push(() => document.removeEventListener("click", onGlobalClick));
+
+    // Programmatic custom event support: window.dispatchEvent(new CustomEvent('finvoq:show-nav'))
+    const onCustomShowNav = () => showNav();
+    window.addEventListener("finvoq:show-nav", onCustomShowNav);
+    cleanups.push(() => window.removeEventListener("finvoq:show-nav", onCustomShowNav));
 
     /* smooth scroll w/ offset (same-page anchors only) */
     const anchorHandlers: Array<{ el: HTMLAnchorElement; fn: (e: Event) => void }> = [];

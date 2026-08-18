@@ -91,7 +91,7 @@ export default function TickerBar() {
   }, [items]);
 
   return (
-    <div className="ticker-bar">
+    <div className="ticker-bar" data-show-nav="true" title="Click or tap to show menu">
       <div className="ticker-track" id="tickerTrack" ref={trackRef} />
     </div>
   );

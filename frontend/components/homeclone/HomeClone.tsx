@@ -737,7 +737,7 @@ export default function HomeClone() {
               </div>
             </div>
 
-            <div className="sfc-footer-links">
+            <div className="sfc-footer-main">
               <div className="sfc-footer-brand">
                 <div className="sfc-footer-logo">
                   {/* This footer is navy in BOTH themes, so the logo must be
@@ -746,30 +746,37 @@ export default function HomeClone() {
                       invisible against the navy. */}
                   <Logo width={176} height={70} forceDark />
                 </div>
-                <p>
+                <p className="sfc-footer-blurb">
                   {c.t("footerCta", "blurb", "India's premium investment marketplace. Multiple asset classes, one platform, advisory-led.")}
                 </p>
                 <div className="sfc-footer-reg">
                   <span className="sfc-dot" />{c.t("footerCta", "badge", REGISTRATION_LINE)}
                 </div>
-                {/* Direct routes + socials. The homepage footer had neither,
-                    so the highest-traffic page was the one page with no way
-                    to reach us without another click. */}
+
                 <ul className="sfc-footer-contact">
                   {whatsapp.href ? (
                     <li>
-                      <a href={whatsapp.href} target="_blank" rel="noopener noreferrer">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15" aria-hidden="true">
+                      <a href={whatsapp.href} target="_blank" rel="noopener noreferrer" className="sfc-contact-pill">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true">
                           <path d={SOCIAL_ICON_PATHS.whatsapp} />
                         </svg>
-                        WhatsApp {whatsapp.display}
+                        <span>WhatsApp {whatsapp.display}</span>
                       </a>
                     </li>
                   ) : null}
-                  <li>
-                    <a href={`mailto:${contact.email}`}>{contact.email}</a>
-                  </li>
+                  {contact.email ? (
+                    <li>
+                      <a href={`mailto:${contact.email}`} className="sfc-contact-pill">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
+                          <rect width="20" height="16" x="2" y="4" rx="2" />
+                          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                        </svg>
+                        <span>{contact.email}</span>
+                      </a>
+                    </li>
+                  ) : null}
                 </ul>
+
                 {social.length > 0 ? (
                   <div className="sfc-footer-social" aria-label="Social links">
                     {social.map((s) => (
@@ -789,18 +796,21 @@ export default function HomeClone() {
                   </div>
                 ) : null}
               </div>
-              {footerColumns.map((col) => (
-                <div key={col.title}>
-                  <div className="sfc-footer-col-title">{col.title}</div>
-                  <ul>
-                    {col.links.map((l) => (
-                      <li key={`${l.href}-${l.label}`}>
-                        <Link href={l.href}>{l.label}</Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+
+              <div className="sfc-footer-cols-wrap">
+                {footerColumns.map((col) => (
+                  <div key={col.title} className="sfc-footer-col">
+                    <div className="sfc-footer-col-title">{col.title}</div>
+                    <ul className="sfc-footer-nav-list">
+                      {col.links.map((l) => (
+                        <li key={`${l.href}-${l.label}`}>
+                          <Link href={l.href}>{l.label}</Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="sfc-footer-disclaim">
@@ -1058,7 +1068,7 @@ export default function HomeClone() {
           mix-blend-mode: multiply;
         }
         .sfc-hero .sfc-h1 {
-          font-family: var(--font-display), 'Hanken Grotesk', system-ui, -apple-system, sans-serif !important;
+          font-family: var(--font-display, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif) !important;
           font-weight: 300 !important;
           letter-spacing: -0.02em;
           text-align: left;
@@ -1182,7 +1192,7 @@ export default function HomeClone() {
             width: 100%;
           }
           .sfc-hero .sfc-h1 {
-            font-family: var(--font-display), 'Hanken Grotesk', system-ui, -apple-system, sans-serif !important;
+            font-family: var(--font-display, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif) !important;
             font-weight: 300 !important;
             letter-spacing: -0.02em !important;
             text-align: center;
@@ -2199,186 +2209,190 @@ export default function HomeClone() {
         color: rgba(255, 255, 255, 0.5);
         margin: 0;
         }
-        .sfc-footer-links {
+        .sfc-footer-main {
           display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 40px 32px;
-        padding: 40px 0 56px;
-        font-size: 14px;
+          grid-template-columns: 1fr;
+          gap: 40px;
+          padding: 40px 0 56px;
         }
         @media (min-width: 1024px) {
-          .sfc-footer-links {
-          grid-template-columns: 1.7fr 1fr 1fr 1fr 1fr;
+          .sfc-footer-main {
+            grid-template-columns: 1.7fr 3.3fr;
+            gap: 48px;
           }
         }
         .sfc-footer-brand {
-          grid-column: span 2;
-        }
-        @media (min-width: 1024px) {
-          .sfc-footer-brand {
-          grid-column: span 1;
-          }
-        }
-        /* Soft-cornered card, not a pill: this label wraps to two lines at
-           most widths now that the ARN is appended, and a 999px radius fights
-           a wrapped line. */
-        .sfc-footer-reg {
-          display: inline-flex;
-        align-items: flex-start;
-        gap: 9px;
-        margin-top: 20px;
-        padding: 10px 15px;
-        max-width: 21rem;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        background: rgba(255, 255, 255, 0.05);
-        font-size: 11.5px;
-        font-weight: 600;
-        line-height: 1.5;
-        text-align: left;
-        color: rgba(255, 255, 255, 0.78);
-        backdrop-filter: blur(6px);
-        }
-        /* Direct routes + socials, under the registration badge. */
-        .sfc-footer-contact {
-          list-style: none;
-          margin: 16px 0 0;
-          padding: 0;
-          display: grid;
-          gap: 7px;
-        }
-        /* Scoped through .sfc-footer-links to outrank the .sfc-footer-links li a
-           nav-column link style — these rows sit inside that container but
-           are contact routes, not nav items, so they must not inherit its
-           block layout or its decorative ::before bullet. */
-        .sfc-footer-links .sfc-footer-contact a::before {
-          content: none;
-        }
-        .sfc-footer-links .sfc-footer-contact a {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 13px;
-          font-weight: 500;
-          color: rgba(255, 255, 255, 0.72);
-          text-decoration: none;
-          transition: color 0.2s ease;
-          overflow-wrap: anywhere;
-        }
-        .sfc-footer-links .sfc-footer-contact a:hover,
-        .sfc-footer-links .sfc-footer-contact a:focus-visible {
-          color: #fff;
-          transform: none;
-        }
-        .sfc-footer-contact svg {
-          flex: 0 0 auto;
-          color: #25d366;
-        }
-        .sfc-footer-social {
           display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-          margin-top: 16px;
-        }
-        .sfc-footer-links .sfc-footer-social a::before {
-          content: none;
-        }
-        .sfc-footer-links .sfc-footer-social a {
-          display: grid;
-          place-items: center;
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          border: 1px solid rgba(255, 255, 255, 0.18);
-          background: rgba(255, 255, 255, 0.05);
-          color: rgba(255, 255, 255, 0.78);
-          transition: color 0.2s ease, border-color 0.2s ease,
-            background 0.2s ease, transform 0.2s ease;
-        }
-        .sfc-footer-links .sfc-footer-social a:hover,
-        .sfc-footer-links .sfc-footer-social a:focus-visible {
-          color: #fff;
-          border-color: rgba(255, 255, 255, 0.42);
-          background: rgba(255, 255, 255, 0.12);
-          transform: translateY(-2px);
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .sfc-footer-social a:hover {
-            transform: none;
-          }
-        }
-        .sfc-footer-reg .sfc-dot {
-          flex: 0 0 auto;
-        margin-top: 5px;
-        }
-        .sfc-footer-disclaim {
-          border-top: 1px solid rgba(255, 255, 255, 0.12);
-        padding: 28px 0 8px;
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        }
-        .sfc-footer-disclaim p {
-          margin: 0;
-        font-size: 11.5px;
-        line-height: 1.7;
-        color: rgba(255, 255, 255, 0.45);
-        }
-        .sfc-footer-disclaim strong {
-          color: rgba(255, 255, 255, 0.65);
-        }
-        /* Registration codes: slightly brighter than the disclaimer and
-           letter-spaced, so an investor can read a code off the navy ground. */
-        .sfc-footer-codes {
-          font-size: 11px;
-        letter-spacing: 0.04em;
-        font-weight: 500;
-        color: rgba(255, 255, 255, 0.58) !important;
-        font-variant-numeric: tabular-nums;
-        }
-        .sfc-footer-made {
-          display: none;
-        }
-        @media (min-width: 768px) {
-          .sfc-footer-made {
-          display: inline;
-          }
+          flex-direction: column;
+          align-items: flex-start;
         }
         .sfc-footer-logo {
           display: flex;
-        align-items: center;
-        margin-bottom: 18px;
+          align-items: center;
+          margin-bottom: 16px;
         }
         .sfc-footer-logo img {
-          height: 70px;
-        width: auto;
+          height: 60px;
+          width: auto;
         }
-        @media (max-width: 760px) {
-          .sfc-footer-logo img {
-          height: 56px;
+        .sfc-footer-blurb {
+          color: rgba(255, 255, 255, 0.65);
+          max-width: 24rem;
+          line-height: 1.6;
+          font-size: 14px;
+          margin: 0;
+        }
+        .sfc-footer-reg {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          margin-top: 14px;
+          padding: 8px 14px;
+          border-radius: 10px;
+          border: 1px solid rgba(255, 255, 255, 0.14);
+          background: rgba(255, 255, 255, 0.05);
+          font-size: 11.5px;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.85);
+          backdrop-filter: blur(6px);
+        }
+        .sfc-footer-reg .sfc-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #78ebbe;
+          box-shadow: 0 0 8px #78ebbe;
+        }
+
+        .sfc-footer-contact {
+          list-style: none !important;
+          list-style-type: none !important;
+          margin: 18px 0 0 !important;
+          padding: 0 !important;
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 10px !important;
+          width: 100% !important;
+        }
+        .sfc-footer-contact li {
+          list-style: none !important;
+          list-style-type: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        .sfc-contact-pill {
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 10px !important;
+          padding: 8px 16px !important;
+          border-radius: 12px !important;
+          background: rgba(255, 255, 255, 0.05) !important;
+          border: 1px solid rgba(255, 255, 255, 0.12) !important;
+          color: rgba(255, 255, 255, 0.88) !important;
+          font-size: 13.5px !important;
+          font-weight: 500 !important;
+          text-decoration: none !important;
+          transition: all 0.2s ease !important;
+          width: fit-content !important;
+          max-width: 100% !important;
+        }
+        .sfc-contact-pill:hover,
+        .sfc-contact-pill:focus-visible {
+          background: rgba(120, 235, 190, 0.12) !important;
+          border-color: rgba(120, 235, 190, 0.35) !important;
+          color: #78ebbe !important;
+          transform: translateY(-1px) !important;
+        }
+        .sfc-contact-pill svg {
+          flex: 0 0 auto !important;
+          color: #25d366 !important;
+        }
+
+        .sfc-footer-social {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          flex-wrap: wrap !important;
+          gap: 12px !important;
+          margin-top: 18px !important;
+          margin-bottom: 8px !important;
+        }
+        .sfc-footer-social a {
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 42px !important;
+          height: 42px !important;
+          border-radius: 50% !important;
+          border: 1px solid rgba(255, 255, 255, 0.16) !important;
+          background: rgba(255, 255, 255, 0.06) !important;
+          color: rgba(255, 255, 255, 0.8) !important;
+          transition: all 0.25s ease !important;
+          text-decoration: none !important;
+        }
+        .sfc-footer-social a:hover,
+        .sfc-footer-social a:focus-visible {
+          color: #78ebbe !important;
+          border-color: #78ebbe !important;
+          background: rgba(120, 235, 190, 0.15) !important;
+          transform: translateY(-2px) !important;
+        }
+        .sfc-footer-social svg {
+          width: 18px !important;
+          height: 18px !important;
+          flex-shrink: 0 !important;
+        }
+
+        .sfc-footer-cols-wrap {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 36px 20px;
+        }
+        @media (min-width: 1024px) {
+          .sfc-footer-cols-wrap {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 28px;
           }
         }
-        .sfc-footer-brand p {
-          color: rgba(255, 255, 255, 0.6);
-        max-width: 24rem;
-        line-height: 1.6;
-        margin: 0;
-        }
         .sfc-footer-col-title {
-          color: rgba(255, 255, 255, 0.38);
-        text-transform: uppercase;
-        letter-spacing: 0.18em;
-        font-size: 10.5px;
-        font-weight: 700;
-        margin-bottom: 18px;
+          color: rgba(255, 255, 255, 0.45);
+          text-transform: uppercase;
+          letter-spacing: 0.16em;
+          font-size: 11px;
+          font-weight: 700;
+          margin-bottom: 16px;
         }
-        .sfc-footer-links ul {
-          list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 1px;
+        .sfc-footer-nav-list {
+          list-style: none !important;
+          list-style-type: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 2px !important;
+        }
+        .sfc-footer-nav-list li {
+          list-style: none !important;
+          list-style-type: none !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        .sfc-footer-nav-list li a {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          width: fit-content;
+          max-width: 100%;
+          padding: 6px 0;
+          font-size: 13.5px;
+          color: rgba(255, 255, 255, 0.65);
+          text-decoration: none;
+          transition: color 0.25s ease, transform 0.25s ease;
+        }
+        .sfc-footer-nav-list li a:hover,
+        .sfc-footer-nav-list li a:focus-visible {
+          color: #78ebbe;
+          transform: translateX(4px);
         }
         /* Hairlines give the link columns a deliberate editorial grid, so the
            shorter columns don't read as floating in empty space. */

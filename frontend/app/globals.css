@@ -61,8 +61,8 @@
   --radius-full: 9999px;
 
   /* Typography */
-  --font-display: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
-  --font-body: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 
   /* Easing */
   --ease: cubic-bezier(.2, .7, .2, 1);
@@ -508,8 +508,9 @@ svg.icon {
   align-items: center;
   padding: 0;
   overflow: hidden;
-  z-index: 100;
+  z-index: 120;
   box-shadow: var(--shadow-sm);
+  cursor: pointer;
 }
 
 .ticker-track {
@@ -573,7 +574,14 @@ svg.icon {
   z-index: 110;
   background: transparent;
   border-bottom: 1px solid transparent;
-  transition: background 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease), top 0.3s var(--ease);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s var(--ease), border-color 0.3s var(--ease), box-shadow 0.3s var(--ease), top 0.3s var(--ease);
+  will-change: transform;
+}
+
+.main-nav.nav-hidden {
+  transform: translateY(calc(-100% - 44px));
+  pointer-events: none;
+  box-shadow: none !important;
 }
 
 .main-nav .logo {
@@ -7185,12 +7193,16 @@ section {
    toast vs back-to-top overlap
    ========================================================= */
 
-/* Ensure nav is always above ticker on all screens */
+/* Ensure ticker stays on top of sliding nav, and nav sits above page content */
+.ticker-bar {
+  z-index: 120 !important;
+}
+
 .main-nav {
   z-index: 110 !important;
 }
 
-/* Tablet & below: too many nav items to fit â€” switch to the hamburger menu.
+/* Tablet & below: too many nav items to fit — switch to the hamburger menu.
    (.mobile-open keeps display:flex via !important so the overlay still opens.) */
 @media (max-width: 1024px) {
   .nav-links:not(.mobile-open) {
@@ -7214,10 +7226,15 @@ section {
 @media (max-width: 760px) {
   .ticker-bar {
     display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    z-index: 120 !important;
   }
 
   .main-nav {
     top: 44px !important;
+    position: fixed !important;
+    z-index: 110 !important;
   }
 }
 
