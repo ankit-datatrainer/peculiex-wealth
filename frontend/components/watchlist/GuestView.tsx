@@ -839,6 +839,7 @@ export default function GuestView() {
           .gv-orb, .gv-orb-2 { display: none; }
           .gv-stats-bar { padding-left: 16px; padding-right: 16px; }
           .gv-title { font-size: clamp(28px, 8vw, 42px); }
+          .gv-chips { flex-wrap: wrap; }
         }
 
         /* Landscape phones (~812x375): the 100vh hero leaves no room for copy. */
