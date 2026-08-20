@@ -418,8 +418,11 @@ export default function GuestView() {
           align-items: center; position: relative; z-index: 2;
         }
         @media (max-width: 960px) {
-          .gv-hero-inner { grid-template-columns: 1fr; gap: 3rem; }
+          .gv-hero { min-height: auto; padding: 100px 0 60px; }
+          .gv-hero-inner { grid-template-columns: 1fr; gap: 3rem; padding: 0 24px; }
           .gv-stage { display: none; }
+          .gv-orb { width: 260px; height: 260px; right: -5%; }
+          .gv-orb-2 { width: 160px; height: 160px; }
         }
 
         /* Copy */
@@ -811,23 +814,30 @@ export default function GuestView() {
            so nothing is pinched or pushed past the viewport edge. */
         @media (max-width: 600px) {
           .gv-hero { padding: 96px 0 48px; min-height: 0; }
-          .gv-hero-inner { padding: 0 20px; }
+          .gv-hero-inner { padding: 0 16px; }
           .gv-features { padding: 64px 0; }
-          .gv-features-grid { padding: 0 20px; }
-          .gv-features-head { margin-bottom: 32px; }
-          .gv-unlisted { padding: 64px 20px; }
-          .gv-how { padding: 64px 20px; }
-          .gv-testi { padding: 64px 20px; }
+          .gv-features-grid { padding: 0 16px; }
+          .gv-features-head { margin-bottom: 32px; padding: 0 16px; }
+          .gv-unlisted { padding: 64px 16px; }
+          .gv-how { padding: 64px 16px; }
+          .gv-testi { padding: 64px 16px; }
           .gv-testi-card { padding: 1.5rem; }
-          .gv-cta-section { padding: 48px 20px; }
+          .gv-cta-section { padding: 48px 16px; }
           .gv-cta-content { padding: 2.5rem 1.25rem; }
           .gv-cta-btns { flex-direction: column; align-items: stretch; }
           .gv-cta-primary, .gv-cta-ghost { justify-content: center; }
           .gv-ctas > :global(a) { flex: 1 1 100%; justify-content: center; }
-          .gv-sub { font-size: 1rem; }
+          .gv-sub { font-size: 0.95rem; }
           .gv-unl-card { padding: 0.9rem 1rem; gap: 0.75rem; }
           .gv-step { gap: 1rem; }
           .gv-step-num { font-size: 2rem; }
+          .gv-trust {
+            font-size: 0.72rem;
+            line-height: 1.8;
+          }
+          .gv-orb, .gv-orb-2 { display: none; }
+          .gv-stats-bar { padding-left: 16px; padding-right: 16px; }
+          .gv-title { font-size: clamp(28px, 8vw, 42px); }
         }
 
         /* Landscape phones (~812x375): the 100vh hero leaves no room for copy. */

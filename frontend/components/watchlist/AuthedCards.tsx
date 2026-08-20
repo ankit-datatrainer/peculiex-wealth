@@ -191,17 +191,21 @@ export default function AuthedCards({
 
         .c-remove {
           position: absolute;
-          right: 4px;
-          top: 4px;
+          right: 2px;
+          top: 2px;
           background: transparent;
           border: none;
           color: #aaa;
           cursor: pointer;
           font-size: 1.2rem;
           line-height: 1;
-          padding: 2px 6px;
-          border-radius: 4px;
+          padding: 4px 7px;
+          border-radius: 6px;
           transition: all 0.2s;
+          min-width: 30px;
+          min-height: 30px;
+          display: grid;
+          place-items: center;
         }
         .c-card:hover .c-remove {
           color: #888;

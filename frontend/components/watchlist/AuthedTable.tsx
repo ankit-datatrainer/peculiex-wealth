@@ -369,45 +369,58 @@ export default function AuthedTable({
           .desktop-only { display: none !important; }
           .mobile-only { display: block; }
           
-          .t-row {
-            padding: 0.35rem 0.6rem;
-            position: relative;
+          .t-wrap {
+            border-radius: 10px;
           }
           
-          /* Mobile shows only 3 columns, so the row fits: drop the desktop
-             min-width and let the cells compress instead of scrolling. */
+          .t-row {
+            padding: 0.55rem 0.5rem;
+            position: relative;
+            gap: 0.15rem;
+          }
+          
           .t-header,
           .t-row {
             min-width: 0;
           }
           .t-scroll { overflow-x: hidden; }
 
-          .t-col-asset { flex: 1.5 1 0; min-width: 0; }
+          .t-col-asset { flex: 1.4 1 0; min-width: 0; }
           .t-col-num { flex: 1 1 0; min-width: 0; }
           
-          .t-asset-text {
-            /* Add left margin if logo was here, but logo is hidden */
-          }
           .t-asset-name {
-            font-size: 0.95rem;
+            font-size: 0.88rem;
+          }
+          .t-asset-sub {
+            font-size: 0.7rem;
           }
           
           .t-price-block {
             align-items: flex-end;
           }
           .t-price-val {
-            font-size: 0.95rem;
+            font-size: 0.88rem;
           }
           
           .t-chg-block {
             align-items: flex-end;
           }
           .t-chg-abs {
-            font-size: 0.9rem;
+            font-size: 0.82rem;
+          }
+          .t-chg-pct {
+            font-size: 0.68rem;
           }
           
           .t-col-actions {
-            display: none !important;
+            display: flex !important;
+            width: 32px;
+            flex: 0 0 32px;
+          }
+          .t-remove {
+            min-width: 32px;
+            min-height: 36px;
+            padding: 6px;
           }
         }
       `}</style>

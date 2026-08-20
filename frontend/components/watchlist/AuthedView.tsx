@@ -806,6 +806,7 @@ export default function AuthedView() {
           padding: 0 0 6rem;
           min-width: 0;
           max-width: 100%;
+          overflow-x: hidden;
         }
 
 
