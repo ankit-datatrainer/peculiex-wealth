@@ -426,6 +426,7 @@ export default function GuestView() {
         }
 
         /* Copy */
+        .gv-copy { min-width: 0; }
         .gv-title {
           font-family: var(--font-display, 'Barlow', sans-serif);
           font-size: clamp(34px, 6.4vw, 82px);
