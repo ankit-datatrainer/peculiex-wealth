@@ -229,20 +229,18 @@ export default function Footer() {
           </ul>
         </div>
 
-        <div className="foot-cols-wrap">
-          {columns.map((col) => (
-            <div className="foot-col" key={col.title}>
-              <h4>{col.title}</h4>
-              <ul>
-                {col.links.map((l) => (
-                  <li key={`${l.href}-${l.label}`}>
-                    <a href={l.href}>{l.label}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+        {columns.map((col) => (
+          <div className="foot-col" key={col.title}>
+            <h4>{col.title}</h4>
+            <ul>
+              {col.links.map((l) => (
+                <li key={`${l.href}-${l.label}`}>
+                  <a href={l.href}>{l.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
 
       <div className="container foot-band">

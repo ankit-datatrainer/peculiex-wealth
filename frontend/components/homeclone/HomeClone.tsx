@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { postJSON } from "@/lib/api";
+import { postJSON, fetcher, apiUrl } from "@/lib/api";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -673,6 +673,9 @@ export default function HomeClone() {
             );
           })()}
         </section>
+
+        {/* ── Blog Preview ───────────────────────────────────────────── */}
+        <BlogPreviewSection Reveal={Reveal} />
 
         {/* ── News ─────────────────────────────────────────────────────── */}
         <section id="news" className="sfc-news" data-nav-theme="dark">
@@ -2048,6 +2051,120 @@ export default function HomeClone() {
         flex-shrink: 0;
         }
 
+        /* ── Blog Preview ── */
+        .sfc-blog-preview {
+          position: relative;
+        padding: 100px 0;
+        background: linear-gradient(180deg, #0c1426 0%, #111b36 100%);
+        }
+        .sfc-blog-head {
+          display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 56px;
+        flex-wrap: wrap;
+        gap: 20px;
+        }
+        .sfc-blog-head h2 {
+          color: #fff;
+        }
+        .sfc-blog-grid {
+          display: grid;
+        grid-template-columns: 1fr;
+        gap: 28px;
+        }
+        @media (min-width: 768px) {
+          .sfc-blog-grid {
+          grid-template-columns: repeat(3, 1fr);
+          }
+        }
+        .sfc-blog-card {
+          display: flex;
+        flex-direction: column;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.04);
+        transition: transform 0.3s ease, background 0.3s ease;
+        }
+        .sfc-blog-card:hover {
+          transform: translateY(-4px);
+        background: rgba(255, 255, 255, 0.08);
+        }
+        .sfc-blog-card-img {
+          width: 100%;
+        height: 180px;
+        object-fit: cover;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(16, 185, 129, 0.2));
+        }
+        .sfc-blog-card-img-placeholder {
+          width: 100%;
+        height: 180px;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(16, 185, 129, 0.15));
+        display: grid;
+        place-items: center;
+        color: rgba(255, 255, 255, 0.25);
+        font-size: 28px;
+        }
+        .sfc-blog-card-body {
+          padding: 24px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        }
+        .sfc-blog-card-author {
+          font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--sfc-mint, #34d399);
+        margin-bottom: 12px;
+        font-weight: 600;
+        }
+        .sfc-blog-card h3 {
+          font-size: 18px;
+        font-weight: 500;
+        line-height: 1.4;
+        margin: 0 0 12px;
+        color: #fff;
+        }
+        .sfc-blog-card-excerpt {
+          font-size: 13.5px;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.55);
+        margin: 0 0 20px;
+        flex: 1;
+        }
+        .sfc-blog-card-read {
+          display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--sfc-mint, #34d399);
+        font-weight: 500;
+        transition: gap 0.2s ease;
+        }
+        .sfc-blog-card:hover .sfc-blog-card-read {
+          gap: 10px;
+        }
+        .sfc-blog-see-more {
+          display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 28px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background: transparent;
+        }
+        .sfc-blog-see-more:hover {
+          background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.4);
+        gap: 12px;
+        }
+
         /* ── News ── */
         .sfc-news {
           position: relative;
@@ -2561,6 +2678,138 @@ export default function HomeClone() {
         }
       `}</style>
     </main>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BlogPreviewSection — latest 3 published blogs on the homepage
+   ───────────────────────────────────────────────────────────── */
+type Blog = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  image_url: string | null;
+  author: string;
+  created_at?: string;
+};
+
+const DEFAULT_HOME_BLOGS: Blog[] = [
+  {
+    id: "b1",
+    title: "Why Advisory-Led Investing Beats Pure DIY in 2026",
+    slug: "advisory-led-investing-beats-diy-2026",
+    excerpt: "Navigating volatile markets requires discipline and expert curation. Here's why personalized advisory creates durable wealth over pure DIY trading.",
+    image_url: "/images/blogs/blog-1.jpg",
+    author: "Finvoq Admin"
+  },
+  {
+    id: "b2",
+    title: "Pre-IPO & Unlisted Equities: The New Frontier of Alpha",
+    slug: "pre-ipo-unlisted-equities-alpha",
+    excerpt: "Discover how early access to India's high-growth private champions before their IPO can deliver outsized portfolio returns.",
+    image_url: "/images/blogs/blog-2.jpg",
+    author: "Finvoq Admin"
+  },
+  {
+    id: "b3",
+    title: "The Art of Multi-Asset Allocation: Stocks, Bonds & Alternatives",
+    slug: "art-of-multi-asset-allocation",
+    excerpt: "Why true diversification goes beyond large-cap equities. A comprehensive framework for balancing risk and reward across 10+ asset classes.",
+    image_url: "/images/blogs/blog-3.jpg",
+    author: "Finvoq Admin"
+  },
+  {
+    id: "b4",
+    title: "Mastering Market Volatility: A Systematic Compounding Playbook",
+    slug: "mastering-market-volatility-playbook",
+    excerpt: "How institutional investors use market corrections to strategically rebalance and accelerate compound interest over decades.",
+    image_url: "/images/blogs/blog-4.jpg",
+    author: "Finvoq Admin"
+  },
+  {
+    id: "b5",
+    title: "Fixed Income Reimagined: High-Yield Corporate Bonds & FDs",
+    slug: "fixed-income-high-yield-bonds-fds",
+    excerpt: "Secure steady, predictable cash flows with senior secured bonds and AAA-rated fixed income securities in a shifting interest rate cycle.",
+    image_url: "/images/blogs/blog-5.jpg",
+    author: "Finvoq Admin"
+  },
+  {
+    id: "b6",
+    title: "Portfolio Management Services (PMS) vs Mutual Funds",
+    slug: "pms-vs-mutual-funds-guide",
+    excerpt: "Unpacking the key differences in portfolio concentration, fee structures, and customization for high-net-worth investors.",
+    image_url: "/images/blogs/blog-6.jpg",
+    author: "Finvoq Admin"
+  }
+];
+
+function BlogPreviewSection({
+  Reveal
+}: {
+  Reveal: React.ComponentType<{ children: React.ReactNode; delay?: number; className?: string }>;
+}) {
+  const [blogs, setBlogs] = useState<Blog[]>(DEFAULT_HOME_BLOGS);
+
+  useEffect(() => {
+    let killed = false;
+    fetcher<{ items: Blog[] }>("/api/blogs")
+      .then((j) => {
+        if (!killed && j?.items?.length) setBlogs(j.items.slice(0, 6));
+      })
+      .catch(() => {});
+    return () => { killed = true; };
+  }, []);
+
+  if (blogs.length === 0) return null;
+
+  return (
+    <section id="blog" className="sfc-blog-preview" data-nav-theme="dark">
+      <div className="sfc-wrap">
+        <div className="sfc-blog-head">
+          <div>
+            <p className="sfc-eyebrow" style={{ color: "var(--sfc-mint, #34d399)", marginBottom: 8 }}>
+              From Our Blog
+            </p>
+            <h2 className="sfc-h2-serif">Insights & perspectives.</h2>
+          </div>
+          <Link href="/blog" className="sfc-blog-see-more">
+            See more <ArrowUpRight size={16} />
+          </Link>
+        </div>
+
+        <div className="sfc-blog-grid">
+          {blogs.map((b, i) => (
+            <Reveal key={b.id || b.slug} delay={i * 80}>
+              <Link href={`/blog/${b.slug}`} className="sfc-blog-card" aria-label={`Read: ${b.title}`}>
+                {b.image_url ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={apiUrl(b.image_url)}
+                    alt={b.title}
+                    className="sfc-blog-card-img"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="sfc-blog-card-img-placeholder" aria-hidden>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 8h10M7 12h6M7 16h8"/></svg>
+                  </div>
+                )}
+                <div className="sfc-blog-card-body">
+                  <span className="sfc-blog-card-author">{b.author}</span>
+                  <h3>{b.title}</h3>
+                  {b.excerpt && <p className="sfc-blog-card-excerpt">{b.excerpt}</p>}
+                  <span className="sfc-blog-card-read">
+                    Read more <ArrowUpRight size={14} />
+                  </span>
+                </div>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 

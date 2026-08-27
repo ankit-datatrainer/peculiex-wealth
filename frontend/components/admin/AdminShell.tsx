@@ -146,12 +146,28 @@ const ICON = {
         strokeLinejoin="round"
       />
     </svg>
+  ),
+  blog: (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden>
+      <path
+        d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
+      <path
+        d="M7 8h10M7 12h6M7 16h8"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+    </svg>
   )
 };
 
 const NAV: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: ICON.dashboard },
   { href: "/admin/content", label: "Content Manager", icon: ICON.content },
+  { href: "/admin/blogs", label: "Blogs", icon: ICON.blog },
   { href: "/admin/unlisted", label: "Unlisted Shares", icon: ICON.unlisted },
   { href: "/admin/factsheet-html", label: "Factsheets", icon: ICON.factsheet },
   { href: "/admin/users", label: "Users", icon: ICON.users },

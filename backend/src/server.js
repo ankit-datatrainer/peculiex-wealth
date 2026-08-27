@@ -36,6 +36,7 @@ app.disable("x-powered-by");
 app.use("/api/factsheets", require("./routes/factsheets"));
 app.use("/api/factsheet-html", require("./routes/factsheetHtml"));
 app.use("/api/unlisted-logos", require("./routes/unlistedLogos"));
+app.use("/api/blog-images", require("./routes/blogImages"));
 app.use("/api/content", require("./routes/pageContent"));
 app.use(express.json({ limit: "200kb" }));
 app.use(morgan("dev"));
@@ -86,6 +87,7 @@ app.get("/", (_req, res) => {
 app.use("/api/health", health);
 app.use("/api", catalog);
 app.use("/api/markets", markets);
+app.use("/api/blogs", require("./routes/blogs"));
 app.use("/api/mf", require("./routes/mf"));
 app.use("/api/auth/fyers", fyersAuth);
 app.use("/api/auth", authLimiter, auth);

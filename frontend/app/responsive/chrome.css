@@ -324,17 +324,15 @@
 @media (max-width: 599px) {
 
   .foot-grid {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 32px !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 28px 16px !important;
     padding: 36px 16px !important;
   }
 
-  .foot-cols-wrap {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 28px 16px !important;
-    width: 100% !important;
+  .foot-brand {
+    grid-column: 1 / -1 !important;
+    max-width: 100% !important;
   }
 
   .foot-contact {

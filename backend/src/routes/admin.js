@@ -358,4 +358,81 @@ router.delete("/contact/:id", async (req, res, next) => {
   }
 });
 
+// --------------------------------------------------------------
+// BLOGS
+// --------------------------------------------------------------
+
+const BlogCreateSchema = z.object({
+  title: z.string().trim().min(1).max(300),
+  slug: z.string().trim().max(200).optional().or(z.literal("")),
+  excerpt: z.string().trim().max(1000).optional().default(""),
+  body: z.string().optional().default(""),
+  image_url: z.string().trim().max(1000).optional().or(z.literal("")).nullable(),
+  author: z.string().trim().max(120).optional().default("Finvoq"),
+  published: z.boolean().optional().default(false),
+  position: z.coerce.number().nonnegative().optional().default(0)
+});
+
+const BlogPatchSchema = BlogCreateSchema.partial();
+
+router.get("/blogs", async (_req, res, next) => {
+  try {
+    const items = await admin.listBlogs();
+    res.json({ items });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/blogs", async (req, res, next) => {
+  try {
+    const parsed = BlogCreateSchema.safeParse(req.body || {});
+    if (!parsed.success) {
+      return res
+        .status(400)
+        .json({ error: parsed.error.errors[0]?.message || "Invalid payload" });
+    }
+    const item = await admin.createBlog(parsed.data);
+    res.status(201).json({ item });
+  } catch (err) {
+    if (err && err.status === 409) {
+      return res.status(409).json({ error: err.message });
+    }
+    next(err);
+  }
+});
+
+router.patch("/blogs/:id", async (req, res, next) => {
+  try {
+    const id = String(req.params.id || "").trim();
+    if (!id) return res.status(400).json({ error: "id required" });
+    const parsed = BlogPatchSchema.safeParse(req.body || {});
+    if (!parsed.success) {
+      return res
+        .status(400)
+        .json({ error: parsed.error.errors[0]?.message || "Invalid payload" });
+    }
+    const updated = await admin.updateBlog(id, parsed.data);
+    if (!updated) return res.status(404).json({ error: "Not found" });
+    res.json({ item: updated });
+  } catch (err) {
+    if (err && err.status === 409) {
+      return res.status(409).json({ error: err.message });
+    }
+    next(err);
+  }
+});
+
+router.delete("/blogs/:id", async (req, res, next) => {
+  try {
+    const id = String(req.params.id || "").trim();
+    if (!id) return res.status(400).json({ error: "id required" });
+    const ok = await admin.deleteBlog(id);
+    if (!ok) return res.status(404).json({ error: "Not found" });
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

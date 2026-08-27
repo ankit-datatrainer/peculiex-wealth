@@ -12,6 +12,7 @@ import { apiFetch, apiPostJSON } from "./api";
 export type AdminStats = {
   unlisted: number;
   stocks: number;
+  blogs: number;
   users: number;
   leads: number;
   newsletter: number;
@@ -208,3 +209,64 @@ export const fetchContactMessages = () =>
 
 export const deleteContactMessage = (id: string | number) =>
   apiFetch<{ ok: boolean }>(`/api/admin/contact/${id}`, { method: "DELETE" });
+
+// ---------- blogs ----------
+export type AdminBlog = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  body: string;
+  image_url: string | null;
+  author: string;
+  category: string;
+  published: boolean;
+  position: number;
+  // SEO fields (WordPress style)
+  meta_title?: string | null;
+  meta_description?: string | null;
+  focus_keyword?: string | null;
+  meta_keywords?: string | null;
+  tags?: string[];
+  canonical_url?: string | null;
+  og_image?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export const fetchBlogs = () =>
+  apiFetch<{ items: AdminBlog[] }>("/api/admin/blogs").then((r) => r.items);
+
+export const createBlog = (
+  payload: Omit<AdminBlog, "id" | "created_at" | "updated_at">
+) =>
+  apiPostJSON<{ item: AdminBlog }>("/api/admin/blogs", payload).then(
+    (r) => r.item
+  );
+
+export const updateBlog = (
+  id: string,
+  patch: Partial<Omit<AdminBlog, "id" | "created_at" | "updated_at">>
+) =>
+  apiPostJSON<{ item: AdminBlog }>(`/api/admin/blogs/${id}`, patch, {
+    method: "PATCH"
+  }).then((r) => r.item);
+
+export const deleteBlog = (id: string) =>
+  apiFetch<{ ok: boolean }>(`/api/admin/blogs/${id}`, { method: "DELETE" });
+
+export const uploadBlogImage = (id: string, file: File) =>
+  new Promise<{ item: AdminBlog; image_url: string }>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Could not read the selected file."));
+    reader.onload = () => {
+      apiPostJSON<{ ok: boolean; item: AdminBlog; image_url: string }>(
+        `/api/blog-images/${id}`,
+        { dataBase64: String(reader.result) }
+      )
+        .then(resolve)
+        .catch(reject);
+    };
+    reader.readAsDataURL(file);
+  });
+

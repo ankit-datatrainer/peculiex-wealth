@@ -232,3 +232,46 @@ create table if not exists public.page_content (
 create index if not exists page_content_updated_idx on public.page_content(updated_at desc);
 
 alter table public.page_content enable row level security;
+
+-- ==== BLOGS ==================================================
+
+create table if not exists public.blogs (
+  id               uuid        primary key default gen_random_uuid(),
+  title            text        not null,
+  slug             text        not null unique,
+  excerpt          text        not null default '',
+  body             text        not null default '',
+  image_url        text,
+  author           text        not null default 'Finvoq',
+  category         text        not null default 'Wealth Management',
+  published        boolean     not null default false,
+  position         integer     not null default 0,
+  -- SEO & Meta tags (WordPress style)
+  meta_title       text,
+  meta_description text,
+  focus_keyword    text,
+  meta_keywords    text,
+  tags             text[]      default '{}'::text[],
+  canonical_url    text,
+  og_image         text,
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now()
+);
+
+-- Migration helper for existing databases
+alter table public.blogs
+  add column if not exists category         text    not null default 'Wealth Management',
+  add column if not exists meta_title       text,
+  add column if not exists meta_description text,
+  add column if not exists focus_keyword    text,
+  add column if not exists meta_keywords    text,
+  add column if not exists tags             text[]  default '{}'::text[],
+  add column if not exists canonical_url    text,
+  add column if not exists og_image         text;
+
+create index if not exists blogs_slug_idx      on public.blogs(slug);
+create index if not exists blogs_published_idx on public.blogs(published, position, created_at desc);
+create index if not exists blogs_category_idx  on public.blogs(category);
+
+alter table public.blogs enable row level security;
+

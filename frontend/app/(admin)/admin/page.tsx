@@ -12,6 +12,7 @@ const KPIS: Array<{
 }> = [
   { key: "users", label: "Users", href: "/admin/users", hint: "Registered investors" },
   { key: "unlisted", label: "Unlisted Shares", href: "/admin/unlisted", hint: "Inventory items" },
+  { key: "blogs", label: "Blog Posts", href: "/admin/blogs", hint: "Published & draft articles" },
   { key: "leads", label: "Leads", href: "/admin/leads", hint: "Onboarding submissions" },
   { key: "newsletter", label: "Newsletter", href: "/admin/newsletter", hint: "Email subscribers" },
   { key: "contact", label: "Messages", href: "/admin/contact", hint: "Contact form replies" }
@@ -82,6 +83,9 @@ export default function AdminDashboardPage() {
         <div className="admin-quick">
           <Link href="/admin/unlisted" className="btn btn-primary">
             Add unlisted share
+          </Link>
+          <Link href="/admin/blogs" className="btn btn-primary">
+            Manage blogs
           </Link>
           <Link href="/admin/users" className="btn btn-outline">
             Manage users
