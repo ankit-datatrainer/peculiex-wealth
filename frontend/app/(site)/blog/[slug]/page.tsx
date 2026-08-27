@@ -1,36 +1,53 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, Share2, Tag, ArrowUpRight, Sparkles } from "lucide-react";
 import { apiUrl } from "@/lib/api";
+import { type Blog, getFallbackBlogBySlug, getAllFallbackBlogs } from "@/lib/blogData";
+import BlogDetailClient from "@/components/BlogDetailClient";
 import "./blog-detail.css";
 
-type Blog = {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  body: string;
-  image_url: string | null;
-  author: string;
-  category?: string;
-  published: boolean;
-  position: number;
-  meta_title?: string | null;
-  meta_description?: string | null;
-  focus_keyword?: string | null;
-  meta_keywords?: string | null;
-  tags?: string[];
-  canonical_url?: string | null;
-  og_image?: string | null;
-  created_at?: string;
-  updated_at?: string;
-};
+export const dynamicParams = true;
 
-async function getBlog(slug: string): Promise<Blog | null> {
+export async function generateStaticParams() {
+  // Try fetching from the live API first so newly-added blogs get pre-built.
+  // Fall back to the hardcoded list if the API is unreachable (build-time safety).
+  const apiBase =
+    process.env.API_BASE ||
+    process.env.NEXT_PUBLIC_API_BASE ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "";
+
+  if (apiBase) {
+    try {
+      const cleanBase = apiBase.replace(/\/+$/, "");
+      const res = await fetch(`${cleanBase}/api/blogs`, {
+        signal: AbortSignal.timeout(5000),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const items = json.items || json;
+        if (Array.isArray(items) && items.length > 0) {
+          // Merge API slugs with fallback slugs to guarantee coverage
+          const slugSet = new Set<string>(
+            items.map((b: { slug: string }) => b.slug)
+          );
+          getAllFallbackBlogs().forEach((b) => slugSet.add(b.slug));
+          return Array.from(slugSet).map((slug) => ({ slug }));
+        }
+      }
+    } catch {
+      // API unreachable during build — use fallback list below
+    }
+  }
+
+  return getAllFallbackBlogs().map((b) => ({ slug: b.slug }));
+}
+
+async function fetchFromUrl(baseUrl: string, slug: string): Promise<Blog | null> {
   try {
-    const url = process.env.NEXT_PUBLIC_API_BASE || process.env.API_BASE || "http://127.0.0.1:4001";
-    const res = await fetch(`${url}/api/blogs/${slug}`, { next: { revalidate: 60 } });
+    const cleanBase = baseUrl.replace(/\/+$/, "");
+    const res = await fetch(`${cleanBase}/api/blogs/${encodeURIComponent(slug)}`, {
+      next: { revalidate: 60 },
+      signal: AbortSignal.timeout(3000)
+    });
     if (!res.ok) return null;
     const json = await res.json();
     return json.item || null;
@@ -39,26 +56,58 @@ async function getBlog(slug: string): Promise<Blog | null> {
   }
 }
 
-async function getAllBlogs(): Promise<Blog[]> {
-  try {
-    const url = process.env.NEXT_PUBLIC_API_BASE || process.env.API_BASE || "http://127.0.0.1:4001";
-    const res = await fetch(`${url}/api/blogs`, { next: { revalidate: 60 } });
-    if (!res.ok) return [];
-    const json = await res.json();
-    return json.items || [];
-  } catch {
-    return [];
+async function getBlog(slug: string): Promise<Blog | null> {
+  const fallback = getFallbackBlogBySlug(slug);
+
+  // Candidate API base URLs to attempt in order.
+  // On the VPS the backend usually lives on the same box, so localhost works.
+  // The production site URL is included as a fallback because next.config
+  // rewrites /api/* → backend, meaning https://finvoq.com/api/blogs/... will
+  // route through to the Express backend even in production.
+  const candidates: string[] = [
+    process.env.API_BASE,
+    process.env.NEXT_PUBLIC_API_BASE,
+    process.env.NEXT_PUBLIC_SITE_URL,   // e.g. https://finvoq.com
+    "http://127.0.0.1:4001",
+    "http://127.0.0.1:4000",
+    "http://localhost:4001",
+    "http://localhost:4000"
+  ].filter(Boolean) as string[];
+
+  // Remove duplicates
+  const uniqueUrls = Array.from(new Set(candidates));
+
+  for (const url of uniqueUrls) {
+    const blog = await fetchFromUrl(url, slug);
+    if (blog) return blog;
   }
+
+  // If live fetch failed, return fallback blog
+  return fallback;
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const blog = await getBlog(params.slug);
-  if (!blog) return { title: "Article Not Found | Finvoq" };
+  const blog = (await getBlog(params.slug)) || getFallbackBlogBySlug(params.slug);
+  if (!blog) {
+    const formattedTitle = params.slug
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+    return {
+      title: `${formattedTitle} | Finvoq Wealth`,
+      description: "Expert wealth management analysis and insights from the Finvoq research team.",
+      alternates: { canonical: `https://finvoq.com/blog/${params.slug}` }
+    };
+  }
 
   const title = blog.meta_title || `${blog.title} | Finvoq Wealth`;
-  const description = blog.meta_description || blog.excerpt || "Expert wealth management analysis and insights from the Finvoq research team.";
+  const description =
+    blog.meta_description ||
+    blog.excerpt ||
+    "Expert wealth management analysis and insights from the Finvoq research team.";
   const canonical = blog.canonical_url || `https://finvoq.com/blog/${blog.slug}`;
-  const coverImg = blog.og_image || blog.image_url || "/images/blogs/blog-1.jpg";
+  const rawCover = blog.og_image || blog.image_url || "/images/blogs/blog-1.jpg";
+  const coverImg = rawCover.startsWith("http") || rawCover.startsWith("/") ? rawCover : apiUrl(rawCover);
   const tags = blog.tags || [];
 
   return {
@@ -84,7 +133,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       tags,
       images: [
         {
-          url: apiUrl(coverImg),
+          url: coverImg,
           width: 1200,
           height: 630,
           alt: blog.title
@@ -95,7 +144,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       card: "summary_large_image",
       title,
       description,
-      images: [apiUrl(coverImg)],
+      images: [coverImg],
       creator: "@FinvoqWealth"
     }
   };
@@ -103,148 +152,52 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 export default async function BlogDetailPage({ params }: { params: { slug: string } }) {
   const blog = await getBlog(params.slug);
-  if (!blog) notFound();
-
-  const allBlogs = await getAllBlogs();
-  const related = allBlogs.filter((b) => b.slug !== blog.slug).slice(0, 3);
-
-  // Estimate read time
-  const wordCount = (blog.body || "").replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
-  const readTime = Math.max(2, Math.ceil(wordCount / 180));
 
   // JSON-LD Article Schema for Search Engines (Google SEO Rich Snippets)
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": blog.meta_title || blog.title,
-    "description": blog.meta_description || blog.excerpt,
-    "image": [apiUrl(blog.og_image || blog.image_url || "/images/blogs/blog-1.jpg")],
-    "datePublished": blog.created_at,
-    "dateModified": blog.updated_at || blog.created_at,
-    "author": {
-      "@type": "Person",
-      "name": blog.author || "Finvoq Admin"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Finvoq",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://finvoq.com/logo.png"
+  const jsonLd = blog
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: blog.meta_title || blog.title,
+        description: blog.meta_description || blog.excerpt,
+        image: [
+          blog.og_image || blog.image_url
+            ? (blog.og_image || blog.image_url)!.startsWith("http") || (blog.og_image || blog.image_url)!.startsWith("/")
+              ? blog.og_image || blog.image_url
+              : apiUrl(blog.og_image || blog.image_url || "/images/blogs/blog-1.jpg")
+            : "https://finvoq.com/images/blogs/blog-1.jpg"
+        ],
+        datePublished: blog.created_at,
+        dateModified: blog.updated_at || blog.created_at,
+        author: {
+          "@type": "Person",
+          name: blog.author || "Finvoq Admin"
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "Finvoq",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://finvoq.com/logo.png"
+          }
+        },
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": `https://finvoq.com/blog/${blog.slug}`
+        },
+        keywords: (blog.tags || []).join(", ")
       }
-    },
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": `https://finvoq.com/blog/${blog.slug}`
-    },
-    "keywords": (blog.tags || []).join(", ")
-  };
+    : null;
 
   return (
     <>
-      {/* Search Engine JSON-LD Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
-      <article className="blog-detail">
-        <div className="blog-container">
-          <Link href="/blog" className="blog-back">
-            <ArrowLeft size={16} /> Back to All Articles
-          </Link>
-
-          <header className="blog-header">
-            <div className="blog-category-pill">
-              <Sparkles size={13} />
-              <span>{blog.category || "Wealth Advisory"}</span>
-            </div>
-
-            <h1 className="blog-title">{blog.title}</h1>
-            {blog.excerpt && <p className="blog-excerpt">{blog.excerpt}</p>}
-
-            <div className="blog-meta-strip">
-              <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-                <span>
-                  By <strong className="blog-author-tag">{blog.author}</strong>
-                </span>
-                {blog.created_at && (
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                    <Calendar size={14} />
-                    {new Date(blog.created_at).toLocaleDateString("en-IN", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric"
-                    })}
-                  </span>
-                )}
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                  <Clock size={14} />
-                  {readTime} min read
-                </span>
-              </div>
-            </div>
-          </header>
-
-          {blog.image_url && (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              src={apiUrl(blog.image_url)}
-              alt={blog.title}
-              className="blog-cover"
-              loading="eager"
-            />
-          )}
-
-          <div
-            className="blog-body"
-            dangerouslySetInnerHTML={{ __html: blog.body }}
-          />
-
-          {blog.tags && blog.tags.length > 0 && (
-            <div className="blog-tags-box">
-              <span style={{ fontSize: 13, fontWeight: 700, color: "var(--ink-sub, #64748b)", display: "inline-flex", alignItems: "center", gap: 6 }}>
-                <Tag size={15} /> Tags:
-              </span>
-              {blog.tags.map((t) => (
-                <Link href={`/blog?tag=${encodeURIComponent(t)}`} key={t} className="blog-tag-chip">
-                  #{t}
-                </Link>
-              ))}
-            </div>
-          )}
-
-          {/* Related Articles */}
-          {related.length > 0 && (
-            <section className="blog-related-section">
-              <div className="blog-related-head">
-                <h3 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>
-                  Related Perspectives
-                </h3>
-                <Link href="/blog" style={{ fontSize: 13, fontWeight: 600, color: "#10b981", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                  All articles <ArrowUpRight size={14} />
-                </Link>
-              </div>
-              <div className="blog-related-grid">
-                {related.map((r) => (
-                  <Link href={`/blog/${r.slug}`} key={r.slug} className="blog-rel-card">
-                    {r.image_url && (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={apiUrl(r.image_url)} alt={r.title} className="blog-rel-img" loading="lazy" />
-                    )}
-                    <div className="blog-rel-body">
-                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", color: "#10b981", marginBottom: 4 }}>
-                        {r.category || "Wealth Advisory"}
-                      </span>
-                      <h4 className="blog-rel-title">{r.title}</h4>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
-      </article>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <BlogDetailClient slug={params.slug} initialBlog={blog} />
     </>
   );
 }

@@ -3,6 +3,7 @@ import { SITE_URL } from "@/lib/siteUrl";
 import { PRODUCTS } from "@/lib/productContent";
 import { LEGAL } from "@/lib/legalContent";
 import { unlistedSlug } from "@/lib/util";
+import { getAllFallbackBlogs } from "@/lib/blogData";
 
 /**
  * /sitemap.xml
@@ -46,6 +47,7 @@ const STATIC_ROUTES: Array<{
 
   // Content and trust pages.
   { path: "/news", priority: 0.7, changeFrequency: "daily" },
+  { path: "/blog", priority: 0.7, changeFrequency: "weekly" },
   { path: "/insights", priority: 0.6, changeFrequency: "weekly" },
   { path: "/faq", priority: 0.6, changeFrequency: "monthly" },
   { path: "/glossary", priority: 0.5, changeFrequency: "monthly" },
@@ -109,6 +111,62 @@ async function unlistedRoutes(): Promise<MetadataRoute.Sitemap> {
   }
 }
 
+/**
+ * Blog article pages.
+ *
+ * Tries the live API first so newly-published articles appear in the sitemap
+ * within an hour. Falls back to the hardcoded default blogs baked into the
+ * frontend to guarantee the sitemap is never empty.
+ */
+async function blogRoutes(): Promise<MetadataRoute.Sitemap> {
+  const base =
+    process.env.NEXT_PUBLIC_API_BASE ||
+    process.env.API_BASE ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "";
+
+  type BlogItem = { slug?: string; updated_at?: string; created_at?: string };
+  let apiBlogs: BlogItem[] = [];
+
+  if (base) {
+    try {
+      const res = await fetch(
+        `${base.replace(/\/+$/, "")}/api/blogs`,
+        { signal: AbortSignal.timeout(8000), next: { revalidate } }
+      );
+      if (res.ok) {
+        const json = (await res.json()) as { items?: BlogItem[] };
+        apiBlogs = json.items || [];
+      }
+    } catch (err) {
+      console.warn(
+        "[sitemap] blog articles from API omitted:",
+        err instanceof Error ? err.message : err
+      );
+    }
+  }
+
+  // Merge API slugs with hardcoded fallback to guarantee coverage
+  const seen = new Set<string>();
+  const entries: MetadataRoute.Sitemap = [];
+
+  const addBlog = (slug: string, lastMod?: string) => {
+    if (!slug || seen.has(slug)) return;
+    seen.add(slug);
+    entries.push({
+      url: `${SITE_URL}/blog/${slug}`,
+      lastModified: lastMod ? new Date(lastMod) : new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    });
+  };
+
+  apiBlogs.forEach((b) => addBlog(b.slug || "", b.updated_at || b.created_at));
+  getAllFallbackBlogs().forEach((b) => addBlog(b.slug, b.created_at));
+
+  return entries;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
@@ -152,6 +210,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticEntries,
     ...productEntries,
     ...legalEntries,
+    ...(await blogRoutes()),
     ...(await unlistedRoutes()),
   ];
 }

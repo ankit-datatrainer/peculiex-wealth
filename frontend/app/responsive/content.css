@@ -1,3 +1,138 @@
-/* Responsive layer — content.
-   See _tokens.css for the breakpoint contract and house rules.
-   Owned by one workstream: keep edits to this area inside this file. */
+/* ============================================================================
+   Responsive layer — Content & Editorial Pages (News, Blogs, Articles)
+   ----------------------------------------------------------------------------
+   Guarantees fluid responsiveness across:
+   - Mobile Phones (320px - 599px)
+   - Tablets (600px - 1023px)
+   - Laptops (1024px - 1439px)
+   - Desktops & Wide Monitors (1440px+)
+   ========================================================================= */
+
+/* ── Global Content Guards ───────────────────────────────── */
+.np,
+.blog-page,
+.blog-detail {
+  max-width: 100%;
+  overflow-x: clip;
+  box-sizing: border-box;
+}
+
+/* Base / Desktop Spacing */
+.np {
+  padding-top: clamp(130px, 11vw, 160px);
+  padding-bottom: clamp(60px, 6vw, 110px);
+}
+
+.blog-page,
+.blog-detail {
+  padding-top: clamp(140px, 12vw, 165px);
+  padding-bottom: clamp(60px, 6vw, 110px);
+}
+
+/* Ensure all content media is strictly responsive */
+.np img,
+.blog-page img,
+.blog-detail img,
+.blog-body img,
+.np iframe,
+.blog-detail iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Mobile Phone Adjustments (<= 599px) ─────────────────── */
+@media (max-width: 599px) {
+  .np {
+    padding-top: max(96px, env(safe-area-inset-top, 0px) + 82px);
+    padding-bottom: max(48px, env(safe-area-inset-bottom, 0px) + 32px);
+  }
+
+  .blog-page,
+  .blog-detail {
+    padding-top: max(104px, env(safe-area-inset-top, 0px) + 88px);
+    padding-bottom: max(48px, env(safe-area-inset-bottom, 0px) + 32px);
+  }
+
+  /* Compact gutters on narrow phone screens */
+  .np .container,
+  .blog-container {
+    padding-left: clamp(14px, 4vw, 20px);
+    padding-right: clamp(14px, 4vw, 20px);
+  }
+
+  /* Prevent text hyphenation overflow */
+  .blog-title,
+  .np-title,
+  .np-lead-title,
+  .blog-body h2,
+  .blog-body h3 {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Stack meta tags and action chips gracefully */
+  .blog-meta-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .blog-meta-strip button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Full-width primary touch action buttons */
+  .np-art-cta {
+    padding: 16px;
+  }
+}
+
+/* ── Tablet Adjustments (600px - 1023px) ─────────────────── */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .np {
+    padding-top: 125px;
+    padding-bottom: 70px;
+  }
+
+  .blog-page,
+  .blog-detail {
+    padding-top: 130px;
+    padding-bottom: 70px;
+  }
+
+  .np-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .np-blog-featured-grid,
+  .blog-grid,
+  .blog-related-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Laptop / Desktop Adjustments (1024px - 1439px) ──────── */
+@media (min-width: 1024px) {
+  .np-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .np-blog-featured-grid,
+  .blog-grid,
+  .blog-related-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Ultra-wide Monitors (1440px+) ───────────────────────── */
+@media (min-width: 1440px) {
+  .np .container,
+  .blog-container {
+    max-width: 1240px;
+  }
+
+  .blog-detail .blog-container {
+    max-width: 880px;
+  }
+}

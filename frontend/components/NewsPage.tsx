@@ -230,14 +230,17 @@ export default function NewsPage() {
             </div>
 
             <div className="np-blog-featured-grid">
-              {blogs.slice(0, 6).map((b) => (
+              {blogs.slice(0, 6).map((b, idx) => (
                 <Link href={`/blog/${b.slug}`} key={b.slug} className="np-blog-featured-card">
                   <div className="np-blog-featured-img-wrap">
                     <img
-                      src={b.image_url ? apiUrl(b.image_url) : "/images/blogs/blog-1.jpg"}
+                      src={b.image_url ? apiUrl(b.image_url) : `/images/blogs/blog-${(idx % 6) + 1}.jpg`}
                       alt={b.title}
                       className="np-blog-featured-img"
                       loading="lazy"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = `/images/blogs/blog-${(idx % 6) + 1}.jpg`;
+                      }}
                     />
                     {b.category && (
                       <span className="np-blog-featured-cat-tag">
