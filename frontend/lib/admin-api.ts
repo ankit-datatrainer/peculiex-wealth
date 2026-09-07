@@ -113,6 +113,12 @@ export const updateUser = (
 export const deleteUser = (id: string) =>
   apiFetch<{ ok: boolean }>(`/api/admin/users/${id}`, { method: "DELETE" });
 
+export const deleteUsersBatch = (payload: { ids?: string[]; all?: boolean }) =>
+  apiPostJSON<{ success: boolean; deletedCount: number }>(
+    "/api/admin/users/batch-delete",
+    payload
+  );
+
 // ---------- unlisted ----------
 export const fetchUnlisted = () =>
   apiFetch<{ items: AdminUnlisted[] }>("/api/admin/unlisted").then(

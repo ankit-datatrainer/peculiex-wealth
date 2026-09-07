@@ -59,7 +59,19 @@ function getFyersClient() {
 function getFyersToken() {
   try {
     const data = fs.readFileSync(path.join(__dirname, "../../fyers_token.json"), "utf8");
-    return JSON.parse(data).access_token;
+    const parsed = JSON.parse(data);
+    const token = parsed?.access_token;
+    if (!token) return null;
+    const parts = token.split(".");
+    if (parts.length === 3) {
+      try {
+        const payload = JSON.parse(Buffer.from(parts[1], "base64").toString("utf8"));
+        if (payload.exp && Math.floor(Date.now() / 1000) > payload.exp) {
+          return null;
+        }
+      } catch (_) {}
+    }
+    return token;
   } catch (e) {
     return null;
   }
@@ -427,7 +439,7 @@ async function getQuotesBatchFyers(ysSymbols) {
     }
     return null;
   } catch (e) {
-    console.warn("[markets] Fyers batch quote failed:", e.message);
+    console.warn("[markets] Fyers batch quote failed:", e?.message || e);
     return null;
   }
 }

@@ -120,6 +120,47 @@ router.delete("/users/:id", async (req, res, next) => {
   }
 });
 
+router.post("/users/batch-delete", async (req, res, next) => {
+  try {
+    const { ids, all } = req.body || {};
+    let targetIds = [];
+
+    if (all) {
+      const allUsers = await userStore.listUsers({ limit: 1000 });
+      targetIds = allUsers
+        .filter(
+          (u) =>
+            String(u.id) !== String(req.user.id) &&
+            u.email !== process.env.SUPERADMIN_EMAIL &&
+            u.role !== "superadmin"
+        )
+        .map((u) => u.id);
+    } else if (Array.isArray(ids)) {
+      targetIds = ids
+        .map((x) => String(x).trim())
+        .filter(
+          (id) => id && String(id) !== String(req.user.id)
+        );
+    }
+
+    if (targetIds.length === 0) {
+      return res.status(400).json({
+        error:
+          "No eligible users to delete. (Your own account and the super-admin account are protected)."
+      });
+    }
+
+    const deletedCount = await userStore.deleteUsers(targetIds);
+    res.json({
+      success: true,
+      deletedCount,
+      requestedCount: targetIds.length
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // --------------------------------------------------------------
 // UNLISTED SHARES
 // --------------------------------------------------------------

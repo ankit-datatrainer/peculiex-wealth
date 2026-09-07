@@ -225,6 +225,29 @@ async function deleteUser(id) {
   return (count || 0) > 0;
 }
 
+async function deleteUsers(ids = []) {
+  if (!Array.isArray(ids) || ids.length === 0) return 0;
+  if (!isLive()) {
+    let count = 0;
+    for (const id of ids) {
+      const u = mem.users.get(id);
+      if (u) {
+        mem.users.delete(id);
+        mem.byEmail.delete(u.email);
+        mem.watchlists.delete(id);
+        count++;
+      }
+    }
+    return count;
+  }
+  const { error, count } = await client
+    .from(USERS_TABLE)
+    .delete({ count: "exact" })
+    .in("id", ids);
+  if (error) throw new Error(error.message);
+  return count || 0;
+}
+
 async function countUsers() {
   if (!isLive()) return mem.users.size;
   const { count, error } = await client
@@ -625,6 +648,7 @@ module.exports = {
   listUsers,
   updateUser,
   deleteUser,
+  deleteUsers,
   countUsers,
   listWatchlist,
   addWatchlistItem,
