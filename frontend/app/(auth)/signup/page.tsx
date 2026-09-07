@@ -13,6 +13,7 @@ import {
 } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { ASSET_CLASS_COUNT_WORD } from "@/lib/siteFacts";
+import Logo from "@/components/Logo";
 
 type Step = "creds" | "otp" | "profile" | "done";
 
@@ -167,12 +168,7 @@ function SignupInner() {
     <div className="auth-shell">
       <aside className="auth-aside">
         <Link href="/" className="logo" data-magnetic>
-          <span className="logo-mark">
-            <span>f</span>
-          </span>
-          <span className="logo-text">
-            finvo<em>q</em>
-          </span>
+          <Logo width={172} height={68} />
         </Link>
         <div>
           <h2>
@@ -199,6 +195,11 @@ function SignupInner() {
 
       <main className="auth-main">
         <div className="auth-card">
+          <div className="auth-mobile-logo">
+            <Link href="/" className="logo" data-magnetic>
+              <Logo width={160} height={60} />
+            </Link>
+          </div>
           {step !== "done" && (
             <div className="step-pills" aria-hidden="true">
               {["creds", "otp", "profile"].map((s, i) => (

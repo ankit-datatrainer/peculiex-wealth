@@ -137,53 +137,79 @@ function renderText({ name, otp, isReset }) {
 }
 
 function renderHtml({ name, otp, isReset }) {
+  const appUrl = (process.env.APP_URL || "https://finvoq.com").replace(/\/$/, "");
+  const logoUrl = `${appUrl}/logo_light.svg`;
   const title = isReset 
-    ? `Reset your password, ${escapeHtml(name || "investor")}`
-    : `Verify your email, ${escapeHtml(name || "investor")}`;
+    ? `Reset your password`
+    : `Verify your email`;
   const subtitle = isReset
-    ? `Use the code below to securely reset or change your password.`
-    : `Use the code below to finish creating your Finvoq account.`;
+    ? `Hi ${escapeHtml(name || "there")}, use the code below to securely reset your Finvoq password.`
+    : `Hi ${escapeHtml(name || "there")}, use the code below to finish creating your Finvoq account.`;
+  const iconSvg = isReset
+    ? `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>`
+    : `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
 
   return `<!doctype html>
-<html><body style="margin:0;padding:0;background:#f4f7f6;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#131313">
-  <div style="max-width:560px;margin:0 auto;padding:40px 24px">
-    <div style="background:#ffffff;border-radius:24px;padding:40px 36px;box-shadow:0 8px 32px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)">
-      <div style="display:flex;align-items:center;margin-bottom:32px;">
-        <div style="font-weight:800;letter-spacing:0.06em;color:#01696f;font-size:16px;">
-          finvo<span style="font-style:italic;color:#0c4a4f">q</span>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><meta name="color-scheme" content="light"/><title>${title}</title></head>
+<body style="margin:0;padding:0;background:#f0f4f3;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#131313;-webkit-font-smoothing:antialiased;">
+  <!--[if mso]><style>body,table,td{font-family:Arial,sans-serif!important}</style><![endif]-->
+  <div style="max-width:600px;margin:0 auto;padding:40px 16px;">
+
+    <!-- Logo header -->
+    <div style="text-align:center;padding:0 0 32px;">
+      <a href="${appUrl}" style="text-decoration:none;">
+        <img src="${logoUrl}" alt="Finvoq" width="160" height="64" style="display:inline-block;max-width:160px;height:auto;"/>
+      </a>
+    </div>
+
+    <!-- Main card -->
+    <div style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(19,115,93,0.08),0 1px 3px rgba(0,0,0,0.04);">
+
+      <!-- Green gradient header bar -->
+      <div style="background:linear-gradient(135deg,#13735d 0%,#0f5c49 50%,#1a8c6e 100%);padding:32px 36px;text-align:center;">
+        <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.18);display:inline-block;line-height:56px;text-align:center;vertical-align:middle;">
+          ${iconSvg}
         </div>
-      </div>
-      
-      <div style="background:#f0fbfa;width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;color:#01696f;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <h1 style="font-size:24px;line-height:1.3;margin:16px 0 0;font-weight:700;color:#ffffff;letter-spacing:-0.01em;">
+          ${title}
+        </h1>
       </div>
 
-      <h1 style="font-size:24px;line-height:1.3;margin:0 0 12px;font-weight:700;color:#0b2730;">
-        ${title}
-      </h1>
-      <p style="margin:0 0 28px;color:#5b5e63;line-height:1.6;font-size:16px">
-        ${subtitle}
-        It expires in <strong style="color:#0b2730;font-weight:600">10 minutes</strong>.
-      </p>
-      
-      <div style="background:#f0fbfa;border:1px solid rgba(1,105,111,0.15);border-radius:16px;padding:28px 24px;text-align:center;margin-bottom:32px">
-        <div style="font-size:12px;letter-spacing:0.18em;color:#01696f;font-weight:700;text-transform:uppercase;margin-bottom:12px">Your verification code</div>
-        <div style="font-size:40px;letter-spacing:0.35em;font-weight:800;color:#0b2730;font-variant-numeric:tabular-nums;text-indent:0.35em;">${escapeHtml(String(otp))}</div>
+      <!-- Body content -->
+      <div style="padding:36px 36px 32px;">
+        <p style="margin:0 0 24px;color:#4a5568;line-height:1.7;font-size:15px;">
+          ${subtitle}
+          This code expires in <strong style="color:#13735d;font-weight:600;">10 minutes</strong>.
+        </p>
+
+        <!-- OTP code box -->
+        <div style="background:linear-gradient(135deg,#e4f1ed 0%,#f0f9f6 100%);border:2px solid #13735d;border-radius:12px;padding:24px;text-align:center;margin:0 0 28px;">
+          <div style="font-size:11px;letter-spacing:0.2em;color:#13735d;font-weight:700;text-transform:uppercase;margin-bottom:10px;">Your verification code</div>
+          <div style="font-size:36px;letter-spacing:0.4em;font-weight:800;color:#0f5c49;font-variant-numeric:tabular-nums;text-indent:0.4em;font-family:'Courier New',Courier,monospace;">${escapeHtml(String(otp))}</div>
+        </div>
+
+        <p style="margin:0 0 20px;color:#718096;line-height:1.6;font-size:13px;text-align:center;">
+          Didn't request this? You can safely ignore this email — your account stays secure.
+        </p>
       </div>
-      
-      <p style="margin:0 0 24px;color:#5b5e63;line-height:1.6;font-size:14px">
-        Didn't request this code? You can safely ignore this email. Your account is protected.
-      </p>
-      
-      <div style="border-top:1px solid #edf1f0;padding-top:24px;margin-top:8px;">
-        <p style="margin:0;color:#5b5e63;font-size:14px;font-weight:500;">The Finvoq Team</p>
+
+      <!-- Footer divider & sign-off -->
+      <div style="border-top:1px solid #e8eeec;padding:24px 36px;background:#fafcfb;">
+        <p style="margin:0;color:#718096;font-size:13px;">Warm regards,</p>
+        <p style="margin:4px 0 0;color:#13735d;font-size:14px;font-weight:600;">The Finvoq Team</p>
       </div>
     </div>
-    
-    <div style="text-align:center;font-size:12px;color:#9aa0a6;margin-top:24px;line-height:1.5;">
-      © ${new Date().getFullYear()} Finvoq Wealth Pvt. Ltd.<br/>
-      SEBI Registered Investment Adviser
+
+    <!-- Bottom footer -->
+    <div style="text-align:center;padding:28px 0 8px;">
+      <p style="margin:0 0 6px;font-size:12px;color:#a0aab0;line-height:1.5;">
+        © ${new Date().getFullYear()} Finvoq Wealth Pvt. Ltd. · SEBI Registered Investment Adviser
+      </p>
+      <p style="margin:0;font-size:11px;color:#b8c2c8;">
+        <a href="${appUrl}" style="color:#13735d;text-decoration:none;">finvoq.com</a>
+      </p>
     </div>
+
   </div>
 </body></html>`;
 }
@@ -241,57 +267,125 @@ function renderWelcomeText({ name }) {
 
 function renderWelcomeHtml({ name }) {
   const appUrl = (process.env.APP_URL || "https://finvoq.com").replace(/\/$/, "");
+  const logoUrl = `${appUrl}/logo_light.svg`;
+  const escapedName = escapeHtml(name || "Investor");
+
   return `<!doctype html>
-<html><body style="margin:0;padding:0;background:#f4f7f6;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#131313">
-  <div style="max-width:560px;margin:0 auto;padding:40px 24px">
-    <div style="background:#ffffff;border-radius:24px;padding:40px 36px;box-shadow:0 8px 32px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)">
-      <div style="display:flex;align-items:center;margin-bottom:32px;">
-        <div style="font-weight:800;letter-spacing:0.06em;color:#01696f;font-size:16px;">
-          finvo<span style="font-style:italic;color:#0c4a4f">q</span>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><meta name="color-scheme" content="light"/><title>Welcome to Finvoq</title></head>
+<body style="margin:0;padding:0;background:#f0f4f3;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#131313;-webkit-font-smoothing:antialiased;">
+  <!--[if mso]><style>body,table,td{font-family:Arial,sans-serif!important}</style><![endif]-->
+  <div style="max-width:600px;margin:0 auto;padding:40px 16px;">
+
+    <!-- Logo header -->
+    <div style="text-align:center;padding:0 0 32px;">
+      <a href="${appUrl}" style="text-decoration:none;">
+        <img src="${logoUrl}" alt="Finvoq" width="160" height="64" style="display:inline-block;max-width:160px;height:auto;"/>
+      </a>
+    </div>
+
+    <!-- Main card -->
+    <div style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(19,115,93,0.08),0 1px 3px rgba(0,0,0,0.04);">
+
+      <!-- Green gradient header bar -->
+      <div style="background:linear-gradient(135deg,#13735d 0%,#0f5c49 50%,#1a8c6e 100%);padding:32px 36px;text-align:center;">
+        <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.18);display:inline-block;line-height:56px;text-align:center;vertical-align:middle;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <h1 style="font-size:24px;line-height:1.3;margin:16px 0 0;font-weight:700;color:#ffffff;letter-spacing:-0.01em;">
+          Welcome to Finvoq, ${escapedName}!
+        </h1>
+      </div>
+
+      <!-- Body content -->
+      <div style="padding:36px 36px 32px;">
+        <p style="margin:0 0 20px;color:#4a5568;line-height:1.7;font-size:15px;">
+          Your account is verified and ready to go. We're thrilled to have you onboard as you begin your wealth creation journey.
+        </p>
+
+        <p style="margin:0 0 28px;color:#4a5568;line-height:1.7;font-size:15px;">
+          With Finvoq, you now have access to India's smartest investment marketplace — curated products, transparent pricing, and an advisor-led approach to building your portfolio.
+        </p>
+
+        <!-- Feature highlights -->
+        <div style="background:#fafcfb;border:1px solid #e8eeec;border-radius:12px;padding:24px 28px;margin:0 0 32px;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td style="padding:0 0 14px;">
+                <table border="0" cellspacing="0" cellpadding="0"><tr>
+                  <td style="width:28px;vertical-align:top;padding-top:2px;">
+                    <div style="width:20px;height:20px;border-radius:50%;background:#e4f1ed;text-align:center;line-height:20px;">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#13735d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                  </td>
+                  <td style="color:#2d3748;font-size:14px;font-weight:500;line-height:1.5;">10+ asset classes, one unified dashboard</td>
+                </tr></table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0 0 14px;">
+                <table border="0" cellspacing="0" cellpadding="0"><tr>
+                  <td style="width:28px;vertical-align:top;padding-top:2px;">
+                    <div style="width:20px;height:20px;border-radius:50%;background:#e4f1ed;text-align:center;line-height:20px;">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#13735d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                  </td>
+                  <td style="color:#2d3748;font-size:14px;font-weight:500;line-height:1.5;">SEBI-registered, advisor-led, transparent pricing</td>
+                </tr></table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:0;">
+                <table border="0" cellspacing="0" cellpadding="0"><tr>
+                  <td style="width:28px;vertical-align:top;padding-top:2px;">
+                    <div style="width:20px;height:20px;border-radius:50%;background:#e4f1ed;text-align:center;line-height:20px;">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#13735d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                  </td>
+                  <td style="color:#2d3748;font-size:14px;font-weight:500;line-height:1.5;">Dedicated relationship manager for your portfolio</td>
+                </tr></table>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- CTA Button -->
+        <div style="text-align:center;margin:0 0 8px;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td align="center">
+                <a href="${appUrl}/login" style="display:inline-block;background:linear-gradient(135deg,#13735d,#0f5c49);color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:14px 40px;border-radius:10px;text-align:center;letter-spacing:0.01em;">
+                  Go to Your Dashboard →
+                </a>
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
-      
-      <div style="background:#f0fbfa;width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:24px;color:#01696f;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      </div>
 
-      <h1 style="font-size:24px;line-height:1.3;margin:0 0 16px;font-weight:700;color:#0b2730;">
-        Welcome to Finvoq, ${escapeHtml(name || "Investor")}!
-      </h1>
-      
-      <p style="margin:0 0 20px;color:#5b5e63;line-height:1.6;font-size:16px">
-        Your account is verified and ready to go. We're thrilled to have you onboard as you begin your wealth creation journey.
-      </p>
-      
-      <p style="margin:0 0 28px;color:#5b5e63;line-height:1.6;font-size:16px">
-        With Finvoq, you now have access to India's smartest investment marketplace, curated products across multiple asset classes, and an advisor-led approach to building your portfolio.
-      </p>
-
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:32px;">
-        <tr>
-          <td>
-            <a href="${appUrl}/login" style="display:inline-block;background:#01696f;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:14px 28px;border-radius:10px;text-align:center;">
-              Go to Dashboard
-            </a>
-          </td>
-        </tr>
-      </table>
-      
-      <div style="border-top:1px solid #edf1f0;padding-top:24px;">
-        <p style="margin:0;color:#5b5e63;font-size:14px;font-weight:500;">To your financial success,<br/>The Finvoq Team</p>
+      <!-- Footer divider & sign-off -->
+      <div style="border-top:1px solid #e8eeec;padding:24px 36px;background:#fafcfb;">
+        <p style="margin:0;color:#718096;font-size:13px;">To your financial success,</p>
+        <p style="margin:4px 0 0;color:#13735d;font-size:14px;font-weight:600;">The Finvoq Team</p>
       </div>
     </div>
-    
-    <div style="text-align:center;font-size:12px;color:#9aa0a6;margin-top:24px;line-height:1.5;">
-      © ${new Date().getFullYear()} Finvoq Wealth Pvt. Ltd.<br/>
-      SEBI Registered Investment Adviser
+
+    <!-- Bottom footer -->
+    <div style="text-align:center;padding:28px 0 8px;">
+      <p style="margin:0 0 6px;font-size:12px;color:#a0aab0;line-height:1.5;">
+        © ${new Date().getFullYear()} Finvoq Wealth Pvt. Ltd. · SEBI Registered Investment Adviser
+      </p>
+      <p style="margin:0;font-size:11px;color:#b8c2c8;">
+        <a href="${appUrl}" style="color:#13735d;text-decoration:none;">finvoq.com</a>
+      </p>
     </div>
+
   </div>
 </body></html>`;
 }
 
+
 async function sendContactFormEmail({ name, email, subject, message }) {
-  const to = "finvoq@gmail.com";
+  const to = "info@finvoq.com";
   const mailSubject = `New Contact Form Submission: ${subject}`;
   const text = renderContactFormText({ name, email, subject, message });
   const html = renderContactFormHtml({ name, email, subject, message });
@@ -337,39 +431,75 @@ function renderContactFormText({ name, email, subject, message }) {
 }
 
 function renderContactFormHtml({ name, email, subject, message }) {
+  const appUrl = (process.env.APP_URL || "https://finvoq.com").replace(/\/$/, "");
+  const logoUrl = `${appUrl}/logo_light.svg`;
+
   return `<!doctype html>
-<html><body style="margin:0;padding:0;background:#f4f7f6;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#131313">
-  <div style="max-width:600px;margin:0 auto;padding:40px 24px">
-    <div style="background:#ffffff;border-radius:16px;padding:40px 36px;box-shadow:0 4px 24px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.02);border-top: 6px solid #01696f;">
-      <h2 style="margin: 0 0 24px 0; color: #01696f; font-size: 22px; font-weight: 700; border-bottom: 1px solid #edf1f0; padding-bottom: 16px;">
-        New Contact Form Submission
-      </h2>
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px; font-size: 15px;">
-        <tr>
-          <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; width: 100px; color: #666; font-weight: 500;">Name</td>
-          <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; color: #111; font-weight: 600;">\${escapeHtml(name)}</td>
-        </tr>
-        <tr>
-          <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; color: #666; font-weight: 500;">Email</td>
-          <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; color: #111; font-weight: 600;">
-            <a href="mailto:\${escapeHtml(email)}" style="color: #01696f; text-decoration: none;">\${escapeHtml(email)}</a>
-          </td>
-        </tr>
-        <tr>
-          <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; color: #666; font-weight: 500;">Subject</td>
-          <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; color: #111; font-weight: 600;">\${escapeHtml(subject)}</td>
-        </tr>
-      </table>
-      
-      <div style="background: #f8faf9; padding: 20px; border-radius: 8px; border: 1px solid #e2e8e7; line-height: 1.6; font-size: 15px; color: #333; white-space: pre-wrap;">\${escapeHtml(message)}</div>
-      
-      <div style="margin-top: 32px; font-size: 13px; color: #888; text-align: center;">
-        This email was sent automatically from the Finvoq website contact form.
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><meta name="color-scheme" content="light"/><title>New Contact Form Submission</title></head>
+<body style="margin:0;padding:0;background:#f0f4f3;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#131313;-webkit-font-smoothing:antialiased;">
+  <!--[if mso]><style>body,table,td{font-family:Arial,sans-serif!important}</style><![endif]-->
+  <div style="max-width:600px;margin:0 auto;padding:40px 16px;">
+
+    <!-- Logo header -->
+    <div style="text-align:center;padding:0 0 32px;">
+      <a href="${appUrl}" style="text-decoration:none;">
+        <img src="${logoUrl}" alt="Finvoq" width="140" height="56" style="display:inline-block;max-width:140px;height:auto;"/>
+      </a>
+    </div>
+
+    <!-- Main card -->
+    <div style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(19,115,93,0.08),0 1px 3px rgba(0,0,0,0.04);">
+
+      <!-- Green top accent -->
+      <div style="height:5px;background:linear-gradient(90deg,#13735d 0%,#1a8c6e 50%,#2ea2a8 100%);"></div>
+
+      <div style="padding:32px 36px;">
+        <!-- Header -->
+        <h2 style="margin:0 0 24px;color:#13735d;font-size:20px;font-weight:700;border-bottom:1px solid #e8eeec;padding-bottom:16px;">
+          New Contact Form Submission
+        </h2>
+
+        <!-- Form data table -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;font-size:14px;">
+          <tr>
+            <td style="padding:12px 16px;border-bottom:1px solid #f0f4f3;width:100px;color:#718096;font-weight:600;vertical-align:top;background:#fafcfb;">Name</td>
+            <td style="padding:12px 16px;border-bottom:1px solid #f0f4f3;color:#2d3748;font-weight:600;">${escapeHtml(name)}</td>
+          </tr>
+          <tr>
+            <td style="padding:12px 16px;border-bottom:1px solid #f0f4f3;color:#718096;font-weight:600;vertical-align:top;background:#fafcfb;">Email</td>
+            <td style="padding:12px 16px;border-bottom:1px solid #f0f4f3;color:#2d3748;font-weight:600;">
+              <a href="mailto:${escapeHtml(email)}" style="color:#13735d;text-decoration:none;">${escapeHtml(email)}</a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:12px 16px;border-bottom:1px solid #f0f4f3;color:#718096;font-weight:600;vertical-align:top;background:#fafcfb;">Subject</td>
+            <td style="padding:12px 16px;border-bottom:1px solid #f0f4f3;color:#2d3748;font-weight:600;">${escapeHtml(subject)}</td>
+          </tr>
+        </table>
+
+        <!-- Message body -->
+        <div style="background:#fafcfb;padding:20px 24px;border-radius:10px;border:1px solid #e8eeec;line-height:1.7;font-size:14px;color:#4a5568;white-space:pre-wrap;">${escapeHtml(message)}</div>
+
+        <!-- Reply CTA -->
+        <div style="text-align:center;margin-top:28px;">
+          <a href="mailto:${escapeHtml(email)}?subject=Re: ${escapeHtml(subject)}" style="display:inline-block;background:linear-gradient(135deg,#13735d,#0f5c49);color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;padding:12px 32px;border-radius:8px;">
+            Reply to ${escapeHtml(name)}
+          </a>
+        </div>
       </div>
     </div>
+
+    <!-- Bottom footer -->
+    <div style="text-align:center;padding:24px 0 8px;">
+      <p style="margin:0;font-size:11px;color:#b8c2c8;line-height:1.5;">
+        This email was sent automatically from the Finvoq website contact form.
+      </p>
+    </div>
+
   </div>
 </body></html>`;
 }
+
 
 module.exports = {
   sendOtpEmail,

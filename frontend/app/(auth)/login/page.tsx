@@ -12,6 +12,7 @@ import {
   type KeyboardEvent
 } from "react";
 import { useAuth } from "@/lib/auth-context";
+import Logo from "@/components/Logo";
 
 type Step = "creds" | "otp" | "done";
 
@@ -150,12 +151,7 @@ function LoginInner() {
     <div className="auth-shell">
       <aside className="auth-aside">
         <Link href="/" className="logo" data-magnetic>
-          <span className="logo-mark">
-            <span>f</span>
-          </span>
-          <span className="logo-text">
-            finvo<em>q</em>
-          </span>
+          <Logo width={172} height={68} />
         </Link>
         <div>
           <h2>
@@ -174,6 +170,11 @@ function LoginInner() {
 
       <main className="auth-main">
         <div className="auth-card">
+          <div className="auth-mobile-logo">
+            <Link href="/" className="logo" data-magnetic>
+              <Logo width={160} height={60} />
+            </Link>
+          </div>
           {step === "creds" && (
             <>
               <h1>Login to your account</h1>

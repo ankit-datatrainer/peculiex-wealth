@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: "Invalid form" });
   const data = parsed.data;
 
-  // Send the professional email to finvoq@gmail.com
+  // Send the professional email to info@finvoq.com
   await sendContactFormEmail(data);
 
   if (!isLive()) {

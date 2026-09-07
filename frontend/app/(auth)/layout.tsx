@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import IconSprite from "@/components/IconSprite";
 import { AuthProvider } from "@/lib/auth-context";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 /**
  * Auth screens are kept out of the index.
@@ -25,6 +26,9 @@ export default function AuthLayout({
   return (
     <AuthProvider>
       <IconSprite />
+      <div className="auth-theme-toggle-wrap">
+        <ThemeToggle />
+      </div>
       {children}
     </AuthProvider>
   );

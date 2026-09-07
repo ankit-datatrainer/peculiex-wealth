@@ -12,6 +12,10 @@
 }
 
 :root {
+  /* Prevent mobile browsers (Chrome Auto-Dark, Samsung Internet etc.) from
+     force-darkening this page when the phone's system dark mode is on.
+     "light only" = this page is light-mode by design, do NOT auto-invert. */
+  color-scheme: light only;
   /* Backgrounds & Surfaces â€” crisp premium white, not warm-grey */
   --color-bg: #ffffff;
   --color-surface: #ffffff;
@@ -70,6 +74,9 @@
 }
 
 .dark {
+  /* When the user explicitly enables the site's own dark mode toggle,
+     tell the browser this page is now dark-mode by design. */
+  color-scheme: dark only;
   /* Backgrounds & Surfaces */
   --color-bg: #0b121b;
   --color-surface: #131a24;
@@ -111,6 +118,56 @@
 
 html {
   scroll-behavior: smooth;
+  /* Reinforce color-scheme at the element level for maximum browser compat */
+  color-scheme: light only;
+}
+html.dark {
+  color-scheme: dark only;
+}
+
+/* ── Force light appearance when phone dark mode is on but site is light ── */
+@media (prefers-color-scheme: dark) {
+  /* When the phone is in dark mode BUT the site hasn't activated .dark class,
+     explicitly re-declare all light-mode colors so no browser auto-dark can
+     override them. This block is overridden by .dark{} when user toggles. */
+  :root:not(.dark) {
+    color-scheme: light only;
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-2: #ffffff;
+    --color-surface-offset: #ffffff;
+    --color-divider: #eceae5;
+    --color-border: #e3e1da;
+    --color-text: #1e1c18;
+    --color-text-muted: #333333;
+    --color-text-faint: #555555;
+    --color-text-inverse: #f9f8f4;
+    --color-primary: #13735d;
+    --color-primary-hover: #0f5c49;
+    --color-primary-highlight: #e4f1ed;
+    --color-primary-ink: #13735d;
+    --color-on-primary: #ffffff;
+    --color-success: #16a34a;
+    --color-success-bg: #e6f4ec;
+    --color-danger: #dc2626;
+    --color-danger-bg: #fbe9e9;
+    --color-info: #2563eb;
+    --color-info-bg: #e6edfb;
+    --color-purple: #7c3aed;
+    --color-orange: #ea7c1c;
+  }
+  :root:not(.dark) body {
+    background: #ffffff !important;
+    color: #1e1c18 !important;
+  }
+  /* Prevent browser from inverting images/media in auto-dark */
+  :root:not(.dark) img,
+  :root:not(.dark) video,
+  :root:not(.dark) svg,
+  :root:not(.dark) canvas,
+  :root:not(.dark) picture {
+    filter: none !important;
+  }
 }
 
 body {
@@ -6990,12 +7047,18 @@ section {
   }
 
   .ticker-item {
-    padding: 0 14px;
-    font-size: 10.5px;
+    padding: 0 12px;
+    font-size: 11px;
+    gap: 5px;
   }
 
   .ticker-item .ticker-name {
-    display: none;
+    display: inline;
+    font-weight: 600;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .foot-grid {
@@ -7544,12 +7607,50 @@ section {
 }
 
 .auth-aside .logo {
-  color: white;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 14px;
+  width: fit-content;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease, padding 0.25s ease;
 }
 
-.auth-aside .logo-text,
-.auth-aside .logo-text em {
-  color: white !important;
+html:not(.dark) .auth-aside .logo {
+  background: rgba(255, 255, 255, 0.94);
+  padding: 6px 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.dark .auth-aside .logo {
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.auth-mobile-logo {
+  display: none;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 920px) {
+  .auth-mobile-logo {
+    display: flex;
+    justify-content: flex-start;
+  }
+}
+
+.auth-theme-toggle-wrap {
+  position: fixed;
+  top: 24px;
+  right: 28px;
+  z-index: 100;
+}
+
+@media (max-width: 920px) {
+  .auth-theme-toggle-wrap {
+    top: 16px;
+    right: 16px;
+  }
 }
 
 .auth-aside h2 {

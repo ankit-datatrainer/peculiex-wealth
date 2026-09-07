@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
   }
   const data = parsed.data;
 
-  // Send the professional email to finvoq@gmail.com
+  // Send the professional email to info@finvoq.com
   const messageBody = `Phone: ${data.phone}
 Interest: ${data.interest}
 Budget: ${data.budget}
