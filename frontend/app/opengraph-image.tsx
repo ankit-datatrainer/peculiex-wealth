@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { GOLDEN_INFINITY_B64 } from "@/lib/goldenInfinityB64";
 
 // Sitewide default social-share card. Next.js picks this up as og:image and
 // twitter:image for every route that does not define its own image, which is
@@ -24,23 +25,18 @@ export default function OpengraphImage() {
           fontFamily: "Georgia, serif"
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <div
+        <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={GOLDEN_INFINITY_B64}
+            alt="Finvoq Mark"
+            width={72}
+            height={72}
             style={{
-              width: 72,
-              height: 72,
-              borderRadius: 36,
-              background: "#ffffff",
-              color: "#13735d",
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 48,
-              fontWeight: 700
+              objectFit: "contain"
             }}
-          >
-            f
-          </div>
+          />
           <div style={{ fontSize: 44, fontWeight: 700, letterSpacing: -1 }}>Finvoq</div>
         </div>
 

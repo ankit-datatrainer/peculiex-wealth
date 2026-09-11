@@ -33,14 +33,18 @@ export const metadata: Metadata = {
       "Listed, unlisted, mutual funds, PMS, AIF, bonds, insurance, curated by experts, executed in seconds."
   },
   icons: {
-    icon: {
-      url:
-        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2313735d'/%3E%3Ctext x='50' y='73' text-anchor='middle' font-size='66' font-family='Georgia,serif' font-weight='700' fill='white'%3Ef%3C/text%3E%3C/svg%3E",
-      type: "image/svg+xml"
-    },
-    apple:
-      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2313735d'/%3E%3Ctext x='50' y='73' text-anchor='middle' font-size='66' font-family='Georgia,serif' font-weight='700' fill='white'%3Ef%3C/text%3E%3C/svg%3E"
+    icon: [
+      { url: "/favicon.ico?v=2", sizes: "any" },
+      { url: "/favicon-48x48.png?v=2", sizes: "48x48", type: "image/png" },
+      { url: "/favicon-96x96.png?v=2", sizes: "96x96", type: "image/png" },
+      { url: "/icon.png?v=2", sizes: "512x512", type: "image/png" }
+    ],
+    shortcut: "/favicon.ico?v=2",
+    apple: [
+      { url: "/apple-touch-icon.png?v=2", sizes: "180x180", type: "image/png" }
+    ]
   },
+  manifest: "/site.webmanifest",
   robots: { index: true, follow: true }
 };
 
@@ -68,6 +72,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
+        <link rel="icon" href="/favicon-48x48.png?v=2" type="image/png" sizes="48x48" />
+        <link rel="icon" href="/favicon-96x96.png?v=2" type="image/png" sizes="96x96" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" sizes="180x180" />
+        <link rel="manifest" href="/site.webmanifest" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link

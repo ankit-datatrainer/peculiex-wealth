@@ -342,7 +342,149 @@ const PAGES = [
         "About",
         "Wealth management, *without the markup.*",
         "We started Finvoq because India's investing experience was broken in two predictable ways: too many platforms, and too many incentives that point away from the investor."
-      )
+      ),
+      {
+        key: "why",
+        label: "Why we exist",
+        fields: [
+          f("heading", "Section heading", "text", "Why we exist"),
+          f(
+            "paragraph1",
+            "First paragraph",
+            "textarea",
+            "Most Indian investors hold a tangle of mutual fund folios, a demat account at one broker, an LIC policy from a relative, a flat in a tier-3 city, and a few stocks someone recommended at a wedding. Each piece was sold by someone earning a commission. None of it was bought as part of a plan."
+          ),
+          f(
+            "paragraph2",
+            "Second paragraph",
+            "textarea",
+            "Finvoq unifies the investing surface (10+ asset classes, one dashboard). We earn regulated distribution commissions disclosed upfront on every trade. There's no separate bill from us for the research, the curation, or the platform itself."
+          )
+        ]
+      },
+      {
+        key: "beliefs",
+        label: "What we believe",
+        fields: [
+          f("heading", "Section heading", "text", "What we believe"),
+          {
+            key: "items",
+            label: "Belief points",
+            type: "list",
+            fields: [
+              f("title", "Point title", "text", ""),
+              f("description", "Point description", "textarea", "")
+            ],
+            default: [
+              {
+                title: "Curation beats access.",
+                description:
+                  "India has 1,500 mutual fund schemes and 300+ unlisted offers. The win isn't more choice. It's the right shortlist."
+              },
+              {
+                title: "Every fee should be visible.",
+                description:
+                  "Distribution commission is how this industry has always worked. What's rare is showing you the number. We disclose what we earn on every recommendation, upfront."
+              },
+              {
+                title: "Tools should be opinionated.",
+                description:
+                  "Calculators, dashboards, and research notes should help you decide, not just visualise."
+              },
+              {
+                title: "Compliance is a feature, not a hurdle.",
+                description:
+                  "SEBI-linked, RBI-rail settlements, demat in your name, audit trail you can pull at any time."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        key: "where",
+        label: "Where we are",
+        fields: [
+          f("heading", "Section heading", "text", "Where we are"),
+          {
+            key: "items",
+            label: "Facts list",
+            type: "list",
+            fields: [f("text", "Fact item text", "text", "")],
+            default: [
+              { text: "Founded in 2026 in Delhi, India." },
+              { text: "AMFI-registered Mutual Fund Distributor (ARN-346787)." },
+              { text: "12,000+ active investors, ₹450+ Cr in assets under distribution." }
+            ]
+          }
+        ]
+      },
+      {
+        key: "howWeWork",
+        label: "How we work with you",
+        fields: [
+          f("heading", "Section heading", "text", "How we work with you"),
+          f(
+            "paragraph1",
+            "First paragraph",
+            "textarea",
+            "Every investor is paired with a relationship manager based on goals, time horizon, and portfolio size. You'll get one human as your point of contact (reachable on WhatsApp, email, or a scheduled call), backed by a research desk and an operations team that handles the paperwork."
+          ),
+          f(
+            "paragraph2",
+            "Second paragraph",
+            "textarea",
+            "We do quarterly portfolio reviews on the calendar, and ad-hoc reviews whenever there's a market event or a personal one. The goal is steady, boring compounding, and the discipline to ride out the rough quarters."
+          )
+        ]
+      },
+      {
+        key: "whatWeDontDo",
+        label: "What we don't do",
+        fields: [
+          f("heading", "Section heading", "text", "What we don't do"),
+          {
+            key: "items",
+            label: "Rules / exclusions",
+            type: "list",
+            fields: [f("text", "Item text", "text", "")],
+            default: [
+              { text: "Sell ULIPs, endowment plans, or any product that mixes insurance with investing." },
+              { text: "Charge you a separate advisory fee on top of the commission we disclose." },
+              { text: "Push F&O speculation, intraday tips, or \"get-rich\" schemes." },
+              { text: "Promise specific returns. We promise process and transparency." }
+            ]
+          }
+        ]
+      },
+      {
+        key: "regulators",
+        label: "Our regulators",
+        fields: [
+          f("heading", "Section heading", "text", "Our regulators"),
+          f(
+            "body",
+            "Regulator description",
+            "textarea",
+            "We work within the framework set by SEBI and AMFI (mutual fund distribution), RBI (banking rails), and IRDAI (insurance distribution). Disputes can be raised through our grievance redressal process, with escalation to the SEBI SCORES portal at every stage."
+          ),
+          f("credentialsHeading", "Credentials card heading", "text", "Our AMFI registration"),
+          f(
+            "credentialsIntro",
+            "Credentials card intro",
+            "textarea",
+            "Verify these against the AMFI register before you invest. We publish them in full because a distributor who will not show you their ARN is a distributor you should not be dealing with."
+          )
+        ]
+      },
+      {
+        key: "cta",
+        label: "Closing call to action",
+        fields: [
+          f("text", "Text", "text", "If our values match yours, we'd love to work with you."),
+          f("linkLabel", "Button / link label", "text", "Get started in five minutes →"),
+          f("linkHref", "Button / link target", "url", "/get-started")
+        ]
+      }
     ]
   },
   {
