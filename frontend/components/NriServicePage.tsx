@@ -2,6 +2,7 @@
 import { useState } from "react";
 import PageHero from "./PageHero";
 import NriServiceForm from "./NriServiceForm";
+import { useContent } from "@/lib/content";
 
 type Faq = { q: string; a: string };
 type Step = { title: string; body: string };
@@ -20,12 +21,23 @@ export type NriServiceContent = {
 };
 
 export default function NriServicePage({ content, page }: { content: NriServiceContent; page?: string }) {
-  const { label, title, subtitle, intro, highlights, steps, documents, faqs, serviceName } = content;
+  const cms = useContent(page || "");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const intro = cms.t("service", "intro", content.intro);
+  const serviceName = cms.t("service", "serviceName", content.serviceName);
+  const cmsHighlights = cms.list<Highlight>("service", "highlights", []);
+  const highlights = cmsHighlights.length > 0 ? cmsHighlights : content.highlights;
+  const cmsSteps = cms.list<Step>("service", "steps", []);
+  const steps = cmsSteps.length > 0 ? cmsSteps : content.steps;
+  const cmsDocs = cms.list<{ text?: string }>("service", "documents", []);
+  const documents = cmsDocs.length > 0 ? cmsDocs.map((d: any) => d.text || String(d)) : content.documents;
+  const cmsFaqs = cms.list<Faq>("service", "faqs", []);
+  const faqs = cmsFaqs.length > 0 ? cmsFaqs : content.faqs;
 
   return (
     <>
-      <PageHero page={page} label={label} title={title} subtitle={subtitle} />
+      <PageHero page={page} label={content.label} title={content.title} subtitle={content.subtitle} />
 
       <section style={{ padding: "0 0 30px" }}>
         <div className="container">

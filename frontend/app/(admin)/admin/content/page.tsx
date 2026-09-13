@@ -242,7 +242,12 @@ export default function ContentManagerPage() {
                       className="cms-section-head"
                       onClick={() => setOpenSection(open ? null : sec.key)}
                     >
-                      <span>{sec.label}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <span>{sec.label}</span>
+                        <span className="cms-field-count">
+                          {sec.fields.length} {sec.fields.length === 1 ? "item" : "items"}
+                        </span>
+                      </div>
                       <span className="cms-caret">{open ? "−" : "+"}</span>
                     </button>
                     {open && (
@@ -286,9 +291,10 @@ export default function ContentManagerPage() {
         }
         .cms-body {
           display: grid;
-          grid-template-columns: 260px 1fr;
-          gap: 20px;
+          grid-template-columns: 280px minmax(0, 1fr);
+          gap: 24px;
           align-items: start;
+          width: 100%;
         }
         @media (max-width: 900px) {
           .cms-body {
@@ -305,6 +311,8 @@ export default function ContentManagerPage() {
         }
         .cms-search {
           margin-bottom: 10px;
+          width: 100% !important;
+          box-sizing: border-box !important;
         }
         .cms-list-scroll {
           max-height: 70vh;
@@ -356,6 +364,7 @@ export default function ContentManagerPage() {
         }
         .cms-editor {
           min-width: 0;
+          width: 100%;
         }
         .cms-toolbar {
           display: flex;
@@ -382,62 +391,115 @@ export default function ContentManagerPage() {
           border: 1px solid var(--color-border);
           border-radius: var(--radius-lg);
           background: var(--color-surface-2);
-          margin-bottom: 10px;
+          margin-bottom: 12px;
           overflow: hidden;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+          transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .cms-section:hover {
+          border-color: rgba(19, 115, 93, 0.3);
+        }
+        .cms-section.open {
+          border-color: rgba(19, 115, 93, 0.45);
+          box-shadow: 0 4px 14px rgba(10, 160, 128, 0.05);
         }
         .cms-section-head {
           width: 100%;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 14px 16px;
-          background: transparent;
+          padding: 15px 18px;
+          background: var(--color-surface);
           border: 0;
           cursor: pointer;
           font-weight: 600;
-          font-size: 0.95rem;
+          font-size: 0.96rem;
           color: var(--color-text);
           font-family: inherit;
+          transition: background 0.12s ease;
+        }
+        .cms-section-head:hover {
+          background: var(--color-surface-offset);
         }
         .cms-section.open .cms-section-head {
           border-bottom: 1px solid var(--color-border);
         }
         .cms-caret {
-          font-size: 1.1rem;
+          font-size: 1.2rem;
           color: var(--color-text-faint);
         }
+        .cms-field-count {
+          font-size: 0.7rem;
+          font-weight: 500;
+          color: var(--color-text-muted);
+          background: var(--color-surface-offset);
+          padding: 2px 8px;
+          border-radius: 999px;
+          border: 1px solid var(--color-border);
+        }
         .cms-fields {
-          padding: 16px;
-          display: grid;
-          gap: 14px;
+          padding: 20px 22px;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .cms-field {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
         }
         .cms-field label {
           display: block;
-          font-size: 0.8rem;
+          font-size: 0.82rem;
           font-weight: 600;
-          margin-bottom: 5px;
+          margin-bottom: 6px;
           color: var(--color-text-muted);
         }
+        .cms-field .admin-input,
+        .cms-field input,
+        .cms-field textarea,
+        .cms-field select {
+          width: 100% !important;
+          max-width: 100% !important;
+          box-sizing: border-box !important;
+          font-size: 0.92rem;
+        }
+        .cms-field input.admin-input {
+          height: 44px;
+          padding: 10px 14px;
+        }
+        .cms-field textarea.admin-input,
         .cms-field textarea {
-          min-height: 80px;
+          min-height: 110px;
+          line-height: 1.6;
+          padding: 12px 14px;
           resize: vertical;
         }
+        .cms-field select.admin-input {
+          height: 44px;
+          padding: 10px 14px;
+          cursor: pointer;
+        }
         .cms-hint {
-          font-size: 0.72rem;
+          font-size: 0.74rem;
           color: var(--color-text-faint);
-          margin-top: 4px;
+          margin-top: 5px;
+          line-height: 1.4;
         }
         .cms-hint-top {
-          margin: -2px 0 8px;
+          margin: -2px 0 10px;
         }
         .cms-img-row {
           display: flex;
-          gap: 12px;
-          align-items: center;
+          gap: 16px;
+          align-items: flex-start;
+          width: 100%;
         }
         .cms-img-prev {
-          width: 72px;
-          height: 72px;
+          width: 76px;
+          height: 76px;
           border-radius: 10px;
           border: 1px solid var(--color-border);
           object-fit: contain;
@@ -447,20 +509,27 @@ export default function ContentManagerPage() {
         .cms-img-controls {
           flex: 1;
           min-width: 0;
-          display: grid;
-          gap: 6px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
         }
         .cms-list-rows {
-          display: grid;
-          gap: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          width: 100%;
         }
         .cms-row {
           border: 1px solid var(--color-border);
-          border-radius: 10px;
-          padding: 12px;
+          border-radius: 12px;
+          padding: 16px 18px;
           background: var(--color-surface);
-          display: grid;
-          gap: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          width: 100%;
+          box-sizing: border-box;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
         }
         .cms-row-head {
           display: flex;
@@ -471,23 +540,28 @@ export default function ContentManagerPage() {
           color: var(--color-text-faint);
           text-transform: uppercase;
           letter-spacing: 0.08em;
+          padding-bottom: 6px;
+          border-bottom: 1px dashed var(--color-border);
         }
         .cms-row-btns {
           display: flex;
-          gap: 4px;
+          gap: 6px;
         }
         .cms-mini {
           border: 1px solid var(--color-border);
           background: var(--color-surface-2);
           color: var(--color-text);
           border-radius: 7px;
-          padding: 3px 9px;
+          padding: 5px 11px;
           cursor: pointer;
           font-size: 0.78rem;
           font-family: inherit;
+          font-weight: 500;
+          transition: all 0.12s ease;
         }
         .cms-mini:hover {
-          border-color: var(--color-primary-ink);
+          border-color: var(--color-primary);
+          color: var(--color-primary);
         }
         .cms-mini.danger:hover {
           border-color: #dc2626;

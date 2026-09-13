@@ -496,7 +496,91 @@ const PAGES = [
         "Investor stories",
         "Investors who chose *process over noise.*",
         "No paid testimonials. These are real Finvoq clients, with the headline change in their portfolio in their own words."
-      )
+      ),
+      {
+        key: "stories",
+        label: "Investor story cards",
+        fields: [
+          {
+            key: "items",
+            label: "Stories",
+            type: "list",
+            fields: [
+              f("name", "Investor name", "text", ""),
+              f("role", "Role / Company", "text", ""),
+              f("initials", "Initials (avatar)", "text", ""),
+              f("color", "Avatar colour", "text", "#0E3F76"),
+              f("headline", "Headline", "text", ""),
+              f("quote", "Full story / quote", "textarea", ""),
+              f("metric", "Portfolio metric tag", "text", "")
+            ],
+            default: [
+              {
+                initials: "AS",
+                color: "#0E3F76",
+                name: "Aarav Shah",
+                role: "Founder, Lumen Studios",
+                headline: "From scattered demats to one ledger.",
+                quote: "I had four demat accounts, two LIC policies I'd forgotten about, and ₹40L sitting in a savings account because I didn't know what to do with it. The Finvoq team consolidated everything inside two weeks and built me a 60-30-10 portfolio that actually fits my horizon.",
+                metric: "₹2.1 Cr consolidated · 12 months"
+              },
+              {
+                initials: "PK",
+                color: "#7c3aed",
+                name: "Priya Kapoor",
+                role: "Director, MIT-K Capital",
+                headline: "Finally got into the funds I'd been refused before.",
+                quote: "As an HNI you get pitched a thousand AIFs, and almost none of them are worth the lock-up. Finvoq's research desk turned down two of the three I was leaning toward, for very specific reasons. The one we did go with is up 19% IRR after fees.",
+                metric: "₹1.4 Cr deployed across two AIFs"
+              },
+              {
+                initials: "VI",
+                color: "#13735d",
+                name: "Vikram Iyer",
+                role: "Managing Partner, Iyer Family Office",
+                headline: "Family-office service without family-office overheads.",
+                quote: "We were quoted ₹12L/year by a private bank for what is essentially a quarterly review and a curated product list. Finvoq does the same for a fraction, and they take regulatory compliance seriously: every meeting is documented, every recommendation is auditable.",
+                metric: "₹4.8 Cr managed · zero commissions"
+              },
+              {
+                initials: "NR",
+                color: "#ea7c1c",
+                name: "Neha Reddy",
+                role: "CFO, Zenith Health",
+                headline: "Three hours a week back, every week.",
+                quote: "I used to spend Sunday mornings logging into five different platforms to figure out what I owned. Now I open one tab. The dashboard alone justified the move, the advisory fees are gravy.",
+                metric: "5 platforms → 1 dashboard"
+              },
+              {
+                initials: "RB",
+                color: "#16a34a",
+                name: "Rajesh Bansal",
+                role: "Retd. Senior Banker, 25-yr investor",
+                headline: "First platform that actually serves the investor.",
+                quote: "I've been investing through public-sector banks, private banks, three different brokers, and two robo-advisors. Finvoq is the first one where I felt like I was the customer, not the product. It shouldn't be a rare thing: but it is.",
+                metric: "₹3.2 Cr portfolio, post-retirement"
+              },
+              {
+                initials: "KM",
+                color: "#dc2626",
+                name: "Karan Mehta",
+                role: "Founder, Stride Ventures",
+                headline: "Got into a PMS that's beaten the index for 7 years.",
+                quote: "The PMS I'd been wanting was closed to new HNI investors. Finvoq got me in via a partner allocation, with full disclosure of fees, exit terms, and historical drawdowns. No 'best returns' marketing: just the data and a recommendation I could pressure-test.",
+                metric: "PMS · ₹75L · onboarded in 11 days"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        key: "cta",
+        label: "Bottom call to action",
+        fields: [
+          f("buttonLabel", "Button label", "text", "Open your account →"),
+          f("buttonHref", "Button target", "url", "/get-started")
+        ]
+      }
     ]
   },
   {
@@ -508,7 +592,83 @@ const PAGES = [
         "Careers",
         "Build the platform *India's investors deserve.*",
         "We're a small team rebuilding the wealth-management experience from first principles. We hire for craft, ownership, and unusual clarity of thought."
-      )
+      ),
+      {
+        key: "howWeWork",
+        label: "How we work",
+        fields: [
+          f("heading", "Section heading", "text", "How we work"),
+          {
+            key: "items",
+            label: "Principles",
+            type: "list",
+            fields: [
+              f("title", "Principle title", "text", ""),
+              f("body", "Description", "textarea", "")
+            ],
+            default: [
+              {
+                title: "Small teams, large surface.",
+                body: "Our largest team has six people. You'll ship code or recommendations that touch every active investor on the platform."
+              },
+              {
+                title: "Compliance is engineering.",
+                body: "SEBI compliance isn't a checklist somewhere else. Whoever ships the feature owns the regulatory surface it touches."
+              },
+              {
+                title: "No revenue from product manufacturers.",
+                body: "We charge investors a flat advisory fee. Sales targets do not exist on the advisory team."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        key: "openRoles",
+        label: "Open roles",
+        fields: [
+          f("eyebrow", "Eyebrow label", "text", "Open roles"),
+          f("title", "Heading", "text", "We're hiring across *product, advisory & research.*"),
+          {
+            key: "roles",
+            label: "Job listings",
+            type: "list",
+            fields: [
+              f("title", "Role title", "text", ""),
+              f("team", "Team / Department", "text", ""),
+              f("location", "Location", "text", ""),
+              f("type", "Employment type", "text", "Full-time"),
+              f("applyEmail", "Application email", "text", "info@finvoq.com")
+            ],
+            default: [
+              {
+                title: "Regional Manager",
+                team: "Management",
+                location: "On-site",
+                type: "Full-time",
+                applyEmail: "info@finvoq.com"
+              },
+              {
+                title: "Regional Manager",
+                team: "Management",
+                location: "Delhi, Mumbai, Bangalore, Hyderabad, Goa, Pune, Kolkata, Chandigarh",
+                type: "Full-time",
+                applyEmail: "info@finvoq.com"
+              },
+              {
+                title: "Commission Agent",
+                team: "Sales",
+                location: "Remote",
+                type: "Full-time",
+                applyEmail: "info@finvoq.com"
+              }
+            ]
+          },
+          f("calloutText", "Footer callout text", "text", "Don't see a fit but think you'd add value? Email"),
+          f("calloutEmail", "Contact email", "text", "info@finvoq.com"),
+          f("calloutSub", "Callout sub-text", "text", "with what you'd want to build, and a link to your best work.")
+        ]
+      }
     ]
   },
   {
@@ -520,7 +680,70 @@ const PAGES = [
         "FAQ",
         "Questions, *answered.*",
         "Everything investors ask before getting started: straight answers, no jargon."
-      )
+      ),
+      {
+        key: "main",
+        label: "FAQ section header",
+        fields: [
+          f("badgeText", "Badge label", "text", "FAQ"),
+          f("heading", "Main heading", "textarea", "Frequently Asked\nQuestions")
+        ]
+      },
+      {
+        key: "contactBox",
+        label: "Consultation / Contact box",
+        fields: [
+          f("heading", "Box heading", "text", "Still have a question?"),
+          f("subheading", "Box subtitle", "text", "Don't worry we're here for consultation."),
+          f("buttonText", "Button label", "text", "Contact Us"),
+          f("buttonHref", "Button link", "url", "/get-started")
+        ]
+      },
+      {
+        key: "faqList",
+        label: "FAQ questions & answers",
+        fields: [
+          {
+            key: "items",
+            label: "Questions & Answers",
+            type: "list",
+            fields: [
+              f("q", "Question", "text", ""),
+              f("a", "Answer", "textarea", "")
+            ],
+            default: [
+              {
+                q: "Is there a free plan available?",
+                a: "Yes. Your demat account is held with SEBI-registered partners and funds move via RBI-regulated banking rails. Finvoq never holds custody of your assets. We are an advisor and execution layer only."
+              },
+              {
+                q: "Can I invite my team members?",
+                a: "Absolutely. Invite teammates, assign roles, and collaborate in real time from a shared workspace."
+              },
+              {
+                q: "Does it integrate with other tools?",
+                a: "Yes, we offer seamless integrations with popular tools like Slack, Jira, and GitHub to streamline your workflow."
+              },
+              {
+                q: "Can I upgrade or downgrade my plan anytime?",
+                a: "Yes, you can easily change your plan at any time. Prorated charges or credits will be applied automatically."
+              },
+              {
+                q: "Is my project data secure?",
+                a: "Security is our top priority. All data is encrypted at rest and in transit, and we undergo regular third-party audits."
+              },
+              {
+                q: "How does Finvoq choose mutual funds and PMS?",
+                a: "Our research desk screens the entire Indian universe for rolling return consistency, drawdown protection, and expense ratios. We only recommend strategies we would allocate our own capital to."
+              },
+              {
+                q: "Can NRIs invest through Finvoq?",
+                a: "Yes. We offer complete NRI onboarding with NRE/NRO banking, FEMA compliance, and DTAA tax reporting."
+              }
+            ]
+          }
+        ]
+      }
     ]
   },
   {
@@ -532,7 +755,52 @@ const PAGES = [
         "Glossary",
         "Investing terms, in *plain English.*",
         "From AIF and CAGR to SIP and YTM: definitions you can rely on, with the Indian regulatory context where it matters."
-      )
+      ),
+      {
+        key: "terms",
+        label: "Glossary terms & definitions",
+        fields: [
+          {
+            key: "items",
+            label: "Terms",
+            type: "list",
+            fields: [
+              f("term", "Financial term", "text", ""),
+              f("def", "Plain-English definition", "textarea", "")
+            ],
+            default: [
+              { term: "AIF (Alternative Investment Fund)", def: "A SEBI-regulated pooled investment vehicle for sophisticated investors. Comes in three categories: Cat I (VC, infra), Cat II (PE, real estate, debt), Cat III (long-short, hedge). Minimum ticket: ₹1 Cr." },
+              { term: "AMC (Asset Management Company)", def: "The company that manages a mutual fund. HDFC AMC, ICICI Prudential AMC, SBI MF, Nippon India AMC, etc. Each AMC offers many schemes." },
+              { term: "AUM (Assets Under Management)", def: "The total market value of investments managed on behalf of clients. A scheme's AUM and a firm's AUM are common health metrics." },
+              { term: "CAGR (Compound Annual Growth Rate)", def: "The annualised rate at which an investment would have grown if it compounded at a steady rate. Useful for comparing returns over different time periods." },
+              { term: "Demat Account", def: "An electronic account that holds your shares and securities in dematerialised (paperless) form. Required to invest in equity, bonds, REITs, and ETFs in India." },
+              { term: "Direct Plan", def: "A mutual fund plan with no distributor commission baked into the expense ratio. Net returns are typically 0.5–1.0% higher than the equivalent regular plan." },
+              { term: "ELSS (Equity-Linked Savings Scheme)", def: "Tax-saving equity mutual fund eligible for Section 80C deduction up to ₹1.5L per year. Comes with a 3-year lock-in, the shortest among 80C options." },
+              { term: "ETF (Exchange Traded Fund)", def: "A basket of securities that trades on the stock exchange like a single stock. Generally tracks an index (NIFTY 50, S&P 500, gold). Lower expense ratios than active mutual funds." },
+              { term: "Expense Ratio", def: "The annual fee a mutual fund charges, expressed as a percentage of AUM. Comes out of returns automatically. Direct plans: 0.2–1.0%. Regular plans: 1.0–2.5%." },
+              { term: "FD (Fixed Deposit)", def: "A bank deposit at a fixed interest rate for a fixed term. Capital is RBI-insured up to ₹5L per bank per depositor (DICGC)." },
+              { term: "G-Sec (Government Security)", def: "Debt issued by the Government of India through the RBI. Sovereign-rated, considered the safest rupee asset. Yields are the benchmark for all other Indian debt." },
+              { term: "IRR (Internal Rate of Return)", def: "The annualised return on an investment with irregular cash flows: useful for SIPs, real estate, and PE/VC where money goes in and out at different times." },
+              { term: "KYC (Know Your Customer)", def: "Identity-verification mandated by SEBI/RBI before you can invest. Aadhaar-based eKYC is the fastest path; PAN + address proof works otherwise." },
+              { term: "LTCG (Long-Term Capital Gains)", def: "Profit on an asset held longer than the long-term threshold (1 year for listed equity, 2 years for real estate, 3 years for debt funds). Concessional tax rates apply." },
+              { term: "Lumpsum", def: "A one-time investment, as opposed to a SIP. Useful when you have a windfall or after a significant market correction." },
+              { term: "NAV (Net Asset Value)", def: "The per-unit market value of a mutual fund scheme, calculated daily after market close. Buying / selling happens at the next NAV." },
+              { term: "NCD (Non-Convertible Debenture)", def: "A corporate bond that cannot be converted to equity. Listed NCDs trade on BSE; unlisted NCDs are private placements." },
+              { term: "PMS (Portfolio Management Service)", def: "A SEBI-regulated discretionary mandate where a portfolio manager invests directly in your demat account on your behalf. Minimum ticket: ₹50L." },
+              { term: "REIT (Real Estate Investment Trust)", def: "A SEBI-regulated trust that owns income-producing real estate, mostly Grade-A commercial. Listed on BSE; pays out ~90% of cash flow as distributions." },
+              { term: "Risk Profile", def: "A classification (Conservative / Moderate / Aggressive) based on your time horizon, liquidity needs, and emotional capacity for drawdowns. Drives your asset allocation." },
+              { term: "SIP (Systematic Investment Plan)", def: "Auto-debiting a fixed amount each month into a mutual fund. Builds the habit, smooths the entry price (rupee-cost averaging), and removes timing decisions." },
+              { term: "STCG (Short-Term Capital Gains)", def: "Profit on an asset sold before the long-term threshold. Taxed at higher rates than LTCG: 15% for listed equity, slab rate for debt funds." },
+              { term: "STP (Systematic Transfer Plan)", def: "Periodic transfers from one mutual fund (often a liquid fund) into another (often equity). A way to do staggered lump-sum entry while keeping cash earning interest." },
+              { term: "SWP (Systematic Withdrawal Plan)", def: "The reverse of a SIP: periodic redemptions from a mutual fund into your bank account. Common in retirement portfolios." },
+              { term: "Unlisted Share", def: "Equity in a company that is not yet listed on a public stock exchange. Liquidity is lower and price discovery happens through private secondary trades." },
+              { term: "ULIP (Unit-Linked Insurance Plan)", def: "A hybrid product that mixes life insurance with investing. We don't sell them. They typically underperform on both legs compared to buying term + investing the difference separately." },
+              { term: "XIRR (Extended Internal Rate of Return)", def: "IRR for irregular cash flows. The right metric for a SIP or any portfolio where money goes in at different times, most platforms now report XIRR by default." },
+              { term: "YTM (Yield to Maturity)", def: "The total annualised return on a bond if held to maturity, accounting for coupons and the difference between purchase price and face value. The single most important number on a bond." }
+            ]
+          }
+        ]
+      }
     ]
   },
   {
@@ -544,7 +812,90 @@ const PAGES = [
         "Market Insights",
         "Research, before *the noise.*",
         "Weekly notes from our research desk on Indian equities, debt, unlisted, and global flows."
-      )
+      ),
+      {
+        key: "articles",
+        label: "Research articles",
+        fields: [
+          {
+            key: "items",
+            label: "Articles",
+            type: "list",
+            fields: [
+              f("tag", "Category tag", "text", ""),
+              f("title", "Article title", "text", ""),
+              f("summary", "Summary / Excerpt", "textarea", ""),
+              f("date", "Date published", "text", ""),
+              f("read", "Read duration", "text", "5 min read")
+            ],
+            default: [
+              {
+                tag: "Equity Strategy",
+                title: "After a 12% NIFTY run-up, where do we trim?",
+                summary: "Mid-cap valuations have stretched well past their 10-year median P/E. We walk through three positions we're scaling back, the screen we used, and what we're rotating into.",
+                date: "May 22, 2026",
+                read: "8 min read"
+              },
+              {
+                tag: "Mutual Funds",
+                title: "Direct vs. regular plans: the real cost of a 1% expense ratio",
+                summary: "Across a 20-year SIP at ₹25,000/month, the difference between a regular and direct plan adds up to ₹38L. We model it scheme-by-scheme.",
+                date: "May 18, 2026",
+                read: "6 min read"
+              },
+              {
+                tag: "Unlisted",
+                title: "Pre-IPO inventory: what's moving and what's not",
+                summary: "NSE India and Tata Capital have firm pricing; Pharmeasy and Oyo are still in price discovery. Our quarterly cap-table refresh, with implied valuations.",
+                date: "May 14, 2026",
+                read: "10 min read"
+              },
+              {
+                tag: "Fixed Income",
+                title: "G-Sec curve at 7.18%: buying duration here?",
+                summary: "With the RBI on a holding pattern and inflation easing toward target, longer-dated G-Secs are starting to look attractive. The math, the risks, and the alternatives.",
+                date: "May 10, 2026",
+                read: "7 min read"
+              },
+              {
+                tag: "Tax & Compliance",
+                title: "ELSS in May: is the late-tax-saver penalty worth it?",
+                summary: "Buying ELSS in March is the worst time of year. Buying in May is among the best. We unpack why, and which schemes survived our quality screen.",
+                date: "May 06, 2026",
+                read: "5 min read"
+              },
+              {
+                tag: "Behaviour",
+                title: "The investor who beat the market: by doing nothing for 3 years",
+                summary: "A real portfolio review of one of our investors who hit pause on rebalancing during the 2023–24 run, and outperformed by 3.4% p.a. as a result.",
+                date: "May 01, 2026",
+                read: "9 min read"
+              },
+              {
+                tag: "Global",
+                title: "What rising US yields mean for your Indian portfolio",
+                summary: "FII flows, INR-USD, and the import-cost translation, three transmission channels and the asset classes most exposed.",
+                date: "Apr 26, 2026",
+                read: "6 min read"
+              },
+              {
+                tag: "Insurance",
+                title: "Term cover vs. whole-life: still the same answer in 2026",
+                summary: "We re-ran the math at 2026 premium tables. The conclusion is unchanged: pure term plus mutual fund SIP beats whole-life by a wide margin.",
+                date: "Apr 20, 2026",
+                read: "5 min read"
+              },
+              {
+                tag: "Real Estate",
+                title: "REITs in 2026: yield is back, but is growth?",
+                summary: "Embassy and Mindspace yields have recovered to 7%+, but rental escalations are slowing. We rate the four listed REITs on yield, growth, and balance-sheet strength.",
+                date: "Apr 14, 2026",
+                read: "7 min read"
+              }
+            ]
+          }
+        ]
+      }
     ]
   },
   {
@@ -556,7 +907,74 @@ const PAGES = [
         "Press",
         "Press *resources*",
         "Company facts, brand assets, and media contact for journalists writing about Finvoq."
-      )
+      ),
+      {
+        key: "contact",
+        label: "Press contact",
+        fields: [
+          f("heading", "Heading", "text", "Press contact"),
+          f("body", "Body copy", "text", "For media enquiries, please email"),
+          f("email", "Media email", "text", "press@finvoq.com"),
+          f("responseTime", "Response time note", "textarea", "We aim to respond to journalists within four business hours during India trading days.")
+        ]
+      },
+      {
+        key: "companyFacts",
+        label: "Company facts",
+        fields: [
+          f("heading", "Heading", "text", "Company facts"),
+          {
+            key: "facts",
+            label: "Facts list",
+            type: "list",
+            fields: [
+              f("label", "Label", "text", ""),
+              f("value", "Value", "text", "")
+            ],
+            default: [
+              { label: "Legal name", value: "Finvoq Wealth Pvt. Ltd." },
+              { label: "Founded", value: "2026" },
+              { label: "Headquarters", value: "Delhi, India" },
+              { label: "Registration", value: "AMFI Registered Mutual Fund Distributor" },
+              { label: "CIN", value: "U67100MH2024PTC999999" },
+              { label: "Active investors", value: "4,000+" },
+              { label: "Assets advised", value: "₹182 Cr+" },
+              { label: "Asset classes covered", value: "Listed equity, unlisted shares, mutual funds, PMS, AIF, bonds, insurance, gold & commodities" }
+            ]
+          }
+        ]
+      },
+      {
+        key: "boilerplate",
+        label: "Boilerplate",
+        fields: [
+          f("heading", "Heading", "text", "Boilerplate"),
+          f("text", "Boilerplate description", "textarea", "Finvoq is India's premium investment marketplace. We unify 10+ asset classes (listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, insurance, fixed deposits, and GIFT City products) into a single advisor-led platform. As an AMFI Registered Mutual Fund Distributor, Finvoq is compensated through trail commission paid by the asset manager. Founded in 2026, headquartered in Delhi.")
+        ]
+      },
+      {
+        key: "brandAssets",
+        label: "Brand assets",
+        fields: [
+          f("heading", "Heading", "text", "Brand assets"),
+          f("body", "Body copy", "textarea", "Logos, wordmarks, and approved colour palettes are available on request to press@finvoq.com. Please do not modify the wordmark or apply colour treatments not in the brand kit.")
+        ]
+      },
+      {
+        key: "founderBios",
+        label: "Founder bios",
+        fields: [
+          f("heading", "Heading", "text", "Founder bios"),
+          f("body", "Body copy", "textarea", "Bios for our co-founders, head of advisory, and head of research are available on request. We are happy to arrange interviews with subject-matter experts on India's mutual fund industry, unlisted markets, fixed income, and SEBI's investment-adviser framework.")
+        ]
+      },
+      {
+        key: "disclaimer",
+        label: "Disclaimer",
+        fields: [
+          f("note", "Note", "text", "We do not respond to PR pitches or sponsored-post requests through this channel.")
+        ]
+      }
     ]
   },
   {
@@ -568,7 +986,44 @@ const PAGES = [
         "Advisor Toolkit",
         "Marcom & Centricity *Reckoner*",
         "Rate your marketing communication and client engagement across eight levers. Get an instant readiness score and a focused action list."
-      )
+      ),
+      {
+        key: "form",
+        label: "Reckoner levers & questions",
+        fields: [
+          f("marcomTitle", "Group 1 title", "text", "Marketing Communication"),
+          f("centricityTitle", "Group 2 title", "text", "Client Centricity"),
+          {
+            key: "questions",
+            label: "Assessment questions",
+            type: "list",
+            fields: [
+              f("id", "Identifier", "text", ""),
+              f("group", "Group (Marcom / Centricity)", "select", "Marcom", {
+                options: ["Marcom", "Centricity"]
+              }),
+              f("label", "Evaluation question / lever", "text", "")
+            ],
+            default: [
+              { id: "brand", group: "Marcom", label: "Brand & messaging consistency across channels" },
+              { id: "content", group: "Marcom", label: "Quality & cadence of educational content" },
+              { id: "digital", group: "Marcom", label: "Digital reach (social, email, web) effectiveness" },
+              { id: "clarity", group: "Marcom", label: "Clarity & transparency of product communication" },
+              { id: "response", group: "Centricity", label: "Speed of response to client queries" },
+              { id: "personal", group: "Centricity", label: "Personalisation of advice to client goals" },
+              { id: "trust", group: "Centricity", label: "Trust & relationship depth with clients" },
+              { id: "retention", group: "Centricity", label: "Proactive reviews & retention efforts" }
+            ]
+          }
+        ]
+      },
+      {
+        key: "results",
+        label: "Results note",
+        fields: [
+          f("note", "Summary explanation note", "textarea", "The reckoner blends your marketing-communication and client-centricity ratings into a single readiness score. Use it to spot the weakest lever and prioritise where to invest next.")
+        ]
+      }
     ]
   },
   {
@@ -644,7 +1099,62 @@ const PAGES = [
         "For Non-Resident Indians",
         "Invest in India, *from anywhere.*",
         "Mutual funds, PMS, AIF, unlisted shares, bonds and Gift City offshore access, with repatriation-aware, FEMA-compliant paperwork."
-      )
+      ),
+      {
+        key: "whatYouGet",
+        label: "What you get features",
+        fields: [
+          f("label", "Section label", "text", "What you get"),
+          f("title", "Section title", "text", "A complete *NRI investing* desk."),
+          {
+            key: "items",
+            label: "Features list",
+            type: "list",
+            fields: [
+              f("title", "Title", "text", ""),
+              f("body", "Description", "textarea", "")
+            ],
+            default: [
+              {
+                title: "NRE / NRO / FCNR ready",
+                body: "Invest from your NRE (repatriable) or NRO account, with FEMA-compliant execution and full documentation for repatriation."
+              },
+              {
+                title: "Mutual funds & PMS for NRIs",
+                body: "Access India-domiciled mutual funds, PMS and AIF strategies open to NRIs, with TDS handling and DTAA guidance built in."
+              },
+              {
+                title: "Unlisted & pre-IPO access",
+                body: "Curated unlisted opportunities with off-market transfer into your NRO demat, fully disclosed and compliant."
+              },
+              {
+                title: "Gift City (IFSC) offshore route",
+                body: "Invest in USD-denominated global funds through GIFT City: a familiar, IFSCA-regulated framework for NRIs."
+              },
+              {
+                title: "Tax & DTAA support",
+                body: "Capital-gains statements, TDS reconciliation, and Double Taxation Avoidance Agreement guidance for your country of residence."
+              },
+              {
+                title: "Dedicated NRI desk",
+                body: "A relationship manager who understands time zones, repatriation, and cross-border paperwork: reachable on WhatsApp, email or call."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        key: "cta",
+        label: "Bottom call-to-action",
+        fields: [
+          f("title", "Heading", "text", "Distance shouldn’t cost you the India growth story."),
+          f("subtitle", "Sub-heading", "textarea", "Our NRI desk handles the paperwork, the compliance, and the tax. You just decide where to invest."),
+          f("primaryBtnText", "Primary button label", "text", "Talk to the NRI desk →"),
+          f("primaryBtnHref", "Primary button link", "url", "/get-started"),
+          f("secondaryBtnText", "Secondary button label", "text", "Explore Gift City"),
+          f("secondaryBtnHref", "Secondary button link", "url", "/products/gift-city")
+        ]
+      }
     ]
   },
   {
@@ -654,9 +1164,79 @@ const PAGES = [
     sections: [
       hero(
         "NRI Services",
-        "Apply for a *PAN card.*",
-        "A PAN is mandatory for investing in India. We handle the application end to end."
-      )
+        "Get your *Indian PAN card*, wherever you live.",
+        "Assisted application for a new Permanent Account Number (PAN): required for investing, property transactions, and tax filing in India."
+      ),
+      {
+        key: "service",
+        label: "Service details & process",
+        fields: [
+          f("serviceName", "Service Name", "text", "PAN Card Application"),
+          f("intro", "Introduction paragraph", "textarea", "A PAN is mandatory for NRIs who want to invest in Indian securities, buy or sell property, open a bank or demat account, or file income tax returns in India. We prepare and track your application so you don't have to navigate the forms and documentation yourself."),
+          {
+            key: "highlights",
+            label: "What's included (Highlights)",
+            type: "list",
+            fields: [
+              f("title", "Title", "text", ""),
+              f("body", "Description", "textarea", "")
+            ],
+            default: [
+              { title: "Correct form, filled right", body: "NRIs typically apply through Form 49AA. We make sure the right form and applicant category are used from the start." },
+              { title: "Document review before submission", body: "We check that your passport, overseas address proof and photograph meet the required format, so your application isn't rejected on a technicality." },
+              { title: "Application tracking", body: "We monitor your application status after submission and keep you updated at every stage." },
+              { title: "Delivery coordination", body: "Your physical PAN card can be couriered to your overseas address, or you can use the e-PAN for most digital purposes immediately." },
+              { title: "No branch visits required", body: "The entire process (documentation, submission, and tracking) is handled online, over email and WhatsApp." }
+            ]
+          },
+          {
+            key: "steps",
+            label: "Process steps (How it works)",
+            type: "list",
+            fields: [
+              f("title", "Step title", "text", ""),
+              f("body", "Step description", "textarea", "")
+            ],
+            default: [
+              { title: "Share your details", body: "Basic personal information, a passport copy, and your current overseas address proof." },
+              { title: "We prepare your application", body: "Form 49AA is filled out and cross-checked against your documents for accuracy." },
+              { title: "You review and sign", body: "We share the final application with you for confirmation before it's submitted." },
+              { title: "Submitted & tracked", body: "Your application is submitted to the PAN issuing authority and tracked through to allotment." }
+            ]
+          },
+          {
+            key: "documents",
+            label: "Required documents",
+            type: "list",
+            fields: [
+              f("text", "Document requirement", "text", "")
+            ],
+            default: [
+              { text: "Passport copy (all relevant pages)" },
+              { text: "Overseas address proof (utility bill, bank statement, or residence permit)" },
+              { text: "Passport-size photograph" },
+              { text: "OCI/PIO card copy, if applicable" },
+              { text: "Proof of an Indian address, if you'd like to register one (optional)" }
+            ]
+          },
+          {
+            key: "faqs",
+            label: "Frequently asked questions",
+            type: "list",
+            fields: [
+              f("q", "Question", "text", ""),
+              f("a", "Answer", "textarea", "")
+            ],
+            default: [
+              { q: "Why does an NRI need a PAN card?", a: "PAN is required to open an NRE/NRO account for investment purposes, invest in mutual funds, shares, PMS or AIF, buy or sell property in India, and file Indian income tax returns." },
+              { q: "How long does it take to get a PAN card?", a: "Processing typically takes a couple of weeks from submission, though it can vary depending on document verification and the issuing authority's workload." },
+              { q: "Can I apply for a PAN without visiting India?", a: "Yes: the entire application, verification and delivery process can be completed while you're overseas." },
+              { q: "What's the difference between Form 49A and Form 49AA?", a: "Form 49A is meant for Indian citizens; Form 49AA is for foreign citizens and, in most cases, NRIs. We determine the correct form for your specific situation before filing." },
+              { q: "Can I use an e-PAN instead of a physical card?", a: "For most digital purposes (including e-KYC for investment accounts), the e-PAN (PDF version) is accepted. A physical card can still be couriered if you need one." }
+            ]
+          }
+        ]
+      }
     ]
   },
   {
@@ -666,9 +1246,82 @@ const PAGES = [
     sections: [
       hero(
         "NRI Services",
-        "Income tax filing, *handled.*",
-        "Residency-aware filing, DTAA relief and capital-gains reporting for non-residents."
-      )
+        "File your *India income tax* without the stress.",
+        "Expert-assisted income tax return filing for Non-Resident Indians: covering NRE/NRO income, capital gains, DTAA relief, and TDS reconciliation."
+      ),
+      {
+        key: "service",
+        label: "Service details & process",
+        fields: [
+          f("serviceName", "Service Name", "text", "NRI Tax Filing"),
+          f("intro", "Introduction paragraph", "textarea", "If you earn income in India (rent, interest, dividends, or capital gains from property, mutual funds or shares), you may be required to file an income tax return even as a non-resident. We handle the assessment, the paperwork, and the filing, so you can stay compliant without navigating the Indian tax system yourself."),
+          {
+            key: "highlights",
+            label: "What's included (Highlights)",
+            type: "list",
+            fields: [
+              f("title", "Title", "text", ""),
+              f("body", "Description", "textarea", "")
+            ],
+            default: [
+              { title: "Full income coverage", body: "NRE/NRO interest, rental income, capital gains from Indian assets, and dividends: every income source is accounted for in your return." },
+              { title: "DTAA relief applied correctly", body: "Where India has a Double Taxation Avoidance Agreement with your country of residence, we apply the relevant relief so the same income isn't taxed twice." },
+              { title: "TDS reconciliation", body: "We match tax already deducted by your bank or broker against your Form 26AS / AIS, and claim a refund wherever excess tax was withheld." },
+              { title: "Capital gains computed correctly", body: "Short-term and long-term gains on equity, mutual funds and property: computed with indexation applied where it's available." },
+              { title: "Filed and acknowledged", body: "Your return is e-filed and verified, so you have a clean compliance record and an acknowledgment you can rely on." },
+              { title: "Support after filing", body: "If the Income Tax Department raises a query or notice after filing, we help you understand it and prepare the response." }
+            ]
+          },
+          {
+            key: "steps",
+            label: "Process steps (How it works)",
+            type: "list",
+            fields: [
+              f("title", "Step title", "text", ""),
+              f("body", "Step description", "textarea", "")
+            ],
+            default: [
+              { title: "Share your documents", body: "Send your PAN, Form 26AS/AIS, and your NRE/NRO bank and broker statements for the financial year." },
+              { title: "We assess your tax liability", body: "Our team reviews every income source, applicable DTAA benefits, and eligible deductions." },
+              { title: "Review & approve", body: "You review a plain-language summary of your computed tax position before anything is filed." },
+              { title: "E-file & acknowledge", body: "Your return is filed electronically and the acknowledgment (ITR-V) is shared with you for your records." }
+            ]
+          },
+          {
+            key: "documents",
+            label: "Required documents",
+            type: "list",
+            fields: [
+              f("text", "Document requirement", "text", "")
+            ],
+            default: [
+              { text: "PAN card copy" },
+              { text: "Passport (photo and visa/residency pages)" },
+              { text: "Form 26AS / Annual Information Statement (AIS)" },
+              { text: "NRE and NRO bank account statements for the financial year" },
+              { text: "Capital gains statements from your broker or mutual fund folios, if applicable" },
+              { text: "Details of any property sold or rented out in India" },
+              { text: "Proof of tax already paid overseas, if you're claiming DTAA relief" }
+            ]
+          },
+          {
+            key: "faqs",
+            label: "Frequently asked questions",
+            type: "list",
+            fields: [
+              f("q", "Question", "text", ""),
+              f("a", "Answer", "textarea", "")
+            ],
+            default: [
+              { q: "Do NRIs need to file income tax returns in India?", a: "If your total taxable income in India exceeds the basic exemption limit, or you want to claim a refund of TDS already deducted, you're required to file a return, even though you're a non-resident for tax purposes." },
+              { q: "What is DTAA and how does it help?", a: "The Double Taxation Avoidance Agreement is a treaty India has with most countries. It prevents the same income from being taxed twice (once in India and once in your country of residence), either through an exemption or a tax credit." },
+              { q: "Is interest on my NRE account taxable in India?", a: "Interest earned on an NRE account is generally tax-exempt in India for as long as your NRI status holds. Interest on an NRO account, however, is taxable and usually subject to TDS." },
+              { q: "What happens if I miss the filing deadline?", a: "Late filing can attract interest and penalties, and may affect your ability to carry forward certain losses. If you've already missed a deadline, we can still help you file a belated return where the law permits it." },
+              { q: "Can you help if I've already received a notice from the tax department?", a: "Yes. We review the notice, prepare an appropriate response, and help you resolve it." }
+            ]
+          }
+        ]
+      }
     ]
   },
   {
@@ -678,9 +1331,79 @@ const PAGES = [
     sections: [
       hero(
         "NRI Services",
-        "Update your *residency status.*",
-        "Convert resident folios and demat accounts to NRI status without freezing your portfolio."
-      )
+        "Update your *PAN details* to match your NRI status.",
+        "Correct your residential status, address, or personal details on an existing PAN card, so your records match your current status as an NRI."
+      ),
+      {
+        key: "service",
+        label: "Service details & process",
+        fields: [
+          f("serviceName", "Service Name", "text", "PAN Citizenship / Status Update"),
+          f("intro", "Introduction paragraph", "textarea", "If your residential status has changed (you've recently moved abroad, changed citizenship, or your existing PAN reflects outdated details), keeping your PAN updated helps avoid mismatches when investing, filing taxes, or dealing with your bank in India."),
+          {
+            key: "highlights",
+            label: "What's included (Highlights)",
+            type: "list",
+            fields: [
+              f("title", "Title", "text", ""),
+              f("body", "Description", "textarea", "")
+            ],
+            default: [
+              { title: "Residential status correction", body: "Update your PAN record to accurately reflect your resident or non-resident status." },
+              { title: "Address updates", body: "Change your registered address on file to your current overseas address." },
+              { title: "Name and detail corrections", body: "Fix spelling errors, or update details following a legal name change." },
+              { title: "Correction form handled for you", body: "The PAN correction / change-request form is prepared and filed on your behalf, with supporting documents attached." },
+              { title: "Tracked until completion", body: "We follow up with the issuing authority and confirm once your updated PAN details are processed." }
+            ]
+          },
+          {
+            key: "steps",
+            label: "Process steps (How it works)",
+            type: "list",
+            fields: [
+              f("title", "Step title", "text", ""),
+              f("body", "Step description", "textarea", "")
+            ],
+            default: [
+              { title: "Tell us what needs updating", body: "Share your current PAN details and what has changed." },
+              { title: "We prepare the correction request", body: "The appropriate change-request form is filled out with supporting documents attached." },
+              { title: "You review and confirm", body: "We share the final request with you for confirmation before it's submitted." },
+              { title: "Filed and confirmed", body: "Once processed, you'll receive your updated PAN details and, if applicable, a reissued card." }
+            ]
+          },
+          {
+            key: "documents",
+            label: "Required documents",
+            type: "list",
+            fields: [
+              f("text", "Document requirement", "text", "")
+            ],
+            default: [
+              { text: "Copy of your existing PAN card" },
+              { text: "Passport copy showing current citizenship/nationality" },
+              { text: "Current overseas address proof" },
+              { text: "Visa, OCI or residency permit, if the update relates to citizenship or residential status" },
+              { text: "Legal documents for any name change (e.g. marriage certificate), if applicable" }
+            ]
+          },
+          {
+            key: "faqs",
+            label: "Frequently asked questions",
+            type: "list",
+            fields: [
+              f("q", "Question", "text", ""),
+              f("a", "Answer", "textarea", "")
+            ],
+            default: [
+              { q: "Why should I update my PAN if my status has changed to NRI?", a: "Banks, brokers and the Income Tax Department cross-check your PAN details. An outdated resident status or address can cause tax to be deducted at the wrong rate, or delay KYC on your investment accounts." },
+              { q: "Will I get a new PAN number?", a: "No. A correction request updates the details linked to your existing PAN, the PAN number itself never changes." },
+              { q: "How long does a PAN correction take?", a: "It generally takes a couple of weeks after submission, depending on document verification." },
+              { q: "Do I need to update my PAN if I only changed my address, not my citizenship?", a: "It's optional but recommended, so your KYC records with banks and brokers stay accurate and correspondence reaches you without delay." },
+              { q: "Can this be done entirely online?", a: "Yes: the correction request, document upload and confirmation can all be completed remotely." }
+            ]
+          }
+        ]
+      }
     ]
   },
 
@@ -694,7 +1417,32 @@ const PAGES = [
         "Calculator",
         "SIP *calculator*",
         "See what a monthly investment can grow into, and adjust until the number feels right."
-      )
+      ),
+      {
+        key: "disclaimer",
+        label: "Projection disclaimer & notes",
+        fields: [
+          f("note", "Disclaimer text", "textarea", "Illustrative projection only. Returns are assumed, not guaranteed — actual returns vary with market performance. This is not investment advice.")
+        ]
+      },
+      {
+        key: "actions",
+        label: "Call to action buttons",
+        fields: [
+          f("primaryLabel", "Primary button label", "text", "Start this SIP"),
+          f("primaryHref", "Primary button link", "url", "/get-started"),
+          f("secondaryLabel", "Secondary button label", "text", "Talk to Advisor"),
+          f("secondaryHref", "Secondary button link", "url", "/get-started")
+        ]
+      },
+      {
+        key: "graph",
+        label: "Wealth progression chart",
+        fields: [
+          f("title", "Chart title", "text", "Wealth Progression"),
+          f("subtitle", "Chart subtitle template", "text", "Projected growth over duration")
+        ]
+      }
     ]
   },
   {
@@ -706,7 +1454,24 @@ const PAGES = [
         "Calculator",
         "Lumpsum *investment calculator*",
         "Compounding turns a one-time deposit into a meaningful corpus over time. Try the numbers below."
-      )
+      ),
+      {
+        key: "disclaimer",
+        label: "Projection disclaimer & notes",
+        fields: [
+          f("note", "Disclaimer text", "textarea", "Illustrative projection only. Returns are assumed, not guaranteed — actual returns vary with market performance. This is not investment advice.")
+        ]
+      },
+      {
+        key: "actions",
+        label: "Call to action buttons",
+        fields: [
+          f("primaryLabel", "Primary button label", "text", "Invest Lumpsum"),
+          f("primaryHref", "Primary button link", "url", "/get-started"),
+          f("secondaryLabel", "Secondary button label", "text", "Talk to Advisor"),
+          f("secondaryHref", "Secondary button link", "url", "/get-started")
+        ]
+      }
     ]
   },
   {
@@ -718,7 +1483,14 @@ const PAGES = [
         "Calculator",
         "Goal-based *investment planner*",
         "Start with the destination (retirement, a home, your child's education), and work backward to the monthly number."
-      )
+      ),
+      {
+        key: "disclaimer",
+        label: "Projection disclaimer & notes",
+        fields: [
+          f("note", "Disclaimer text", "textarea", "Illustrative projection only. Returns are assumed, not guaranteed — actual returns vary with market performance. This is not investment advice.")
+        ]
+      }
     ]
   },
   {
@@ -730,7 +1502,14 @@ const PAGES = [
         "Calculator",
         "Retirement *calculator*",
         "Secure your future by calculating how much you need to save and invest today for a comfortable retirement."
-      )
+      ),
+      {
+        key: "disclaimer",
+        label: "Projection disclaimer & notes",
+        fields: [
+          f("note", "Disclaimer text", "textarea", "Illustrative projection only. Returns are assumed, not guaranteed — actual returns vary with market performance. This is not investment advice.")
+        ]
+      }
     ]
   },
   {
@@ -742,7 +1521,14 @@ const PAGES = [
         "Reverse SIP Calculator",
         "Enter your goal: get the *monthly SIP.*",
         "Type a target corpus and a time horizon, and we work backward to the exact monthly investment."
-      )
+      ),
+      {
+        key: "disclaimer",
+        label: "Projection disclaimer & notes",
+        fields: [
+          f("note", "Disclaimer text", "textarea", "Illustrative projection only. Returns are assumed, not guaranteed — actual returns vary with market performance. This is not investment advice.")
+        ]
+      }
     ]
   },
   {
@@ -1217,9 +2003,123 @@ const PAGES = [
     sections: [
       hero(
         "Investor Zone",
-        "Everything you need, *in one place.*",
-        "Tools, statements, factsheets and resources for existing Finvoq investors."
-      )
+        "Every tool an investor needs, *in one place.*",
+        "Your command center: live markets, calculators, fund performance, unlisted access and research, curated for the Visionary Trailblazers community."
+      ),
+      {
+        key: "tools",
+        label: "Investor tools & links",
+        fields: [
+          {
+            key: "items",
+            label: "Tools",
+            type: "list",
+            fields: [
+              f("href", "Link target", "url", ""),
+              f("title", "Tool title", "text", ""),
+              f("body", "Tool description", "textarea", ""),
+              f("cta", "Button / link label", "text", ""),
+              f("icon", "Icon identifier", "text", "i-trending-up")
+            ],
+            default: [
+              {
+                href: "/markets",
+                title: "Live Markets",
+                body: "Track indices, equities and real-time quotes on BSE with charts and watchlists.",
+                cta: "Open markets",
+                icon: "i-trending-up"
+              },
+              {
+                href: "/watchlist",
+                title: "My Watchlist",
+                body: "Save the stocks, funds and unlisted names you care about and follow them in one place.",
+                cta: "View watchlist",
+                icon: "i-star"
+              },
+              {
+                href: "/#mf-performance",
+                title: "MF Performance",
+                body: "See top-performing mutual funds ranked by 1Y, 3Y and 5Y returns, tracked by our desk.",
+                cta: "See fund rankings",
+                icon: "i-bar-chart"
+              },
+              {
+                href: "/calculator",
+                title: "SIP Calculator",
+                body: "Model how monthly SIPs compound over time at different return and duration assumptions.",
+                cta: "Calculate SIP",
+                icon: "i-coin"
+              },
+              {
+                href: "/calculator/reverse-sip",
+                title: "Reverse SIP Calculator",
+                body: "Start from a target corpus and work backward to the exact monthly SIP you need.",
+                cta: "Plan my goal",
+                icon: "i-grid"
+              },
+              {
+                href: "/unlisted",
+                title: "Unlisted Shares",
+                body: "Explore curated pre-IPO and unlisted opportunities with transparent pricing.",
+                cta: "Browse unlisted",
+                icon: "i-lock"
+              },
+              {
+                href: "/reckoner",
+                title: "Marcom & Centricity Reckoner",
+                body: "Score your marketing communication and client-centricity and see where to improve.",
+                cta: "Run the reckoner",
+                icon: "i-gem"
+              },
+              {
+                href: "/news",
+                title: "Market News",
+                body: "The latest financial news aggregated from Yahoo India Finance and leading wires.",
+                cta: "Read the news",
+                icon: "i-building"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    key: "contact",
+    label: "Contact",
+    path: "/contact",
+    sections: [
+      hero(
+        "Contact",
+        "Talk to a *real person.*",
+        "Advice is the product. Ask us anything — about a specific fund, a mandate you're weighing up, or an investment you already hold."
+      ),
+      {
+        key: "form",
+        label: "Contact form header",
+        fields: [
+          f("title", "Form title", "text", "Send us a message"),
+          f("subtitle", "Form subtitle", "textarea", "We reply within one working day.")
+        ]
+      },
+      {
+        key: "grievance",
+        label: "Grievances card",
+        fields: [
+          f("title", "Card title", "text", "Grievances"),
+          f("body", "Card description", "textarea", "If we haven't resolved something to your satisfaction, our grievance procedure and escalation path are set out here."),
+          f("linkLabel", "Link label", "text", "Grievance redressal →"),
+          f("linkHref", "Link target", "url", "/legal/grievance")
+        ]
+      },
+      {
+        key: "regulatory",
+        label: "Regulatory card",
+        fields: [
+          f("title", "Card title", "text", "Regulatory registration"),
+          f("note", "Note text", "textarea", "Quote our EUIN on every transaction. It ties the advice you received to the person who gave it.")
+        ]
+      }
     ]
   },
 
@@ -1281,8 +2181,14 @@ const PAGES = [
             ]
           },
           f("loginLabel", "Login button", "text", "Login"),
+          f("loginEnabled", "Show login button", "select", "yes", {
+            options: ["yes", "no"]
+          }),
           f("signupLabel", "Sign-up button", "text", "Open Account"),
-          f("signupHref", "Sign-up button target", "url", "/signup")
+          f("signupHref", "Sign-up button target", "url", "/signup"),
+          f("signupEnabled", "Show sign-up button", "select", "yes", {
+            options: ["yes", "no"]
+          })
         ]
       },
       /* The NRI item opens a bespoke two-column mega menu, so its contents
@@ -1397,6 +2303,9 @@ const PAGES = [
         key: "footer",
         label: "Site footer",
         fields: [
+          f("newsletterEnabled", "Show newsletter section", "select", "yes", {
+            options: ["yes", "no"]
+          }),
           f(
             "blurb",
             "Brand blurb",
@@ -1409,6 +2318,9 @@ const PAGES = [
             "text",
             "AMFI Registered Mutual Fund Distributor — ARN-346787"
           ),
+          f("badgeEnabled", "Show registration badge", "select", "yes", {
+            options: ["yes", "no"]
+          }),
           f("newsletterTitle", "Newsletter heading", "text", "Get the weekly market brief."),
           f(
             "newsletterBody",

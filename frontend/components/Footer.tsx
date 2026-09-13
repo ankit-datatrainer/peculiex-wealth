@@ -90,6 +90,8 @@ export default function Footer() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const newsletterEnabled = cms.t("footer", "newsletterEnabled", "yes") !== "no";
+  const badgeEnabled = cms.t("footer", "badgeEnabled", "yes") !== "no";
 
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -120,7 +122,7 @@ export default function Footer() {
 
   return (
     <footer className="site-footer">
-      <div className="container foot-newsletter reveal">
+      {newsletterEnabled && <div className="container foot-newsletter reveal">
         <div className="fn-text">
           <h3>{heading(cms.t("footer", "newsletterTitle", "Get the *weekly market brief.*"))}</h3>
           <p>{cms.t("footer", "newsletterBody", "Curated insights from our research team, every Monday before markets open. No promotions, no spam, ever.")}</p>
@@ -175,7 +177,7 @@ export default function Footer() {
             </p>
           )}
         </form>
-      </div>
+      </div>}
 
       <div className="container foot-grid">
         <div className="foot-col foot-brand">
@@ -189,9 +191,9 @@ export default function Footer() {
               "India's premium investment marketplace. Multiple asset classes, one platform, advisory-led."
             )}
           </p>
-          <div className="foot-reg">
+          {badgeEnabled && <div className="foot-reg">
             <span className="status-dot"></span>{cms.t("footer", "badge", REGISTRATION_LINE)}
-          </div>
+          </div>}
           {/* Direct routes in the footer: the number is the fastest path to a
               human, and burying it on /contact costs the high-intent click. */}
           <ul className="foot-contact">
@@ -229,8 +231,8 @@ export default function Footer() {
           </ul>
         </div>
 
-        {columns.map((col) => (
-          <div className="foot-col" key={col.title}>
+        {columns.map((col, columnIndex) => (
+          <div className="foot-col" key={`${col.title}-${columnIndex}`}>
             <h4>{col.title}</h4>
             <ul>
               {col.links.map((l) => (

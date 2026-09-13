@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchStats, type AdminStats } from "@/lib/admin-api";
+import { useAuth } from "@/lib/auth-context";
 
 const KPIS: Array<{
   key: keyof Omit<AdminStats, "db">;
@@ -19,6 +20,7 @@ const KPIS: Array<{
 ];
 
 export default function AdminDashboardPage() {
+  const { user } = useAuth();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -81,6 +83,11 @@ export default function AdminDashboardPage() {
           Jump straight into the most common tasks.
         </p>
         <div className="admin-quick">
+          {user?.role === "superadmin" && (
+            <Link href="/admin/header-footer" className="btn btn-primary">
+              Manage header &amp; footer
+            </Link>
+          )}
           <Link href="/admin/unlisted" className="btn btn-primary">
             Add unlisted share
           </Link>

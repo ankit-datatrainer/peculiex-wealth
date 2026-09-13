@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
+import { useContent } from "@/lib/content";
 
 type Q = { id: string; group: "Marcom" | "Centricity"; label: string };
 
@@ -22,22 +23,34 @@ function band(score: number) {
 }
 
 export default function Reckoner() {
-  const [scores, setScores] = useState<Record<string, number>>(
-    Object.fromEntries(QUESTIONS.map((q) => [q.id, 6]))
+  const cms = useContent("reckoner");
+  const marcomTitle = cms.t("form", "marcomTitle", "Marketing Communication");
+  const centricityTitle = cms.t("form", "centricityTitle", "Client Centricity");
+  const questionsList = cms.list<Q>("form", "questions", QUESTIONS);
+  const questions = questionsList.length > 0 ? questionsList : QUESTIONS;
+  const resultNote = cms.t(
+    "results",
+    "note",
+    "The reckoner blends your marketing-communication and client-centricity ratings into a single readiness score. Use it to spot the weakest lever and prioritise where to invest next."
+  );
+
+  const [scores, setScores] = useState<Record<string, number>>(() =>
+    Object.fromEntries(questions.map((q) => [q.id || q.label, 6]))
   );
 
   const set = (id: string, v: number) => setScores((s) => ({ ...s, [id]: v }));
 
   const { total, marcom, centricity } = useMemo(() => {
     const avg = (grp: Q["group"]) => {
-      const items = QUESTIONS.filter((q) => q.group === grp);
-      const sum = items.reduce((a, q) => a + (scores[q.id] || 0), 0);
+      const items = questions.filter((q) => q.group === grp);
+      if (items.length === 0) return 50;
+      const sum = items.reduce((a, q) => a + (scores[q.id || q.label] || 6), 0);
       return Math.round((sum / (items.length * 10)) * 100);
     };
     const m = avg("Marcom");
     const c = avg("Centricity");
     return { marcom: m, centricity: c, total: Math.round((m + c) / 2) };
-  }, [scores]);
+  }, [scores, questions]);
 
   const b = band(total);
 
@@ -47,21 +60,24 @@ export default function Reckoner() {
         <div className="reckoner-form reveal">
           {(["Marcom", "Centricity"] as const).map((grp) => (
             <div key={grp} className="reckoner-group">
-              <h3>{grp === "Marcom" ? "Marketing Communication" : "Client Centricity"}</h3>
-              {QUESTIONS.filter((q) => q.group === grp).map((q) => (
-                <label key={q.id} className="reckoner-item">
-                  <span className="reckoner-label">
-                    {q.label} <b>{scores[q.id]}/10</b>
-                  </span>
-                  <input
-                    type="range"
-                    min={0}
-                    max={10}
-                    value={scores[q.id]}
-                    onChange={(e) => set(q.id, +e.target.value)}
-                  />
-                </label>
-              ))}
+              <h3>{grp === "Marcom" ? marcomTitle : centricityTitle}</h3>
+              {questions.filter((q) => q.group === grp).map((q) => {
+                const qKey = q.id || q.label;
+                return (
+                  <label key={qKey} className="reckoner-item">
+                    <span className="reckoner-label">
+                      {q.label} <b>{scores[qKey] ?? 6}/10</b>
+                    </span>
+                    <input
+                      type="range"
+                      min={0}
+                      max={10}
+                      value={scores[qKey] ?? 6}
+                      onChange={(e) => set(qKey, +e.target.value)}
+                    />
+                  </label>
+                );
+              })}
             </div>
           ))}
         </div>
@@ -77,8 +93,7 @@ export default function Reckoner() {
             <li><span>Centricity score</span><b>{centricity}%</b></li>
           </ul>
           <p className="reckoner-note">
-            The reckoner blends your marketing-communication and client-centricity ratings into a
-            single readiness score. Use it to spot the weakest lever and prioritise where to invest next.
+            {resultNote}
           </p>
         </aside>
       </div>

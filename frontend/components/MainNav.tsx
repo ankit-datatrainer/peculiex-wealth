@@ -98,8 +98,10 @@ export default function MainNav() {
   const navItems = navFrom(cms, NAV_ITEMS);
   const nri = nriMenuFrom(cms);
   const loginLabel = cms.t("nav", "loginLabel", "Login");
+  const loginEnabled = cms.t("nav", "loginEnabled", "yes") !== "no";
   const signupLabel = cms.t("nav", "signupLabel", "Open Account");
   const signupHref = cms.t("nav", "signupHref", "/signup");
+  const signupEnabled = cms.t("nav", "signupEnabled", "yes") !== "no";
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
@@ -184,7 +186,7 @@ export default function MainNav() {
                 </svg>
               </button>
             )}
-            {navItems.map((it) => {
+            {navItems.map((it, itemIndex) => {
               const isActive =
                 it.href.startsWith("/") &&
                 !it.href.includes("#") &&
@@ -199,7 +201,7 @@ export default function MainNav() {
                 if (isNriMega) {
                   return (
                     <li
-                      key={it.href}
+                      key={`${it.href}-${it.label}-${itemIndex}`}
                       className={`nav-has-dropdown nri-mega-menu-container${
                         openGroup === it.href ? " open" : ""
                       }${closeHover ? " disable-hover" : ""}`}
@@ -232,7 +234,7 @@ export default function MainNav() {
                           <div className="nri-column nri-left-col">
                             <span className="nri-col-label">{nri.investLabel}</span>
                             <ul className="nri-links">
-                              {(nri.investLinks.length ? nri.investLinks : NRI_INVEST_FALLBACK).map((l) => (
+                              {(cms.has("navNri", "investLinks") ? nri.investLinks : NRI_INVEST_FALLBACK).map((l) => (
                                 <li key={`${l.href}-${l.label}`}>
                                   <Link
                                     href={l.href}
@@ -249,7 +251,7 @@ export default function MainNav() {
                           <div className="nri-column nri-right-col">
                             <span className="nri-col-label">{nri.servicesLabel}</span>
                             <div className="nri-services-grid">
-                              {(nri.services.length ? nri.services : NRI_SERVICES_FALLBACK).map((s, i) => (
+                              {(cms.has("navNri", "services") ? nri.services : NRI_SERVICES_FALLBACK).map((s, i) => (
                                 <Link
                                   key={`${s.href}-${s.title}`}
                                   href={s.href}
@@ -303,8 +305,8 @@ export default function MainNav() {
                       </button>
                     </div>
                     <ul className="nav-dropdown">
-                      {(it.children || []).map((c) => (
-                        <li key={c.label}>
+                      {(it.children || []).map((c, childIndex) => (
+                        <li key={`${c.href}-${c.label}-${childIndex}`}>
                           <Link
                             href={c.href}
                             className="nav-dropdown-link"
@@ -319,7 +321,7 @@ export default function MainNav() {
                 );
               }
               return (
-                <li key={it.href}>
+                <li key={`${it.href}-${it.label}-${itemIndex}`}>
                   <Link
                     href={it.href}
                     className={`nav-link${isActive ? " active" : ""}`}
@@ -366,8 +368,8 @@ export default function MainNav() {
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="btn btn-outline" style={{ width: "100%", justifyContent: "center" }} data-magnetic onClick={() => { setMobileOpen(false); setCloseHover(true); }}>{loginLabel}</Link>
-                  <Link href={signupHref} className="btn btn-gold" style={{ width: "100%", justifyContent: "center" }} data-magnetic onClick={() => { setMobileOpen(false); setCloseHover(true); }}>{signupLabel}</Link>
+                  {loginEnabled && <Link href="/login" className="btn btn-outline" style={{ width: "100%", justifyContent: "center" }} data-magnetic onClick={() => { setMobileOpen(false); setCloseHover(true); }}>{loginLabel}</Link>}
+                  {signupEnabled && <Link href={signupHref} className="btn btn-gold" style={{ width: "100%", justifyContent: "center" }} data-magnetic onClick={() => { setMobileOpen(false); setCloseHover(true); }}>{signupLabel}</Link>}
                 </>
               )}
             </li>
@@ -575,12 +577,16 @@ export default function MainNav() {
             </div>
           ) : (
             <>
-              <Link href="/login" className="btn btn-outline" data-magnetic>
-                {loginLabel}
-              </Link>
-              <Link href={signupHref} className="btn btn-gold" data-magnetic>
-                {signupLabel}
-              </Link>
+              {loginEnabled && (
+                <Link href="/login" className="btn btn-outline" data-magnetic>
+                  {loginLabel}
+                </Link>
+              )}
+              {signupEnabled && (
+                <Link href={signupHref} className="btn btn-gold" data-magnetic>
+                  {signupLabel}
+                </Link>
+              )}
             </>
           )}
           <button

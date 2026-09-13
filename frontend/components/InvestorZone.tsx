@@ -80,20 +80,25 @@ const TOOLS: Tool[] = [
 
 export default function InvestorZone() {
   const cms = useContent("investor-zone");
+  const cmsTools = cms.list<Tool>("tools", "items", []);
+  const tools = cmsTools.length > 0 ? cmsTools : TOOLS;
+  const subtitle = cms.t(
+    "hero",
+    "subtitle",
+    "Your command center: live markets, calculators, fund performance, unlisted access and research, curated for the Visionary Trailblazers community."
+  );
+
   return (
     <main className="izone">
       <div className="container">
         <section className="izone-hero reveal">
           <span className="label">{cms.t("hero", "label", "InvestorZone")}</span>
           <h1>{heading(cms.t("hero", "title", "Every tool an investor needs, *in one place.*"))}</h1>
-          <p>
-            Your command center: live markets, calculators, fund performance, unlisted access and
-            research, curated for the Visionary Trailblazers community.
-          </p>
+          <p>{subtitle}</p>
         </section>
 
         <section className="izone-grid">
-          {TOOLS.map((t) => (
+          {tools.map((t) => (
             <Link href={t.href} key={t.title} className="izone-card reveal" data-tilt>
               <div className="izone-icon">
                 <svg>

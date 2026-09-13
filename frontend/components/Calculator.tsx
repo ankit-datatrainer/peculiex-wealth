@@ -339,9 +339,11 @@ export default function Calculator() {
               color: "var(--color-text-faint)"
             }}
           >
-            Illustrative projection only. Returns are assumed, not guaranteed —
-            actual returns vary with market performance. This is not investment
-            advice.
+            {cms.t(
+              "disclaimer",
+              "note",
+              "Illustrative projection only. Returns are assumed, not guaranteed — actual returns vary with market performance. This is not investment advice."
+            )}
           </p>
 
           <div
@@ -353,11 +355,19 @@ export default function Calculator() {
               alignItems: "center"
             }}
           >
-            <a href="/get-started" className="btn btn-primary" data-magnetic>
-              Start this SIP
+            <a
+              href={cms.t("actions", "primaryHref", "/get-started")}
+              className="btn btn-primary"
+              data-magnetic
+            >
+              {cms.t("actions", "primaryLabel", "Start this SIP")}
             </a>
-            <a href="/get-started" className="btn btn-outline" data-magnetic>
-              Talk to Advisor
+            <a
+              href={cms.t("actions", "secondaryHref", "/get-started")}
+              className="btn btn-outline"
+              data-magnetic
+            >
+              {cms.t("actions", "secondaryLabel", "Talk to Advisor")}
             </a>
           </div>
         </div>
@@ -365,7 +375,9 @@ export default function Calculator() {
 
       <div className="container calc-graph reveal" style={{ marginTop: "4rem" }}>
          <div className="graph-header" style={{ marginBottom: "2rem" }}>
-            <h3 style={{ fontSize: "1.5rem", fontWeight: 500 }}>Wealth Progression</h3>
+            <h3 style={{ fontSize: "1.5rem", fontWeight: 500 }}>
+              {cms.t("graph", "title", "Wealth Progression")}
+            </h3>
             <p style={{ color: "var(--color-text-faint)", fontSize: "0.95rem" }}>Projected growth over {yr} years</p>
          </div>
          <div className="chart-container" style={{ position: "relative", width: "100%", overflow: "visible", display: "flex", alignItems: "flex-end", gap: "3px" }}>

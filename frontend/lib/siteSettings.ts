@@ -103,7 +103,7 @@ export function socialFrom(cms: Reader): SocialLink[] {
   const wa = whatsappFrom(cms);
   const rows = cms.list<{ platform: string; href: string }>("social", "items", []);
 
-  const source = rows.length
+  const source = cms.has("social", "items")
     ? rows
     : SOCIAL_LINKS.map((s) => ({ platform: s.id as string, href: s.href }));
 
@@ -129,7 +129,7 @@ export function useSocialLinks(): SocialLink[] {
  */
 export function navFrom(cms: Reader, fallback: NavItem[]): NavItem[] {
   const items = cms.list<NavLink>("nav", "items", []).filter(usable);
-  if (!items.length) return fallback;
+  if (!cms.has("nav", "items")) return fallback;
 
   const kids = cms
     .list<{ parent: string; label: string; href: string }>("nav", "dropdown", [])
@@ -179,7 +179,7 @@ export function footerColumnsFrom(
       .filter(usable),
   }));
   const kept = cols.filter((c) => c.title.trim() && c.links.length);
-  return kept.length ? kept : fallback;
+  return cms.has("footerLinks", "col1") ? kept : fallback;
 }
 
 /** Direct contact routes shown under the footer brand blurb. */

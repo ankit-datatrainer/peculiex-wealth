@@ -119,6 +119,8 @@ export type Reader = {
   t: (section: string, field: string, fallback?: string) => string;
   /** Repeatable list, falling back to the rows compiled into the page. */
   list: <T extends Row>(section: string, field: string, fallback: T[]) => T[];
+  /** Whether the API supplied this field (including an intentionally empty list). */
+  has: (section: string, field: string) => boolean;
   /** True once the server content has arrived. */
   ready: boolean;
 };
@@ -151,13 +153,18 @@ export function useContent(page: string): Reader {
 
   return {
     ready,
+    has: (s, field) =>
+      Object.prototype.hasOwnProperty.call(section(s) || {}, field),
     t: (s, field, fallback = "") => {
       const v = section(s)?.[field];
       return typeof v === "string" && v.trim() !== "" ? v : fallback;
     },
     list: <T extends Row>(s: string, field: string, fallback: T[]): T[] => {
       const v = section(s)?.[field];
-      return Array.isArray(v) && v.length ? (v as T[]) : fallback;
+      // An empty saved list is meaningful: it means the super admin removed
+      // every item. Falling back here made deleted navigation/footer links
+      // reappear after a successful save.
+      return Array.isArray(v) ? (v as T[]) : fallback;
     }
   };
 }

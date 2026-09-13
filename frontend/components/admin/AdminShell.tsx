@@ -20,9 +20,16 @@ type NavItem = {
   href: string;
   label: string;
   icon: React.ReactNode;
+  superOnly?: boolean;
 };
 
 const ICON = {
+  chrome: (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden>
+      <rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M3 9h18M3 16h18M8 6.5h.01M11 6.5h.01" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  ),
   content: (
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden>
       <rect
@@ -166,7 +173,8 @@ const ICON = {
 
 const NAV: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: ICON.dashboard },
-  { href: "/admin/content", label: "Content Manager", icon: ICON.content },
+  { href: "/admin/header-footer", label: "Header & Footer", icon: ICON.chrome, superOnly: true },
+  { href: "/admin/content", label: "Content Manager", icon: ICON.content, superOnly: true },
   { href: "/admin/blogs", label: "Blogs", icon: ICON.blog },
   { href: "/admin/unlisted", label: "Unlisted Shares", icon: ICON.unlisted },
   { href: "/admin/factsheet-html", label: "Factsheets", icon: ICON.factsheet },
@@ -290,7 +298,10 @@ export default function AdminShell({
         </div>
 
         <nav className="admin-nav">
-          {(managerOnly ? NAV.filter((it) => allowedForManager(it.href)) : NAV).map((it) => {
+          {(managerOnly
+            ? NAV.filter((it) => allowedForManager(it.href))
+            : NAV.filter((it) => !it.superOnly || user.role === "superadmin")
+          ).map((it) => {
             const active =
               it.href === "/admin"
                 ? pathname === "/admin"

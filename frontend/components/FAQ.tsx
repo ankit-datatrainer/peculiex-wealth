@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { fetcher } from "@/lib/api";
+import { useContent } from "@/lib/content";
 import Link from "next/link";
 
 type Item = { q: string; a: string };
@@ -14,20 +15,31 @@ const FALLBACK: Item[] = [
 ];
 
 export default function FAQ() {
-  const [items, setItems] = useState<Item[]>(FALLBACK);
+  const cms = useContent("faq");
+  const [apiItems, setApiItems] = useState<Item[]>(FALLBACK);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   useEffect(() => {
     let killed = false;
     fetcher<{ items: Item[] }>("/api/faqs")
       .then((j) => {
-        if (!killed && j?.items?.length) setItems(j.items);
+        if (!killed && j?.items?.length) setApiItems(j.items);
       })
       .catch(() => {});
     return () => {
       killed = true;
     };
   }, []);
+
+  const cmsItems = cms.list<Item>("faqList", "items", []);
+  const items = cmsItems.length > 0 ? cmsItems : apiItems;
+
+  const badgeText = cms.t("main", "badgeText", "FAQ");
+  const headingText = cms.t("main", "heading", "Frequently Asked\nQuestions");
+  const contactHeading = cms.t("contactBox", "heading", "Still have a question?");
+  const contactSub = cms.t("contactBox", "subheading", "Don't worry we're here for consultation.");
+  const contactBtn = cms.t("contactBox", "buttonText", "Contact Us");
+  const contactHref = cms.t("contactBox", "buttonHref", "/get-started");
 
   const toggle = (i: number) => {
     setOpenIndex(openIndex === i ? null : i);
@@ -40,16 +52,16 @@ export default function FAQ() {
           
           <div className="faq-left-col">
             <div className="faq-label-small">
-              <span className="faq-dot"></span> FAQ
+              <span className="faq-dot"></span> {badgeText}
             </div>
-            <h2 className="faq-title-main">
-              Frequently Asked<br/>Questions
+            <h2 className="faq-title-main" style={{ whiteSpace: "pre-line" }}>
+              {headingText}
             </h2>
             
             <div className="faq-contact-block">
-              <h3>Still have a question?</h3>
-              <p>Don't worry we're here for consultation.</p>
-              <Link href="/get-started" className="btn-contact-theme">Contact Us</Link>
+              <h3>{contactHeading}</h3>
+              <p>{contactSub}</p>
+              <Link href={contactHref} className="btn-contact-theme">{contactBtn}</Link>
             </div>
           </div>
 
