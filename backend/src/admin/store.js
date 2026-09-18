@@ -822,6 +822,16 @@ function coerceBlogInput(input, { partial = false } = {}) {
       out.tags = [];
     }
   }
+  if (input.created_at !== undefined && input.created_at) {
+    try {
+      out.created_at = new Date(input.created_at).toISOString();
+    } catch {}
+  }
+  if (input.updated_at !== undefined && input.updated_at) {
+    try {
+      out.updated_at = new Date(input.updated_at).toISOString();
+    } catch {}
+  }
   if (!partial) {
     if (!out.title) throw new Error('Field "title" is required');
     if (!out.slug) out.slug = slugify(out.title);
@@ -940,6 +950,7 @@ async function getBlogBySlug(slug) {
 async function createBlog(input) {
   const fields = coerceBlogInput(input, { partial: false });
   if (!fields.slug) fields.slug = slugify(fields.title);
+  const nowIso = now();
   const row = {
     id: newId(),
     title: fields.title,
@@ -958,8 +969,8 @@ async function createBlog(input) {
     tags: fields.tags || [],
     canonical_url: fields.canonical_url || null,
     og_image: fields.og_image || null,
-    created_at: now(),
-    updated_at: now()
+    created_at: fields.created_at || nowIso,
+    updated_at: fields.updated_at || nowIso
   };
 
   const map = seedBlogsMem();
@@ -976,7 +987,12 @@ async function createBlog(input) {
         map.set(data.id, fillBlogDefaults(data));
         return fillBlogDefaults(data);
       }
-    } catch {}
+      if (error) {
+        console.error("[createBlog] Supabase insert error:", error);
+      }
+    } catch (err) {
+      console.error("[createBlog] Supabase exception:", err);
+    }
   }
   return fillBlogDefaults(row);
 }
@@ -984,7 +1000,12 @@ async function createBlog(input) {
 async function updateBlog(id, patch) {
   const fields = coerceBlogInput(patch, { partial: true });
   if (Object.keys(fields).length === 0) return getBlogById(id);
-  fields.updated_at = now();
+  fields.updated_at = fields.updated_at || now();
+  if (patch.created_at) {
+    try {
+      fields.created_at = new Date(patch.created_at).toISOString();
+    } catch {}
+  }
 
   const map = seedBlogsMem();
   const cur = map.get(id) || {};
@@ -1004,7 +1025,12 @@ async function updateBlog(id, patch) {
         map.set(id, filled);
         return filled;
       }
-    } catch {}
+      if (error) {
+        console.error("[updateBlog] Supabase update error:", error);
+      }
+    } catch (err) {
+      console.error("[updateBlog] Supabase exception:", err);
+    }
   }
   return next;
 }

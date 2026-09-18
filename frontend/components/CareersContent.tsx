@@ -26,21 +26,21 @@ const DEFAULT_PRINCIPLES = [
 
 const DEFAULT_ROLES = [
   {
-    title: "Regional Manager",
+    title: "Commission Agent",
     team: "Management",
     location: "On-site",
     type: "Full-time",
     applyEmail: "info@finvoq.com"
   },
   {
-    title: "Regional Manager",
+    title: "Social Media Managers",
     team: "Management",
     location: "Delhi, Mumbai, Bangalore, Hyderabad, Goa, Pune, Kolkata, Chandigarh",
     type: "Full-time",
     applyEmail: "info@finvoq.com"
   },
   {
-    title: "Commission Agent",
+    title: "Business Developers",
     team: "Sales",
     location: "Remote",
     type: "Full-time",

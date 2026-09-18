@@ -5,8 +5,8 @@ import ContentBody from "@/components/ContentBody";
 import { useContent } from "@/lib/content";
 
 const DEFAULT_FACTS = [
-  { label: "Legal name", value: "Finvoq Wealth Pvt. Ltd." },
-  { label: "Founded", value: "2026" },
+  { label: "Legal name", value: "East Side Global" },
+  { label: "Founded", value: "2021" },
   { label: "Headquarters", value: "Delhi, India" },
   { label: "Registration", value: "AMFI Registered Mutual Fund Distributor" },
   { label: "CIN", value: "U67100MH2024PTC999999" },
@@ -42,7 +42,7 @@ export default function PressContent() {
   const bpText = cms.t(
     "boilerplate",
     "text",
-    "Finvoq is India's premium investment marketplace. We unify 10+ asset classes (listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, insurance, fixed deposits, and GIFT City products) into a single advisor-led platform. As an AMFI Registered Mutual Fund Distributor, Finvoq is compensated through trail commission paid by the asset manager. Founded in 2026, headquartered in Delhi."
+    "Finvoq is India's premium investment marketplace. We unify 10+ asset classes (listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, insurance, fixed deposits, and GIFT City products) into a single advisor-led platform. As an AMFI Registered Mutual Fund Distributor, Finvoq is compensated through trail commission paid by the asset manager. Founded in 2021, headquartered in Delhi."
   );
 
   const brandHeading = cms.t("brandAssets", "heading", "Brand assets");

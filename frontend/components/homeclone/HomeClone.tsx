@@ -378,7 +378,7 @@ export default function HomeClone() {
                 </h1>
 
                 {/* Trust Radar & Micro-Metrics Strip */}
-                <HeroHeadlineAdditions />
+                <HeroHeadlineAdditions content={c} />
               </div>
 
               {/* Golden Infinity Artwork */}
@@ -823,8 +823,8 @@ export default function HomeClone() {
                   risks.
                 </strong>{" "}
                 Read all related documents carefully before investing. Past
-                performance does not guarantee future returns. Finvoq Wealth
-                Pvt. Ltd. is an {REGULATORY_LABEL}
+                performance does not guarantee future returns. East Side Global
+                is an {REGULATORY_LABEL}
                 {REGISTRATION_NUMBER ? ` (${REGISTRATION_NUMBER})` : ""}.{" "}
                 {DEMAT_DISCLOSURE}
               </p>
@@ -874,7 +874,7 @@ export default function HomeClone() {
 
             <div className="sfc-footer-base">
               <span>
-                © {new Date().getFullYear()} Finvoq Wealth Pvt. Ltd. All
+                © {new Date().getFullYear()} East Side Global. All
                 rights reserved.
               </span>
               <span className="sfc-footer-made">

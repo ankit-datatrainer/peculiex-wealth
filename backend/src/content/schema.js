@@ -411,7 +411,7 @@ const PAGES = [
             type: "list",
             fields: [f("text", "Fact item text", "text", "")],
             default: [
-              { text: "Founded in 2026 in Delhi, India." },
+              { text: "Founded in 2021 in Delhi, India." },
               { text: "AMFI-registered Mutual Fund Distributor (ARN-346787)." },
               { text: "12,000+ active investors, ₹450+ Cr in assets under distribution." }
             ]
@@ -642,21 +642,21 @@ const PAGES = [
             ],
             default: [
               {
-                title: "Regional Manager",
+                title: "Commission Agent",
                 team: "Management",
                 location: "On-site",
                 type: "Full-time",
                 applyEmail: "info@finvoq.com"
               },
               {
-                title: "Regional Manager",
+                title: "Social Media Managers",
                 team: "Management",
                 location: "Delhi, Mumbai, Bangalore, Hyderabad, Goa, Pune, Kolkata, Chandigarh",
                 type: "Full-time",
                 applyEmail: "info@finvoq.com"
               },
               {
-                title: "Commission Agent",
+                title: "Business Developers",
                 team: "Sales",
                 location: "Remote",
                 type: "Full-time",
@@ -932,8 +932,8 @@ const PAGES = [
               f("value", "Value", "text", "")
             ],
             default: [
-              { label: "Legal name", value: "Finvoq Wealth Pvt. Ltd." },
-              { label: "Founded", value: "2026" },
+              { label: "Legal name", value: "East Side Global" },
+              { label: "Founded", value: "2021" },
               { label: "Headquarters", value: "Delhi, India" },
               { label: "Registration", value: "AMFI Registered Mutual Fund Distributor" },
               { label: "CIN", value: "U67100MH2024PTC999999" },
@@ -949,7 +949,7 @@ const PAGES = [
         label: "Boilerplate",
         fields: [
           f("heading", "Heading", "text", "Boilerplate"),
-          f("text", "Boilerplate description", "textarea", "Finvoq is India's premium investment marketplace. We unify 10+ asset classes (listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, insurance, fixed deposits, and GIFT City products) into a single advisor-led platform. As an AMFI Registered Mutual Fund Distributor, Finvoq is compensated through trail commission paid by the asset manager. Founded in 2026, headquartered in Delhi.")
+          f("text", "Boilerplate description", "textarea", "Finvoq is India's premium investment marketplace. We unify 10+ asset classes (listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds, insurance, fixed deposits, and GIFT City products) into a single advisor-led platform. As an AMFI Registered Mutual Fund Distributor, Finvoq is compensated through trail commission paid by the asset manager. Founded in 2021, headquartered in Delhi.")
         ]
       },
       {
@@ -2119,6 +2119,19 @@ const PAGES = [
           f("title", "Card title", "text", "Regulatory registration"),
           f("note", "Note text", "textarea", "Quote our EUIN on every transaction. It ties the advice you received to the person who gave it.")
         ]
+      },
+      {
+        key: "office",
+        label: "Office location & Google Map",
+        fields: [
+          f("eyebrow", "Eyebrow label", "text", "Headquarters"),
+          f("title", "Section title", "text", "Visit Our Office"),
+          f("addressTitle", "Address label", "text", "Registered office"),
+          f("address", "Registered office address", "textarea", "B-5, Ashoka Chambers, G/F, Pusa Rd, Block A, Rajendra Park, Rajendra Place, New Delhi, Delhi, 110060"),
+          f("landmark", "Landmark / Metro hint", "text", "Near Rajendra Place Metro Station (Blue Line) · Pusa Road"),
+          f("mapUrl", "Google Map link", "url", "https://maps.google.com/?q=B-5,+Ashoka+Chambers,+G/F,+Pusa+Rd,+Block+A,+Rajendra+Park,+Rajendra+Place,+New+Delhi,+Delhi+110060"),
+          f("mapEmbedUrl", "Google Map embed iframe URL", "url", "https://maps.google.com/maps?q=B-5,+Ashoka+Chambers,+G/F,+Pusa+Rd,+Block+A,+Rajendra+Park,+Rajendra+Place,+New+Delhi,+Delhi+110060&t=&z=16&ie=UTF8&iwloc=&output=embed")
+        ]
       }
     ]
   },
@@ -2410,7 +2423,9 @@ const PAGES = [
           f("phone", "Phone (dial target)", "text", "+919811295656"),
           f("phoneDisplay", "Phone (as displayed)", "text", "+91 98112 95656"),
           f("hours", "Working hours", "text", "Monday to Friday, 9:30am – 6:30pm IST"),
-          f("address", "Registered office", "textarea", "Delhi, India")
+          f("address", "Registered office", "textarea", "B-5, Ashoka Chambers, G/F, Pusa Rd, Block A, Rajendra Park, Rajendra Place, New Delhi, Delhi, 110060"),
+          f("mapUrl", "Google Map link", "url", "https://maps.google.com/?q=B-5,+Ashoka+Chambers,+G/F,+Pusa+Rd,+Block+A,+Rajendra+Park,+Rajendra+Place,+New+Delhi,+Delhi+110060"),
+          f("mapEmbedUrl", "Google Map embed iframe URL", "url", "https://maps.google.com/maps?q=B-5,+Ashoka+Chambers,+G/F,+Pusa+Rd,+Block+A,+Rajendra+Park,+Rajendra+Place,+New+Delhi,+Delhi+110060&t=&z=16&ie=UTF8&iwloc=&output=embed")
         ]
       }
     ]

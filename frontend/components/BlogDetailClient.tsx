@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Clock, Share2, Tag, ArrowUpRight, Sparkles, Check } from "lucide-react";
 import { fetcher, apiUrl } from "@/lib/api";
@@ -60,6 +60,63 @@ export default function BlogDetailClient({ slug, initialBlog }: BlogDetailClient
     }
   };
 
+  // Smart relevance ranking for related articles
+  const related = useMemo(() => {
+    if (!blog) return [];
+
+    const candidates = allBlogs.filter((b) => b.slug !== blog.slug);
+    if (candidates.length === 0) return [];
+
+    const currentCategory = (blog.category || "").toLowerCase().trim();
+    const currentTags = new Set((blog.tags || []).map((t) => t.toLowerCase().trim()));
+    const stopWords = new Set(["the", "and", "for", "with", "into", "from", "when", "that", "this", "your", "about", "what", "how", "over"]);
+    const currentWords = (blog.title || "")
+      .toLowerCase()
+      .replace(/[^\w\s]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w.length > 3 && !stopWords.has(w));
+
+    const scored = candidates.map((candidate) => {
+      let score = 0;
+
+      // 1. Same category is primary (+20)
+      const candidateCat = (candidate.category || "").toLowerCase().trim();
+      if (candidateCat && candidateCat === currentCategory) {
+        score += 20;
+      }
+
+      // 2. Matching tags (+10 each)
+      if (candidate.tags && candidate.tags.length > 0) {
+        candidate.tags.forEach((t) => {
+          if (currentTags.has(t.toLowerCase().trim())) {
+            score += 10;
+          }
+        });
+      }
+
+      // 3. Matching title or excerpt keywords (+6 / +3)
+      const candTitleLower = (candidate.title || "").toLowerCase();
+      const candExcerptLower = (candidate.excerpt || "").toLowerCase();
+      currentWords.forEach((word) => {
+        if (candTitleLower.includes(word)) {
+          score += 6;
+        } else if (candExcerptLower.includes(word)) {
+          score += 3;
+        }
+      });
+
+      // 4. Recency tiebreaker
+      const candidateTime = new Date(candidate.updated_at || candidate.created_at || 0).getTime();
+      const recencyBonus = isNaN(candidateTime) ? 0 : candidateTime / 1e14;
+      score += recencyBonus;
+
+      return { candidate, score };
+    });
+
+    scored.sort((a, b) => b.score - a.score);
+    return scored.slice(0, 3).map((s) => s.candidate);
+  }, [blog, allBlogs]);
+
   if (!blog) {
     if (loading) {
       return (
@@ -84,15 +141,16 @@ export default function BlogDetailClient({ slug, initialBlog }: BlogDetailClient
     );
   }
 
-  const related = allBlogs.filter((b) => b.slug !== blog.slug).slice(0, 3);
   const wordCount = (blog.body || "").replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
   const readTime = Math.max(2, Math.ceil(wordCount / 180));
 
   const coverImg = blog.image_url
-    ? blog.image_url.startsWith("http") || blog.image_url.startsWith("/")
+    ? blog.image_url.startsWith("http")
       ? blog.image_url
       : apiUrl(blog.image_url)
     : "/images/blogs/blog-1.jpg";
+
+  const articleDate = blog.updated_at || blog.created_at;
 
   return (
     <article className="blog-detail">
@@ -115,10 +173,10 @@ export default function BlogDetailClient({ slug, initialBlog }: BlogDetailClient
               <span>
                 By <strong className="blog-author-tag">{blog.author || "Finvoq Admin"}</strong>
               </span>
-              {blog.created_at && (
+              {articleDate && (
                 <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
                   <Calendar size={14} />
-                  {new Date(blog.created_at).toLocaleDateString("en-IN", {
+                  {new Date(articleDate).toLocaleDateString("en-IN", {
                     year: "numeric",
                     month: "long",
                     day: "numeric"
@@ -171,15 +229,22 @@ export default function BlogDetailClient({ slug, initialBlog }: BlogDetailClient
             ))}
           </div>
         )}
+      </div>
 
-        {/* Related Articles */}
-        {related.length > 0 && (
-          <section className="blog-related-section">
+      {/* Related Articles Section (Full-Width Breakout) */}
+      {related.length > 0 && (
+        <section className="blog-related-section">
+          <div className="blog-related-container">
             <div className="blog-related-head">
-              <h3 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>
-                Related Perspectives
-              </h3>
-              <Link href="/blog" style={{ fontSize: 13, fontWeight: 600, color: "#10b981", display: "inline-flex", alignItems: "center", gap: 4 }}>
+              <div>
+                <span className="blog-related-eyebrow">
+                  <Sparkles size={13} /> Recommended Reading
+                </span>
+                <h3 className="blog-related-heading">
+                  Related Perspectives
+                </h3>
+              </div>
+              <Link href="/blog" className="blog-related-all-btn">
                 All articles <ArrowUpRight size={14} />
               </Link>
             </div>
@@ -191,10 +256,16 @@ export default function BlogDetailClient({ slug, initialBlog }: BlogDetailClient
                     ? r.image_url
                     : apiUrl(r.image_url)
                   : fallbackImg;
+                const rDate = r.updated_at || r.created_at;
+                const rWordCount = (r.body || "").replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
+                const rReadTime = Math.max(2, Math.ceil(rWordCount / 180));
 
                 return (
                   <Link href={`/blog/${r.slug}`} key={r.slug} className="blog-rel-card">
                     <div className="blog-rel-img-wrap">
+                      <span className="blog-rel-cat-badge">
+                        {r.category || "Wealth Advisory"}
+                      </span>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={relImg}
@@ -207,18 +278,49 @@ export default function BlogDetailClient({ slug, initialBlog }: BlogDetailClient
                       />
                     </div>
                     <div className="blog-rel-body">
-                      <span className="blog-rel-cat">
-                        {r.category || "Wealth Advisory"}
-                      </span>
+                      <div className="blog-rel-meta">
+                        <span className="blog-rel-author">{r.author || "Finvoq Admin"}</span>
+                        <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                          {rDate && (
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                              <Calendar size={12} />
+                              {new Date(rDate).toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              })}
+                            </span>
+                          )}
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                            <Clock size={12} />
+                            {rReadTime} min
+                          </span>
+                        </div>
+                      </div>
                       <h4 className="blog-rel-title">{r.title}</h4>
+                      {r.excerpt && <p className="blog-rel-excerpt">{r.excerpt}</p>}
+                      <div className="blog-rel-footer">
+                        <span className="blog-rel-read">
+                          Read article <ArrowUpRight size={13} />
+                        </span>
+                        {r.tags && r.tags.length > 0 && (
+                          <div className="blog-rel-tags">
+                            {r.tags.slice(0, 2).map((t) => (
+                              <span key={t} className="blog-rel-tag">
+                                #{t}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </Link>
                 );
               })}
             </div>
-          </section>
-        )}
-      </div>
+          </div>
+        </section>
+      )}
     </article>
   );
 }

@@ -4,6 +4,8 @@ import { type Blog, getFallbackBlogBySlug, getAllFallbackBlogs } from "@/lib/blo
 import BlogDetailClient from "@/components/BlogDetailClient";
 import "./blog-detail.css";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
@@ -19,6 +21,7 @@ export async function generateStaticParams() {
     try {
       const cleanBase = apiBase.replace(/\/+$/, "");
       const res = await fetch(`${cleanBase}/api/blogs`, {
+        cache: "no-store",
         signal: AbortSignal.timeout(5000),
       });
       if (res.ok) {
@@ -45,7 +48,7 @@ async function fetchFromUrl(baseUrl: string, slug: string): Promise<Blog | null>
   try {
     const cleanBase = baseUrl.replace(/\/+$/, "");
     const res = await fetch(`${cleanBase}/api/blogs/${encodeURIComponent(slug)}`, {
-      next: { revalidate: 60 },
+      cache: "no-store",
       signal: AbortSignal.timeout(3000)
     });
     if (!res.ok) return null;
@@ -127,7 +130,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       url: canonical,
       siteName: "Finvoq Wealth Management",
       type: "article",
-      publishedTime: blog.created_at,
+      publishedTime: blog.updated_at || blog.created_at,
       modifiedTime: blog.updated_at || blog.created_at,
       authors: [blog.author || "Finvoq Admin"],
       tags,
@@ -167,7 +170,7 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
               : apiUrl(blog.og_image || blog.image_url || "/images/blogs/blog-1.jpg")
             : "https://finvoq.com/images/blogs/blog-1.jpg"
         ],
-        datePublished: blog.created_at,
+        datePublished: blog.updated_at || blog.created_at,
         dateModified: blog.updated_at || blog.created_at,
         author: {
           "@type": "Person",

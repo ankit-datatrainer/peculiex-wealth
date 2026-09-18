@@ -163,6 +163,9 @@ export type RegulatoryRole = 'adviser' | 'distributor';
 // stay valid if this is ever switched back to 'adviser'.
 export const REGULATORY_ROLE = 'distributor' as RegulatoryRole;
 
+/** Confirmed entity name for AMFI registration. */
+export const COMPANY_LEGAL_NAME = 'East Side Global';
+
 /** Confirmed by Finvoq 2026-08-02 — AMFI ARN of the distributor. */
 export const REGISTRATION_NUMBER = 'ARN-346787';
 
@@ -196,10 +199,14 @@ export const REGULATORY_CREDENTIALS: { label: string; value: string }[] = [
   { label: 'EUIN code', value: EUIN_CODE },
 ].filter((row) => row.value);
 
-/** Single-line form for the footer band and other tight spaces. */
-export const REGISTRATION_CODES_LINE = REGULATORY_CREDENTIALS.map(
-  (row) => `${row.label} ${row.value}`
-).join('  ·  ');
+/** Founding year of the firm */
+export const FOUNDED_YEAR = '2021';
+
+/** Single-line form for the footer band and other tight spaces (excluding enrollment date). */
+export const REGISTRATION_CODES_LINE = REGULATORY_CREDENTIALS
+  .filter((row) => row.label !== 'Enrollment date')
+  .map((row) => `${row.label} ${row.value}`)
+  .join('  ·  ');
 
 export const REGULATORY_LABEL =
   REGULATORY_ROLE === 'adviser'

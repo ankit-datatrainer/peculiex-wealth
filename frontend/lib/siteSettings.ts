@@ -182,14 +182,23 @@ export function footerColumnsFrom(
   return cms.has("footerLinks", "col1") ? kept : fallback;
 }
 
-/** Direct contact routes shown under the footer brand blurb. */
+const DEFAULT_OFFICE_ADDRESS =
+  "B-5, Ashoka Chambers, G/F, Pusa Rd, Block A, Rajendra Park, Rajendra Place, New Delhi, Delhi, 110060";
+
+/** Direct contact routes shown under the footer brand blurb and /contact. */
 export function contactFrom(cms: Reader) {
+  const address = cms.t("contact", "address", DEFAULT_OFFICE_ADDRESS);
+  const defaultMapUrl = `https://maps.google.com/?q=${encodeURIComponent(address)}`;
+  const defaultMapEmbedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(address)}&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+
   return {
     email: cms.t("contact", "email", "info@finvoq.com"),
-    phone: cms.t("contact", "phone", ""),
-    phoneDisplay: cms.t("contact", "phoneDisplay", ""),
-    hours: cms.t("contact", "hours", ""),
-    address: cms.t("contact", "address", "Delhi, India"),
+    phone: cms.t("contact", "phone", "+919811295656"),
+    phoneDisplay: cms.t("contact", "phoneDisplay", "+91 98112 95656"),
+    hours: cms.t("contact", "hours", "Monday to Friday, 9:30am – 6:30pm IST"),
+    address,
+    mapUrl: cms.t("contact", "mapUrl", defaultMapUrl) || defaultMapUrl,
+    mapEmbedUrl: cms.t("contact", "mapEmbedUrl", defaultMapEmbedUrl) || defaultMapEmbedUrl,
   };
 }
 

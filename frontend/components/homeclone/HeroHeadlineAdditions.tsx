@@ -1,36 +1,73 @@
 "use client";
 
-export default function HeroHeadlineAdditions() {
+import { Fragment } from "react";
+import { useContent, type Reader } from "@/lib/content";
+
+export default function HeroHeadlineAdditions({
+  content
+}: {
+  content?: Reader;
+} = {}) {
+  const defaultContent = useContent("home");
+  const c = content || defaultContent;
+
+  const trustBadgeBold = c.t(
+    "hero",
+    "trustBadgeBold",
+    "India's Multi-Asset Investment Gateway"
+  );
+  const trustBadgeText = c.t("hero", "trustBadgeText", "SEBI-Registered");
+
+  const stat1Value = c.t("hero", "stat1Value", "₹1,200Cr+");
+  const stat1Label = c.t("hero", "stat1Label", "Monitored Assets");
+
+  const stat2Value = c.t("hero", "stat2Value", "15,000+");
+  const stat2Label = c.t("hero", "stat2Label", "Serious Investors");
+
+  const stat3Value = c.t("hero", "stat3Value", "0%");
+  const stat3Label = c.t("hero", "stat3Label", "Hidden Fees");
+
+  const stat4Value = c.t("hero", "stat4Value", "");
+  const stat4Label = c.t("hero", "stat4Label", "");
+
+  const metrics = [
+    { value: stat1Value, label: stat1Label },
+    { value: stat2Value, label: stat2Label },
+    { value: stat3Value, label: stat3Label },
+    ...(stat4Value && stat4Label ? [{ value: stat4Value, label: stat4Label }] : [])
+  ].filter((m) => m.value || m.label);
+
   return (
     <div className="hero-headline-enhancement sfc-up sfc-d2">
       {/* ── Top Floating Trust Radar Pill ────────────────────────── */}
-      <div className="hero-trust-pill">
-        <span className="trust-pill-pulse">
-          <span className="trust-pill-pulse-dot" />
-          <span className="trust-pill-pulse-wave" />
-        </span>
-        <span className="trust-pill-text">
-          <strong>India&apos;s Multi-Asset Investment Gateway</strong> · SEBI-Registered
-        </span>
-      </div>
+      {(trustBadgeBold || trustBadgeText) && (
+        <div className="hero-trust-pill">
+          <span className="trust-pill-pulse">
+            <span className="trust-pill-pulse-dot" />
+            <span className="trust-pill-pulse-wave" />
+          </span>
+          <span className="trust-pill-text">
+            {trustBadgeBold && <strong>{trustBadgeBold}</strong>}
+            {trustBadgeBold && trustBadgeText && " · "}
+            {trustBadgeText && <span>{trustBadgeText}</span>}
+          </span>
+        </div>
+      )}
 
       {/* ── Hero Live Micro-Metrics Strip ───────────────────────── */}
-      <div className="hero-metrics-strip">
-        <div className="hero-metric-item">
-          <div className="hero-metric-num">₹1,200Cr+</div>
-          <div className="hero-metric-lbl">Monitored Assets</div>
+      {metrics.length > 0 && (
+        <div className="hero-metrics-strip">
+          {metrics.map((m, idx) => (
+            <Fragment key={idx}>
+              {idx > 0 && <div className="hero-metric-sep" />}
+              <div className="hero-metric-item">
+                <div className="hero-metric-num">{m.value}</div>
+                <div className="hero-metric-lbl">{m.label}</div>
+              </div>
+            </Fragment>
+          ))}
         </div>
-        <div className="hero-metric-sep" />
-        <div className="hero-metric-item">
-          <div className="hero-metric-num">15,000+</div>
-          <div className="hero-metric-lbl">Serious Investors</div>
-        </div>
-        <div className="hero-metric-sep" />
-        <div className="hero-metric-item">
-          <div className="hero-metric-num">0%</div>
-          <div className="hero-metric-lbl">Hidden Fees</div>
-        </div>
-      </div>
+      )}
 
       <style jsx>{`
         .hero-headline-enhancement {

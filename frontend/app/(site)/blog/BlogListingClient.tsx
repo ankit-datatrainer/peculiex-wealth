@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { fetcher, apiUrl } from "@/lib/api";
 import { type Blog, DEFAULT_BLOGS } from "@/lib/blogData";
-import { ArrowUpRight, Search, Sparkles, Tag, Clock } from "lucide-react";
+import { ArrowUpRight, Search, Sparkles, Tag, Clock, Calendar } from "lucide-react";
 import "./blog.css";
 
 export default function BlogListingClient() {
@@ -147,17 +147,29 @@ export default function BlogListingClient() {
                   <div className="blog-card-body">
                     <div className="blog-card-meta">
                       <span className="blog-card-author">{b.author || "Finvoq Admin"}</span>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                        <Clock size={12} /> {readTime} min
-                      </span>
+                      <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+                        {(b.updated_at || b.created_at) && (
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                            <Calendar size={12} />
+                            {new Date((b.updated_at || b.created_at)!).toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric"
+                            })}
+                          </span>
+                        )}
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                          <Clock size={12} /> {readTime} min
+                        </span>
+                      </div>
                     </div>
 
-                    <h3>{b.title}</h3>
+                    <h3 className="blog-card-title">{b.title}</h3>
                     {b.excerpt && <p className="blog-card-excerpt">{b.excerpt}</p>}
 
                     <div className="blog-card-footer">
                       <span className="blog-card-read">
-                        Read article <ArrowUpRight size={14} />
+                        Read article <ArrowUpRight size={13} />
                       </span>
                       {b.tags && b.tags.length > 0 && (
                         <div className="blog-card-tags">

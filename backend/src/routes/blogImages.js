@@ -40,12 +40,27 @@ function detectExt(buffer) {
 // ---------- public: serve an uploaded blog image ----------
 router.get("/file/:filename", (req, res) => {
   const filename = String(req.params.filename || "").replace(/[^a-zA-Z0-9._-]/g, "");
-  const file = path.join(UPLOAD_DIR, filename);
+  let file = path.join(UPLOAD_DIR, filename);
+
+  if (!file.startsWith(UPLOAD_DIR) || !fs.existsSync(file)) {
+    // Fallback: match by blog ID prefix if exact filename is not found
+    const baseId = filename.split(".")[0].split("-")[0];
+    if (baseId) {
+      try {
+        const match = fs.readdirSync(UPLOAD_DIR).find((f) => f.startsWith(baseId));
+        if (match) {
+          file = path.join(UPLOAD_DIR, match);
+        }
+      } catch {}
+    }
+  }
+
   if (!file.startsWith(UPLOAD_DIR) || !fs.existsSync(file)) {
     return res.status(404).json({ error: "Not found" });
   }
-  res.setHeader("Cache-Control", "public, max-age=86400");
-  fs.createReadStream(file).pipe(res);
+
+  res.setHeader("Cache-Control", "public, max-age=3600, must-revalidate");
+  res.sendFile(path.resolve(file));
 });
 
 // ---------- admin: upload / replace a blog cover image ----------
@@ -88,16 +103,25 @@ router.post(
 
       // Remove any previous image for this blog post.
       for (const f of fs.readdirSync(UPLOAD_DIR)) {
-        if (f.startsWith(id + ".")) {
-          fs.unlinkSync(path.join(UPLOAD_DIR, f));
+        if (f.startsWith(id + ".") || f.startsWith(id + "-") || f.startsWith(id + "_")) {
+          try {
+            fs.unlinkSync(path.join(UPLOAD_DIR, f));
+          } catch {}
         }
       }
 
-      const filename = `${id}.${ext}`;
+      const timestamp = Date.now();
+      const filename = `${id}-${timestamp}.${ext}`;
       fs.writeFileSync(path.join(UPLOAD_DIR, filename), buffer);
 
+      const nowIso = new Date().toISOString();
       const logo_url = `/api/blog-images/file/${filename}`;
-      const updated = await admin.updateBlog(id, { image_url: logo_url });
+      const updated = await admin.updateBlog(id, {
+        image_url: logo_url,
+        og_image: logo_url,
+        updated_at: nowIso,
+        created_at: nowIso
+      });
 
       res.json({ ok: true, item: updated, image_url: logo_url });
     } catch (err) {

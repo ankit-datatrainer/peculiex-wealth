@@ -6,6 +6,7 @@ import { postJSON } from "@/lib/api";
 import Logo from "./Logo";
 import { useContent, accent } from "@/lib/content";
 import {
+  COMPANY_LEGAL_NAME,
   DEMAT_DISCLOSURE,
   REGISTRATION_CODES_LINE,
   REGISTRATION_LINE,
@@ -78,13 +79,13 @@ function heading(text: string) {
   );
 }
 
-
 export default function Footer() {
   const cms = useContent("global");
   const columns = footerColumnsFrom(cms, FOOTER_COLUMNS);
   const social = socialFrom(cms);
   const whatsapp = whatsappFrom(cms);
   const contact = contactFrom(cms);
+  const companyName = cms.t("footer", "companyName", COMPANY_LEGAL_NAME);
   const pathname = usePathname();
   const year = new Date().getFullYear();
   const [submitting, setSubmitting] = useState(false);
@@ -92,7 +93,6 @@ export default function Footer() {
   const [error, setError] = useState<string | null>(null);
   const newsletterEnabled = cms.t("footer", "newsletterEnabled", "yes") !== "no";
   const badgeEnabled = cms.t("footer", "badgeEnabled", "yes") !== "no";
-
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -122,62 +122,70 @@ export default function Footer() {
 
   return (
     <footer className="site-footer">
-      {newsletterEnabled && <div className="container foot-newsletter reveal">
-        <div className="fn-text">
-          <h3>{heading(cms.t("footer", "newsletterTitle", "Get the *weekly market brief.*"))}</h3>
-          <p>{cms.t("footer", "newsletterBody", "Curated insights from our research team, every Monday before markets open. No promotions, no spam, ever.")}</p>
-        </div>
-        <form
-          className="fn-form"
-          id="newsletterForm"
-          noValidate
-          onSubmit={onSubmit}
-        >
-          <input
-            type="email"
-            name="email"
-            placeholder="you@email.com"
-            required
-            aria-label="Email address"
-          />
-          <button
-            className="btn btn-primary"
-            type="submit"
-            data-magnetic
-            disabled={submitting}
-            style={{ opacity: submitting ? 0.7 : 1 }}
+      {newsletterEnabled && (
+        <div className="container foot-newsletter reveal">
+          <div className="fn-text">
+            <h3>{heading(cms.t("footer", "newsletterTitle", "Get the *weekly market brief.*"))}</h3>
+            <p>
+              {cms.t(
+                "footer",
+                "newsletterBody",
+                "Curated insights from our research team, every Monday before markets open. No promotions, no spam, ever."
+              )}
+            </p>
+          </div>
+          <form
+            className="fn-form"
+            id="newsletterForm"
+            noValidate
+            onSubmit={onSubmit}
           >
-            <span>
-              {submitting ? "Subscribing…" : success ? "Subscribed ✓" : "Subscribe"}
-            </span>
-            <svg viewBox="0 0 14 14" fill="none" width="14" height="14">
-              <path
-                d="M1 7h12m0 0L8 2m5 5l-5 5"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          {success && (
-            <p className="fn-msg show" id="fnMsg">
-              ✓ Subscribed. Look out for Monday's brief in your inbox.
-            </p>
-          )}
-          {error && (
-            <p
-              style={{
-                color: "var(--color-danger)",
-                marginTop: "0.5rem",
-                fontSize: "0.85rem"
-              }}
+            <input
+              type="email"
+              name="email"
+              placeholder="you@email.com"
+              required
+              aria-label="Email address"
+            />
+            <button
+              className="btn btn-primary"
+              type="submit"
+              data-magnetic
+              disabled={submitting}
+              style={{ opacity: submitting ? 0.7 : 1 }}
             >
-              {error}
-            </p>
-          )}
-        </form>
-      </div>}
+              <span>
+                {submitting ? "Subscribing…" : success ? "Subscribed ✓" : "Subscribe"}
+              </span>
+              <svg viewBox="0 0 14 14" fill="none" width="14" height="14">
+                <path
+                  d="M1 7h12m0 0L8 2m5 5l-5 5"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            {success && (
+              <p className="fn-msg show" id="fnMsg">
+                ✓ Subscribed. Look out for Monday's brief in your inbox.
+              </p>
+            )}
+            {error && (
+              <p
+                style={{
+                  color: "var(--color-danger)",
+                  marginTop: "0.5rem",
+                  fontSize: "0.85rem"
+                }}
+              >
+                {error}
+              </p>
+            )}
+          </form>
+        </div>
+      )}
 
       <div className="container foot-grid">
         <div className="foot-col foot-brand">
@@ -191,9 +199,12 @@ export default function Footer() {
               "India's premium investment marketplace. Multiple asset classes, one platform, advisory-led."
             )}
           </p>
-          {badgeEnabled && <div className="foot-reg">
-            <span className="status-dot"></span>{cms.t("footer", "badge", REGISTRATION_LINE)}
-          </div>}
+          {badgeEnabled && (
+            <div className="foot-reg">
+              <span className="status-dot"></span>
+              {cms.t("footer", "badge", REGISTRATION_LINE)}
+            </div>
+          )}
           {/* Direct routes in the footer: the number is the fastest path to a
               human, and burying it on /contact costs the high-intent click. */}
           <ul className="foot-contact">
@@ -252,8 +263,8 @@ export default function Footer() {
               Investments in securities markets are subject to market risks.
             </strong>{" "}
             Read all related documents carefully before investing. Past
-            performance does not guarantee future returns. Finvoq Wealth Pvt.
-            Ltd. is an {REGULATORY_LABEL}
+            performance does not guarantee future returns. {companyName} is an{" "}
+            {REGULATORY_LABEL}
             {REGISTRATION_NUMBER ? ` (${REGISTRATION_NUMBER})` : ""}.{" "}
             {DEMAT_DISCLOSURE}
           </p>
@@ -304,7 +315,7 @@ export default function Footer() {
 
       <div className="container foot-base">
         <span>
-          © <span id="year">{year}</span> {cms.t("footer", "copyright", "Finvoq Wealth Pvt. Ltd. All rights reserved.")}
+          © <span id="year">{year}</span> {cms.t("footer", "copyright", `${companyName}. All rights reserved.`)}
         </span>
         <span>{cms.t("footer", "madeIn", "Crafted with care · Delhi, India")}</span>
       </div>

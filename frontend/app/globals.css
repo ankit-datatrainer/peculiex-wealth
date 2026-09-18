@@ -7967,7 +7967,7 @@ html:not(.dark) .auth-aside .logo {
   background: var(--color-surface-2);
   border: 1px solid var(--color-divider);
   border-radius: 16px;
-  padding: 28px;
+  padding: 0;
   transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 }
 
@@ -14246,26 +14246,26 @@ html:not(.dark) .auth-aside .logo {
    the screen character by character without second-guessing an l from a 1.
    All colours come from tokens, so the block inverts with the dark theme. */
 .reg-creds--panel {
-  margin: 32px 0;
-  padding: 28px 30px;
+  margin: 36px 0;
+  padding: 32px 34px;
   background: var(--color-surface-2);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl, 20px);
   box-shadow: var(--shadow-sm);
 }
 
 .reg-creds__heading {
   font-family: var(--font-display);
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   color: var(--color-text);
 }
 
 .reg-creds__intro {
-  margin: 0 0 16px;
-  font-size: 0.9rem;
+  margin: 0 0 18px;
+  font-size: 0.92rem;
   line-height: 1.65;
   color: var(--color-text-muted);
 }
@@ -14273,9 +14273,11 @@ html:not(.dark) .auth-aside .logo {
 /* The regulatory role sits above the codes: the codes are meaningless
    without knowing what we are registered *as*. */
 .reg-creds__role {
-  display: inline-block;
-  margin: 0 0 18px;
-  padding: 6px 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 20px;
+  padding: 6px 14px;
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -14288,22 +14290,36 @@ html:not(.dark) .auth-aside .logo {
 
 .reg-creds__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
-  gap: 1px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
   margin: 0;
-  background: var(--color-divider);
-  border: 1px solid var(--color-divider);
-  border-radius: 10px;
-  overflow: hidden;
+  background: transparent;
+  border: none;
+  overflow: visible;
 }
 
 .reg-creds__row {
-  padding: 13px 16px;
+  padding: 16px 18px;
   background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.reg-creds__row:hover {
+  border-color: rgba(14, 63, 118, 0.28);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
 }
 
 .reg-creds__row dt {
-  margin: 0 0 5px;
+  margin: 0 0 6px;
   font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -14322,8 +14338,8 @@ html:not(.dark) .auth-aside .logo {
 }
 
 .reg-creds__note {
-  margin: 16px 0 0;
-  font-size: 0.8rem;
+  margin: 18px 0 0;
+  font-size: 0.82rem;
   line-height: 1.65;
   color: var(--color-text-muted);
 }
@@ -14339,24 +14355,36 @@ html:not(.dark) .auth-aside .logo {
 
 .reg-creds--inline .reg-creds__grid {
   grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  background: transparent;
+  border: none;
 }
 
 .reg-creds--inline .reg-creds__row {
-  padding: 11px 13px;
+  padding: 12px 14px;
+  border-radius: 10px;
 }
 
 .reg-creds--inline .reg-creds__row dd {
   font-size: 0.88rem;
 }
 
-@media (max-width: 560px) {
+@media (max-width: 768px) {
+  .reg-creds__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
   .reg-creds--panel {
-    padding: 22px 20px;
+    padding: 22px 18px;
   }
 
   .reg-creds__grid,
   .reg-creds--inline .reg-creds__grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 }
 

@@ -13,6 +13,7 @@ const router = Router();
 
 router.get("/", async (_req, res, next) => {
   try {
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     const items = await admin.listBlogs({ publishedOnly: true });
     res.json({ items });
   } catch (err) {
@@ -22,6 +23,7 @@ router.get("/", async (_req, res, next) => {
 
 router.get("/:slug", async (req, res, next) => {
   try {
+    res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     const slug = String(req.params.slug || "").trim();
     if (!slug) return res.status(400).json({ error: "slug required" });
     const item = await admin.getBlogBySlug(slug);

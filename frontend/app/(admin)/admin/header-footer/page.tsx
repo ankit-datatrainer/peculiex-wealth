@@ -345,7 +345,8 @@ export default function HeaderFooterPage() {
                 <Field label="Newsletter heading" value={text(draft.footer?.newsletterTitle)} onChange={(value) => change("footer", "newsletterTitle", value)} />
                 <Field textarea label="Newsletter description" value={text(draft.footer?.newsletterBody)} onChange={(value) => change("footer", "newsletterBody", value)} />
               </div>
-              <Field label="Copyright line" value={text(draft.footer?.copyright)} onChange={(value) => change("footer", "copyright", value)} />
+              <Field label="Company / distributor legal name" value={text(draft.footer?.companyName) || "East Side Global"} onChange={(value) => change("footer", "companyName", value)} />
+              <Field label="Copyright line" value={text(draft.footer?.copyright) || "East Side Global. All rights reserved."} onChange={(value) => change("footer", "copyright", value)} />
               <Field label="Location line" value={text(draft.footer?.madeIn)} onChange={(value) => change("footer", "madeIn", value)} />
             </div>
           </SectionCard>
@@ -361,6 +362,8 @@ export default function HeaderFooterPage() {
               <Field label="Phone as displayed" value={text(draft.contact?.phoneDisplay)} onChange={(value) => change("contact", "phoneDisplay", value)} />
               <Field label="Working hours" value={text(draft.contact?.hours)} onChange={(value) => change("contact", "hours", value)} />
               <Field textarea label="Registered office" value={text(draft.contact?.address)} onChange={(value) => change("contact", "address", value)} />
+              <Field label="Google Map link (URL)" value={text(draft.contact?.mapUrl)} onChange={(value) => change("contact", "mapUrl", value)} />
+              <Field label="Google Map embed iframe URL" value={text(draft.contact?.mapEmbedUrl)} onChange={(value) => change("contact", "mapEmbedUrl", value)} />
             </div>
           </SectionCard>
 

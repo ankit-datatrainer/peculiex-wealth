@@ -10,6 +10,7 @@ import {
   ASSET_CLASS_COUNT_WORD,
   CITY,
   FEE_DISCLOSURE,
+  FOUNDED_YEAR,
   INVESTOR_COUNT,
   REGISTRATION_LINE
 } from "@/lib/siteFacts";
@@ -58,7 +59,7 @@ export default function AboutClient() {
   // Where section
   const whereHeading = cms.t("where", "heading", "Where we are");
   const whereList = cms.list("where", "items", [
-    { text: `Founded in 2026 in ${CITY}, India.` },
+    { text: `Founded in ${FOUNDED_YEAR} in ${CITY}, India.` },
     { text: `${REGISTRATION_LINE}.` },
     { text: `${INVESTOR_COUNT} active investors, ${ASSETS_ADVISED} in assets under distribution.` }
   ]);

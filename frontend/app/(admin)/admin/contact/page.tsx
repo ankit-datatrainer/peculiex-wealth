@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   fetchContactMessages,
   deleteContactMessage,
   type AdminContactMessage
 } from "@/lib/admin-api";
+import { MapPin, ExternalLink, Settings } from "lucide-react";
 
 export default function AdminContactPage() {
   const [items, setItems] = useState<AdminContactMessage[]>([]);
@@ -46,10 +48,80 @@ export default function AdminContactPage() {
         <div>
           <h1>Contact Messages</h1>
           <p className="admin-page-sub">
-            Submissions from the public contact form.
+            Submissions from the public contact form. Looking to edit website copy and hero metrics? Go to{" "}
+            <Link
+              href="/admin/content"
+              style={{
+                color: "var(--color-primary, #13735d)",
+                fontWeight: 600,
+                textDecoration: "underline"
+              }}
+            >
+              Content Manager
+            </Link>.
           </p>
         </div>
       </header>
+
+      {/* Office & Google Map Shortcut */}
+      <div
+        className="admin-card"
+        style={{
+          marginBottom: 24,
+          padding: "20px 24px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 20,
+          flexWrap: "wrap",
+          background: "var(--color-surface, #fff)",
+          border: "1px solid var(--color-border, rgba(0,0,0,0.08))",
+          borderRadius: 14,
+        }}
+      >
+        <div>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: "0.72rem",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+              color: "#10b981",
+              marginBottom: 4,
+            }}
+          >
+            <MapPin size={13} /> Registered Office & Google Map
+          </div>
+          <div style={{ fontSize: "0.95rem", fontWeight: 600, color: "var(--ink, #0f172a)" }}>
+            B-5, Ashoka Chambers, G/F, Pusa Rd, Block A, Rajendra Park, Rajendra Place, New Delhi, Delhi, 110060
+          </div>
+          <div style={{ fontSize: "0.82rem", color: "var(--ink-sub, #64748b)", marginTop: 2 }}>
+            Connected to Google Maps on the public /contact page.
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <a
+            href="https://maps.google.com/?q=B-5,+Ashoka+Chambers,+G/F,+Pusa+Rd,+Block+A,+Rajendra+Park,+Rajendra+Place,+New+Delhi,+Delhi+110060"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-outline btn-sm"
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            <ExternalLink size={14} /> View Map
+          </a>
+          <Link
+            href="/admin/header-footer"
+            className="btn btn-primary btn-sm"
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            <Settings size={14} /> Edit in Settings
+          </Link>
+        </div>
+      </div>
 
       {error && <div className="admin-error">{error}</div>}
 

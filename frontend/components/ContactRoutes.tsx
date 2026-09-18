@@ -10,6 +10,7 @@
  * passed in so it stays identical to the server-rendered cards around it.
  */
 
+import { MapPin } from "lucide-react";
 import { SOCIAL_ICON_PATHS } from "@/lib/socialIcons";
 import { contactFrom, socialFrom, whatsappFrom } from "@/lib/siteSettings";
 import { useContent } from "@/lib/content";
@@ -82,7 +83,26 @@ export default function ContactRoutes({
 
       <div style={cardStyle}>
         <div style={labelStyle}>Registered office</div>
-        <p style={{ margin: 0, lineHeight: 1.7 }}>{contact.address}</p>
+        <p style={{ margin: 0, lineHeight: 1.7, fontSize: "0.92rem" }}>{contact.address}</p>
+        {contact.mapUrl ? (
+          <a
+            href={contact.mapUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              ...linkStyle,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              marginTop: 10,
+              fontSize: "0.86rem",
+              textDecoration: "none",
+            }}
+          >
+            <MapPin size={14} />
+            View on Google Maps →
+          </a>
+        ) : null}
       </div>
 
       {social.length > 0 ? (

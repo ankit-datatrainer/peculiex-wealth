@@ -244,7 +244,7 @@ export const fetchBlogs = () =>
   apiFetch<{ items: AdminBlog[] }>("/api/admin/blogs").then((r) => r.items);
 
 export const createBlog = (
-  payload: Omit<AdminBlog, "id" | "created_at" | "updated_at">
+  payload: Omit<AdminBlog, "id"> & { created_at?: string; updated_at?: string }
 ) =>
   apiPostJSON<{ item: AdminBlog }>("/api/admin/blogs", payload).then(
     (r) => r.item
@@ -252,7 +252,7 @@ export const createBlog = (
 
 export const updateBlog = (
   id: string,
-  patch: Partial<Omit<AdminBlog, "id" | "created_at" | "updated_at">>
+  patch: Partial<Omit<AdminBlog, "id">>
 ) =>
   apiPostJSON<{ item: AdminBlog }>(`/api/admin/blogs/${id}`, patch, {
     method: "PATCH"

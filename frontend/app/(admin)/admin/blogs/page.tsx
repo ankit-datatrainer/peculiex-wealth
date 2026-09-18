@@ -25,7 +25,8 @@ import {
   FileText,
   Smartphone,
   Monitor,
-  Share2
+  Share2,
+  Calendar
 } from "lucide-react";
 
 type FormState = {
@@ -39,6 +40,7 @@ type FormState = {
   category: string;
   published: boolean;
   position: number;
+  article_date: string;
   meta_title: string;
   meta_description: string;
   focus_keyword: string;
@@ -59,6 +61,14 @@ const DEFAULT_CATEGORIES = [
   "Alternative Assets"
 ];
 
+function getTodayDateStr() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 const blank = (): FormState => ({
   id: null,
   title: "",
@@ -70,6 +80,7 @@ const blank = (): FormState => ({
   category: "Wealth Advisory",
   published: true,
   position: 0,
+  article_date: getTodayDateStr(),
   meta_title: "",
   meta_description: "",
   focus_keyword: "",
@@ -161,6 +172,17 @@ export default function AdminBlogsPage() {
   };
 
   const startEdit = (item: AdminBlog) => {
+    const rawDate = item.updated_at || item.created_at;
+    let initialDate = getTodayDateStr();
+    if (rawDate) {
+      try {
+        const d = new Date(rawDate);
+        if (!isNaN(d.getTime())) {
+          initialDate = d.toISOString().split("T")[0];
+        }
+      } catch {}
+    }
+
     setForm({
       id: item.id,
       title: item.title,
@@ -172,6 +194,7 @@ export default function AdminBlogsPage() {
       category: item.category || "Wealth Advisory",
       published: item.published,
       position: item.position || 0,
+      article_date: initialDate,
       meta_title: item.meta_title || "",
       meta_description: item.meta_description || "",
       focus_keyword: item.focus_keyword || "",
@@ -269,6 +292,19 @@ export default function AdminBlogsPage() {
     setFormError(null);
     try {
       const slug = form.slug || slugify(form.title);
+      const nowIso = new Date().toISOString();
+      let chosenDateIso = nowIso;
+      if (form.article_date) {
+        try {
+          const d = new Date(form.article_date);
+          if (!isNaN(d.getTime())) {
+            const nowTime = new Date();
+            d.setHours(nowTime.getHours(), nowTime.getMinutes(), nowTime.getSeconds());
+            chosenDateIso = d.toISOString();
+          }
+        } catch {}
+      }
+
       const payload = {
         title: form.title,
         slug,
@@ -279,6 +315,8 @@ export default function AdminBlogsPage() {
         category: form.category || "Wealth Advisory",
         published: form.published,
         position: form.position,
+        created_at: chosenDateIso,
+        updated_at: nowIso,
         meta_title: form.meta_title || null,
         meta_description: form.meta_description || null,
         focus_keyword: form.focus_keyword || null,
@@ -1018,6 +1056,16 @@ export default function AdminBlogsPage() {
                       <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5, color: "#94a3b8", marginTop: 2 }}>
                         <code className="ab-slug-code" title={`/blog/${b.slug}`}>/blog/{b.slug}</code>
                         <span style={{ whiteSpace: "nowrap" }}>• {b.author || "Finvoq Admin"}</span>
+                        {(b.updated_at || b.created_at) && (
+                          <span style={{ whiteSpace: "nowrap", color: "#38bdf8", display: "inline-flex", alignItems: "center", gap: 3 }}>
+                            <Calendar size={11} />
+                            {new Date((b.updated_at || b.created_at)!).toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric"
+                            })}
+                          </span>
+                        )}
                       </div>
                     </td>
 
@@ -1256,14 +1304,43 @@ export default function AdminBlogsPage() {
                       </label>
                     </div>
 
-                    {/* Author & Position */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                    {/* Author, Article Date & Position */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 0.8fr", gap: 14 }}>
                       <label style={{ display: "grid", gap: 4 }}>
                         <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text, #ffffff)" }}>Author Byline</span>
                         <input
                           value={form.author}
                           onChange={(e) => setForm((f) => ({ ...f, author: e.target.value }))}
                           placeholder="e.g. Finvoq Admin"
+                          className="ab-form-input"
+                        />
+                      </label>
+
+                      <label style={{ display: "grid", gap: 4 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text, #ffffff)", display: "flex", alignItems: "center", gap: 4 }}>
+                            <Calendar size={13} color="#38bdf8" /> Article Date
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setForm((f) => ({ ...f, article_date: getTodayDateStr() }))}
+                            style={{
+                              fontSize: 11,
+                              color: "#10b981",
+                              background: "none",
+                              border: "none",
+                              cursor: "pointer",
+                              padding: 0,
+                              fontWeight: 600
+                            }}
+                          >
+                            Set to Today
+                          </button>
+                        </div>
+                        <input
+                          type="date"
+                          value={form.article_date}
+                          onChange={(e) => setForm((f) => ({ ...f, article_date: e.target.value }))}
                           className="ab-form-input"
                         />
                       </label>
