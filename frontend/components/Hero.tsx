@@ -127,7 +127,7 @@ export default function Hero() {
           >
             <div className="hero-pill hero-fade-1">
               <span className="pill-dot" />
-              SEBI Registered · Trusted by 4,000+ investors
+              SEBI Registered · Trusted by 400+ investors
             </div>
             <h1 className="hero-title hero-cine-title hero-fade-2">
               Invest with <em>clarity</em> across every asset class.

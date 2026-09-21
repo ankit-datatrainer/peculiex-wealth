@@ -65,7 +65,31 @@ const PAGES = [
           f("linkHref", "Left link target", "url", "/get-started"),
           f("ctaGhost", "Secondary button", "text", "Explore"),
           f("ctaPrimary", "Primary button", "text", "Open Account"),
-          f("ctaPrimaryHref", "Primary button target", "url", "/signup")
+          f("ctaPrimaryHref", "Primary button target", "url", "/signup"),
+          f("stat1Value", "Hero Stat 1 Value", "text", "182cr+"),
+          f("stat1Label", "Hero Stat 1 Label", "text", "Assets Managed"),
+          f("stat2Value", "Hero Stat 2 Value", "text", "400+"),
+          f("stat2Label", "Hero Stat 2 Label", "text", "Trusted Investors"),
+          f("stat3Value", "Hero Stat 3 Value", "text", "0%"),
+          f("stat3Label", "Hero Stat 3 Label", "text", "Advisory Fee")
+        ]
+      },
+      {
+        key: "stats",
+        label: "Key Statistics (182cr+, 400+, 0%)",
+        fields: [
+          {
+            key: "items",
+            label: "Headline figures",
+            type: "list",
+            hint: "Headline numbers shown on Homepage and About page. Super Admin can change values (e.g. 182cr+, 400+, 0%) and labels here.",
+            fields: [f("v", "Value", "text", ""), f("l", "Label", "text", "")],
+            default: [
+              { v: "182cr+", l: "Assets managed" },
+              { v: "400+", l: "Trusted investors" },
+              { v: "0%", l: "Advisory fee" }
+            ]
+          }
         ]
       },
       {
@@ -199,10 +223,9 @@ const PAGES = [
             type: "list",
             fields: [f("v", "Value", "text", ""), f("l", "Label", "text", "")],
             default: [
-              { v: "₹182Cr+", l: "Assets managed" },
-              { v: "4,000+", l: "Trusted investors" },
-              { v: "10+", l: "Product categories" },
-              { v: "10 yrs+", l: "Industry experience" }
+              { v: "182cr+", l: "Assets managed" },
+              { v: "400+", l: "Trusted investors" },
+              { v: "0%", l: "Advisory fee" }
             ]
           }
         ]
@@ -413,7 +436,25 @@ const PAGES = [
             default: [
               { text: "Founded in 2021 in Delhi, India." },
               { text: "AMFI-registered Mutual Fund Distributor (ARN-346787)." },
-              { text: "12,000+ active investors, ₹450+ Cr in assets under distribution." }
+              { text: "400+ active investors, 182cr+ in assets under distribution." }
+            ]
+          }
+        ]
+      },
+      {
+        key: "stats",
+        label: "Key Statistics (182cr+, 400+, 0%)",
+        fields: [
+          {
+            key: "items",
+            label: "Headline figures",
+            type: "list",
+            hint: "Headline numbers shown on About page.",
+            fields: [f("v", "Value", "text", ""), f("l", "Label", "text", "")],
+            default: [
+              { v: "182cr+", l: "Assets under distribution" },
+              { v: "400+", l: "Active investors" },
+              { v: "0%", l: "Advisory fee" }
             ]
           }
         ]
@@ -933,8 +974,8 @@ const PAGES = [
               { label: "Headquarters", value: "Delhi, India" },
               { label: "Registration", value: "AMFI Registered Mutual Fund Distributor" },
               { label: "CIN", value: "U67100MH2024PTC999999" },
-              { label: "Active investors", value: "4,000+" },
-              { label: "Assets advised", value: "₹182 Cr+" },
+              { label: "Active investors", value: "400+" },
+              { label: "Assets advised", value: "182cr+" },
               { label: "Asset classes covered", value: "Listed equity, unlisted shares, mutual funds, PMS, AIF, bonds, insurance, gold & commodities" }
             ]
           }

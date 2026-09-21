@@ -15,13 +15,14 @@
 // ────────────────────────────────────────────────────────────────────────────
 
 /** Confirmed by Finvoq 2026-07-29. */
-export const ASSETS_ADVISED = '₹182 Cr+';
+export const ASSETS_ADVISED = '182cr+';
 export const ASSETS_AS_OF = 'as of 31 March 2026';
 /** Short form for stat bands where the label already says "assets". */
-export const ASSETS_SHORT = '₹182 Cr+';
+export const ASSETS_SHORT = '182cr+';
 
-/** CONFIRM: investor count. */
-export const INVESTOR_COUNT = '4,000+';
+/** Confirmed investor count. */
+export const INVESTOR_COUNT = '400+';
+export const ADVISORY_FEE = '0%';
 
 /**
  * Confirmed by Finvoq 2026-07-29: "10+ products" sitewide.

@@ -4,6 +4,7 @@ import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import ContentBody from "@/components/ContentBody";
 import RegulatoryCredentials from "@/components/RegulatoryCredentials";
+import CountUp from "@/components/CountUp";
 import { useContent } from "@/lib/content";
 import {
   ASSETS_ADVISED,
@@ -14,6 +15,12 @@ import {
   INVESTOR_COUNT,
   REGISTRATION_LINE
 } from "@/lib/siteFacts";
+
+const ABOUT_STATS = [
+  { v: "182cr+", l: "Assets under distribution" },
+  { v: "400+", l: "Active investors" },
+  { v: "0%", l: "Advisory fee" }
+];
 
 export default function AboutClient() {
   const cms = useContent("about");
@@ -28,7 +35,7 @@ export default function AboutClient() {
   const whyP2 = cms.t(
     "why",
     "paragraph2",
-    `Finvoq unifies the investing surface (${ASSET_CLASS_COUNT_WORD} asset classes, one dashboard). ${FEE_DISCLOSURE} There's no separate bill from us for the research, the curation, or the platform itself.`
+    `Finvoq unifies the investing surface (${ASSET_CLASS_COUNT_WORD} asset classes, one dashboard). ${FEE_DISCLOSURE} There's 0% advisory fee and no separate bill from us for the research, the curation, or the platform itself.`
   );
 
   // Beliefs section
@@ -61,7 +68,8 @@ export default function AboutClient() {
   const whereList = cms.list("where", "items", [
     { text: `Founded in ${FOUNDED_YEAR} in ${CITY}, India.` },
     { text: `${REGISTRATION_LINE}.` },
-    { text: `${INVESTOR_COUNT} active investors, ${ASSETS_ADVISED} in assets under distribution.` }
+    { text: `${INVESTOR_COUNT} active investors, ${ASSETS_ADVISED} in assets under distribution.` },
+    { text: `0% direct advisory fee — 100% transparent.` }
   ]);
 
   // How we work section
@@ -115,6 +123,45 @@ export default function AboutClient() {
       />
 
       <ContentBody>
+        <div
+          className="about-stats-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+            gap: "20px",
+            margin: "0 0 40px",
+            padding: "24px 20px",
+            background: "rgba(16, 185, 129, 0.05)",
+            border: "1px solid rgba(16, 185, 129, 0.2)",
+            borderRadius: "16px"
+          }}
+        >
+          {cms.list("stats", "items", ABOUT_STATS).map((st, i) => (
+            <div key={st.l || i} style={{ textAlign: "center" }}>
+              <div
+                style={{
+                  fontSize: "clamp(2rem, 3.2vw, 2.6rem)",
+                  fontWeight: 700,
+                  color: "var(--color-primary, #10b981)",
+                  lineHeight: 1.15
+                }}
+              >
+                <CountUp value={st.v} />
+              </div>
+              <div
+                style={{
+                  marginTop: "6px",
+                  fontSize: "14px",
+                  color: "var(--color-text-muted, #94a3b8)",
+                  fontWeight: 500
+                }}
+              >
+                {st.l}
+              </div>
+            </div>
+          ))}
+        </div>
+
         <h2>{whyHeading}</h2>
         <p>{whyP1}</p>
         <p>{whyP2}</p>

@@ -184,10 +184,9 @@ const FEATURES = [
 ];
 
 const STATS = [
-  { v: "₹182Cr+", l: "Assets managed" },
-  { v: "4,000+", l: "Trusted investors" },
-  { v: "10+", l: "Product categories" },
-  { v: "10 yrs+", l: "Industry experience" }
+  { v: "182cr+", l: "Assets managed" },
+  { v: "400+", l: "Trusted investors" },
+  { v: "0%", l: "Advisory fee" }
 ];
 
 /* Same partner logo assets the rest of the site uses (see PartnerLogos.tsx).
@@ -613,7 +612,10 @@ export default function HomeClone() {
           </div>
 
           <div className="sfc-wrap sfc-stats">
-            {c.list("about", "stats", STATS).map((s, i) => (
+            {(c.has("stats", "items")
+              ? c.list("stats", "items", STATS)
+              : c.list("about", "stats", STATS)
+            ).map((s, i) => (
               <Reveal key={s.l} delay={i * 100}>
                 <div className="sfc-stat">
                   <div className="sfc-stat-v"><CountUp value={s.v} /></div>
@@ -1911,7 +1913,7 @@ export default function HomeClone() {
         }
         @media (min-width: 768px) {
           .sfc-stats {
-          grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
           }
         }
         .sfc-stat {

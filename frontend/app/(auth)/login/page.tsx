@@ -159,8 +159,8 @@ function LoginInner() {
           </h2>
           <ul className="auth-points">
             <li>10+ asset classes, one unified dashboard</li>
-            <li>SEBI-registered, advisor-led, transparent pricing</li>
-            <li>Trusted by 4,000+ investors managing ₹182 Cr+</li>
+            <li>SEBI-registered, advisor-led, 0% advisory fee</li>
+            <li>Trusted by 400+ investors managing 182cr+</li>
           </ul>
         </div>
         <div className="auth-foot">

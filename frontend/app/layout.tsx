@@ -63,6 +63,7 @@ export const viewport: Viewport = {
 
 import { ThemeProvider } from "next-themes";
 import SmoothScroll from "@/components/SmoothScroll";
+import ContentProtection from "@/components/ContentProtection";
 
 export default function RootLayout({
   children
@@ -86,6 +87,7 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
+          <ContentProtection />
           <SmoothScroll>
             {children}
           </SmoothScroll>

@@ -10,8 +10,9 @@ const DEFAULT_FACTS = [
   { label: "Headquarters", value: "Delhi, India" },
   { label: "Registration", value: "AMFI Registered Mutual Fund Distributor" },
   { label: "CIN", value: "U67100MH2024PTC999999" },
-  { label: "Active investors", value: "4,000+" },
-  { label: "Assets advised", value: "₹182 Cr+" },
+  { label: "Active investors", value: "400+" },
+  { label: "Assets advised", value: "182cr+" },
+  { label: "Advisory fee", value: "0%" },
   {
     label: "Asset classes covered",
     value:

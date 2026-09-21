@@ -169,18 +169,18 @@ export default function GuestView() {
         {/* Stats bar */}
         <div className="gv-stats-bar">
           <div className="gv-stat-item">
-            <div className="gv-snum">₹182 Cr</div>
+            <div className="gv-snum">182cr+</div>
             <div className="gv-slabel">Assets Managed</div>
           </div>
           <div className="gv-stat-divider" />
           <div className="gv-stat-item">
-            <div className="gv-snum">1200+</div>
+            <div className="gv-snum">400+</div>
             <div className="gv-slabel">Active Investors</div>
           </div>
           <div className="gv-stat-divider" />
           <div className="gv-stat-item">
-            <div className="gv-snum">10+</div>
-            <div className="gv-slabel">Product Categories</div>
+            <div className="gv-snum">0%</div>
+            <div className="gv-slabel">Advisory Fee</div>
           </div>
           <div className="gv-stat-divider" />
           <div className="gv-stat-item">
@@ -339,7 +339,7 @@ export default function GuestView() {
               Your markets cockpit<br /><em>awaits.</em>
             </h2>
             <p className="gv-cta-sub">
-              Join 4,000+ investors tracking their favorite stocks on Finvoq.
+              Join 400+ investors tracking their favorite stocks on Finvoq.
               Free forever. No credit card required.
             </p>
             <div className="gv-cta-btns">

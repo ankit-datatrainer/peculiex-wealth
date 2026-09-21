@@ -18,14 +18,15 @@ export default function HeroHeadlineAdditions({
   );
   const trustBadgeText = c.t("hero", "trustBadgeText", "SEBI-Registered");
 
-  const stat1Value = c.t("hero", "stat1Value", "₹1,200Cr+");
-  const stat1Label = c.t("hero", "stat1Label", "Monitored Assets");
+  const statsList = c.list("stats", "items", []);
+  const stat1Value = c.t("hero", "stat1Value", statsList[0]?.v || "182cr+");
+  const stat1Label = c.t("hero", "stat1Label", statsList[0]?.l || "Assets Managed");
 
-  const stat2Value = c.t("hero", "stat2Value", "15,000+");
-  const stat2Label = c.t("hero", "stat2Label", "Serious Investors");
+  const stat2Value = c.t("hero", "stat2Value", statsList[1]?.v || "400+");
+  const stat2Label = c.t("hero", "stat2Label", statsList[1]?.l || "Trusted Investors");
 
-  const stat3Value = c.t("hero", "stat3Value", "0%");
-  const stat3Label = c.t("hero", "stat3Label", "Hidden Fees");
+  const stat3Value = c.t("hero", "stat3Value", statsList[2]?.v || "0%");
+  const stat3Label = c.t("hero", "stat3Label", statsList[2]?.l || "Advisory Fee");
 
   const stat4Value = c.t("hero", "stat4Value", "");
   const stat4Label = c.t("hero", "stat4Label", "");
