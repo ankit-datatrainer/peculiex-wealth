@@ -713,32 +713,28 @@ const PAGES = [
             ],
             default: [
               {
-                q: "Is there a free plan available?",
-                a: "Yes. Your demat account is held with SEBI-registered partners and funds move via RBI-regulated banking rails. Finvoq never holds custody of your assets. We are an advisor and execution layer only."
+                q: "What is Finvoq?",
+                a: "Finvoq is a multi-asset investment platform that helps investors discover, evaluate and access curated investment opportunities across listed and unlisted equities, mutual funds, PMS, AIFs, bonds and other asset classes."
               },
               {
-                q: "Can I invite my team members?",
-                a: "Absolutely. Invite teammates, assign roles, and collaborate in real time from a shared workspace."
+                q: "Can I invest in unlisted and pre-IPO shares through Finvoq?",
+                a: "Yes. Finvoq provides access to selected unlisted and pre-IPO opportunities, along with research and relevant transaction information to help investors make informed decisions."
               },
               {
-                q: "Does it integrate with other tools?",
-                a: "Yes, we offer seamless integrations with popular tools like Slack, Jira, and GitHub to streamline your workflow."
+                q: "How does Finvoq select investment opportunities?",
+                a: "Finvoq follows a research-led approach, evaluating opportunities across factors such as business fundamentals, financial performance, valuation, risks and overall investment suitability before presenting them to investors."
               },
               {
-                q: "Can I upgrade or downgrade my plan anytime?",
-                a: "Yes, you can easily change your plan at any time. Prorated charges or credits will be applied automatically."
+                q: "Are investments made through Finvoq risk-free?",
+                a: "No. Every investment carries risk. Unlisted shares, in particular, can involve lower liquidity, limited price discovery, valuation risk and uncertainty around future IPO or listing timelines."
               },
               {
-                q: "Is my project data secure?",
-                a: "Security is our top priority. All data is encrypted at rest and in transit, and we undergo regular third-party audits."
+                q: "Does Finvoq offer investments beyond unlisted shares?",
+                a: "Yes. Investors can explore multiple asset classes through Finvoq, including listed equities, mutual funds, PMS, AIFs, bonds, fixed deposits, insurance and GIFT City opportunities."
               },
               {
-                q: "How does Finvoq choose mutual funds and PMS?",
-                a: "Our research desk screens the entire Indian universe for rolling return consistency, drawdown protection, and expense ratios. We only recommend strategies we would allocate our own capital to."
-              },
-              {
-                q: "Can NRIs invest through Finvoq?",
-                a: "Yes. We offer complete NRI onboarding with NRE/NRO banking, FEMA compliance, and DTAA tax reporting."
+                q: "How can I start investing with Finvoq?",
+                a: "You can get started by creating an account with Finvoq. Based on your investment goals, time horizon and portfolio requirements, you can then explore suitable opportunities and connect with the Finvoq team for assistance."
               }
             ]
           }

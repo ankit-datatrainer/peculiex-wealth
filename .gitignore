@@ -24,6 +24,7 @@ Thumbs.db
 .vscode/
 .vs/
 .idea/
+.kilo/
 *.swp
 *.tsbuildinfo
 frontend/temp.html

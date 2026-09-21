@@ -142,7 +142,10 @@ router.get("/testimonials", async (_req, res) => {
 
 router.get("/faqs", async (_req, res) => {
   const items = await fromTable("faqs", seed.FAQS);
-  res.json({ items });
+  const sorted = Array.isArray(items)
+    ? [...items].sort((a, b) => (a.position || 0) - (b.position || 0))
+    : items;
+  res.json({ items: sorted });
 });
 
 module.exports = router;

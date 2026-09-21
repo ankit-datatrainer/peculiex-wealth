@@ -227,13 +227,30 @@ const TESTIMONIALS = [
 ];
 
 const FAQS = [
-  { q: "Is my money safe with Finvoq?", a: "Yes. Your demat account is held with SEBI-registered partners and funds move via RBI-regulated banking rails. Finvoq never holds custody of your assets. We are an advisor and execution layer only, and every transaction settles directly into your name." },
-  { q: "What's the minimum amount to start investing?", a: "You can start a SIP from ₹1,000 per month or a lump sum from ₹500. PMS and AIF have higher statutory minimums (₹50L and ₹1Cr respectively) as mandated by SEBI. Unlisted shares vary by lot size, typically ₹25,000 to ₹1L per opportunity." },
-  { q: "How is Finvoq different from a discount broker?", a: "Discount brokers give you a tool. Finvoq gives you an advisor, a curated product list across 8 asset classes, and a single dashboard that ties it all together. You get curation, accountability, and a relationship, not just access to an order screen." },
-  { q: "Can I withdraw or sell my investments anytime?", a: "For listed equity, mutual funds, and bonds: yes, subject to standard settlement cycles (T+1 or T+2). Unlisted shares, PMS, and AIF have lock-in periods that vary by product. Each lock-in is clearly disclosed before you invest, never buried in fine print." },
-  { q: "Who is my advisor and how do I reach them?", a: "Every investor is paired with a SEBI-registered advisor based on goals, time horizon, and portfolio size. You can reach them via WhatsApp, email, or scheduled video call, typical response time is under 30 minutes during market hours." },
-  { q: "How do I track my portfolio performance?", a: "You can track your portfolio performance through our unified dashboard. It provides real-time updates across all asset classes, detailed analytics, and personalized insights." },
-  { q: "Is there a lock-in period for my investments?", a: "Lock-in periods depend on the specific product. Listed equities and mutual funds generally have no lock-in (except ELSS). Unlisted shares, PMS, and AIFs may have varying lock-in periods, which are clearly stated before investing." }
+  {
+    q: "What is Finvoq?",
+    a: "Finvoq is a multi-asset investment platform that helps investors discover, evaluate and access curated investment opportunities across listed and unlisted equities, mutual funds, PMS, AIFs, bonds and other asset classes."
+  },
+  {
+    q: "Can I invest in unlisted and pre-IPO shares through Finvoq?",
+    a: "Yes. Finvoq provides access to selected unlisted and pre-IPO opportunities, along with research and relevant transaction information to help investors make informed decisions."
+  },
+  {
+    q: "How does Finvoq select investment opportunities?",
+    a: "Finvoq follows a research-led approach, evaluating opportunities across factors such as business fundamentals, financial performance, valuation, risks and overall investment suitability before presenting them to investors."
+  },
+  {
+    q: "Are investments made through Finvoq risk-free?",
+    a: "No. Every investment carries risk. Unlisted shares, in particular, can involve lower liquidity, limited price discovery, valuation risk and uncertainty around future IPO or listing timelines."
+  },
+  {
+    q: "Does Finvoq offer investments beyond unlisted shares?",
+    a: "Yes. Investors can explore multiple asset classes through Finvoq, including listed equities, mutual funds, PMS, AIFs, bonds, fixed deposits, insurance and GIFT City opportunities."
+  },
+  {
+    q: "How can I start investing with Finvoq?",
+    a: "You can get started by creating an account with Finvoq. Based on your investment goals, time horizon and portfolio requirements, you can then explore suitable opportunities and connect with the Finvoq team for assistance."
+  }
 ];
 
 module.exports = { TICKER, INDICES, STOCKS, UNLISTED, PRODUCTS, TESTIMONIALS, FAQS };
