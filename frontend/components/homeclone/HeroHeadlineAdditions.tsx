@@ -18,7 +18,11 @@ export default function HeroHeadlineAdditions({
   );
   const trustBadgeText = c.t("hero", "trustBadgeText", "SEBI-Registered");
 
-  const statsList = c.list("stats", "items", []);
+  const statsList = c.list<{ v: string; l: string }>("stats", "items", [
+    { v: "182cr+", l: "Assets Managed" },
+    { v: "400+", l: "Trusted Investors" },
+    { v: "0%", l: "Advisory Fee" }
+  ]);
   const stat1Value = c.t("hero", "stat1Value", statsList[0]?.v || "182cr+");
   const stat1Label = c.t("hero", "stat1Label", statsList[0]?.l || "Assets Managed");
 
