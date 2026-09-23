@@ -48,7 +48,7 @@ export const PRODUCTS: Record<string, ProductContent> = {
     label: "Portfolio Management (PMS)",
     title: <>Portfolio management for <em>serious capital.</em></>,
     subtitle:
-      "Discretionary PMS strategies hand-picked for HNI investors. Bespoke mandates, transparent reporting, no hidden trails.",
+      "PMS is a systematic approach to maximize returns while minimizing the risk on your investments by actively managing the portfolio that can potentially be customized to meet specific investment objectives. When you invest in PMS, you own individual securities unlike a mutual fund investor.",
     highlights: [
       { title: "Curated PMS strategies", body: "We onboard fewer than 1 in 8 PMS strategies we evaluate. Multi-cap, focused, sectoral, contra: only the ones with auditable track records survive." },
       { title: "Statutory minimums", body: "PMS from ₹50L (SEBI mandated). We help you decide which structure fits your tax position and liquidity needs." },

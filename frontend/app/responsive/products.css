@@ -414,3 +414,148 @@
     width: 100%;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   PMS Hero - Paragraph Width & Golden Minimum Investment Tag
+   ------------------------------------------------------------------------ */
+
+.page-hero .sdesc {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1.0625rem;
+  line-height: 1.72;
+  color: #1e293b; /* High-contrast crisp typography in light mode */
+}
+
+.dark .page-hero .sdesc {
+  color: #e2e8f0 !important; /* Elegant luminous text in dark mode */
+}
+
+.page-hero-tag-wrap {
+  margin-top: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pms-min-tag-container {
+  display: inline-flex;
+}
+
+/* Light Mode: Luxury Champagne Gold Badge */
+.pms-min-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 24px 9px 18px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #fffcf0 0%, #fdf6e2 40%, #f8ecc4 100%);
+  border: 1.5px solid #d4af37;
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.2), 0 1px 3px rgba(0, 0, 0, 0.04), inset 0 1px 1px #ffffff;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.pms-min-tag:hover {
+  transform: translateY(-2px);
+  border-color: #b8860b;
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.32), inset 0 1px 2px #ffffff;
+}
+
+.pms-min-tag-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  color: #b8860b;
+  text-shadow: 0 0 6px rgba(212, 175, 55, 0.5);
+  animation: pmsStarGlow 3s ease-in-out infinite alternate;
+}
+
+.pms-min-tag-label {
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #7a5203; /* Deep burnished gold: 100% visible and readable in light mode */
+}
+
+.pms-min-tag-val {
+  font-family: var(--font-display, var(--font-sans));
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #432800;
+  background: linear-gradient(135deg, #432800 0%, #7a5203 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Dark Mode: Luxury Onyx & Gold Treatment */
+.dark .pms-min-tag {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.18) 0%, rgba(26, 22, 14, 0.92) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.16), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.dark .pms-min-tag:hover {
+  border-color: rgba(243, 199, 81, 0.8);
+  box-shadow: 0 8px 28px rgba(212, 175, 55, 0.32), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+.dark .pms-min-tag-icon {
+  color: #f3c751;
+  text-shadow: 0 0 10px rgba(243, 199, 81, 0.85);
+}
+
+.dark .pms-min-tag-label {
+  color: #f3c751;
+}
+
+.dark .pms-min-tag-val {
+  color: #ffffff;
+  background: linear-gradient(135deg, #ffffff 0%, #fae69e 40%, #e5b869 80%, #b8860b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+}
+
+@keyframes pmsStarGlow {
+  0% {
+    opacity: 0.75;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@media (max-width: 599px) {
+  .page-hero .sdesc {
+    max-width: 100%;
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+
+  .page-hero-tag-wrap {
+    margin-top: 18px;
+  }
+
+  .pms-min-tag {
+    padding: 7px 16px 7px 14px;
+    gap: 6px;
+  }
+
+  .pms-min-tag-label {
+    font-size: 0.75rem;
+  }
+
+  .pms-min-tag-val {
+    font-size: 0.88rem;
+  }
+}

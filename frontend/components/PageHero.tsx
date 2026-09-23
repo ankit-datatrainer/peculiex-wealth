@@ -14,6 +14,8 @@ type Props = {
    * to what is passed in here, so the page never renders empty.
    */
   page?: string;
+  tag?: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 /** "Wealth management, *without the markup.*" -> JSX with the <em> accent. */
@@ -27,7 +29,7 @@ function renderAccented(text: string) {
   );
 }
 
-export default function PageHero({ label, title, subtitle, align = "left", page }: Props) {
+export default function PageHero({ label, title, subtitle, align = "left", page, tag, children }: Props) {
   const c = useContent(page || "");
   const center = align === "center";
 
@@ -56,6 +58,8 @@ export default function PageHero({ label, title, subtitle, align = "left", page 
           {(cmsSubtitle || subtitle) && (
             <p className="sdesc">{cmsSubtitle || subtitle}</p>
           )}
+          {tag && <div className="page-hero-tag-wrap">{tag}</div>}
+          {children}
         </div>
       </div>
     </section>

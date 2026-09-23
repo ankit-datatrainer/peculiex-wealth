@@ -16,6 +16,8 @@ import PageHero from "@/components/PageHero";
 import PartnerLogos from "@/components/PartnerLogos";
 import Factsheet from "@/components/Factsheet";
 import FactsheetEmbed from "@/components/FactsheetEmbed";
+import PmsFramework from "@/components/PmsFramework";
+import AifFramework from "@/components/AifFramework";
 import PremiumThemeSync from "@/components/PremiumThemeSync";
 import { LAMF_RATE } from "@/lib/siteFacts";
 
@@ -131,7 +133,23 @@ export default function ProductPageClient({ slug, product: p }: Props) {
         </>
       )}
 
-      <PageHero label={p.label} title={p.title} subtitle={p.subtitle} page={cmsKey} />
+      <PageHero
+        label={p.label}
+        title={p.title}
+        subtitle={p.subtitle}
+        page={cmsKey}
+        tag={
+          slug === "pms" ? (
+            <div className="pms-min-tag-container">
+              <div className="pms-min-tag">
+                <span className="pms-min-tag-icon" aria-hidden="true">✦</span>
+                <span className="pms-min-tag-label">Minimum Investment :</span>
+                <span className="pms-min-tag-val">50 Lakhs</span>
+              </div>
+            </div>
+          ) : undefined
+        }
+      />
 
       {/* Metrics row */}
       <section className="product-metrics-sec" style={{ padding: "0 0 80px" }}>
@@ -189,6 +207,11 @@ export default function ProductPageClient({ slug, product: p }: Props) {
 
       {/* Partner logos */}
       <PartnerLogos productSlug={slug} />
+
+      {/* PMS: benefits, taxation and shortlisting parameters — sits directly
+          above the factsheet so the reader has the framework before the data. */}
+      {slug === "pms" && <PmsFramework />}
+      {slug === "aif" && <AifFramework />}
 
       {/* Factsheet */}
       {slug !== "pms" && <Factsheet slug={slug} label={p.label} />}

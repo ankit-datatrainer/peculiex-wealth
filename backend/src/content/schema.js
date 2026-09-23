@@ -1591,7 +1591,7 @@ const PAGES = [
 
   /** Build a full product-page schema entry. */
   ...(function buildProductPages() {
-    const productPage = (key, label, pagePath, { shortLabel, heroLabel, heroTitle, heroSubtitle, metrics, highlights, howItWorks, closing, ctaLabel, ctaHref, related, insuranceCards }) => ({
+    const productPage = (key, label, pagePath, { shortLabel, heroLabel, heroTitle, heroSubtitle, metrics, highlights, howItWorks, closing, ctaLabel, ctaHref, related, insuranceCards, pmsBenefits, pmsTaxRows, pmsShortlisting }) => ({
       key,
       label,
       path: pagePath,
@@ -1613,6 +1613,62 @@ const PAGES = [
             }
           ]
         },
+        /* PMS only: the benefits + taxation block and the shortlisting
+           explorer that render above the factsheet on /products/pms. */
+        ...(pmsBenefits ? [{
+          key: "pmsBenefits",
+          label: "Benefits & taxation (PMS)",
+          fields: [
+            f("sectionEyebrow", "Section eyebrow", "text", "Why PMS"),
+            f("sectionTitle", "Section heading", "text", "The case for a *managed portfolio.*"),
+            {
+              key: "items",
+              label: "Benefits",
+              type: "list",
+              fields: [
+                f("title", "Benefit", "text", ""),
+                f("body", "Supporting line", "textarea", "")
+              ],
+              default: pmsBenefits
+            },
+            f("taxTitle", "Taxation card title", "text", "Taxation"),
+            f("taxSubtitle", "Taxation card subtitle", "text", "Equity-oriented portfolios"),
+            f("taxColTenure", "Taxation column 1 header", "text", "Tenure"),
+            f("taxColRate", "Taxation column 2 header", "text", "Equity taxation"),
+            {
+              key: "taxRows",
+              label: "Taxation rows",
+              type: "list",
+              fields: [
+                f("tenure", "Tenure", "text", "", { hint: "e.g. STCG, LTCG" }),
+                f("full", "Tenure expanded", "text", ""),
+                f("rate", "Rate", "text", "", { hint: "Counts up on scroll, e.g. 20%" }),
+                f("suffix", "Rate suffix", "text", "")
+              ],
+              default: pmsTaxRows || []
+            },
+            f("taxNote", "Taxation footnote", "textarea", "Indicative equity taxation. Cess and surcharge apply as per your income slab — please confirm the final position with your tax advisor.")
+          ]
+        }] : []),
+        ...(pmsShortlisting ? [{
+          key: "pmsShortlisting",
+          label: "Shortlisting parameters (PMS)",
+          fields: [
+            f("sectionEyebrow", "Section eyebrow", "text", "Our diligence"),
+            f("sectionTitle", "Section heading", "text", "Shortlisting *parameters.*"),
+            f("sectionDesc", "Section description", "textarea", "Every strategy we put in front of a client clears the same eight-point screen. Select a parameter to see why it earns its place."),
+            {
+              key: "items",
+              label: "Parameters",
+              type: "list",
+              fields: [
+                f("name", "Parameter", "text", ""),
+                f("rationale", "Rationale", "textarea", "")
+              ],
+              default: pmsShortlisting
+            }
+          ]
+        }] : []),
         {
           key: "highlights",
           label: "Highlight cards (What you get)",
@@ -1722,11 +1778,32 @@ const PAGES = [
         shortLabel: "Portfolio Management (PMS)",
         heroLabel: "PORTFOLIO MANAGEMENT (PMS)",
         heroTitle: "Portfolio management for *serious capital.*",
-        heroSubtitle: "Discretionary PMS strategies hand-picked for HNI investors. Bespoke mandates, transparent reporting, no hidden trails.",
+        heroSubtitle: "PMS is a systematic approach to maximize returns while minimizing the risk on your investments by actively managing the portfolio that can potentially be customized to meet specific investment objectives. When you invest in PMS, you own individual securities unlike a mutual fund investor.",
         metrics: [
           { value: "₹50L", label: "PMS minimum" },
           { value: "20+", label: "Curated strategies" },
           { value: "1 in 8", label: "Onboarding ratio" }
+        ],
+        pmsBenefits: [
+          { title: "Professional Management", body: "A SEBI-registered portfolio manager runs the mandate full-time, with a dedicated research desk behind every position." },
+          { title: "Diversification of risk", body: "Capital is spread across companies, sectors and market caps, so no single holding decides the outcome." },
+          { title: "Transparency", body: "Securities sit in your own demat account. Every holding, trade and charge is visible to you, line by line." },
+          { title: "Rebalancing", body: "Allocations are reviewed and reset as valuations, conviction and market cycles change." },
+          { title: "Scope of higher risk adjusted return", body: "A focused, actively managed book is built for return per unit of risk, not return alone." }
+        ],
+        pmsTaxRows: [
+          { tenure: "STCG", full: "Short-term capital gains", rate: "20%", suffix: "+ Cess + Surcharge" },
+          { tenure: "LTCG", full: "Long-term capital gains", rate: "12.5%", suffix: "+ Cess + Surcharge" }
+        ],
+        pmsShortlisting: [
+          { name: "Calendar Year Performance", rationale: "We have considered the alpha of 3-year and 5-year average calendar year returns." },
+          { name: "Rolling Returns", rationale: "We have considered the alpha of 3-year and 5-year average rolling returns." },
+          { name: "Standard Deviation", rationale: "Standard Deviation is used to measure the volatility or risk associated with a portfolio. Lower standard deviation implies more stable returns, making it a useful parameter for shortlisting portfolios." },
+          { name: "Sharpe Ratio", rationale: "We prefer funds with a higher Sharpe Ratio relative to their peers, as it reflects better risk-adjusted performance." },
+          { name: "Beta", rationale: "We have given higher weightage to the funds having lower Beta. A beta of more than 1 indicates higher momentum than the benchmark, and a beta of less than 1 indicates less momentum." },
+          { name: "Fund Level AUM", rationale: "It represents the overall market value that the fund holds." },
+          { name: "Fund Manager", rationale: "We choose funds based on the pedigree and the fund manager's experience." },
+          { name: "AMC", rationale: "We prefer AMC-backed or boutique PMS which have exceptionally good performance." }
         ],
         highlights: [
           { title: "Curated PMS strategies", body: "We onboard fewer than 1 in 8 PMS strategies we evaluate. Multi-cap, focused, sectoral, contra: only the ones with auditable track records survive." },

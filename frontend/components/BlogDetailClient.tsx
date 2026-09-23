@@ -2,10 +2,93 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, Share2, Tag, ArrowUpRight, Sparkles, Check } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Share2, Tag, ArrowUpRight, Sparkles, Check, Lock, LogIn } from "lucide-react";
 import { fetcher, apiUrl } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 import { type Blog, getFallbackBlogBySlug, getAllFallbackBlogs } from "@/lib/blogData";
 import "@/app/(site)/blog/[slug]/blog-detail.css";
+
+const VOID_TAGS = new Set([
+  "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"
+]);
+
+function cleanBlogHtml(html: string): string {
+  if (!html) return "";
+  let s = html.trim();
+  // Strip outer <article ...> ... </article> wrapper if present
+  s = s.replace(/^<article(?:\s+[^>]*)?>/i, "").replace(/<\/article>\s*$/i, "").trim();
+  // Strip outer <section ...> ... </section> wrapper if present
+  s = s.replace(/^<section(?:\s+[^>]*)?>/i, "").replace(/<\/section>\s*$/i, "").trim();
+  return s;
+}
+
+/**
+ * Splits an HTML string into a preview (first ~wordLimit words, ~2-4 lines)
+ * and the remainder, cutting only at top-level tag boundaries (depth === 0)
+ * so both preview and rest are 100% syntactically balanced and valid HTML.
+ */
+function splitHtmlBody(rawHtml: string, wordLimit = 35): { preview: string; rest: string } {
+  const html = cleanBlogHtml(rawHtml);
+  const plainText = html.replace(/<[^>]+>/g, " ");
+  const words = plainText.split(/\s+/).filter(Boolean);
+
+  if (words.length <= wordLimit) {
+    return { preview: html, rest: "" };
+  }
+
+  const tagRegex = /<\/?([a-zA-Z0-9]+)(?:\s+[^>]*)?>/g;
+  let wordsSeen = 0;
+  let cutIdx = -1;
+  let cursor = 0;
+  const openTags: string[] = [];
+  let match: RegExpExecArray | null;
+
+  while ((match = tagRegex.exec(html)) !== null) {
+    const matchIndex = match.index;
+    const fullTag = match[0];
+    const tagName = match[1].toLowerCase();
+    const isClosing = fullTag.startsWith("</");
+    const isSelfClosing = fullTag.endsWith("/>") || VOID_TAGS.has(tagName);
+
+    // Count words in text chunk between tags
+    if (matchIndex > cursor) {
+      const textChunk = html.slice(cursor, matchIndex);
+      const chunkWords = textChunk.split(/\s+/).filter(Boolean).length;
+      wordsSeen += chunkWords;
+    }
+    cursor = matchIndex + fullTag.length;
+
+    if (isClosing) {
+      const lastIdx = openTags.lastIndexOf(tagName);
+      if (lastIdx !== -1) {
+        openTags.splice(lastIdx, 1);
+      }
+    } else if (!isSelfClosing) {
+      openTags.push(tagName);
+    }
+
+    // Cut at the first top-level tag boundary (depth === 0) after wordLimit
+    if (wordsSeen >= wordLimit && openTags.length === 0) {
+      cutIdx = cursor;
+      break;
+    }
+  }
+
+  // Fallback if no clean depth===0 boundary was reached
+  if (cutIdx === -1) {
+    cutIdx = Math.min(html.length, 1200);
+    const closingStr = [...openTags].reverse().map((t) => `</${t}>`).join("");
+    return {
+      preview: html.slice(0, cutIdx) + closingStr,
+      rest: html.slice(cutIdx)
+    };
+  }
+
+  return {
+    preview: html.slice(0, cutIdx).trim(),
+    rest: html.slice(cutIdx).trim()
+  };
+}
 
 interface BlogDetailClientProps {
   slug: string;
@@ -13,11 +96,19 @@ interface BlogDetailClientProps {
 }
 
 export default function BlogDetailClient({ slug, initialBlog }: BlogDetailClientProps) {
+  const { user } = useAuth();
+  const [mounted, setMounted] = useState(false);
   const fallback = getFallbackBlogBySlug(slug);
   const [blog, setBlog] = useState<Blog | null>(initialBlog || fallback);
   const [allBlogs, setAllBlogs] = useState<Blog[]>(getAllFallbackBlogs());
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(!initialBlog && !fallback);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isLoggedIn = mounted && !!user;
 
   useEffect(() => {
     let killed = false;
@@ -145,7 +236,7 @@ export default function BlogDetailClient({ slug, initialBlog }: BlogDetailClient
   const readTime = Math.max(2, Math.ceil(wordCount / 180));
 
   const coverImg = blog.image_url
-    ? blog.image_url.startsWith("http")
+    ? blog.image_url.startsWith("http") || blog.image_url.startsWith("/")
       ? blog.image_url
       : apiUrl(blog.image_url)
     : "/images/blogs/blog-1.jpg";
@@ -212,27 +303,99 @@ export default function BlogDetailClient({ slug, initialBlog }: BlogDetailClient
           />
         )}
 
-        <div
-          className="blog-body"
-          dangerouslySetInnerHTML={{ __html: blog.body }}
-        />
+        {/* ── Blog Body: gated for guests ─────────────────── */}
+        {(() => {
+          if (isLoggedIn) {
+            // Authenticated: show full body
+            return (
+              <>
+                <div
+                  className="blog-body"
+                  suppressHydrationWarning
+                  dangerouslySetInnerHTML={{ __html: cleanBlogHtml(blog.body) }}
+                />
 
-        {blog.tags && blog.tags.length > 0 && (
-          <div className="blog-tags-box">
-            <span style={{ fontSize: 13, fontWeight: 700, color: "var(--ink-sub, #64748b)", display: "inline-flex", alignItems: "center", gap: 6 }}>
-              <Tag size={15} /> Tags:
-            </span>
-            {blog.tags.map((t) => (
-              <Link href={`/blog?tag=${encodeURIComponent(t)}`} key={t} className="blog-tag-chip">
-                #{t}
-              </Link>
-            ))}
-          </div>
-        )}
+                {blog.tags && blog.tags.length > 0 && (
+                  <div className="blog-tags-box">
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "var(--ink-sub, #64748b)", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                      <Tag size={15} /> Tags:
+                    </span>
+                    {blog.tags.map((t) => (
+                      <Link href={`/blog?tag=${encodeURIComponent(t)}`} key={t} className="blog-tag-chip">
+                        #{t}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </>
+            );
+          }
+
+          // Guest: show preview (2-4 lines) + blur with login card floating directly above
+          const { preview, rest } = splitHtmlBody(blog.body, 35);
+          const nextUrl = `/blog/${slug}`;
+
+          return (
+            <>
+              {/* Unblurred preview text — limited to 2-4 lines */}
+              <div
+                className="blog-body blog-preview-body"
+                suppressHydrationWarning
+                dangerouslySetInnerHTML={{ __html: preview }}
+              />
+
+              {rest && (
+                <div className="blog-gate-container">
+                  {/* Blurry text visible underneath */}
+                  <div
+                    className="blog-gate-blur"
+                    aria-hidden="true"
+                    suppressHydrationWarning
+                    dangerouslySetInnerHTML={{ __html: rest }}
+                  />
+                  <div className="blog-gate-overlay" />
+
+                  {/* Centered CTA floating directly above the blurred text */}
+                  <div className="blog-gate-cta-wrapper">
+                    <div className="blog-gate-cta">
+                      <div className="blog-gate-icon" aria-hidden="true">
+                        <Lock size={26} />
+                      </div>
+                      <h3 className="blog-gate-heading">Want to read more?</h3>
+                      <p className="blog-gate-subtext">
+                        Log in or create a free account to unlock the full article and access all our insights.
+                      </p>
+                      <div className="blog-gate-actions">
+                        <Link
+                          href={`/login?next=${encodeURIComponent(nextUrl)}`}
+                          className="btn btn-primary btn-lg"
+                          data-magnetic
+                        >
+                          <LogIn size={16} style={{ marginRight: 6 }} />
+                          Log in
+                        </Link>
+                        <Link
+                          href={`/signup?next=${encodeURIComponent(nextUrl)}`}
+                          className="btn btn-outline btn-lg"
+                          data-magnetic
+                        >
+                          Create an account
+                        </Link>
+                      </div>
+                      <p className="blog-gate-foot">
+                        It takes under a minute. We&apos;ll never share your details.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          );
+        })()}
       </div>
 
-      {/* Related Articles Section (Full-Width Breakout) */}
-      {related.length > 0 && (
+      {/* Related Articles Section — only for authenticated users */}
+      {isLoggedIn && related.length > 0 && (
         <section className="blog-related-section">
           <div className="blog-related-container">
             <div className="blog-related-head">
