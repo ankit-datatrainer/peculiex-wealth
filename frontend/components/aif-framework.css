@@ -702,7 +702,7 @@
   border-color: var(--fv-hair-strong);
 }
 
-.aifx-fund.is-open {
+.aifx-fund[data-open] {
   border-color: var(--fv-accent);
   box-shadow: 0 16px 44px rgba(0, 0, 0, 0.14);
 }
@@ -811,7 +811,7 @@
   transform: translate(-50%, -50%) rotate(90deg);
 }
 
-.aifx-fund.is-open .aifx-fund-caret i:last-child {
+.aifx-fund[data-open] .aifx-fund-caret i:last-child {
   transform: translate(-50%, -50%) rotate(0deg);
   opacity: 0;
 }
@@ -824,16 +824,21 @@
   transition: grid-template-rows 0.55s var(--ease-out);
 }
 
-.aifx-fund-wrap[hidden] {
-  display: none;
-}
-
-.aifx-fund.is-open .aifx-fund-wrap {
+.aifx-fund[data-open] .aifx-fund-wrap {
   grid-template-rows: 1fr;
 }
 
 .aifx-fund-body {
   overflow: hidden;
+  /* Hides the collapsed copy from assistive tech and from tabbing, but only
+     once the collapse animation has finished. */
+  visibility: hidden;
+  transition: visibility 0s linear 0.55s;
+}
+
+.aifx-fund[data-open] .aifx-fund-body {
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 .aifx-fund-body p {
@@ -1016,6 +1021,7 @@
   .aifx-cat::before,
   .aifx-ring-item,
   .aifx-fund-wrap,
+  .aifx-fund-body,
   .aifx-fund-caret i,
   .aifx-stem-line {
     transition: none !important;

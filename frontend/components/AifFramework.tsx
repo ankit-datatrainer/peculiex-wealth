@@ -37,17 +37,22 @@ function FundList({ funds, branchKey }: { funds: AifFund[]; branchKey: string })
     <div className="aifx-funds reveal-stagger">
       {funds.map((f, i) => {
         const isOpen = i === open;
+        const base = `aifx-fund-${branchKey}-${i}`;
         return (
-          <article
-            className={`aifx-fund reveal${isOpen ? " is-open" : ""}`}
-            key={f.name}
-          >
+          /* The open state rides on a data attribute, not a class. `.visible`
+             is put on `.reveal` nodes by GlobalUX's observer, outside React —
+             so a className that changes between renders makes React rewrite
+             the whole class attribute and wipe it, and the observer has
+             already unobserved the node. Keep className static on anything
+             carrying `.reveal`. */
+          <article className="aifx-fund reveal" data-open={isOpen || undefined} key={f.name}>
             <h4 className="aifx-fund-h">
               <button
                 type="button"
+                id={`${base}-btn`}
                 className="aifx-fund-head"
                 aria-expanded={isOpen}
-                aria-controls={`aifx-fund-${branchKey}-${i}`}
+                aria-controls={`${base}-panel`}
                 onClick={() => setOpen(isOpen ? -1 : i)}
               >
                 <span className="aifx-fund-no" aria-hidden="true">
@@ -72,11 +77,14 @@ function FundList({ funds, branchKey }: { funds: AifFund[]; branchKey: string })
                 </span>
               </button>
             </h4>
+            {/* Kept mounted so the 0fr → 1fr height animation has something
+                to interpolate; the body's `visibility` takes the collapsed
+                copy out of the a11y tree and the tab order. */}
             <div
               className="aifx-fund-wrap"
-              id={`aifx-fund-${branchKey}-${i}`}
+              id={`${base}-panel`}
               role="region"
-              hidden={!isOpen}
+              aria-labelledby={`${base}-btn`}
             >
               <div className="aifx-fund-body">
                 <p>{f.description}</p>
