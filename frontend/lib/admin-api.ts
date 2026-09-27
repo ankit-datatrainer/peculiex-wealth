@@ -236,6 +236,19 @@ export type AdminBlog = {
   tags?: string[];
   canonical_url?: string | null;
   og_image?: string | null;
+  // Extended SEO / social, written by the Rank-Math-style editor. Persisted
+  // once backend/migrations/001-blog-seo-fields.sql has been applied.
+  image_alt?: string | null;
+  og_title?: string | null;
+  og_description?: string | null;
+  twitter_title?: string | null;
+  twitter_description?: string | null;
+  twitter_image?: string | null;
+  secondary_keywords?: string | null;
+  schema_type?: string | null;
+  robots_noindex?: boolean;
+  robots_nofollow?: boolean;
+  pillar_content?: boolean;
   created_at?: string;
   updated_at?: string;
 };

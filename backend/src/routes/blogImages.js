@@ -63,6 +63,121 @@ router.get("/file/:filename", (req, res) => {
   res.sendFile(path.resolve(file));
 });
 
+// ---------- admin: media library ----------
+//
+// Uploading through the blog-scoped route below needs a saved post to hang the
+// file off, which is no use while you are still writing one — the editor has
+// to be able to drop an image into the body, or set a cover, before the post
+// exists. These routes own the file only; whatever references it is the
+// caller's business.
+
+const MEDIA_PREFIX = "media-";
+
+/** Byte size formatted for the picker, e.g. "412 KB". */
+function human(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/** Decode a data: URL or bare base64 string into a validated image buffer. */
+function decodeImage(dataBase64) {
+  let raw = String(dataBase64 || "");
+  const comma = raw.indexOf(",");
+  if (raw.startsWith("data:") && comma !== -1) raw = raw.slice(comma + 1);
+  if (!raw) return { error: "Missing image data." };
+
+  let buffer;
+  try {
+    buffer = Buffer.from(raw, "base64");
+  } catch {
+    return { error: "Invalid base64 data." };
+  }
+  if (!buffer.length) return { error: "Missing image data." };
+  if (buffer.length > 5 * 1024 * 1024) {
+    return { error: "Image must be under 5 MB." };
+  }
+  const ext = detectExt(buffer);
+  if (!ext) {
+    return { error: "Unsupported image type. Use PNG, JPG, GIF or WebP." };
+  }
+  return { buffer, ext };
+}
+
+router.post(
+  "/media",
+  requireAuth,
+  requireBlogAccess,
+  express.json({ limit: "8mb" }),
+  (req, res) => {
+    try {
+      const { buffer, ext, error } = decodeImage(req.body && req.body.dataBase64);
+      if (error) return res.status(400).json({ error });
+
+      // Keep something human-readable from the original name so the library is
+      // browsable, but never trust it as a path.
+      const stem = String((req.body && req.body.filename) || "image")
+        .replace(/\.[^.]*$/, "")
+        .replace(/[^a-zA-Z0-9-]+/g, "-")
+        .replace(/^-|-$/g, "")
+        .toLowerCase()
+        .slice(0, 48) || "image";
+
+      const filename = `${MEDIA_PREFIX}${Date.now()}-${stem}.${ext}`;
+      fs.writeFileSync(path.join(UPLOAD_DIR, filename), buffer);
+
+      res.json({
+        ok: true,
+        url: `/api/blog-images/file/${filename}`,
+        filename,
+        size: buffer.length,
+        sizeLabel: human(buffer.length)
+      });
+    } catch (err) {
+      console.error("[blog-images] media upload error:", err);
+      res.status(500).json({ error: err.message || "Upload failed." });
+    }
+  }
+);
+
+router.get("/media", requireAuth, requireBlogAccess, (_req, res) => {
+  try {
+    const items = fs
+      .readdirSync(UPLOAD_DIR)
+      .filter((f) => /\.(png|jpe?g|gif|webp)$/i.test(f))
+      .map((f) => {
+        const stat = fs.statSync(path.join(UPLOAD_DIR, f));
+        return {
+          filename: f,
+          url: `/api/blog-images/file/${f}`,
+          size: stat.size,
+          sizeLabel: human(stat.size),
+          uploadedAt: stat.mtime.toISOString()
+        };
+      })
+      .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt))
+      .slice(0, 200);
+    res.json({ items });
+  } catch (err) {
+    console.error("[blog-images] media list error:", err);
+    res.status(500).json({ error: "Could not read the media library." });
+  }
+});
+
+router.delete("/media/:filename", requireAuth, requireBlogAccess, (req, res) => {
+  const filename = String(req.params.filename || "").replace(/[^a-zA-Z0-9._-]/g, "");
+  const file = path.join(UPLOAD_DIR, filename);
+  if (!filename || !file.startsWith(UPLOAD_DIR) || !fs.existsSync(file)) {
+    return res.status(404).json({ error: "Not found" });
+  }
+  try {
+    fs.unlinkSync(file);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message || "Delete failed." });
+  }
+});
+
 // ---------- admin: upload / replace a blog cover image ----------
 router.post(
   "/:id",

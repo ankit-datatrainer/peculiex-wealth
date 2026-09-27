@@ -1,0 +1,269 @@
+/* Rank-Math-style analysis readout inside the blog editor modal.
+   Light by default, dark under .dark / [data-theme="dark"] — the same
+   pattern the rest of the admin modal uses. */
+
+.sp {
+  --sp-tone: #059669;
+  --sp-card: var(--color-surface-offset, #f8fafc);
+  --sp-line: var(--color-border, #e2e8f0);
+  --sp-ink: var(--color-text, #0f172a);
+  --sp-ink-soft: var(--color-text-muted, #475569);
+  --sp-ink-faint: var(--color-text-faint, #64748b);
+  --sp-hole: var(--color-surface, #ffffff);
+  display: grid;
+  gap: 14px;
+}
+
+.sp-great {
+  --sp-tone: #059669;
+}
+
+.sp-ok {
+  --sp-tone: #b45309;
+}
+
+.sp-poor,
+.sp-none {
+  --sp-tone: #dc2626;
+}
+
+.dark .sp,
+[data-theme="dark"] .sp {
+  --sp-card: rgba(15, 23, 42, 0.5);
+  --sp-line: rgba(148, 163, 184, 0.22);
+  --sp-ink: #e2e8f0;
+  --sp-ink-soft: #cbd5e1;
+  --sp-ink-faint: #94a3b8;
+  --sp-hole: #111827;
+}
+
+.dark .sp-great,
+[data-theme="dark"] .sp-great {
+  --sp-tone: #34d399;
+}
+
+.dark .sp-ok,
+[data-theme="dark"] .sp-ok {
+  --sp-tone: #fbbf24;
+}
+
+.dark .sp-poor,
+.dark .sp-none,
+[data-theme="dark"] .sp-poor,
+[data-theme="dark"] .sp-none {
+  --sp-tone: #f87171;
+}
+
+/* Score header */
+.sp-top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--sp-line);
+  background: var(--sp-card);
+}
+
+.sp-ring {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: none;
+  transition: background 0.5s ease;
+}
+
+.sp-ring-in {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--sp-hole);
+  line-height: 1;
+}
+
+.sp-ring-in strong {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--sp-tone);
+}
+
+.sp-ring-in span {
+  margin-top: 2px;
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  color: var(--sp-ink-faint);
+}
+
+.sp-top-copy {
+  min-width: 0;
+}
+
+.sp-top-copy h4 {
+  margin: 0 0 3px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--sp-tone);
+}
+
+.sp-top-copy p {
+  margin: 0 0 10px;
+  font-size: 12.5px;
+  color: var(--sp-ink-soft);
+}
+
+.sp-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sp-stats span {
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid var(--sp-line);
+  background: var(--color-surface, #ffffff);
+  font-size: 11px;
+  color: var(--sp-ink-faint);
+  white-space: nowrap;
+}
+
+.dark .sp-stats span,
+[data-theme="dark"] .sp-stats span {
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.sp-stats b {
+  color: var(--sp-ink);
+  font-weight: 700;
+}
+
+/* Groups */
+.sp-group {
+  border-radius: 12px;
+  border: 1px solid var(--sp-line);
+  background: var(--sp-card);
+  overflow: hidden;
+}
+
+.sp-group-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 11px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--sp-ink);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sp-group-head:hover {
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.sp-chev {
+  color: var(--sp-ink-faint);
+  transition: transform 0.25s ease;
+}
+
+.sp-chev.is-closed {
+  transform: rotate(-90deg);
+}
+
+.sp-group-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sp-group-count {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--sp-ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.sp-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 14px 12px;
+  display: grid;
+  gap: 2px;
+}
+
+.sp-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding: 9px 10px;
+  border-radius: 9px;
+}
+
+.sp-item:hover {
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.sp-item > svg {
+  margin-top: 1px;
+  flex: none;
+}
+
+.sp-item strong {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--sp-ink);
+}
+
+.sp-item span {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--sp-ink-soft);
+}
+
+/* Status icons keep their own hues — they are the signal. */
+.sp-i-good {
+  color: #059669;
+}
+
+.sp-i-warn {
+  color: #d97706;
+}
+
+.sp-i-bad {
+  color: #dc2626;
+}
+
+.dark .sp-i-good,
+[data-theme="dark"] .sp-i-good {
+  color: #34d399;
+}
+
+.dark .sp-i-warn,
+[data-theme="dark"] .sp-i-warn {
+  color: #fbbf24;
+}
+
+.dark .sp-i-bad,
+[data-theme="dark"] .sp-i-bad {
+  color: #f87171;
+}
+
+@media (max-width: 599px) {
+  .sp-top {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+  }
+}

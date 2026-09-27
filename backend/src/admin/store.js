@@ -789,7 +789,16 @@ function coerceBlogInput(input, { partial = false } = {}) {
     "focus_keyword",
     "meta_keywords",
     "canonical_url",
-    "og_image"
+    "og_image",
+    // SEO/social fields the Rank-Math-style editor writes.
+    "image_alt",
+    "og_title",
+    "og_description",
+    "twitter_title",
+    "twitter_description",
+    "twitter_image",
+    "secondary_keywords",
+    "schema_type"
   ];
   for (const k of stringKeys) {
     if (input[k] !== undefined) {
@@ -805,6 +814,9 @@ function coerceBlogInput(input, { partial = false } = {}) {
   }
   if (input.published !== undefined) {
     out.published = Boolean(input.published);
+  }
+  for (const k of ["robots_noindex", "robots_nofollow", "pillar_content"]) {
+    if (input[k] !== undefined) out[k] = Boolean(input[k]);
   }
   if (input.position !== undefined) {
     const n = Number(input.position);
@@ -873,7 +885,20 @@ function fillBlogDefaults(row) {
     meta_keywords: row.meta_keywords || seed?.meta_keywords || "",
     tags: Array.isArray(row.tags) && row.tags.length > 0 ? row.tags : (seed?.tags || ["Investing", "Wealth"]),
     canonical_url: row.canonical_url || seed?.canonical_url || `https://finvoq.com/blog/${row.slug}`,
-    og_image: row.og_image || seed?.og_image || row.image_url || null
+    og_image: row.og_image || seed?.og_image || row.image_url || null,
+    image_alt: row.image_alt || "",
+    // Social falls back through the SEO fields, then the post itself — the
+    // same cascade Rank Math uses, so a post shares correctly untouched.
+    og_title: row.og_title || "",
+    og_description: row.og_description || "",
+    twitter_title: row.twitter_title || "",
+    twitter_description: row.twitter_description || "",
+    twitter_image: row.twitter_image || "",
+    secondary_keywords: row.secondary_keywords || "",
+    schema_type: row.schema_type || "BlogPosting",
+    robots_noindex: Boolean(row.robots_noindex),
+    robots_nofollow: Boolean(row.robots_nofollow),
+    pillar_content: Boolean(row.pillar_content)
   };
 }
 
@@ -947,6 +972,57 @@ async function getBlogBySlug(slug) {
   return null;
 }
 
+/* ── Live-table write resilience ────────────────────────────────────────
+   A deploy whose `blogs` table predates the SEO fields would have every
+   insert rejected for an unknown column, and the callers below log-and-fall-
+   back to the in-memory map — so the editor would report success while
+   nothing persisted. PostgREST names one offending column per response, so
+   we learn them, drop them, and retry: the core post still saves, and the
+   extra fields start persisting the moment the migration is applied.
+   See backend/migrations/001-blog-seo-fields.sql. */
+
+const missingBlogColumns = new Set();
+
+function stripMissingBlogColumns(row) {
+  if (!missingBlogColumns.size) return row;
+  const out = {};
+  for (const key of Object.keys(row)) {
+    if (!missingBlogColumns.has(key)) out[key] = row[key];
+  }
+  return out;
+}
+
+/** Pull the unknown column's name out of a PostgREST / Postgres error. */
+function unknownColumnFrom(error) {
+  const text = [error && error.message, error && error.details, error && error.hint]
+    .filter(Boolean)
+    .join(" ");
+  const m =
+    text.match(/'([a-z0-9_]+)' column/i) ||
+    text.match(/column "?([a-z0-9_]+)"? does not exist/i) ||
+    text.match(/could not find the ([a-z0-9_]+) column/i);
+  return m ? m[1] : null;
+}
+
+async function writeBlogRow(run, row) {
+  let payload = stripMissingBlogColumns(row);
+  // Bounded: each pass can only ever remove one more key.
+  for (let i = 0; i <= Object.keys(row).length; i++) {
+    const { data, error } = await run(payload);
+    if (!error) return { data };
+    const col = unknownColumnFrom(error);
+    if (!col || !(col in payload)) return { error };
+    missingBlogColumns.add(col);
+    console.warn(
+      `[blogs] live table has no "${col}" column - dropping it from writes. ` +
+        "Apply backend/migrations/001-blog-seo-fields.sql to persist it."
+    );
+    payload = stripMissingBlogColumns(payload);
+    if (!Object.keys(payload).length) return { error };
+  }
+  return { error: new Error("Too many unknown columns in the blogs payload.") };
+}
+
 async function createBlog(input) {
   const fields = coerceBlogInput(input, { partial: false });
   if (!fields.slug) fields.slug = slugify(fields.title);
@@ -969,6 +1045,17 @@ async function createBlog(input) {
     tags: fields.tags || [],
     canonical_url: fields.canonical_url || null,
     og_image: fields.og_image || null,
+    image_alt: fields.image_alt || null,
+    og_title: fields.og_title || null,
+    og_description: fields.og_description || null,
+    twitter_title: fields.twitter_title || null,
+    twitter_description: fields.twitter_description || null,
+    twitter_image: fields.twitter_image || null,
+    secondary_keywords: fields.secondary_keywords || null,
+    schema_type: fields.schema_type || "BlogPosting",
+    robots_noindex: Boolean(fields.robots_noindex),
+    robots_nofollow: Boolean(fields.robots_nofollow),
+    pillar_content: Boolean(fields.pillar_content),
     created_at: fields.created_at || nowIso,
     updated_at: fields.updated_at || nowIso
   };
@@ -978,11 +1065,10 @@ async function createBlog(input) {
 
   if (isLive()) {
     try {
-      const { data, error } = await client
-        .from(BLOGS_TABLE)
-        .insert(row)
-        .select("*")
-        .single();
+      const { data, error } = await writeBlogRow(
+        (payload) => client.from(BLOGS_TABLE).insert(payload).select("*").single(),
+        row
+      );
       if (!error && data) {
         map.set(data.id, fillBlogDefaults(data));
         return fillBlogDefaults(data);
@@ -1014,12 +1100,11 @@ async function updateBlog(id, patch) {
 
   if (isLive()) {
     try {
-      const { data, error } = await client
-        .from(BLOGS_TABLE)
-        .update(fields)
-        .eq("id", id)
-        .select("*")
-        .single();
+      const { data, error } = await writeBlogRow(
+        (payload) =>
+          client.from(BLOGS_TABLE).update(payload).eq("id", id).select("*").single(),
+        fields
+      );
       if (!error && data) {
         const filled = fillBlogDefaults(data);
         map.set(id, filled);

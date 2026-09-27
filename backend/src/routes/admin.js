@@ -403,6 +403,13 @@ router.delete("/contact/:id", async (req, res, next) => {
 // BLOGS
 // --------------------------------------------------------------
 
+/* Optional free text that the editor may also send as null to mean "clear". */
+const seoText = (max) => z.string().trim().max(max).nullish();
+
+/* The editor posts far more than the original eight fields: category, tags,
+   the publish date and the whole SEO/social set. Anything not named here is
+   dropped by the parse, so a field missing from this list looks to the user
+   like the admin silently refused to save it. */
 const BlogCreateSchema = z.object({
   title: z.string().trim().min(1).max(300),
   slug: z.string().trim().max(200).optional().or(z.literal("")),
@@ -410,8 +417,36 @@ const BlogCreateSchema = z.object({
   body: z.string().optional().default(""),
   image_url: z.string().trim().max(1000).optional().or(z.literal("")).nullable(),
   author: z.string().trim().max(120).optional().default("Finvoq"),
+  category: z.string().trim().max(120).nullish(),
   published: z.boolean().optional().default(false),
-  position: z.coerce.number().nonnegative().optional().default(0)
+  position: z.coerce.number().nonnegative().optional().default(0),
+
+  // Search appearance
+  meta_title: seoText(300),
+  meta_description: seoText(600),
+  focus_keyword: seoText(200),
+  secondary_keywords: seoText(600),
+  meta_keywords: seoText(600),
+  canonical_url: seoText(1000),
+  image_alt: seoText(300),
+
+  // Social cards
+  og_image: seoText(1000),
+  og_title: seoText(300),
+  og_description: seoText(600),
+  twitter_image: seoText(1000),
+  twitter_title: seoText(300),
+  twitter_description: seoText(600),
+
+  // Indexing directives
+  schema_type: seoText(60),
+  robots_noindex: z.boolean().optional(),
+  robots_nofollow: z.boolean().optional(),
+  pillar_content: z.boolean().optional(),
+
+  tags: z.array(z.string().trim().max(80)).max(40).optional(),
+  created_at: z.string().trim().max(40).nullish(),
+  updated_at: z.string().trim().max(40).nullish()
 });
 
 const BlogPatchSchema = BlogCreateSchema.partial();

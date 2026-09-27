@@ -6,10 +6,13 @@ import {
   createBlog,
   updateBlog,
   deleteBlog,
-  uploadBlogImage,
   type AdminBlog
 } from "@/lib/admin-api";
 import { apiUrl } from "@/lib/api";
+import RichTextEditor from "@/components/admin/RichTextEditor";
+import MediaPicker, { resolveMediaUrl } from "@/components/admin/MediaPicker";
+import SeoPanel from "@/components/admin/SeoPanel";
+import { analyseSeo } from "@/lib/seoAnalysis";
 import {
   Search,
   Plus,
@@ -48,6 +51,17 @@ type FormState = {
   tags: string[];
   canonical_url: string;
   og_image: string;
+  image_alt: string;
+  secondary_keywords: string;
+  og_title: string;
+  og_description: string;
+  twitter_title: string;
+  twitter_description: string;
+  twitter_image: string;
+  schema_type: string;
+  robots_noindex: boolean;
+  robots_nofollow: boolean;
+  pillar_content: boolean;
 };
 
 const DEFAULT_CATEGORIES = [
@@ -87,7 +101,18 @@ const blank = (): FormState => ({
   meta_keywords: "",
   tags: ["Investing", "Wealth", "Markets"],
   canonical_url: "",
-  og_image: ""
+  og_image: "",
+  image_alt: "",
+  secondary_keywords: "",
+  og_title: "",
+  og_description: "",
+  twitter_title: "",
+  twitter_description: "",
+  twitter_image: "",
+  schema_type: "BlogPosting",
+  robots_noindex: false,
+  robots_nofollow: false,
+  pillar_content: false
 });
 
 function slugify(text: string) {
@@ -112,9 +137,12 @@ export default function AdminBlogsPage() {
   const [activeTab, setActiveTab] = useState<"content" | "seo" | "preview">("content");
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
+  /* The cover is uploaded the moment it is chosen rather than deferred to
+     save, so the preview is real and a draft can carry an image before it
+     has an id. */
+  const [coverPickerOpen, setCoverPickerOpen] = useState(false);
+  const [coverUploadError, setCoverUploadError] = useState<string | null>(null);
+  const [socialPicker, setSocialPicker] = useState<"og" | "tw" | null>(null);
   const [tagInput, setTagInput] = useState("");
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
 
@@ -163,8 +191,6 @@ export default function AdminBlogsPage() {
 
   const startCreate = () => {
     setForm(blank());
-    setImageFile(null);
-    setImagePreview(null);
     setActiveTab("content");
     setShowForm(true);
     setFormError(null);
@@ -201,22 +227,23 @@ export default function AdminBlogsPage() {
       meta_keywords: item.meta_keywords || "",
       tags: Array.isArray(item.tags) ? item.tags : [],
       canonical_url: item.canonical_url || "",
-      og_image: item.og_image || ""
+      og_image: item.og_image || "",
+      image_alt: item.image_alt || "",
+      secondary_keywords: item.secondary_keywords || "",
+      og_title: item.og_title || "",
+      og_description: item.og_description || "",
+      twitter_title: item.twitter_title || "",
+      twitter_description: item.twitter_description || "",
+      twitter_image: item.twitter_image || "",
+      schema_type: item.schema_type || "BlogPosting",
+      robots_noindex: Boolean(item.robots_noindex),
+      robots_nofollow: Boolean(item.robots_nofollow),
+      pillar_content: Boolean(item.pillar_content)
     });
-    setImageFile(null);
-    setImagePreview(item.image_url ? apiUrl(item.image_url) : null);
     setActiveTab("content");
     setShowForm(true);
     setFormError(null);
     setTagInput("");
-  };
-
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    setImageFile(f);
-    const url = URL.createObjectURL(f);
-    setImagePreview(url);
   };
 
   const addTag = () => {
@@ -232,59 +259,42 @@ export default function AdminBlogsPage() {
     setForm((f) => ({ ...f, tags: f.tags.filter((tag) => tag !== t) }));
   };
 
-  const seoAudit = useMemo(() => {
-    const focus = form.focus_keyword.trim().toLowerCase();
-    const title = form.title.toLowerCase();
-    const seoTitle = (form.meta_title || form.title).toLowerCase();
-    const slug = (form.slug || slugify(form.title)).toLowerCase();
-    const desc = (form.meta_description || form.excerpt).toLowerCase();
-    const body = form.body.toLowerCase();
+  /* Full Rank-Math-style analysis. Recomputed as you type; the engine is
+     pure string work so it is cheap enough to run on every keystroke. */
+  const report = useMemo(
+    () =>
+      analyseSeo({
+        title: form.title,
+        metaTitle: form.meta_title,
+        metaDescription: form.meta_description,
+        excerpt: form.excerpt,
+        slug: form.slug || slugify(form.title),
+        bodyHtml: form.body,
+        focusKeyword: form.focus_keyword,
+        secondaryKeywords: form.secondary_keywords,
+        coverImage: form.image_url,
+        coverAlt: form.image_alt,
+        // Lets the "keyword used only once" test see the rest of the blog.
+        otherKeywords: items
+          .filter((b) => b.id !== form.id)
+          .map((b) => b.focus_keyword || "")
+          .filter(Boolean),
+        siteHost: "finvoq.com"
+      }),
+    [form, items]
+  );
 
-    const titleHasFocus = focus ? title.includes(focus) || seoTitle.includes(focus) : false;
-    const slugHasFocus = focus ? slug.includes(slugify(focus)) : false;
-    const descHasFocus = focus ? desc.includes(focus) : false;
-    const bodyHasFocus = focus ? body.includes(focus) : false;
-
-    const titleLength = (form.meta_title || form.title).length;
-    const titleGood = titleLength >= 35 && titleLength <= 65;
-
-    const descLength = (form.meta_description || form.excerpt).length;
-    const descGood = descLength >= 100 && descLength <= 165;
-
-    const hasImage = Boolean(form.image_url || imagePreview);
-    const hasTags = form.tags.length > 0;
-
-    let score = 0;
-    if (focus) {
-      if (titleHasFocus) score += 20;
-      if (slugHasFocus) score += 15;
-      if (descHasFocus) score += 15;
-      if (bodyHasFocus) score += 15;
-    } else {
-      score += 30;
-    }
-    if (titleGood) score += 15;
-    if (descGood) score += 10;
-    if (hasImage) score += 5;
-    if (hasTags) score += 5;
-
-    score = Math.min(100, score);
-
-    return {
-      score,
-      focus,
-      titleHasFocus,
-      slugHasFocus,
-      descHasFocus,
-      bodyHasFocus,
-      titleGood,
-      titleLength,
-      descGood,
-      descLength,
-      hasImage,
-      hasTags
-    };
-  }, [form, imagePreview]);
+  // The header badge and the two character counters read from this.
+  const seoAudit = useMemo(
+    () => ({
+      score: report.score,
+      titleLength: report.stats.titleLength,
+      titleGood: report.stats.titleLength >= 40 && report.stats.titleLength <= 60,
+      descLength: report.stats.descriptionLength,
+      descGood: report.stats.descriptionLength >= 120 && report.stats.descriptionLength <= 160
+    }),
+    [report]
+  );
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -323,32 +333,28 @@ export default function AdminBlogsPage() {
         meta_keywords: form.meta_keywords || null,
         tags: form.tags,
         canonical_url: form.canonical_url || null,
-        og_image: form.og_image || form.image_url || null
+        og_image: form.og_image || form.image_url || null,
+        image_alt: form.image_alt || null,
+        secondary_keywords: form.secondary_keywords || null,
+        og_title: form.og_title || null,
+        og_description: form.og_description || null,
+        twitter_title: form.twitter_title || null,
+        twitter_description: form.twitter_description || null,
+        twitter_image: form.twitter_image || null,
+        schema_type: form.schema_type || "BlogPosting",
+        robots_noindex: form.robots_noindex,
+        robots_nofollow: form.robots_nofollow,
+        pillar_content: form.pillar_content
       };
 
-      let saved: AdminBlog;
       if (form.id) {
-        saved = await updateBlog(form.id, payload);
+        await updateBlog(form.id, payload);
       } else {
-        saved = await createBlog(payload as any);
-      }
-
-      if (imageFile && saved.id) {
-        setUploadingImage(true);
-        try {
-          const result = await uploadBlogImage(saved.id, imageFile);
-          saved = result.item;
-        } catch (imgErr: any) {
-          setFormError(`Blog saved, but image upload failed: ${imgErr.message}`);
-        } finally {
-          setUploadingImage(false);
-        }
+        await createBlog(payload as any);
       }
 
       setShowForm(false);
       setForm(blank());
-      setImageFile(null);
-      setImagePreview(null);
       await reload();
     } catch (err: any) {
       setFormError(err?.message || "Save failed");
@@ -1235,7 +1241,7 @@ export default function AdminBlogsPage() {
                 onClick={() => setActiveTab("preview")}
                 className={`ab-tab-btn ${activeTab === "preview" ? "active" : ""}`}
               >
-                <Eye size={15} color={activeTab === "preview" ? "#34d399" : "#94a3b8"} /> Google SERP Simulator & Audit
+                <Eye size={15} color={activeTab === "preview" ? "#34d399" : "#94a3b8"} /> SEO Analysis
               </button>
             </div>
 
@@ -1356,45 +1362,78 @@ export default function AdminBlogsPage() {
                       </label>
                     </div>
 
-                    {/* Cover Image Upload & Preview */}
+                    {/* Featured image — upload, paste a link, or reuse one */}
                     <div className="ab-box-section">
                       <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text, #ffffff)", display: "block", marginBottom: 8 }}>
-                        Featured Cover Image
+                        Featured image
                       </span>
                       <div style={{ display: "flex", gap: 14, alignItems: "flex-start", flexWrap: "wrap" }}>
-                        <div style={{ flex: 1, minWidth: 220 }}>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageSelect}
-                            style={{ fontSize: 12.5, marginBottom: 6, color: "#94a3b8" }}
+                        {form.image_url ? (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img
+                            src={resolveMediaUrl(form.image_url)}
+                            alt={form.image_alt || "Cover preview"}
+                            style={{ width: 168, height: 105, objectFit: "cover", borderRadius: 9, border: "1px solid rgba(255,255,255,0.15)", background: "#0f172a" }}
+                            onLoad={() => setCoverUploadError(null)}
+                            onError={() =>
+                              setCoverUploadError(
+                                "That image could not be loaded. Check the URL, or upload the file instead."
+                              )
+                            }
                           />
-                          <div style={{ fontSize: 11.5, color: "#94a3b8" }}>
-                            Or specify existing image path:
-                          </div>
-                          <input
-                            value={form.image_url}
-                            onChange={(e) => {
-                              setForm((f) => ({ ...f, image_url: e.target.value }));
-                              setImagePreview(e.target.value ? apiUrl(e.target.value) : null);
-                            }}
-                            placeholder="/images/blogs/blog-1.jpg"
-                            className="ab-form-input"
-                            style={{ fontSize: 12, marginTop: 4 }}
-                          />
-                        </div>
-                        {imagePreview && (
-                          <div style={{ position: "relative" }}>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              src={imagePreview}
-                              alt="Cover preview"
-                              style={{ width: 120, height: 75, objectFit: "cover", borderRadius: 8, border: "1px solid rgba(255,255,255,0.15)" }}
-                            />
+                        ) : (
+                          <div style={{ width: 168, height: 105, borderRadius: 9, border: "1px dashed rgba(148,163,184,0.4)", display: "grid", placeItems: "center", color: "#64748b", fontSize: 11.5, textAlign: "center", padding: 8 }}>
+                            No image yet
                           </div>
                         )}
+                        <div style={{ flex: 1, minWidth: 240, display: "grid", gap: 8 }}>
+                          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                            <button
+                              type="button"
+                              className="btn btn-outline btn-sm"
+                              onClick={() => setCoverPickerOpen(true)}
+                            >
+                              {form.image_url ? "Replace image" : "Upload or choose image"}
+                            </button>
+                            {form.image_url && (
+                              <button
+                                type="button"
+                                className="btn btn-outline btn-sm"
+                                onClick={() => setForm((f) => ({ ...f, image_url: "", image_alt: "" }))}
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
+                          <label style={{ display: "grid", gap: 4 }}>
+                            <span style={{ fontSize: 11.5, color: "#94a3b8" }}>
+                              Image URL — upload above, or paste any link
+                            </span>
+                            <input
+                              value={form.image_url}
+                              onChange={(e) => setForm((f) => ({ ...f, image_url: e.target.value }))}
+                              placeholder="https://example.com/cover.jpg  or  /images/blogs/post.jpg"
+                              className="ab-form-input"
+                              style={{ fontSize: 12 }}
+                            />
+                          </label>
+                          <label style={{ display: "grid", gap: 4 }}>
+                            <span style={{ fontSize: 11.5, color: "#94a3b8" }}>
+                              Alt text — describes the image to Google and screen readers
+                            </span>
+                            <input
+                              value={form.image_alt}
+                              onChange={(e) => setForm((f) => ({ ...f, image_alt: e.target.value }))}
+                              placeholder="e.g. Advisor reviewing a portfolio allocation chart"
+                              className="ab-form-input"
+                              style={{ fontSize: 12 }}
+                            />
+                          </label>
+                        </div>
                       </div>
-                      {uploadingImage && <span style={{ fontSize: 12, color: "#38bdf8" }}>Uploading image…</span>}
+                      {coverUploadError && (
+                        <span style={{ fontSize: 12, color: "#f87171" }}>{coverUploadError}</span>
+                      )}
                     </div>
 
                     {/* Excerpt */}
@@ -1412,36 +1451,17 @@ export default function AdminBlogsPage() {
                       />
                     </label>
 
-                    {/* Body HTML */}
-                    <label style={{ display: "grid", gap: 4 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text, #ffffff)" }}>Article Body (HTML)</span>
-                        <div style={{ display: "flex", gap: 4 }}>
-                          <button
-                            type="button"
-                            onClick={() => setForm((f) => ({ ...f, body: f.body + "\n<h2>Section Heading</h2>\n<p>Your paragraph text here...</p>\n" }))}
-                            style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "#cbd5e1", cursor: "pointer" }}
-                          >
-                            + Add Heading & Text
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setForm((f) => ({ ...f, body: f.body + "\n<blockquote>\"Insightful quote here\"</blockquote>\n" }))}
-                            style={{ fontSize: 11, padding: "3px 8px", borderRadius: 4, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "#cbd5e1", cursor: "pointer" }}
-                          >
-                            + Quote
-                          </button>
-                        </div>
-                      </div>
-                      <textarea
-                        rows={9}
+                    {/* Article body — visual editor, Code view behind a toggle */}
+                    <div style={{ display: "grid", gap: 6 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text, #ffffff)" }}>
+                        Article body
+                      </span>
+                      <RichTextEditor
                         value={form.body}
-                        onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
-                        placeholder="<h2>Why Portfolio Concentration Matters</h2>\n<p>Write your detailed blog post here using standard HTML...</p>"
-                        className="ab-form-textarea"
-                        style={{ fontFamily: "monospace", fontSize: 12.5, lineHeight: 1.5 }}
+                        onChange={(html) => setForm((f) => ({ ...f, body: html }))}
+                        placeholder="Write the article here. Use the toolbar for headings, lists, quotes, links and images."
                       />
-                    </label>
+                    </div>
 
                     {/* Published toggle */}
                     <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", paddingTop: 2 }}>
@@ -1600,18 +1620,149 @@ export default function AdminBlogsPage() {
                       </div>
                     </div>
 
-                    {/* Social Share / OG Image */}
+                    {/* Secondary keywords */}
                     <label style={{ display: "grid", gap: 4 }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text, #ffffff)", display: "flex", alignItems: "center", gap: 6 }}>
-                        <Share2 size={14} color="#38bdf8" /> OpenGraph Social Image URL (Optional)
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text, #ffffff)" }}>
+                        Secondary keywords{" "}
+                        <em style={{ fontWeight: 500, fontStyle: "normal", color: "#94a3b8" }}>
+                          &mdash; comma separated, checked against the body
+                        </em>
                       </span>
                       <input
-                        value={form.og_image}
-                        onChange={(e) => setForm((f) => ({ ...f, og_image: e.target.value }))}
-                        placeholder={form.image_url || "/images/blogs/blog-1.jpg"}
+                        value={form.secondary_keywords}
+                        onChange={(e) => setForm((f) => ({ ...f, secondary_keywords: e.target.value }))}
+                        placeholder="portfolio management services, pms minimum investment"
                         className="ab-form-input"
                       />
                     </label>
+
+                    {/* Social overrides */}
+                    <div className="ab-box-section">
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text, #ffffff)", display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                        <Share2 size={14} color="#38bdf8" /> Social sharing
+                      </span>
+                      <p style={{ margin: "0 0 10px", fontSize: 11.5, color: "#94a3b8" }}>
+                        Leave any of these blank and it falls back to the SEO title, description and featured image.
+                      </p>
+                      <div style={{ display: "grid", gap: 10 }}>
+                        <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))" }}>
+                          <label style={{ display: "grid", gap: 4 }}>
+                            <span style={{ fontSize: 11.5, color: "#94a3b8" }}>Facebook / LinkedIn title</span>
+                            <input
+                              value={form.og_title}
+                              onChange={(e) => setForm((f) => ({ ...f, og_title: e.target.value }))}
+                              placeholder={form.meta_title || form.title || "Share title"}
+                              className="ab-form-input"
+                              style={{ fontSize: 12 }}
+                            />
+                          </label>
+                          <label style={{ display: "grid", gap: 4 }}>
+                            <span style={{ fontSize: 11.5, color: "#94a3b8" }}>X / Twitter title</span>
+                            <input
+                              value={form.twitter_title}
+                              onChange={(e) => setForm((f) => ({ ...f, twitter_title: e.target.value }))}
+                              placeholder={form.meta_title || form.title || "Share title"}
+                              className="ab-form-input"
+                              style={{ fontSize: 12 }}
+                            />
+                          </label>
+                        </div>
+                        <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))" }}>
+                          <label style={{ display: "grid", gap: 4 }}>
+                            <span style={{ fontSize: 11.5, color: "#94a3b8" }}>Facebook / LinkedIn description</span>
+                            <textarea
+                              rows={2}
+                              value={form.og_description}
+                              onChange={(e) => setForm((f) => ({ ...f, og_description: e.target.value }))}
+                              placeholder={form.meta_description || form.excerpt || "Share description"}
+                              className="ab-form-textarea"
+                              style={{ fontSize: 12 }}
+                            />
+                          </label>
+                          <label style={{ display: "grid", gap: 4 }}>
+                            <span style={{ fontSize: 11.5, color: "#94a3b8" }}>X / Twitter description</span>
+                            <textarea
+                              rows={2}
+                              value={form.twitter_description}
+                              onChange={(e) => setForm((f) => ({ ...f, twitter_description: e.target.value }))}
+                              placeholder={form.meta_description || form.excerpt || "Share description"}
+                              className="ab-form-textarea"
+                              style={{ fontSize: 12 }}
+                            />
+                          </label>
+                        </div>
+                        <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))" }}>
+                          <label style={{ display: "grid", gap: 4 }}>
+                            <span style={{ fontSize: 11.5, color: "#94a3b8" }}>OpenGraph image URL</span>
+                            <div style={{ display: "flex", gap: 6 }}>
+                              <input
+                                value={form.og_image}
+                                onChange={(e) => setForm((f) => ({ ...f, og_image: e.target.value }))}
+                                placeholder={form.image_url || "Falls back to the featured image"}
+                                className="ab-form-input"
+                                style={{ fontSize: 12 }}
+                              />
+                              <button type="button" className="btn btn-outline btn-sm" onClick={() => setSocialPicker("og")}>
+                                Pick
+                              </button>
+                            </div>
+                          </label>
+                          <label style={{ display: "grid", gap: 4 }}>
+                            <span style={{ fontSize: 11.5, color: "#94a3b8" }}>X / Twitter image URL</span>
+                            <div style={{ display: "flex", gap: 6 }}>
+                              <input
+                                value={form.twitter_image}
+                                onChange={(e) => setForm((f) => ({ ...f, twitter_image: e.target.value }))}
+                                placeholder={form.og_image || form.image_url || "Falls back to OpenGraph"}
+                                className="ab-form-input"
+                                style={{ fontSize: 12 }}
+                              />
+                              <button type="button" className="btn btn-outline btn-sm" onClick={() => setSocialPicker("tw")}>
+                                Pick
+                              </button>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Search-engine directives */}
+                    <div className="ab-box-section">
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text, #ffffff)", display: "block", marginBottom: 10 }}>
+                        Advanced
+                      </span>
+                      <label style={{ display: "grid", gap: 4, maxWidth: 260 }}>
+                        <span style={{ fontSize: 11.5, color: "#94a3b8" }}>Schema type</span>
+                        <select
+                          value={form.schema_type}
+                          onChange={(e) => setForm((f) => ({ ...f, schema_type: e.target.value }))}
+                          className="ab-form-input"
+                          style={{ fontSize: 12 }}
+                        >
+                          <option value="BlogPosting">BlogPosting</option>
+                          <option value="Article">Article</option>
+                          <option value="NewsArticle">NewsArticle</option>
+                          <option value="AnalysisNewsArticle">AnalysisNewsArticle</option>
+                        </select>
+                      </label>
+                      <div style={{ display: "grid", gap: 8, marginTop: 12 }}>
+                        {([
+                          ["robots_noindex", "No-index \u2014 keep this post out of search results"],
+                          ["robots_nofollow", "No-follow \u2014 do not pass authority through its links"],
+                          ["pillar_content", "Pillar content \u2014 a cornerstone post other articles link to"]
+                        ] as const).map(([key, label]) => (
+                          <label key={key} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                            <input
+                              type="checkbox"
+                              checked={form[key]}
+                              onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.checked }))}
+                              style={{ width: 15, height: 15, accentColor: "#38bdf8" }}
+                            />
+                            <span style={{ fontSize: 12.5, color: "#cbd5e1" }}>{label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -1721,97 +1872,67 @@ export default function AdminBlogsPage() {
                       </p>
                     </div>
 
-                    {/* SEO Health Audit Recommendations Checklist */}
+                    {/* Social share previews — Facebook/LinkedIn and X */}
                     <div className="ab-box-section">
                       <h4 style={{ margin: "0 0 12px", fontSize: 13.5, fontWeight: 700, color: "var(--color-text, #ffffff)" }}>
-                        SEO Health Check & Recommendations
+                        Social share preview
                       </h4>
-                      <div style={{ display: "grid", gap: 8 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
-                          {seoAudit.focus ? (
-                            seoAudit.titleHasFocus ? (
-                              <CheckCircle2 size={15} color="#34d399" />
+                      <div style={{ display: "grid", gap: 14, gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
+                        {([
+                          {
+                            key: "og",
+                            badge: "Facebook / LinkedIn",
+                            img: form.og_image || form.image_url,
+                            head: form.og_title || form.meta_title || form.title,
+                            body: form.og_description || form.meta_description || form.excerpt
+                          },
+                          {
+                            key: "tw",
+                            badge: "X / Twitter",
+                            img: form.twitter_image || form.og_image || form.image_url,
+                            head: form.twitter_title || form.meta_title || form.title,
+                            body: form.twitter_description || form.meta_description || form.excerpt
+                          }
+                        ] as const).map((card) => (
+                          <div
+                            key={card.key}
+                            style={{
+                              border: "1px solid rgba(148,163,184,0.25)",
+                              borderRadius: 10,
+                              overflow: "hidden",
+                              background: "#1f2937"
+                            }}
+                          >
+                            {card.img ? (
+                              /* eslint-disable-next-line @next/next/no-img-element */
+                              <img
+                                src={resolveMediaUrl(card.img)}
+                                alt=""
+                                style={{ width: "100%", height: 132, objectFit: "cover", display: "block" }}
+                              />
                             ) : (
-                              <AlertCircle size={15} color="#fbbf24" />
-                            )
-                          ) : (
-                            <AlertCircle size={15} color="#94a3b8" />
-                          )}
-                          <span>
-                            Focus keyword in title tag:{" "}
-                            <strong>{seoAudit.focus ? (seoAudit.titleHasFocus ? "Yes (Optimized)" : "Missing from title") : "No focus keyword set"}</strong>
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
-                          {seoAudit.focus ? (
-                            seoAudit.slugHasFocus ? (
-                              <CheckCircle2 size={15} color="#34d399" />
-                            ) : (
-                              <AlertCircle size={15} color="#fbbf24" />
-                            )
-                          ) : (
-                            <AlertCircle size={15} color="#94a3b8" />
-                          )}
-                          <span>
-                            Focus keyword in URL permalink slug:{" "}
-                            <strong>{seoAudit.focus ? (seoAudit.slugHasFocus ? "Yes (Optimized)" : "Missing from slug") : "No focus keyword set"}</strong>
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
-                          {seoAudit.focus ? (
-                            seoAudit.descHasFocus ? (
-                              <CheckCircle2 size={15} color="#34d399" />
-                            ) : (
-                              <AlertCircle size={15} color="#fbbf24" />
-                            )
-                          ) : (
-                            <AlertCircle size={15} color="#94a3b8" />
-                          )}
-                          <span>
-                            Focus keyword in meta description:{" "}
-                            <strong>{seoAudit.focus ? (seoAudit.descHasFocus ? "Yes (Optimized)" : "Missing from snippet") : "No focus keyword set"}</strong>
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
-                          {seoAudit.titleGood ? (
-                            <CheckCircle2 size={15} color="#34d399" />
-                          ) : (
-                            <AlertCircle size={15} color="#fbbf24" />
-                          )}
-                          <span>
-                            SEO Title length:{" "}
-                            <strong>{seoAudit.titleLength} chars ({seoAudit.titleGood ? "Ideal 40-60" : "Recommended: 40-65 chars"})</strong>
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
-                          {seoAudit.descGood ? (
-                            <CheckCircle2 size={15} color="#34d399" />
-                          ) : (
-                            <AlertCircle size={15} color="#fbbf24" />
-                          )}
-                          <span>
-                            Meta description length:{" "}
-                            <strong>{seoAudit.descLength} chars ({seoAudit.descGood ? "Ideal 120-160" : "Recommended: 100-165 chars"})</strong>
-                          </span>
-                        </div>
-
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
-                          {seoAudit.hasImage ? (
-                            <CheckCircle2 size={15} color="#34d399" />
-                          ) : (
-                            <AlertCircle size={15} color="#f87171" />
-                          )}
-                          <span>
-                            Cover image / OpenGraph visual:{" "}
-                            <strong>{seoAudit.hasImage ? "Attached" : "Missing cover image"}</strong>
-                          </span>
-                        </div>
+                              <div style={{ height: 132, display: "grid", placeItems: "center", color: "#64748b", fontSize: 11.5, background: "#111827" }}>
+                                No share image
+                              </div>
+                            )}
+                            <div style={{ padding: "10px 12px" }}>
+                              <div style={{ fontSize: 9.5, letterSpacing: "0.1em", textTransform: "uppercase", color: "#64748b", marginBottom: 4 }}>
+                                {card.badge} · finvoq.com
+                              </div>
+                              <div style={{ fontSize: 13, fontWeight: 700, color: "#f1f5f9", lineHeight: 1.35, marginBottom: 3 }}>
+                                {card.head || "Untitled post"}
+                              </div>
+                              <div style={{ fontSize: 11.5, color: "#94a3b8", lineHeight: 1.45, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                                {card.body || "Add a description so shares read well."}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
+
+                    {/* Full Rank-Math-style analysis */}
+                    <SeoPanel report={report} />
                   </div>
                 )}
               </div>
@@ -1844,6 +1965,32 @@ export default function AdminBlogsPage() {
           </div>
         </div>
       )}
+
+      {/* Featured image chooser */}
+      <MediaPicker
+        open={coverPickerOpen}
+        title="Featured image"
+        initialAlt={form.image_alt}
+        onClose={() => setCoverPickerOpen(false)}
+        onChoose={({ url, alt }) => {
+          setCoverUploadError(null);
+          setForm((f) => ({ ...f, image_url: url, image_alt: alt || f.image_alt }));
+          setCoverPickerOpen(false);
+        }}
+      />
+
+      {/* Social share image chooser, shared by both networks */}
+      <MediaPicker
+        open={socialPicker !== null}
+        title={socialPicker === "tw" ? "X / Twitter share image" : "OpenGraph share image"}
+        onClose={() => setSocialPicker(null)}
+        onChoose={({ url }) => {
+          setForm((f) =>
+            socialPicker === "tw" ? { ...f, twitter_image: url } : { ...f, og_image: url }
+          );
+          setSocialPicker(null);
+        }}
+      />
     </div>
   );
 }
