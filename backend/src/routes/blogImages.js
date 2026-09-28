@@ -94,8 +94,8 @@ function decodeImage(dataBase64) {
     return { error: "Invalid base64 data." };
   }
   if (!buffer.length) return { error: "Missing image data." };
-  if (buffer.length > 5 * 1024 * 1024) {
-    return { error: "Image must be under 5 MB." };
+  if (buffer.length > 15 * 1024 * 1024) {
+    return { error: "Image must be under 15 MB." };
   }
   const ext = detectExt(buffer);
   if (!ext) {
@@ -108,7 +108,7 @@ router.post(
   "/media",
   requireAuth,
   requireBlogAccess,
-  express.json({ limit: "8mb" }),
+  express.json({ limit: "25mb" }),
   (req, res) => {
     try {
       const { buffer, ext, error } = decodeImage(req.body && req.body.dataBase64);
@@ -183,7 +183,7 @@ router.post(
   "/:id",
   requireAuth,
   requireBlogAccess,
-  express.json({ limit: "8mb" }),
+  express.json({ limit: "25mb" }),
   async (req, res) => {
     try {
       const id = String(req.params.id || "").trim();
@@ -205,8 +205,8 @@ router.post(
       } catch {
         return res.status(400).json({ error: "Invalid base64 data." });
       }
-      if (buffer.length > 5 * 1024 * 1024) {
-        return res.status(413).json({ error: "Image must be under 5 MB." });
+      if (buffer.length > 15 * 1024 * 1024) {
+        return res.status(413).json({ error: "Image must be under 15 MB." });
       }
 
       const ext = detectExt(buffer);

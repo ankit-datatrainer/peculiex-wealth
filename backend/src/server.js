@@ -40,7 +40,7 @@ app.use("/api/unlisted-logos", require("./routes/unlistedLogos"));
 app.use("/api/blog-images", require("./routes/blogImages"));
 app.use("/api/content", require("./routes/pageContent"));
 // Long-form blog bodies are the largest thing the admin posts.
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "15mb" }));
 app.use(morgan("dev"));
 app.use(
   cors({

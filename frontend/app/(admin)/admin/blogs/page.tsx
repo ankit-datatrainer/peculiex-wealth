@@ -29,7 +29,8 @@ import {
   Smartphone,
   Monitor,
   Share2,
-  Calendar
+  Calendar,
+  Save
 } from "lucide-react";
 
 type FormState = {
@@ -358,6 +359,73 @@ export default function AdminBlogsPage() {
       await reload();
     } catch (err: any) {
       setFormError(err?.message || "Save failed");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const saveAsDraft = async () => {
+    setSubmitting(true);
+    setFormError(null);
+    try {
+      const draftTitle = form.title.trim() || (form.id ? "Draft Post" : "Untitled Draft");
+      const slug = (form.slug.trim() || slugify(draftTitle)) || `draft-${Date.now()}`;
+      const nowIso = new Date().toISOString();
+      let chosenDateIso = nowIso;
+      if (form.article_date) {
+        try {
+          const d = new Date(form.article_date);
+          if (!isNaN(d.getTime())) {
+            const nowTime = new Date();
+            d.setHours(nowTime.getHours(), nowTime.getMinutes(), nowTime.getSeconds());
+            chosenDateIso = d.toISOString();
+          }
+        } catch {}
+      }
+
+      const payload = {
+        title: draftTitle,
+        slug,
+        excerpt: form.excerpt,
+        body: form.body,
+        image_url: form.image_url || null,
+        author: form.author,
+        category: form.category || "Wealth Advisory",
+        published: false,
+        position: form.position,
+        created_at: chosenDateIso,
+        updated_at: nowIso,
+        meta_title: form.meta_title || null,
+        meta_description: form.meta_description || null,
+        focus_keyword: form.focus_keyword || null,
+        meta_keywords: form.meta_keywords || null,
+        tags: form.tags,
+        canonical_url: form.canonical_url || null,
+        og_image: form.og_image || form.image_url || null,
+        image_alt: form.image_alt || null,
+        secondary_keywords: form.secondary_keywords || null,
+        og_title: form.og_title || null,
+        og_description: form.og_description || null,
+        twitter_title: form.twitter_title || null,
+        twitter_description: form.twitter_description || null,
+        twitter_image: form.twitter_image || null,
+        schema_type: form.schema_type || "BlogPosting",
+        robots_noindex: form.robots_noindex,
+        robots_nofollow: form.robots_nofollow,
+        pillar_content: form.pillar_content
+      };
+
+      if (form.id) {
+        await updateBlog(form.id, payload);
+      } else {
+        await createBlog(payload as any);
+      }
+
+      setShowForm(false);
+      setForm(blank());
+      await reload();
+    } catch (err: any) {
+      setFormError(err?.message || "Save as draft failed");
     } finally {
       setSubmitting(false);
     }
@@ -1950,6 +2018,24 @@ export default function AdminBlogsPage() {
                     disabled={submitting}
                   >
                     Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-sm"
+                    onClick={saveAsDraft}
+                    disabled={submitting}
+                    style={{
+                      minWidth: 120,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      borderColor: "#f59e0b",
+                      color: "#f59e0b"
+                    }}
+                    title="Save the post without publishing it live"
+                  >
+                    <Save size={14} />
+                    {submitting ? "Saving…" : "Save as Draft"}
                   </button>
                   <button
                     type="submit"

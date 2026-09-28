@@ -54,6 +54,9 @@ const handle = async <T>(r: Response): Promise<T> => {
       data = await r.json();
       if (data?.error) msg = data.error;
     } catch {}
+    if (r.status === 413 && (!data || !data.error)) {
+      msg = "Upload failed: Image or request body too large (413). Please choose a smaller image or check Nginx client_max_body_size on your VPS.";
+    }
     const err = new Error(msg) as Error & {
       status?: number;
       data?: any;

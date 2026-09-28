@@ -13,6 +13,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Image as ImageIcon, Link2, Trash2, UploadCloud, X } from "lucide-react";
 import { apiFetch, apiPostJSON, apiUrl } from "@/lib/api";
+import { compressImageForUpload } from "@/lib/imageCompress";
 import "./media-picker.css";
 
 export type MediaChoice = { url: string; alt: string };
@@ -50,15 +51,26 @@ export async function uploadMediaFile(file: File): Promise<string> {
   if (!file.type.startsWith("image/")) {
     throw new Error("That is not an image file.");
   }
-  if (file.size > 5 * 1024 * 1024) {
-    throw new Error("Images must be under 5 MB.");
+  if (file.size > 15 * 1024 * 1024) {
+    throw new Error("Images must be under 15 MB.");
   }
-  const dataBase64 = await readAsDataUrl(file);
-  const res = await apiPostJSON<{ ok: boolean; url: string }>(
-    "/api/blog-images/media",
-    { dataBase64, filename: file.name }
-  );
-  return res.url;
+  // Automatically compress and resize high-res images in browser before upload
+  // so payloads never exceed reverse proxy (Nginx) body size limits.
+  const dataBase64 = await compressImageForUpload(file);
+  try {
+    const res = await apiPostJSON<{ ok: boolean; url: string }>(
+      "/api/blog-images/media",
+      { dataBase64, filename: file.name }
+    );
+    return res.url;
+  } catch (err: any) {
+    if (err?.status === 413) {
+      throw new Error(
+        "Image too large for the server proxy (413). Please choose a slightly smaller image or update client_max_body_size in Nginx on the VPS."
+      );
+    }
+    throw err;
+  }
 }
 
 export default function MediaPicker({
@@ -196,8 +208,8 @@ export default function MediaPicker({
               onClick={() => fileRef.current?.click()}
             >
               <UploadCloud size={28} />
-              <strong>{busy ? "Uploading…" : "Drop an image here, or click to browse"}</strong>
-              <span>PNG, JPG, GIF or WebP · up to 5 MB</span>
+              <strong>{busy ? "Processing & Uploading…" : "Drop an image here, or click to browse"}</strong>
+              <span>PNG, JPG, GIF or WebP · up to 10 MB (Auto-optimized)</span>
               <input
                 ref={fileRef}
                 type="file"

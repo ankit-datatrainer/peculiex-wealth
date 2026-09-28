@@ -1,4 +1,5 @@
 import { apiFetch, apiPostJSON } from "./api";
+import { compressImageForUpload } from "./imageCompress";
 
 /**
  * Thin typed helpers around the /api/admin/* endpoints.
@@ -274,18 +275,14 @@ export const updateBlog = (
 export const deleteBlog = (id: string) =>
   apiFetch<{ ok: boolean }>(`/api/admin/blogs/${id}`, { method: "DELETE" });
 
-export const uploadBlogImage = (id: string, file: File) =>
-  new Promise<{ item: AdminBlog; image_url: string }>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Could not read the selected file."));
-    reader.onload = () => {
-      apiPostJSON<{ ok: boolean; item: AdminBlog; image_url: string }>(
-        `/api/blog-images/${id}`,
-        { dataBase64: String(reader.result) }
-      )
-        .then(resolve)
-        .catch(reject);
-    };
-    reader.readAsDataURL(file);
-  });
+export const uploadBlogImage = async (
+  id: string,
+  file: File
+): Promise<{ item: AdminBlog; image_url: string }> => {
+  const dataBase64 = await compressImageForUpload(file);
+  return apiPostJSON<{ ok: boolean; item: AdminBlog; image_url: string }>(
+    `/api/blog-images/${id}`,
+    { dataBase64 }
+  );
+};
 
