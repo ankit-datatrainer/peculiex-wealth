@@ -76,6 +76,15 @@ const DEFAULT_CATEGORIES = [
   "Alternative Assets"
 ];
 
+/** YYYY-MM-DD in the browser's own timezone (an IST editor must not see
+    an ISO date that UTC has rolled back a day). */
+function localDateStr(d: Date) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function getTodayDateStr() {
   const d = new Date();
   const year = d.getFullYear();
@@ -199,15 +208,13 @@ export default function AdminBlogsPage() {
   };
 
   const startEdit = (item: AdminBlog) => {
-    const rawDate = item.updated_at || item.created_at;
+    // The article date is created_at. updated_at is bumped on every save,
+    // so seeding the picker from it reset old posts to "today" on re-save.
+    const rawDate = item.created_at || item.updated_at;
     let initialDate = getTodayDateStr();
     if (rawDate) {
-      try {
-        const d = new Date(rawDate);
-        if (!isNaN(d.getTime())) {
-          initialDate = d.toISOString().split("T")[0];
-        }
-      } catch {}
+      const d = new Date(rawDate);
+      if (!isNaN(d.getTime())) initialDate = localDateStr(d);
     }
 
     setForm({
@@ -305,15 +312,20 @@ export default function AdminBlogsPage() {
       const slug = form.slug || slugify(form.title);
       const nowIso = new Date().toISOString();
       let chosenDateIso = nowIso;
-      if (form.article_date) {
-        try {
-          const d = new Date(form.article_date);
-          if (!isNaN(d.getTime())) {
-            const nowTime = new Date();
-            d.setHours(nowTime.getHours(), nowTime.getMinutes(), nowTime.getSeconds());
-            chosenDateIso = d.toISOString();
-          }
-        } catch {}
+      // Build the date from its parts in local time. `new Date("YYYY-MM-DD")`
+      // is UTC midnight, which is the previous day west of Greenwich.
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(form.article_date || "");
+      if (m) {
+        const now = new Date();
+        const d = new Date(
+          Number(m[1]),
+          Number(m[2]) - 1,
+          Number(m[3]),
+          now.getHours(),
+          now.getMinutes(),
+          now.getSeconds()
+        );
+        if (!isNaN(d.getTime())) chosenDateIso = d.toISOString();
       }
 
       const payload = {
@@ -372,15 +384,20 @@ export default function AdminBlogsPage() {
       const slug = (form.slug.trim() || slugify(draftTitle)) || `draft-${Date.now()}`;
       const nowIso = new Date().toISOString();
       let chosenDateIso = nowIso;
-      if (form.article_date) {
-        try {
-          const d = new Date(form.article_date);
-          if (!isNaN(d.getTime())) {
-            const nowTime = new Date();
-            d.setHours(nowTime.getHours(), nowTime.getMinutes(), nowTime.getSeconds());
-            chosenDateIso = d.toISOString();
-          }
-        } catch {}
+      // Build the date from its parts in local time. `new Date("YYYY-MM-DD")`
+      // is UTC midnight, which is the previous day west of Greenwich.
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(form.article_date || "");
+      if (m) {
+        const now = new Date();
+        const d = new Date(
+          Number(m[1]),
+          Number(m[2]) - 1,
+          Number(m[3]),
+          now.getHours(),
+          now.getMinutes(),
+          now.getSeconds()
+        );
+        if (!isNaN(d.getTime())) chosenDateIso = d.toISOString();
       }
 
       const payload = {
@@ -1130,10 +1147,10 @@ export default function AdminBlogsPage() {
                       <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5, color: "#94a3b8", marginTop: 2 }}>
                         <code className="ab-slug-code" title={`/blog/${b.slug}`}>/blog/{b.slug}</code>
                         <span style={{ whiteSpace: "nowrap" }}>• {b.author || "Finvoq Admin"}</span>
-                        {(b.updated_at || b.created_at) && (
+                        {(b.created_at || b.updated_at) && (
                           <span style={{ whiteSpace: "nowrap", color: "#38bdf8", display: "inline-flex", alignItems: "center", gap: 3 }}>
                             <Calendar size={11} />
-                            {new Date((b.updated_at || b.created_at)!).toLocaleDateString("en-IN", {
+                            {new Date((b.created_at || b.updated_at)!).toLocaleDateString("en-IN", {
                               day: "numeric",
                               month: "short",
                               year: "numeric"

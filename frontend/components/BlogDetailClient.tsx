@@ -197,7 +197,7 @@ export default function BlogDetailClient({ slug, initialBlog }: BlogDetailClient
       });
 
       // 4. Recency tiebreaker
-      const candidateTime = new Date(candidate.updated_at || candidate.created_at || 0).getTime();
+      const candidateTime = new Date(candidate.created_at || candidate.updated_at || 0).getTime();
       const recencyBonus = isNaN(candidateTime) ? 0 : candidateTime / 1e14;
       score += recencyBonus;
 
@@ -241,7 +241,7 @@ export default function BlogDetailClient({ slug, initialBlog }: BlogDetailClient
       : apiUrl(blog.image_url)
     : "/images/blogs/blog-1.jpg";
 
-  const articleDate = blog.updated_at || blog.created_at;
+  const articleDate = blog.created_at || blog.updated_at;
 
   return (
     <article className="blog-detail">
@@ -419,7 +419,7 @@ export default function BlogDetailClient({ slug, initialBlog }: BlogDetailClient
                     ? r.image_url
                     : apiUrl(r.image_url)
                   : fallbackImg;
-                const rDate = r.updated_at || r.created_at;
+                const rDate = r.created_at || r.updated_at;
                 const rWordCount = (r.body || "").replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
                 const rReadTime = Math.max(2, Math.ceil(rWordCount / 180));
 

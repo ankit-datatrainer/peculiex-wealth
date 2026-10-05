@@ -148,10 +148,10 @@ export default function BlogListingClient() {
                     <div className="blog-card-meta">
                       <span className="blog-card-author">{b.author || "Finvoq Admin"}</span>
                       <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-                        {(b.updated_at || b.created_at) && (
+                        {(b.created_at || b.updated_at) && (
                           <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
                             <Calendar size={12} />
-                            {new Date((b.updated_at || b.created_at)!).toLocaleDateString("en-IN", {
+                            {new Date((b.created_at || b.updated_at)!).toLocaleDateString("en-IN", {
                               day: "numeric",
                               month: "short",
                               year: "numeric"

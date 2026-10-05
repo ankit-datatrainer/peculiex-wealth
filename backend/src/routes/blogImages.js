@@ -234,8 +234,8 @@ router.post(
       const updated = await admin.updateBlog(id, {
         image_url: logo_url,
         og_image: logo_url,
-        updated_at: nowIso,
-        created_at: nowIso
+        // Only the edit time moves; created_at is the article date.
+        updated_at: nowIso
       });
 
       res.json({ ok: true, item: updated, image_url: logo_url });

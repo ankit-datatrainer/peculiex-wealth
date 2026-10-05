@@ -130,7 +130,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       url: canonical,
       siteName: "Finvoq Wealth Management",
       type: "article",
-      publishedTime: blog.updated_at || blog.created_at,
+      publishedTime: blog.created_at || blog.updated_at,
       modifiedTime: blog.updated_at || blog.created_at,
       authors: [blog.author || "Finvoq Admin"],
       tags,
@@ -170,7 +170,7 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
               : apiUrl(blog.og_image || blog.image_url || "/images/blogs/blog-1.jpg")
             : "https://finvoq.com/images/blogs/blog-1.jpg"
         ],
-        datePublished: blog.updated_at || blog.created_at,
+        datePublished: blog.created_at || blog.updated_at,
         dateModified: blog.updated_at || blog.created_at,
         author: {
           "@type": "Person",
