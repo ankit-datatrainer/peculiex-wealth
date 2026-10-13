@@ -1,14 +1,12 @@
-import type { Metadata } from "next";
-import ProductsPage from "@/components/ProductsPage";
-import { pageMeta } from "@/lib/seo";
+import { permanentRedirect } from "next/navigation";
 
-export const metadata: Metadata = pageMeta({
-  title: "Products — mutual funds, PMS, AIF, bonds & more",
-  description:
-    "Compare every asset class Finvoq offers: mutual funds, PMS, AIF, bonds, listed and unlisted equity and insurance, each with real diligence and clearly stated costs.",
-  path: "/products"
-});
-
-export default function ProductsRoute() {
-  return <ProductsPage />;
+/**
+ * /products no longer has an overview page: every product is reached from the
+ * "Products" dropdown in the main nav. The 308 itself is issued by
+ * next.config.mjs before this route renders; this is the backstop for any
+ * environment where that redirect table is not applied (it answers the same
+ * 308 to "/").
+ */
+export default function ProductsRoute(): never {
+  permanentRedirect("/");
 }

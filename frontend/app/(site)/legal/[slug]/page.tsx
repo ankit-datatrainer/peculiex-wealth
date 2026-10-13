@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { LEGAL } from "@/lib/legalContent";
-import PageHero from "@/components/PageHero";
-import ContentBody from "@/components/ContentBody";
+import { LEGAL, legalSection } from "@/lib/legalContent";
 import { pageMeta } from "@/lib/seo";
+import LegalDocument from "./LegalDocument";
 
 export const dynamicParams = false;
 
@@ -30,21 +29,17 @@ export default function LegalPage({ params }: { params: { slug: string } }) {
   const doc = LEGAL[params.slug];
   if (!doc) notFound();
 
+  // Header, date line and body are all editable (Content Manager → Legal
+  // pages); the built-in body is the server-rendered fallback.
   return (
-    <>
-      <PageHero label={doc.label} title={doc.title} subtitle={doc.subtitle} />
-      <ContentBody>
-        <p
-          style={{
-            color: "var(--color-text-faint)",
-            fontSize: "0.85rem",
-            marginBottom: "2rem"
-          }}
-        >
-          {doc.updated}
-        </p>
-        {doc.body}
-      </ContentBody>
-    </>
+    <LegalDocument
+      section={legalSection(doc.slug)}
+      label={doc.label}
+      title={doc.title}
+      subtitle={doc.subtitle}
+      updated={doc.updated}
+    >
+      {doc.body}
+    </LegalDocument>
   );
 }

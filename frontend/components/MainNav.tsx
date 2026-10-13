@@ -7,6 +7,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import Logo from "./Logo";
 import { useContent } from "@/lib/content";
 import { GLOBAL_PAGE, navFrom, nriMenuFrom } from "@/lib/siteSettings";
+import "./main-nav-trigger.css";
 
 type NavItem = {
   href: string;
@@ -20,7 +21,9 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { href: "/watchlist", label: "Watchlist" },
   {
-    href: "/products",
+    // A parent with children is a dropdown trigger only, so its href is never
+    // followed. "#" rather than a route, since /products no longer exists.
+    href: "#",
     label: "Products",
     children: [
       { href: "/products/mutual-funds", label: "Mutual Funds" },
@@ -137,6 +140,32 @@ export default function MainNav() {
     setOpenGroup((g) => (g === href ? null : href));
   };
 
+  // A dropdown opened by click/keyboard on desktop stays open until the user
+  // clicks elsewhere or presses Escape (hover-opened ones close by themselves).
+  // In the mobile drawer the groups are an accordion, so only Escape applies.
+  useEffect(() => {
+    if (!openGroup) return;
+    const onDocClick = (e: MouseEvent) => {
+      if (mobileOpen) return;
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-nav-group]")) setOpenGroup(null);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      const trigger = document.querySelector<HTMLElement>(
+        `[data-nav-group="${CSS.escape(openGroup)}"] [data-nav-trigger]`
+      );
+      setOpenGroup(null);
+      trigger?.focus();
+    };
+    document.addEventListener("click", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("click", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [openGroup, mobileOpen]);
+
   // Close account menu when clicking outside
   useEffect(() => {
     if (!menuOpen) return;
@@ -202,6 +231,7 @@ export default function MainNav() {
                   return (
                     <li
                       key={`${it.href}-${it.label}-${itemIndex}`}
+                      data-nav-group={it.href}
                       className={`nav-has-dropdown nri-mega-menu-container${
                         openGroup === it.href ? " open" : ""
                       }${closeHover ? " disable-hover" : ""}`}
@@ -218,6 +248,7 @@ export default function MainNav() {
                         </Link>
                         <button
                           type="button"
+                          data-nav-trigger
                           className="nav-caret-btn"
                           aria-label={`Toggle ${it.label} menu`}
                           aria-expanded={openGroup === it.href}
@@ -277,40 +308,61 @@ export default function MainNav() {
                     </li>
                   );
                 }
+                // A parent with children is a dropdown TRIGGER, never a link:
+                // the CMS-saved nav may still carry an old href on it (e.g. the
+                // retired /products page), so the href is deliberately unused.
+                // Keyed on label + position because several parents can share
+                // the placeholder href "#".
+                const groupKey = `${it.label}-${itemIndex}`;
+                const menuId = `nav-menu-${itemIndex}`;
+                const isOpen = openGroup === groupKey;
+                const childActive = (it.children || []).some(
+                  (c) =>
+                    c.href.startsWith("/") &&
+                    !c.href.includes("#") &&
+                    (pathname === c.href ||
+                      (c.href !== "/" && pathname.startsWith(`${c.href}/`)))
+                );
                 return (
                   <li
-                    key={it.href}
-                    className={`nav-has-dropdown${openGroup === it.href ? " open" : ""}${closeHover ? " disable-hover" : ""}`}
+                    key={groupKey}
+                    data-nav-group={groupKey}
+                    className={`nav-has-dropdown nav-trigger-group${isOpen ? " open" : ""}${closeHover ? " disable-hover" : ""}`}
                     onPointerLeave={() => setCloseHover(false)}
                     onMouseEnter={() => setCloseHover(false)}
+                    onBlur={(e) => {
+                      // Tabbing past the last link closes a keyboard-opened
+                      // dropdown on desktop; the mobile accordion stays put.
+                      if (mobileOpen) return;
+                      if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+                      setOpenGroup((g) => (g === groupKey ? null : g));
+                    }}
                   >
                     <div className="nav-parent-row">
-                      <Link
-                        href={it.href}
-                        className={`nav-link nav-link-parent${isActive ? " active" : ""}`}
-                        onClick={() => { setMobileOpen(false); setCloseHover(true); }}
-                      >
-                        {it.label}
-                      </Link>
                       <button
                         type="button"
-                        className="nav-caret-btn"
-                        aria-label={`Toggle ${it.label} menu`}
-                        aria-expanded={openGroup === it.href}
-                        onClick={toggleGroup(it.href)}
+                        data-nav-trigger
+                        className={`nav-link nav-link-parent nav-trigger${childActive ? " active" : ""}`}
+                        aria-expanded={isOpen}
+                        aria-controls={menuId}
+                        onClick={toggleGroup(groupKey)}
                       >
-                        <svg className="nav-caret" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                        <span className="nav-trigger-label">{it.label}</span>
+                        <span className="nav-trigger-caret" aria-hidden="true">
+                          <svg className="nav-caret" viewBox="0 0 24 24" fill="none">
+                            <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </span>
                       </button>
                     </div>
-                    <ul className="nav-dropdown">
+                    <ul className="nav-dropdown" id={menuId}>
                       {(it.children || []).map((c, childIndex) => (
                         <li key={`${c.href}-${c.label}-${childIndex}`}>
                           <Link
                             href={c.href}
                             className="nav-dropdown-link"
-                            onClick={() => { setMobileOpen(false); setCloseHover(true); }}
+                            aria-current={pathname === c.href ? "page" : undefined}
+                            onClick={() => { setMobileOpen(false); setCloseHover(true); setOpenGroup(null); }}
                           >
                             {c.label}
                           </Link>

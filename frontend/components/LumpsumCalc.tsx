@@ -2,6 +2,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { fmtINR } from "@/lib/util";
 import { postJSON } from "@/lib/api";
+import { accent, useContent } from "@/lib/content";
+import { fill } from "@/lib/template";
+
+/**
+ * Render a *starred* CMS heading with the <em> accent the design uses. Plain
+ * parts stay bare text so the markup matches the hand-written heading.
+ */
+function heading(text: string) {
+  return accent(text).map((p, i) => (typeof p === "string" ? p : <em key={i}>{p.em}</em>));
+}
 
 const C = 2 * Math.PI * 92;
 
@@ -23,6 +33,10 @@ function animateText(el: HTMLElement | SVGTextElement | null, from: number, to: 
 }
 
 export default function LumpsumCalc() {
+  const cms = useContent("calculator-lumpsum");
+  const l = (field: string, fallback: string) => cms.t("labels", field, fallback);
+  const g = (field: string, fallback: string) => cms.t("graph", field, fallback);
+  const a = (field: string, fallback: string) => cms.t("actions", field, fallback);
   const [amt, setAmt] = useState(500000);
   const [rate, setRate] = useState(12);
   const [yr, setYr] = useState(10);
@@ -90,7 +104,7 @@ export default function LumpsumCalc() {
         /* clipboard unavailable — link is still shown below */
       }
     } catch (e: any) {
-      setShareErr(e?.message || "Could not create share link.");
+      setShareErr(e?.message || l("shareError", "Could not create share link."));
     }
   };
 
@@ -100,32 +114,36 @@ export default function LumpsumCalc() {
     <section className="calc-sec" id="lumpsum">
       <div className="container calc-grid">
         <div className="calc-left reveal">
-          <div className="label">Mutual Funds</div>
-          <h2 className="stitle">Lumpsum <em>compound calculator</em></h2>
+          <div className="label">{cms.t("intro", "label", "Mutual Funds")}</div>
+          <h2 className="stitle">{heading(cms.t("intro", "title", "Lumpsum *compound calculator*"))}</h2>
           <p className="sdesc">
-            See what a one-time investment grows to over time, at your assumed rate of return.
+            {cms.t(
+              "intro",
+              "subtitle",
+              "See what a one-time investment grows to over time, at your assumed rate of return."
+            )}
           </p>
 
           <div className="calc-card">
             <div className="slider-row">
-              <div className="slider-head"><span>Lumpsum amount</span><strong>{fmtINR(amt)}</strong></div>
+              <div className="slider-head"><span>{l("amount", "Lumpsum amount")}</span><strong>{fmtINR(amt)}</strong></div>
               <input ref={sliderAmt} type="range" min={10000} max={50000000} step={10000} value={amt} onChange={(e) => setAmt(+e.target.value)} className="range" />
               <div className="range-meta"><span>₹10,000</span><span>₹5 Cr</span></div>
             </div>
             <div className="slider-row">
-              <div className="slider-head"><span>Expected annual return</span><strong>{rate.toFixed(1)}%</strong></div>
+              <div className="slider-head"><span>{l("rate", "Expected annual return")}</span><strong>{rate.toFixed(1)}%</strong></div>
               <input ref={sliderRate} type="range" min={1} max={30} step={0.5} value={rate} onChange={(e) => setRate(+e.target.value)} className="range" />
               <div className="range-meta"><span>1%</span><span>30%</span></div>
             </div>
             <div className="slider-row">
-              <div className="slider-head"><span>Duration</span><strong>{yr} {yr === 1 ? "Year" : "Years"}</strong></div>
+              <div className="slider-head"><span>{l("duration", "Duration")}</span><strong>{yr} {yr === 1 ? l("yearOne", "Year") : l("yearMany", "Years")}</strong></div>
               <input ref={sliderYr} type="range" min={1} max={40} step={1} value={yr} onChange={(e) => setYr(+e.target.value)} className="range" />
               <div className="range-meta"><span>1 yr</span><span>40 yrs</span></div>
             </div>
 
             <div style={{ marginTop: "1.25rem", display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
-              <button type="button" onClick={onShare} className="btn btn-outline" data-magnetic>Copy projection link</button>
-              {shareCopied && <span style={{ color: "var(--color-primary)", fontSize: "0.85rem" }}>Link copied to clipboard</span>}
+              <button type="button" onClick={onShare} className="btn btn-outline" data-magnetic>{l("share", "Copy projection link")}</button>
+              {shareCopied && <span style={{ color: "var(--color-primary)", fontSize: "0.85rem" }}>{l("copied", "Link copied to clipboard")}</span>}
               {shareUrl && <a href={shareUrl} target="_blank" rel="noreferrer" style={{ color: "var(--color-primary)", fontSize: "0.9rem", wordBreak: "break-all" }}>{shareUrl}</a>}
               {shareErr && <span style={{ color: "var(--color-danger)", fontSize: "0.85rem" }}>{shareErr}</span>}
             </div>
@@ -139,31 +157,40 @@ export default function LumpsumCalc() {
               <circle ref={dInv as any} cx="110" cy="110" r="92" stroke="var(--color-primary-highlight)" strokeWidth="22" fill="none" strokeDasharray={`${((amt / total) * C).toFixed(2)} ${C}`} strokeLinecap="round" transform="rotate(-90 110 110)"/>
               <circle ref={dGain as any} cx="110" cy="110" r="92" stroke="var(--color-primary)" strokeWidth="22" fill="none" strokeDasharray={`${((gains / total) * C).toFixed(2)} ${C}`} strokeDashoffset={`${((-amt / total) * C).toFixed(2)}`} strokeLinecap="round" transform="rotate(-90 110 110)"/>
               <text ref={dTot as any} x="110" y="105" textAnchor="middle" fill="var(--color-text)" fontFamily="Instrument Serif" fontSize="22">{fmtINR(total)}</text>
-              <text x="110" y="128" textAnchor="middle" fill="var(--color-text-faint)" fontSize="11" letterSpacing="2">TOTAL VALUE</text>
+              <text x="110" y="128" textAnchor="middle" fill="var(--color-text-faint)" fontSize="11" letterSpacing="2">{l("donut", "TOTAL VALUE")}</text>
             </svg>
           </div>
           <div className="calc-stats">
-            <div className="cs-row"><span className="dotI" style={{backgroundColor: "var(--color-primary-highlight)"}}></span>You invest<strong ref={oInv as any}>{fmtINR(amt)}</strong></div>
-            <div className="cs-row"><span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>Est. returns<strong ref={oRet as any}>{fmtINR(gains)}</strong></div>
-            <div className="cs-row total"><span></span>Total value<strong ref={oTot as any}>{fmtINR(total)}</strong></div>
+            <div className="cs-row"><span className="dotI" style={{backgroundColor: "var(--color-primary-highlight)"}}></span>{l("invest", "You invest")}<strong ref={oInv as any}>{fmtINR(amt)}</strong></div>
+            <div className="cs-row"><span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>{l("returns", "Est. returns")}<strong ref={oRet as any}>{fmtINR(gains)}</strong></div>
+            <div className="cs-row total"><span></span>{l("total", "Total value")}<strong ref={oTot as any}>{fmtINR(total)}</strong></div>
           </div>
 
           <p style={{ marginTop: "0.9rem", fontSize: "0.78rem", lineHeight: 1.5, color: "var(--color-text-faint)" }}>
-            Illustrative projection only. Returns are assumed, not guaranteed — actual
-            returns vary with market performance. This is not investment advice.
+            {cms.t(
+              "disclaimer",
+              "note",
+              "Illustrative projection only. Returns are assumed, not guaranteed — actual returns vary with market performance. This is not investment advice."
+            )}
           </p>
 
           <div style={{ marginTop: "1.25rem", display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
-            <a href="/get-started" className="btn btn-primary" data-magnetic>Start investing</a>
-            <a href="/get-started" className="btn btn-outline" data-magnetic>Talk to Advisor</a>
+            <a href={a("primaryHref", "/get-started")} className="btn btn-primary" data-magnetic>
+              {a("primaryLabel", "Start investing")}
+            </a>
+            <a href={a("secondaryHref", "/get-started")} className="btn btn-outline" data-magnetic>
+              {a("secondaryLabel", "Talk to Advisor")}
+            </a>
           </div>
         </div>
       </div>
 
       <div className="container calc-graph reveal" style={{ marginTop: "4rem" }}>
          <div className="graph-header" style={{ marginBottom: "2rem" }}>
-            <h3 style={{ fontSize: "1.5rem", fontWeight: 500 }}>Wealth Progression</h3>
-            <p style={{ color: "var(--color-text-faint)", fontSize: "0.95rem" }}>Projected growth over {yr} years</p>
+            <h3 style={{ fontSize: "1.5rem", fontWeight: 500 }}>{g("title", "Wealth Progression")}</h3>
+            <p style={{ color: "var(--color-text-faint)", fontSize: "0.95rem" }}>
+              {fill(g("subtitle", "Projected growth over {years} years"), { years: yr })}
+            </p>
          </div>
          <div className="chart-container" style={{ position: "relative", width: "100%", overflow: "visible", display: "flex", alignItems: "flex-end", gap: "3px" }}>
             {projection.map((pt, i) => {
@@ -173,9 +200,9 @@ export default function LumpsumCalc() {
               return (
                 <div key={i} className="chart-bar-group" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", height: "100%" }}>
                   <div className="chart-tooltip">
-                     <strong>Year {pt.year}</strong><br/>
-                     Total: {fmtINR(pt.total)}<br/>
-                     Invested: {fmtINR(pt.invested)}
+                     <strong>{fill(g("tooltipYear", "Year {year}"), { year: pt.year })}</strong><br/>
+                     {g("tooltipTotal", "Total:")} {fmtINR(pt.total)}<br/>
+                     {g("tooltipInvested", "Invested:")} {fmtINR(pt.invested)}
                   </div>
                   <div 
                     className="bar-gains" 
@@ -190,9 +217,9 @@ export default function LumpsumCalc() {
             })}
          </div>
          <div className="chart-axis" style={{ display: "flex", justifyContent: "space-between", marginTop: "1rem", color: "var(--color-text-faint)", fontSize: "0.85rem", borderTop: "1px solid var(--color-border)", paddingTop: "0.5rem" }}>
-            <span>Year 1</span>
-            <span>Year {Math.floor(yr / 2) || 1}</span>
-            <span>Year {yr}</span>
+            <span>{fill(g("axisYear", "Year {year}"), { year: 1 })}</span>
+            <span>{fill(g("axisYear", "Year {year}"), { year: Math.floor(yr / 2) || 1 })}</span>
+            <span>{fill(g("axisYear", "Year {year}"), { year: yr })}</span>
          </div>
       </div>
     </section>

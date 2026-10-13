@@ -16,6 +16,7 @@ import { fetcher } from "@/lib/api";
 import { fmtINR2, randomSpark, sparkPath, sparkLastPoint, getCompanyDomain, getCompanyLogo } from "@/lib/util";
 import WatchlistButton from "./WatchlistButton";
 import { marketHref } from "@/lib/symbol";
+import { fill } from "@/lib/template";
 
 type SymbolEntry = { symbol: string; name: string; currency: string };
 type Quote = {
@@ -52,6 +53,9 @@ export default function Markets() {
   const [loading, setLoading] = useState(true);
   const [moversLoading, setMoversLoading] = useState(true);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const l = (field: string, fallback: string) => cms.t("labels", field, fallback);
+  const exchange = l("exchange", "BSE");
+  const volumePrefix = l("volumePrefix", "Vol");
 
   // Debounce search
   useEffect(() => {
@@ -166,9 +170,9 @@ export default function Markets() {
       `}</style>
       <div className="container">
         <div className="sec-head reveal">
-          <div className="label"><span className="markets-live-dot" />{cms.t("hero", "label", "Live · BSE")}</div>
-          <h2 className="stitle">{heading(cms.t("hero", "title", "Market *Opportunities*"))}</h2>
-          <p className="sdesc">{cms.t("hero", "subtitle", "All Indian stocks listed on BSE. Search any stock, or view today s top gainers and losers.")}</p>
+          <div className="label"><span className="markets-live-dot" />{cms.t("hero", "label", "Markets")}</div>
+          <h2 className="stitle">{heading(cms.t("hero", "title", "Live BSE *prices.*"))}</h2>
+          <p className="sdesc">{cms.t("hero", "subtitle", "Track every listed share with real-time quotes, charts and your own watchlist.")}</p>
         </div>
 
         {/* Indices */}
@@ -198,14 +202,18 @@ export default function Markets() {
                 onClick={() => setTab(t)}
                 type="button"
               >
-                {t === "all" ? `All Stocks` : t === "gainers" ? "Top Gainers" : "Top Losers"}
+                {t === "all"
+                  ? l("tabAll", "All Stocks")
+                  : t === "gainers"
+                    ? l("tabGainers", "Top Gainers")
+                    : l("tabLosers", "Top Losers")}
               </button>
             ))}
           </div>
           <div style={{ position: "relative", flex: "1 1 220px", minWidth: 0, maxWidth: 360 }}>
             <input
               type="text"
-              placeholder="Search stocks by name or symbol..."
+              placeholder={l("searchPlaceholder", "Search stocks by name or symbol...")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
@@ -247,13 +255,20 @@ export default function Markets() {
               </div>
             ) : allStocks.length === 0 ? (
               <div style={{ textAlign: "center", padding: "3rem", color: "var(--color-text-muted)" }}>
-                {debouncedSearch ? `No stocks found for "${debouncedSearch}"` : "No stocks available. Make sure FINNHUB_API_KEY is set in backend .env"}
+                {debouncedSearch
+                  ? fill(l("noResults", 'No stocks found for "{query}"'), { query: debouncedSearch })
+                  : l("noData", "No stocks available. Make sure FINNHUB_API_KEY is set in backend .env")}
               </div>
             ) : (
               <>
                 <p style={{ color: "var(--color-text-muted)", fontSize: "0.85rem", margin: "0.5rem 0 1rem" }}>
-                  Showing {(page - 1) * 50 + 1}–{Math.min(page * 50, total)} of {total} stocks
-                  {debouncedSearch && ` matching "${debouncedSearch}"`}
+                  {fill(l("showing", "Showing {from}–{to} of {total} stocks"), {
+                    from: (page - 1) * 50 + 1,
+                    to: Math.min(page * 50, total),
+                    total
+                  })}
+                  {debouncedSearch &&
+                    " " + fill(l("matching", 'matching "{query}"'), { query: debouncedSearch })}
                 </p>
                 <div className="stock-grid" id="stockGrid">
                   {allStocks.map((q, i) => {
@@ -282,7 +297,7 @@ export default function Markets() {
                               </span>
                               <div>
                                 <div className="stock-name">{q.name}</div>
-                                <div className="stock-sym">{q.symbol} · BSE</div>
+                                <div className="stock-sym">{q.symbol} · {exchange}</div>
                               </div>
                             </div>
                             <span className={`stock-pill ${up ? "up" : "dn"}`}>
@@ -298,7 +313,7 @@ export default function Markets() {
                           </svg>
                           {q.volume != null && (
                             <div className="stock-meta">
-                              <span>Vol {(q.volume / 1e6).toFixed(1)}M</span>
+                              <span>{volumePrefix} {(q.volume / 1e6).toFixed(1)}M</span>
                             </div>
                           )}
                         </Link>
@@ -313,11 +328,11 @@ export default function Markets() {
                 {/* Pagination */}
                 {totalPages > 1 && (
                   <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", marginTop: "2rem", flexWrap: "wrap" }}>
-                    <button className="chip" disabled={page <= 1} onClick={() => setPage((p) => p - 1)} type="button">← Prev</button>
+                    <button className="chip" disabled={page <= 1} onClick={() => setPage((p) => p - 1)} type="button">{l("prev", "← Prev")}</button>
                     <span style={{ display: "flex", alignItems: "center", color: "var(--color-text-muted)", fontSize: "0.9rem" }}>
-                      Page {page} of {totalPages}
+                      {fill(l("pageOf", "Page {page} of {pages}"), { page, pages: totalPages })}
                     </span>
-                    <button className="chip" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)} type="button">Next →</button>
+                    <button className="chip" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)} type="button">{l("next", "Next →")}</button>
                   </div>
                 )}
               </>
@@ -372,7 +387,7 @@ export default function Markets() {
                             </span>
                             <div>
                               <div className="stock-name">{q.name}</div>
-                              <div className="stock-sym">{q.symbol} · BSE</div>
+                              <div className="stock-sym">{q.symbol} · {exchange}</div>
                             </div>
                           </div>
                           <span className={`stock-pill ${up ? "up" : "dn"}`}>
@@ -388,7 +403,7 @@ export default function Markets() {
                         </svg>
                         {q.volume != null && (
                           <div className="stock-meta">
-                            <span>Vol {(q.volume / 1e6).toFixed(1)}M</span>
+                            <span>{volumePrefix} {(q.volume / 1e6).toFixed(1)}M</span>
                           </div>
                         )}
                       </Link>
@@ -400,7 +415,7 @@ export default function Markets() {
                 })}
                 {(tab === "gainers" ? gainers : losers).length === 0 && (
                   <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "2rem", color: "var(--color-text-muted)" }}>
-                    No {tab} data available. Market may be closed.
+                    {fill(l("noMovers", "No {tab} data available. Market may be closed."), { tab })}
                   </div>
                 )}
               </div>

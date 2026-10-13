@@ -249,6 +249,129 @@ router.delete("/unlisted/:id", async (req, res, next) => {
 });
 
 // --------------------------------------------------------------
+// UNLISTED SHARES — market source sync
+// Preview diffs our inventory against the live source listing; apply writes
+// the reviewed subset through the normal store functions. Bulk overwrite is
+// higher impact than single-row edits, so managers can't run it.
+// --------------------------------------------------------------
+
+const unlistedSource = require("../services/unlistedSource");
+const { isLive } = require("../db");
+
+function requireSyncRole(req, res, next) {
+  const role = req.user && req.user.role;
+  if (role === "superadmin" || role === "admin") return next();
+  return res
+    .status(403)
+    .json({ error: "Only admins can sync with the market source." });
+}
+
+// Last fetched source rows, reused by apply so it writes exactly what the
+// admin just reviewed instead of whatever the source shows a minute later.
+const SOURCE_CACHE_TTL_MS = 30 * 60 * 1000;
+let sourceCache = null; // { rows, fetchedAt, origin }
+
+async function loadSource(body, { preferCache }) {
+  try {
+    if (body && Array.isArray(body.items)) {
+      const rows = unlistedSource.normalizeSourceItems(body.items);
+      sourceCache = { rows, fetchedAt: new Date().toISOString(), origin: "items" };
+      return sourceCache;
+    }
+    if (
+      preferCache &&
+      sourceCache &&
+      Date.now() - Date.parse(sourceCache.fetchedAt) < SOURCE_CACHE_TTL_MS
+    ) {
+      return sourceCache;
+    }
+    const rows = await unlistedSource.fetchSourceShares();
+    sourceCache = { rows, fetchedAt: new Date().toISOString(), origin: "live" };
+    return sourceCache;
+  } catch (err) {
+    // Flag it so the route answers 502 (upstream problem), not 500.
+    err.sourceError = true;
+    throw err;
+  }
+}
+
+function syncNotes() {
+  if (!isLive()) return [];
+  return [
+    "Min units, market cap and P/E are read from backend/src/seed.js in this deployment (they are not database columns), so changes to those three show on the site only after seed.js is updated and redeployed. Price and sector are saved immediately."
+  ];
+}
+
+const SyncApplySchema = z.object({
+  applyUpdates: z.boolean().optional().default(false),
+  applySectors: z.boolean().optional().default(false),
+  addIds: z.array(z.string().trim().min(1).max(200)).max(500).optional().default([]),
+  items: z.array(z.any()).max(2000).optional()
+});
+
+router.post("/unlisted/sync/preview", requireSyncRole, async (req, res, next) => {
+  try {
+    const source = await loadSource(req.body, { preferCache: false });
+    const existing = await admin.listUnlisted();
+    const diff = unlistedSource.computeDiff(existing, source.rows);
+    res.json({
+      diff,
+      source: {
+        url: unlistedSource.SOURCE_URL,
+        fetchedAt: source.fetchedAt,
+        origin: source.origin
+      },
+      notes: syncNotes()
+    });
+  } catch (err) {
+    if (err && err.sourceError) {
+      return res.status(502).json({ error: `Could not read the market source: ${err.message}` });
+    }
+    next(err);
+  }
+});
+
+router.post("/unlisted/sync/apply", requireSyncRole, async (req, res, next) => {
+  try {
+    const parsed = SyncApplySchema.safeParse(req.body || {});
+    if (!parsed.success) {
+      return res
+        .status(400)
+        .json({ error: parsed.error.errors[0]?.message || "Invalid payload" });
+    }
+    const { applyUpdates, applySectors, addIds, items } = parsed.data;
+    if (!applyUpdates && addIds.length === 0) {
+      return res.status(400).json({ error: "Nothing selected to apply." });
+    }
+    const source = await loadSource(items ? { items } : null, { preferCache: true });
+    // Re-diff against the current inventory so ids and "from" values are fresh.
+    const existing = await admin.listUnlisted();
+    const diff = unlistedSource.computeDiff(existing, source.rows);
+    const result = await unlistedSource.applySync(admin, diff, {
+      applyUpdates,
+      applySectors,
+      addNames: addIds,
+      seedRows: require("../seed").UNLISTED
+    });
+    res.json({
+      result,
+      counts: {
+        updated: result.updated.length,
+        added: result.added.length,
+        skipped: result.skipped.length,
+        errors: result.errors.length
+      },
+      notes: syncNotes()
+    });
+  } catch (err) {
+    if (err && err.sourceError) {
+      return res.status(502).json({ error: `Could not read the market source: ${err.message}` });
+    }
+    next(err);
+  }
+});
+
+// --------------------------------------------------------------
 // STOCKS
 // --------------------------------------------------------------
 

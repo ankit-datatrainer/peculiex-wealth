@@ -250,7 +250,11 @@ export default function ContactPageContent() {
                   title="Copy office address to clipboard"
                 >
                   {copied ? <Check size={14} /> : <Copy size={14} />}
-                  <span>{copied ? "Address Copied!" : "Copy Address"}</span>
+                  <span>
+                    {copied
+                      ? cms.t("office", "copiedLabel", "Address Copied!")
+                      : cms.t("office", "copyLabel", "Copy Address")}
+                  </span>
                 </button>
 
                 <a
@@ -270,7 +274,7 @@ export default function ContactPageContent() {
                     boxShadow: "0 4px 14px rgba(16,185,129,0.25)",
                   }}
                 >
-                  <ExternalLink size={15} /> Open in Google Maps
+                  <ExternalLink size={15} /> {cms.t("office", "mapButtonLabel", "Open in Google Maps")}
                 </a>
               </div>
             </div>

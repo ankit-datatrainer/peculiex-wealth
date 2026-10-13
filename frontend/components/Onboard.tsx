@@ -20,11 +20,32 @@ const STEPS = [
   { title: "Start investing", body: "Access the full marketplace: equities, unlisted, MF, PMS, bonds & more." }
 ];
 
+/* Fallback select options, mirroring the CMS defaults (Get Started → Interest form fields). */
+const INTERESTS = [
+  { label: "Demat Account" },
+  { label: "Mutual Funds" },
+  { label: "PMS / AIF" },
+  { label: "Unlisted Shares" },
+  { label: "Bonds" },
+  { label: "Insurance" }
+];
+const BUDGETS = [
+  { label: "Below ₹1 Lakh" },
+  { label: "₹1 Lakh to ₹10 Lakh" },
+  { label: "₹10 Lakh to ₹50 Lakh" },
+  { label: "₹50 Lakh to ₹1 Cr" },
+  { label: "₹1 Cr and above" }
+];
+
 export default function Onboard() {
   const cms = useContent("get-started");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const form = (field: string, fallback: string) => cms.t("form", field, fallback);
+  const interests = cms.list("form", "interests", INTERESTS).filter((o) => o.label);
+  const budgets = cms.list("form", "budgets", BUDGETS).filter((o) => o.label);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -39,7 +60,7 @@ export default function Onboard() {
       message: String(fd.get("msg") || "")
     };
     if (!payload.name || !payload.email || !payload.phone) {
-      setError("Please fill name, email, and phone.");
+      setError(form("requiredError", "Please fill name, email, and phone."));
       return;
     }
     const formEl = e.currentTarget;
@@ -50,7 +71,7 @@ export default function Onboard() {
       formEl.reset();
       setTimeout(() => setSuccess(false), 4000);
     } catch (err: any) {
-      setError(err?.message || "Something went wrong. Please try again.");
+      setError(err?.message || form("genericError", "Something went wrong. Please try again."));
     } finally {
       setSubmitting(false);
     }
@@ -100,48 +121,43 @@ export default function Onboard() {
           </p>
 
           <label>
-            <span>Full Name</span>
-            <input required type="text" name="name" placeholder="Your full name" />
+            <span>{form("nameLabel", "Full Name")}</span>
+            <input required type="text" name="name" placeholder={form("namePlaceholder", "Your full name")} />
           </label>
           <div className="form-row">
             <label>
-              <span>Email</span>
-              <input required type="email" name="email" placeholder="you@email.com" />
+              <span>{form("emailLabel", "Email")}</span>
+              <input required type="email" name="email" placeholder={form("emailPlaceholder", "you@email.com")} />
             </label>
             <label>
-              <span>Phone</span>
-              <input required type="tel" name="phone" placeholder="+91 ..." />
+              <span>{form("phoneLabel", "Phone")}</span>
+              <input required type="tel" name="phone" placeholder={form("phonePlaceholder", "+91 ...")} />
             </label>
           </div>
           <div className="form-row">
             <label>
-              <span>Interest</span>
-              <select name="interest" defaultValue="Demat Account">
-                <option>Demat Account</option>
-                <option>Mutual Funds</option>
-                <option>PMS / AIF</option>
-                <option>Unlisted Shares</option>
-                <option>Bonds</option>
-                <option>Insurance</option>
+              <span>{form("interestLabel", "Interest")}</span>
+              <select name="interest" defaultValue={interests[0]?.label}>
+                {interests.map((o, i) => (
+                  <option key={`${o.label}-${i}`}>{o.label}</option>
+                ))}
               </select>
             </label>
             <label>
-              <span>Budget</span>
-              <select name="budget" defaultValue="Below ₹1 Lakh">
-                <option>Below ₹1 Lakh</option>
-                <option>₹1 Lakh to ₹10 Lakh</option>
-                <option>₹10 Lakh to ₹50 Lakh</option>
-                <option>₹50 Lakh to ₹1 Cr</option>
-                <option>₹1 Cr and above</option>
+              <span>{form("budgetLabel", "Budget")}</span>
+              <select name="budget" defaultValue={budgets[0]?.label}>
+                {budgets.map((o, i) => (
+                  <option key={`${o.label}-${i}`}>{o.label}</option>
+                ))}
               </select>
             </label>
           </div>
           <label>
-            <span>Message (optional)</span>
+            <span>{form("messageLabel", "Message (optional)")}</span>
             <textarea
               name="msg"
               rows={3}
-              placeholder="Anything you'd like to share..."
+              placeholder={form("messagePlaceholder", "Anything you'd like to share...")}
             />
           </label>
           <button
@@ -151,13 +167,17 @@ export default function Onboard() {
             style={{ opacity: submitting ? 0.7 : 1 }}
             disabled={submitting}
           >
-            {submitting ? "Submitting…" : success ? "Submitted ✓" : cms.t("hero", "formButton", "Submit & Get Started")}
+            {submitting
+              ? form("submittingLabel", "Submitting…")
+              : success
+                ? form("submittedLabel", "Submitted ✓")
+                : cms.t("hero", "formButton", "Submit & Get Started")}
           </button>
           <div
             className={`form-success${success ? " show" : ""}`}
             id="formSuccess"
           >
-            ✓ Submitted. We'll reach out within 24 hours.
+            {form("successText", "✓ Submitted. We'll reach out within 24 hours.")}
           </div>
           {error && (
             <div

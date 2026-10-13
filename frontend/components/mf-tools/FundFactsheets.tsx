@@ -4,6 +4,7 @@ import { SCHEME_CATEGORIES } from "@/lib/mfData";
 import { apiUrl } from "@/lib/api";
 import { trailingReturn, sortNavAscending, fmtINR2, type NavPoint } from "@/lib/mfCalc";
 import AmcSchemeSelect, { type SchemeOption } from "./AmcSchemeSelect";
+import MfToolHeader from "./MfToolHeader";
 
 type Meta = {
   fund_house?: string;
@@ -60,10 +61,11 @@ export default function FundFactsheets() {
 
   return (
     <div className="mf-tool-container">
-      <div className="mf-tool-header">
-        <h2>Fund Factsheets</h2>
-        <p>A real, live quick-factsheet built from actual fund data, with a link to the official published PDF.</p>
-      </div>
+      <MfToolHeader
+        id="factsheets"
+        title="Fund Factsheets"
+        intro="A real, live quick-factsheet built from actual fund data, with a link to the official published PDF."
+      />
 
       <form className="mf-tool-form" onSubmit={handleSubmit}>
         <div className="mf-form-row">

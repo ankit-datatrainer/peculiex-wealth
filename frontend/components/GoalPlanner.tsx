@@ -2,6 +2,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { fmtINR } from "@/lib/util";
 import { postJSON } from "@/lib/api";
+import { accent, useContent } from "@/lib/content";
+import { fill } from "@/lib/template";
+
+/**
+ * Render a *starred* CMS heading with the <em> accent the design uses. Plain
+ * parts stay bare text so the markup matches the hand-written heading.
+ */
+function heading(text: string) {
+  return accent(text).map((p, i) => (typeof p === "string" ? p : <em key={i}>{p.em}</em>));
+}
 
 const C = 2 * Math.PI * 92;
 
@@ -22,7 +32,19 @@ function animateText(el: HTMLElement | SVGTextElement | null, from: number, to: 
   requestAnimationFrame(step);
 }
 
-export default function GoalPlanner() {
+/**
+ * Rendered by both /calculator/goal-planner and /calculator/reverse-sip; each
+ * route passes its own CMS page so the two can carry different copy.
+ */
+export default function GoalPlanner({
+  page = "calculator-goal"
+}: {
+  page?: "calculator-goal" | "calculator-reverse-sip";
+}) {
+  const cms = useContent(page);
+  const l = (field: string, fallback: string) => cms.t("labels", field, fallback);
+  const g = (field: string, fallback: string) => cms.t("graph", field, fallback);
+  const a = (field: string, fallback: string) => cms.t("actions", field, fallback);
   const [goal, setGoal] = useState(5000000);   // target corpus
   const [yr, setYr] = useState(15);
   const [rate, setRate] = useState(12);
@@ -96,7 +118,7 @@ export default function GoalPlanner() {
         /* clipboard unavailable - link is still shown below */
       }
     } catch (e: any) {
-      setShareErr(e?.message || "Could not create share link.");
+      setShareErr(e?.message || l("shareError", "Could not create share link."));
     }
   };
 
@@ -106,32 +128,36 @@ export default function GoalPlanner() {
     <section className="calc-sec" id="goal">
       <div className="container calc-grid">
         <div className="calc-left reveal">
-          <div className="label">Goal Planner</div>
-          <h2 className="stitle">Reach your <em>target corpus</em></h2>
+          <div className="label">{cms.t("intro", "label", "Goal Planner")}</div>
+          <h2 className="stitle">{heading(cms.t("intro", "title", "Reach your *target corpus*"))}</h2>
           <p className="sdesc">
-            Tell us your goal and time horizon. We work backward to the monthly SIP you need.
+            {cms.t(
+              "intro",
+              "subtitle",
+              "Tell us your goal and time horizon. We work backward to the monthly SIP you need."
+            )}
           </p>
 
           <div className="calc-card">
             <div className="slider-row">
-              <div className="slider-head"><span>Target corpus</span><strong>{fmtINR(goal)}</strong></div>
+              <div className="slider-head"><span>{l("goal", "Target corpus")}</span><strong>{fmtINR(goal)}</strong></div>
               <input ref={sliderGoal} type="range" min={100000} max={100000000} step={50000} value={goal} onChange={(e) => setGoal(+e.target.value)} className="range" />
               <div className="range-meta"><span>₹1L</span><span>₹10 Cr</span></div>
             </div>
             <div className="slider-row">
-              <div className="slider-head"><span>Time horizon</span><strong>{yr} {yr === 1 ? "Year" : "Years"}</strong></div>
+              <div className="slider-head"><span>{l("horizon", "Time horizon")}</span><strong>{yr} {yr === 1 ? l("yearOne", "Year") : l("yearMany", "Years")}</strong></div>
               <input ref={sliderYr} type="range" min={1} max={40} step={1} value={yr} onChange={(e) => setYr(+e.target.value)} className="range" />
               <div className="range-meta"><span>1 yr</span><span>40 yrs</span></div>
             </div>
             <div className="slider-row">
-              <div className="slider-head"><span>Expected annual return</span><strong>{rate.toFixed(1)}%</strong></div>
+              <div className="slider-head"><span>{l("rate", "Expected annual return")}</span><strong>{rate.toFixed(1)}%</strong></div>
               <input ref={sliderRate} type="range" min={1} max={30} step={0.5} value={rate} onChange={(e) => setRate(+e.target.value)} className="range" />
               <div className="range-meta"><span>1%</span><span>30%</span></div>
             </div>
 
             <div style={{ marginTop: "1.25rem", display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
-              <button type="button" onClick={onShare} className="btn btn-outline" data-magnetic>Copy projection link</button>
-              {shareCopied && <span style={{ color: "var(--color-primary)", fontSize: "0.85rem" }}>Link copied to clipboard</span>}
+              <button type="button" onClick={onShare} className="btn btn-outline" data-magnetic>{l("share", "Copy projection link")}</button>
+              {shareCopied && <span style={{ color: "var(--color-primary)", fontSize: "0.85rem" }}>{l("copied", "Link copied to clipboard")}</span>}
               {shareUrl && <a href={shareUrl} target="_blank" rel="noreferrer" style={{ color: "var(--color-primary)", fontSize: "0.9rem", wordBreak: "break-all" }}>{shareUrl}</a>}
               {shareErr && <span style={{ color: "var(--color-danger)", fontSize: "0.85rem" }}>{shareErr}</span>}
             </div>
@@ -145,33 +171,42 @@ export default function GoalPlanner() {
               <circle ref={dInv as any} cx="110" cy="110" r="92" stroke="var(--color-primary-highlight)" strokeWidth="22" fill="none" strokeDasharray={`${(Math.max(0, invested / goal) * C).toFixed(2)} ${C}`} strokeLinecap="round" transform="rotate(-90 110 110)"/>
               <circle ref={dGain as any} cx="110" cy="110" r="92" stroke="var(--color-primary)" strokeWidth="22" fill="none" strokeDasharray={`${(Math.max(0, gains / goal) * C).toFixed(2)} ${C}`} strokeDashoffset={`${(-Math.max(0, invested / goal) * C).toFixed(2)}`} strokeLinecap="round" transform="rotate(-90 110 110)"/>
               <text ref={dTot as any} x="110" y="105" textAnchor="middle" fill="var(--color-text)" fontFamily="Instrument Serif" fontSize="22">{fmtINR(goal)}</text>
-              <text x="110" y="128" textAnchor="middle" fill="var(--color-text-faint)" fontSize="11" letterSpacing="2">TARGET CORPUS</text>
+              <text x="110" y="128" textAnchor="middle" fill="var(--color-text-faint)" fontSize="11" letterSpacing="2">{l("donut", "TARGET CORPUS")}</text>
             </svg>
           </div>
           <div className="calc-stats">
             <div className="cs-row total" style={{ borderTop: "none", paddingTop: 0, marginBottom: "0.6rem" }}>
-              <span></span>Required SIP / month<strong ref={oSip as any}>{fmtINR(sip)}</strong>
+              <span></span>{l("sip", "Required SIP / month")}<strong ref={oSip as any}>{fmtINR(sip)}</strong>
             </div>
-            <div className="cs-row"><span className="dotI" style={{backgroundColor: "var(--color-primary-highlight)"}}></span>You invest<strong ref={oInv as any}>{fmtINR(invested)}</strong></div>
-            <div className="cs-row"><span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>Est. returns<strong ref={oGain as any}>{fmtINR(gains)}</strong></div>
+            <div className="cs-row"><span className="dotI" style={{backgroundColor: "var(--color-primary-highlight)"}}></span>{l("invest", "You invest")}<strong ref={oInv as any}>{fmtINR(invested)}</strong></div>
+            <div className="cs-row"><span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>{l("returns", "Est. returns")}<strong ref={oGain as any}>{fmtINR(gains)}</strong></div>
           </div>
 
           <p style={{ marginTop: "0.9rem", fontSize: "0.78rem", lineHeight: 1.5, color: "var(--color-text-faint)" }}>
-            Illustrative projection only. Returns are assumed, not guaranteed — actual
-            returns vary with market performance. This is not investment advice.
+            {cms.t(
+              "disclaimer",
+              "note",
+              "Illustrative projection only. Returns are assumed, not guaranteed — actual returns vary with market performance. This is not investment advice."
+            )}
           </p>
 
           <div style={{ marginTop: "1.25rem", display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
-            <a href="/get-started" className="btn btn-primary" data-magnetic>Start this SIP</a>
-            <a href="/get-started" className="btn btn-outline" data-magnetic>Talk to Advisor</a>
+            <a href={a("primaryHref", "/get-started")} className="btn btn-primary" data-magnetic>
+              {a("primaryLabel", "Start this SIP")}
+            </a>
+            <a href={a("secondaryHref", "/get-started")} className="btn btn-outline" data-magnetic>
+              {a("secondaryLabel", "Talk to Advisor")}
+            </a>
           </div>
         </div>
       </div>
 
       <div className="container calc-graph reveal" style={{ marginTop: "4rem" }}>
          <div className="graph-header" style={{ marginBottom: "2rem" }}>
-            <h3 style={{ fontSize: "1.5rem", fontWeight: 500 }}>Wealth Progression</h3>
-            <p style={{ color: "var(--color-text-faint)", fontSize: "0.95rem" }}>Projected growth over {yr} years</p>
+            <h3 style={{ fontSize: "1.5rem", fontWeight: 500 }}>{g("title", "Wealth Progression")}</h3>
+            <p style={{ color: "var(--color-text-faint)", fontSize: "0.95rem" }}>
+              {fill(g("subtitle", "Projected growth over {years} years"), { years: yr })}
+            </p>
          </div>
          <div className="chart-container" style={{ position: "relative", width: "100%", overflow: "visible", display: "flex", alignItems: "flex-end", gap: "3px" }}>
             {projection.map((pt, i) => {
@@ -181,9 +216,9 @@ export default function GoalPlanner() {
               return (
                 <div key={i} className="chart-bar-group" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", height: "100%" }}>
                   <div className="chart-tooltip">
-                     <strong>Year {pt.year}</strong><br/>
-                     Total: {fmtINR(pt.total)}<br/>
-                     Invested: {fmtINR(pt.invested)}
+                     <strong>{fill(g("tooltipYear", "Year {year}"), { year: pt.year })}</strong><br/>
+                     {g("tooltipTotal", "Total:")} {fmtINR(pt.total)}<br/>
+                     {g("tooltipInvested", "Invested:")} {fmtINR(pt.invested)}
                   </div>
                   <div 
                     className="bar-gains" 
@@ -198,9 +233,9 @@ export default function GoalPlanner() {
             })}
          </div>
          <div className="chart-axis" style={{ display: "flex", justifyContent: "space-between", marginTop: "1rem", color: "var(--color-text-faint)", fontSize: "0.85rem", borderTop: "1px solid var(--color-border)", paddingTop: "0.5rem" }}>
-            <span>Year 1</span>
-            <span>Year {Math.floor(yr / 2) || 1}</span>
-            <span>Year {yr}</span>
+            <span>{fill(g("axisYear", "Year {year}"), { year: 1 })}</span>
+            <span>{fill(g("axisYear", "Year {year}"), { year: Math.floor(yr / 2) || 1 })}</span>
+            <span>{fill(g("axisYear", "Year {year}"), { year: yr })}</span>
          </div>
       </div>
     </section>

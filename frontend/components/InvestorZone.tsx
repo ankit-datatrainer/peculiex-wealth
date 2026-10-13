@@ -92,7 +92,7 @@ export default function InvestorZone() {
     <main className="izone">
       <div className="container">
         <section className="izone-hero reveal">
-          <span className="label">{cms.t("hero", "label", "InvestorZone")}</span>
+          <span className="label">{cms.t("hero", "label", "Investor Zone")}</span>
           <h1>{heading(cms.t("hero", "title", "Every tool an investor needs, *in one place.*"))}</h1>
           <p>{subtitle}</p>
         </section>

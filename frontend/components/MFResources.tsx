@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useContent } from "@/lib/content";
 import PastSipPerformance from "./mf-tools/PastSipPerformance";
 import CurrentNfos from "./mf-tools/CurrentNfos";
 import LatestNav from "./mf-tools/LatestNav";
@@ -9,19 +10,21 @@ import SchemeComparison from "./mf-tools/SchemeComparison";
 import RecentDividends from "./mf-tools/RecentDividends";
 import SwpCalculator from "./mf-tools/SwpCalculator";
 
+/* `cms` names the field in the "resources-mf" → `sidebar` CMS section. */
 const MENU_ITEMS = [
-  { id: "past-sip", label: "Past SIP Performance" },
-  { id: "current-nfo", label: "Current NFOs" },
-  { id: "latest-nav", label: "Latest NAV" },
-  { id: "fund-factsheets", label: "Fund Factsheets" },
-  { id: "mf-performance", label: "MF Performance" },
-  { id: "scheme-comparison", label: "Scheme Comparison" },
-  { id: "recent-dividends", label: "Recent Announced Dividends" },
-  { id: "swp-calculator", label: "SWP Calculator" },
+  { id: "past-sip", cms: "pastSip", label: "Past SIP Performance" },
+  { id: "current-nfo", cms: "currentNfo", label: "Current NFOs" },
+  { id: "latest-nav", cms: "latestNav", label: "Latest NAV" },
+  { id: "fund-factsheets", cms: "factsheets", label: "Fund Factsheets" },
+  { id: "mf-performance", cms: "performance", label: "MF Performance" },
+  { id: "scheme-comparison", cms: "comparison", label: "Scheme Comparison" },
+  { id: "recent-dividends", cms: "dividends", label: "Recent Announced Dividends" },
+  { id: "swp-calculator", cms: "swp", label: "SWP Calculator" },
 ];
 
 export default function MFResources() {
   const [activeTab, setActiveTab] = useState("past-sip");
+  const cms = useContent("resources-mf");
 
   const renderContent = () => {
     switch (activeTab) {
@@ -52,7 +55,7 @@ export default function MFResources() {
         
         {/* Sidebar */}
         <aside className="mf-sidebar">
-          <h3 className="mf-sidebar-title">MF Resources</h3>
+          <h3 className="mf-sidebar-title">{cms.t("sidebar", "title", "MF Resources")}</h3>
           <nav className="mf-sidebar-nav">
             {MENU_ITEMS.map(item => (
               <button
@@ -60,7 +63,7 @@ export default function MFResources() {
                 className={`mf-nav-item ${activeTab === item.id ? "active" : ""}`}
                 onClick={() => setActiveTab(item.id)}
               >
-                {item.label}
+                {cms.t("sidebar", item.cms, item.label)}
               </button>
             ))}
           </nav>

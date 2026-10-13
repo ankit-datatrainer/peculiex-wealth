@@ -6,15 +6,12 @@ import ContentBody from "@/components/ContentBody";
 import RegulatoryCredentials from "@/components/RegulatoryCredentials";
 import CountUp from "@/components/CountUp";
 import { useContent } from "@/lib/content";
-import {
-  ASSETS_ADVISED,
-  ASSET_CLASS_COUNT_WORD,
-  CITY,
-  FEE_DISCLOSURE,
-  FOUNDED_YEAR,
-  INVESTOR_COUNT,
-  REGISTRATION_LINE
-} from "@/lib/siteFacts";
+
+/*
+ * Every fallback below is the Content Manager default for the "about" page
+ * (backend/src/content/schema.js), word for word, so the copy is the same
+ * whether or not the content API has answered yet.
+ */
 
 const ABOUT_STATS = [
   { v: "182cr+", l: "Assets under distribution" },
@@ -35,7 +32,7 @@ export default function AboutClient() {
   const whyP2 = cms.t(
     "why",
     "paragraph2",
-    `Finvoq unifies the investing surface (${ASSET_CLASS_COUNT_WORD} asset classes, one dashboard). ${FEE_DISCLOSURE} There's 0% advisory fee and no separate bill from us for the research, the curation, or the platform itself.`
+    "Finvoq unifies the investing surface (10+ asset classes, one dashboard). We earn regulated distribution commissions disclosed upfront on every trade. There's no separate bill from us for the research, the curation, or the platform itself."
   );
 
   // Beliefs section
@@ -66,10 +63,9 @@ export default function AboutClient() {
   // Where section
   const whereHeading = cms.t("where", "heading", "Where we are");
   const whereList = cms.list("where", "items", [
-    { text: `Founded in ${FOUNDED_YEAR} in ${CITY}, India.` },
-    { text: `${REGISTRATION_LINE}.` },
-    { text: `${INVESTOR_COUNT} active investors, ${ASSETS_ADVISED} in assets under distribution.` },
-    { text: `0% direct advisory fee — 100% transparent.` }
+    { text: "Founded in 2021 in Delhi, India." },
+    { text: "AMFI-registered Mutual Fund Distributor (ARN-346787)." },
+    { text: "400+ active investors, 182cr+ in assets under distribution." }
   ]);
 
   // How we work section
@@ -100,12 +96,6 @@ export default function AboutClient() {
     "regulators",
     "body",
     "We work within the framework set by SEBI and AMFI (mutual fund distribution), RBI (banking rails), and IRDAI (insurance distribution). Disputes can be raised through our grievance redressal process, with escalation to the SEBI SCORES portal at every stage."
-  );
-  const regCredHeading = cms.t("regulators", "credentialsHeading", "Our AMFI registration");
-  const regCredIntro = cms.t(
-    "regulators",
-    "credentialsIntro",
-    "Verify these against the AMFI register before you invest. We publish them in full because a distributor who will not show you their ARN is a distributor you should not be dealing with."
   );
 
   // CTA section
@@ -209,10 +199,9 @@ export default function AboutClient() {
           )}
         </p>
 
-        <RegulatoryCredentials
-          heading={regCredHeading}
-          intro={regCredIntro}
-        />
+        {/* Heading, intro, tiles and footnote all come from the Content
+            Manager (Global → AMFI registration box), shared with /contact. */}
+        <RegulatoryCredentials />
 
         <hr />
 

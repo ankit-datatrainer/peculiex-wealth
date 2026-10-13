@@ -94,7 +94,7 @@ export default function InsightsContent() {
         page="insights"
         label="Market Insights"
         title={<>Research, before <em>the noise.</em></>}
-        subtitle="Weekly notes from our research desk on Indian equities, debt, unlisted, and global flows. No tip sheets, no forecasts dressed up as facts."
+        subtitle="Weekly notes from our research desk on Indian equities, debt, unlisted, and global flows."
       />
 
       <section style={{ padding: "0 0 120px" }}>

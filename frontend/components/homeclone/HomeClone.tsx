@@ -24,13 +24,8 @@ import HeroHeadlineAdditions from "./HeroHeadlineAdditions";
 import Logo from "../Logo";
 import CountUp from "../CountUp";
 import { useContent, imgSrc } from "@/lib/content";
-import {
-  DEMAT_DISCLOSURE,
-  REGISTRATION_CODES_LINE,
-  REGISTRATION_LINE,
-  REGISTRATION_NUMBER,
-  REGULATORY_LABEL
-} from "@/lib/siteFacts";
+import { DEMAT_DISCLOSURE } from "@/lib/siteFacts";
+import { amfiFrom } from "@/lib/amfi";
 import { SOCIAL_ICON_PATHS } from "@/lib/socialIcons";
 import {
   contactFrom,
@@ -183,6 +178,18 @@ const FEATURES = [
   }
 ];
 
+/* Date ticks under the phone mockup's chart. */
+const PHONE_DATES = [
+  { label: "SEP 25" },
+  { label: "DEC 25" },
+  { label: "MAR 26" },
+  { label: "JUN 26" }
+];
+
+/* Mandated MF risk-factor text in the footer's collapsed disclosure. */
+const HOME_LEGAL_TEXT =
+  "Risk Factors: Investments in Mutual Funds are subject to Market Risks. Read all scheme related documents carefully before investing. Mutual Fund Schemes do not assure or guarantee any returns. Past performances of any Mutual Fund Scheme may or may not be sustained in future. There is no guarantee that the investment objective of any suggested scheme shall be achieved. We deal in Regular Plans only for Mutual Fund Schemes and earn a Trailing Commission on client investments. Disclosure for commission earnings is made to clients at the time of investment. Option of Direct Plan for every Mutual Fund Scheme is available to investors offering advantage of lower expense ratio. We are not entitled to earn any commission on Direct plans; hence we do not deal in Direct Plans.";
+
 const STATS = [
   { v: "182cr+", l: "Assets managed" },
   { v: "400+", l: "Trusted investors" },
@@ -234,7 +241,7 @@ const POSTS = [
     date: "Beta",
     title: "Finvoq opens its doors: India's advisory-led investment marketplace",
     href: "/about",
-    cta: "About Finvoq"
+    cta: "Read our story"
   }
 ];
 
@@ -255,6 +262,7 @@ export default function HomeClone() {
   const social = socialFrom(g);
   const whatsapp = whatsappFrom(g);
   const contact = contactFrom(g);
+  const amfi = amfiFrom(g);
   /* Optional uploaded artwork for the hero mark. Empty by default, in which
      case the drawn <GoldInfinity /> is used instead. */
   const heroInfinity = c.t("hero", "infinity", "").trim();
@@ -406,7 +414,7 @@ export default function HomeClone() {
                   }
                 }}
               >
-                Share <Share2 size={11} />
+                {c.t("hero", "shareLabel", "Share")} <Share2 size={11} />
               </button>
             </div>
           </div>
@@ -419,7 +427,7 @@ export default function HomeClone() {
             <div />
             <Reveal>
               <h2 className="sfc-h2">{lines(c.t("screens", "oneTitle", "New era\nof investing"))}</h2>
-              <p className="sfc-lead">{c.t("screens", "oneBody", "We’re on the verge of a new investing era, where opportunities once reserved for institutions open up to every serious investor in India.")}</p>
+              <p className="sfc-lead">{c.t("screens", "oneBody", "We're on the verge of a new investing era, where opportunities once reserved for institutions open up to every serious investor in India.")}</p>
             </Reveal>
           </div>
         </section>
@@ -429,7 +437,7 @@ export default function HomeClone() {
           <div className="sfc-screen-grid">
             <Reveal>
               <h2 className="sfc-h2">{lines(c.t("screens", "twoTitle", "Every asset,\none platform"))}</h2>
-              <p className="sfc-lead">{c.t("screens", "twoBody", "Listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds and insurance: curated by experts and executed in seconds.")}</p>
+              <p className="sfc-lead">{c.t("screens", "twoBody", "Listed shares, unlisted opportunities, mutual funds, PMS, AIF, bonds and insurance, curated by experts and executed in seconds.")}</p>
             </Reveal>
             <div />
           </div>
@@ -441,7 +449,7 @@ export default function HomeClone() {
             <div />
             <Reveal>
               <h2 className="sfc-h2">{lines(c.t("screens", "threeTitle", "Building\nyour future"))}</h2>
-              <p className="sfc-lead">{c.t("screens", "threeBody", "We connect India's leading asset managers with a clean, advisory-led platform: elegant infrastructure that takes your wealth to the future.")}</p>
+              <p className="sfc-lead">{c.t("screens", "threeBody", "We connect India's leading asset managers with a clean, advisory-led platform, elegant infrastructure that takes your wealth to the future.")}</p>
             </Reveal>
           </div>
         </section>
@@ -553,10 +561,9 @@ export default function HomeClone() {
                     </svg>
                   </div>
                   <div className="sfc-ph-dates">
-                    <span>SEP 25</span>
-                    <span>DEC 25</span>
-                    <span>MAR 26</span>
-                    <span>JUN 26</span>
+                    {c.list("platform", "phoneDates", PHONE_DATES).map((d, i) => (
+                      <span key={i}>{d.label}</span>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -591,7 +598,7 @@ export default function HomeClone() {
           <div className="sfc-wrap sfc-about-grid">
             <div>
               <p className="sfc-eyebrow sfc-eyebrow-mint">{c.t("about", "eyebrow", "About Finvoq")}</p>
-              <h2 className="sfc-h2-serif">{c.t("about", "title", "We’re bringing the discipline of private banking to every investor.")}</h2>
+              <h2 className="sfc-h2-serif">{c.t("about", "title", "We're bringing the discipline of private banking to every investor.")}</h2>
             </div>
             <div className="sfc-about-copy">
               <p>
@@ -716,14 +723,14 @@ export default function HomeClone() {
         <footer id="signup" className="sfc-footer" data-nav-theme="dark">
           <div className="sfc-wrap">
             <div className="sfc-footer-cta">
-              <h2 className="sfc-h2-serif sfc-footer-title">{c.t("footerCta", "title", "Build your wealth’s future with us.")}</h2>
+              <h2 className="sfc-h2-serif sfc-footer-title">{c.t("footerCta", "title", "Build your wealth's future with us.")}</h2>
               <div className="sfc-footer-form">
                 <label>{c.t("footerCta", "formLabel", "Get the weekly market brief")}</label>
                 <div className="sfc-footer-input">
                   <input
                     ref={emailRef}
                     type="email"
-                    placeholder="you@email.com"
+                    placeholder={c.t("footerCta", "emailPlaceholder", "you@email.com")}
                     aria-label="Email address"
                   />
                   <button
@@ -732,9 +739,9 @@ export default function HomeClone() {
                     disabled={submitting}
                   >
                     {submitting
-                      ? "Sending…"
+                      ? c.t("footerCta", "sending", "Sending…")
                       : subscribed
-                        ? "Subscribed ✓"
+                        ? c.t("footerCta", "subscribed", "Subscribed ✓")
                         : c.t("footerCta", "button", "Sign up")}
                   </button>
                 </div>
@@ -755,7 +762,7 @@ export default function HomeClone() {
                   {c.t("footerCta", "blurb", "India's premium investment marketplace. Multiple asset classes, one platform, advisory-led.")}
                 </p>
                 <div className="sfc-footer-reg">
-                  <span className="sfc-dot" />{c.t("footerCta", "badge", REGISTRATION_LINE)}
+                  <span className="sfc-dot" />{c.t("footerCta", "badge", amfi.registrationLine)}
                 </div>
 
                 <ul className="sfc-footer-contact">
@@ -765,7 +772,7 @@ export default function HomeClone() {
                         <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true">
                           <path d={SOCIAL_ICON_PATHS.whatsapp} />
                         </svg>
-                        <span>WhatsApp {whatsapp.display}</span>
+                        <span>{c.t("footerCta", "whatsappPrefix", "WhatsApp")} {whatsapp.display}</span>
                       </a>
                     </li>
                   ) : null}
@@ -821,20 +828,26 @@ export default function HomeClone() {
             <div className="sfc-footer-disclaim">
               <p>
                 <strong>
-                  Investments in securities markets are subject to market
-                  risks.
+                  {c.t(
+                    "footerCta",
+                    "riskLead",
+                    "Investments in securities markets are subject to market risks."
+                  )}
                 </strong>{" "}
-                Read all related documents carefully before investing. Past
-                performance does not guarantee future returns. East Side Global
-                is an {REGULATORY_LABEL}
-                {REGISTRATION_NUMBER ? ` (${REGISTRATION_NUMBER})` : ""}.{" "}
+                {c.t(
+                  "footerCta",
+                  "riskBody",
+                  "Read all related documents carefully before investing. Past performance does not guarantee future returns."
+                )}{" "}
+                {c.t("footerCta", "companyName", "East Side Global")} is an {amfi.badge}
+                {amfi.arn ? ` (${amfi.arn})` : ""}.{" "}
                 {DEMAT_DISCLOSURE}
               </p>
               {/* Mandated risk-factor text, collapsed. Keeps the disclosure
                   complete without ending the homepage in 200 words of grey. */}
               <details className="sfc-footer-legal">
                 <summary>
-                  <span>Full risk factors &amp; commission disclosure</span>
+                  <span>{c.t("footerCta", "legalSummary", "Full risk factors & commission disclosure")}</span>
                   <svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true">
                     <path
                       d="M2.5 4.5L6 8l3.5-3.5"
@@ -846,43 +859,28 @@ export default function HomeClone() {
                     />
                   </svg>
                 </summary>
-                <p>
-                  Risk Factors: Investments in Mutual Funds are subject to
-                  Market Risks. Read all scheme related documents carefully
-                  before investing. Mutual Fund Schemes do not assure or
-                  guarantee any returns. Past performances of any Mutual Fund
-                  Scheme may or may not be sustained in future. There is no
-                  guarantee that the investment objective of any suggested scheme
-                  shall be achieved. We deal in Regular Plans only for Mutual
-                  Fund Schemes and earn a Trailing Commission on client
-                  investments. Disclosure for commission earnings is made to
-                  clients at the time of investment. Option of Direct Plan for
-                  every Mutual Fund Scheme is available to investors offering
-                  advantage of lower expense ratio. We are not entitled to earn
-                  any commission on Direct plans; hence we do not deal in Direct
-                  Plans.
-                </p>
+                <p>{c.t("footerCta", "legalText", HOME_LEGAL_TEXT)}</p>
               </details>
-              {REGISTRATION_CODES_LINE ? (
-                <p className="sfc-footer-codes">{REGISTRATION_CODES_LINE}</p>
+              {amfi.codesLine ? (
+                <p className="sfc-footer-codes">{amfi.codesLine}</p>
               ) : null}
             </div>
 
             {/* Oversized wordmark closes the page deliberately. Decorative:
                 the accessible brand name is in the footer logo above. */}
             <div className="sfc-footer-wordmark" aria-hidden="true">
-              <span>Finvoq</span>
+              <span>{c.t("footerCta", "wordmark", "Finvoq")}</span>
             </div>
 
             <div className="sfc-footer-base">
               <span>
-                © {new Date().getFullYear()} East Side Global. All
-                rights reserved.
+                © {new Date().getFullYear()}{" "}
+                {c.t("footerCta", "copyright", "East Side Global. All rights reserved.")}
               </span>
               <span className="sfc-footer-made">
-                Crafted with care · Delhi, India
+                {c.t("footerCta", "madeIn", "Crafted with care · Delhi, India")}
               </span>
-              <a href="#intro">Back to top ↑</a>
+              <a href="#intro">{c.t("footerCta", "backToTop", "Back to top ↑")}</a>
             </div>
           </div>
         </footer>
@@ -2753,6 +2751,8 @@ function BlogPreviewSection({
   Reveal: React.ComponentType<{ children: React.ReactNode; delay?: number; className?: string }>;
 }) {
   const [blogs, setBlogs] = useState<Blog[]>(DEFAULT_HOME_BLOGS);
+  // The band's copy is CMS-driven (Home → Blog preview); the cards are posts.
+  const c = useContent("home");
 
   useEffect(() => {
     let killed = false;
@@ -2772,12 +2772,12 @@ function BlogPreviewSection({
         <div className="sfc-blog-head">
           <div>
             <p className="sfc-eyebrow" style={{ color: "var(--sfc-mint, #34d399)", marginBottom: 8 }}>
-              From Our Blog
+              {c.t("blog", "eyebrow", "From Our Blog")}
             </p>
-            <h2 className="sfc-h2-serif">Insights & perspectives.</h2>
+            <h2 className="sfc-h2-serif">{c.t("blog", "title", "Insights & perspectives.")}</h2>
           </div>
-          <Link href="/blog" className="sfc-blog-see-more">
-            See more <ArrowUpRight size={16} />
+          <Link href={c.t("blog", "linkHref", "/blog")} className="sfc-blog-see-more">
+            {c.t("blog", "linkLabel", "See more")} <ArrowUpRight size={16} />
           </Link>
         </div>
 
@@ -2803,7 +2803,7 @@ function BlogPreviewSection({
                   <h3>{b.title}</h3>
                   {b.excerpt && <p className="sfc-blog-card-excerpt">{b.excerpt}</p>}
                   <span className="sfc-blog-card-read">
-                    Read more <ArrowUpRight size={14} />
+                    {c.t("blog", "readMore", "Read more")} <ArrowUpRight size={14} />
                   </span>
                 </div>
               </Link>

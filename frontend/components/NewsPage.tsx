@@ -6,6 +6,7 @@ import useSWR from "swr";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { fetcher, apiUrl } from "@/lib/api";
+import { fill } from "@/lib/template";
 import "./news-portal.css";
 
 /** Render a *starred* CMS heading with the <em> accent the design uses. */
@@ -116,6 +117,10 @@ function absoluteTime(ts: number) {
 
 export default function NewsPage() {
   const cms = useContent("news");
+  const bt = (field: string, fallback: string) => cms.t("blogs", field, fallback);
+  const ft = (field: string, fallback: string) => cms.t("feed", field, fallback);
+  const blogHref = bt("seeMoreHref", "/blog");
+  const readOn = (src: string) => fill(ft("readOn", "Read on {source} →"), { source: src });
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [query, setQuery] = useState("");
   const [source, setSource] = useState("All");
@@ -192,7 +197,7 @@ export default function NewsPage() {
             <div>
               <div className="np-eyebrow">
                 <span className="np-live" aria-hidden="true" />
-                Live Intelligence & Market Insights
+                {cms.t("hero", "label", "Live Intelligence & Market Insights")}
               </div>
               <h1 className="np-title">
                 {heading(cms.t("hero", "title", "Markets, *decoded.*"))}
@@ -201,14 +206,14 @@ export default function NewsPage() {
                 {cms.t(
                   "hero",
                   "subtitle",
-                  "Strategic financial perspectives, in-depth blogs, and real-time market headlines aggregated from India's leading financial networks."
+                  "Company news, market moves and the context behind them."
                 )}
               </p>
             </div>
             {!isLoading && !error && stats.latest > 0 && (
               <span className="np-asof">
                 <span className="np-asof-dot" />
-                Updated {relativeTime(stats.latest)}
+                {fill(bt("updated", "Updated {time}"), { time: relativeTime(stats.latest) })}
               </span>
             )}
           </header>
@@ -217,14 +222,19 @@ export default function NewsPage() {
           <section className="np-blog-featured">
             <div className="np-blog-featured-head">
               <div>
-                <span className="np-blog-featured-eyebrow">From Our Blog</span>
-                <h2 className="np-blog-featured-title">Finvoq Wealth Blogs & Market Perspectives</h2>
+                <span className="np-blog-featured-eyebrow">{bt("eyebrow", "From Our Blog")}</span>
+                <h2 className="np-blog-featured-title">
+                  {bt("title", "Finvoq Wealth Blogs & Market Perspectives")}
+                </h2>
                 <p style={{ margin: "6px 0 0", fontSize: 13.5, color: "var(--color-text-muted)" }}>
-                  In-depth analysis, asset allocation strategies, and actionable market intelligence.
+                  {bt(
+                    "desc",
+                    "In-depth analysis, asset allocation strategies, and actionable market intelligence."
+                  )}
                 </p>
               </div>
-              <Link href="/blog" className="np-blog-see-more-btn">
-                <span>See more</span>
+              <Link href={blogHref} className="np-blog-see-more-btn">
+                <span>{bt("seeMore", "See more")}</span>
                 <ArrowUpRight size={16} />
               </Link>
             </div>
@@ -250,13 +260,17 @@ export default function NewsPage() {
                   </div>
                   <div className="np-blog-featured-body">
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                      <span className="np-blog-featured-author">{b.author || "Finvoq Admin"}</span>
-                      <span style={{ fontSize: 11, color: "var(--color-text-faint)" }}>5 min read</span>
+                      <span className="np-blog-featured-author">
+                        {b.author || bt("authorFallback", "Finvoq Admin")}
+                      </span>
+                      <span style={{ fontSize: 11, color: "var(--color-text-faint)" }}>
+                        {bt("readTime", "5 min read")}
+                      </span>
                     </div>
                     <h3 className="np-blog-featured-card-title">{b.title}</h3>
                     {b.excerpt && <p className="np-blog-featured-excerpt">{b.excerpt}</p>}
                     <span className="np-blog-featured-read">
-                      Read full article <ArrowUpRight size={14} />
+                      {bt("readMore", "Read full article")} <ArrowUpRight size={14} />
                     </span>
                   </div>
                 </Link>
@@ -267,14 +281,17 @@ export default function NewsPage() {
             <div className="np-blog-bottom-bar">
               <div>
                 <strong style={{ display: "block", fontSize: 14, color: "var(--color-text)", marginBottom: 2 }}>
-                  Want to explore more wealth strategies?
+                  {bt("bottomTitle", "Want to explore more wealth strategies?")}
                 </strong>
                 <span style={{ fontSize: 12.5, color: "var(--color-text-muted)" }}>
-                  Browse our complete archive of in-depth guides, pre-IPO breakdowns, and bond research.
+                  {bt(
+                    "bottomBody",
+                    "Browse our complete archive of in-depth guides, pre-IPO breakdowns, and bond research."
+                  )}
                 </span>
               </div>
-              <Link href="/blog" className="np-blog-see-more-btn primary">
-                <span>See more blogs</span>
+              <Link href={blogHref} className="np-blog-see-more-btn primary">
+                <span>{bt("bottomCta", "See more blogs")}</span>
                 <ArrowUpRight size={16} />
               </Link>
             </div>
@@ -285,13 +302,16 @@ export default function NewsPage() {
             <div style={{ marginBottom: 20 }}>
               <span className="np-eyebrow" style={{ marginBottom: 4 }}>
                 <span className="np-live" aria-hidden="true" />
-                Live Feed
+                {ft("eyebrow", "Live Feed")}
               </span>
               <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(22px, 2.5vw, 30px)", fontWeight: 600, color: "var(--color-text)", margin: 0 }}>
-                Real-Time Market News
+                {ft("title", "Real-Time Market News")}
               </h2>
               <p style={{ margin: "6px 0 0", fontSize: 13.5, color: "var(--color-text-muted)" }}>
-                Latest breaking financial headlines, regulatory updates, and corporate developments across India.
+                {ft(
+                  "desc",
+                  "Latest breaking financial headlines, regulatory updates, and corporate developments across India."
+                )}
               </p>
             </div>
           </div>
@@ -299,26 +319,27 @@ export default function NewsPage() {
           {!isLoading && !error && items.length > 0 && (
             <div className="np-stats">
               <div className="np-stat">
-                <p className="np-stat-label">Stories</p>
+                <p className="np-stat-label">{ft("statStories", "Stories")}</p>
                 <div className="np-stat-value">{stats.total}</div>
-                <p className="np-stat-note">in the live feed</p>
+                <p className="np-stat-note">{ft("statStoriesNote", "in the live feed")}</p>
               </div>
               <div className="np-stat">
-                <p className="np-stat-label">Publishers</p>
+                <p className="np-stat-label">{ft("statPublishers", "Publishers")}</p>
                 <div className="np-stat-value">{stats.publishers}</div>
-                <p className="np-stat-note">Indian financial media</p>
+                <p className="np-stat-note">{ft("statPublishersNote", "Indian financial media")}</p>
               </div>
               <div className="np-stat np-stat--hero">
-                <p className="np-stat-label">Last 24 hours</p>
+                <p className="np-stat-label">{ft("statToday", "Last 24 hours")}</p>
                 <div className="np-stat-value">{stats.today}</div>
-                <p className="np-stat-note">new headlines</p>
+                <p className="np-stat-note">{ft("statTodayNote", "new headlines")}</p>
               </div>
               <div className="np-stat">
-                <p className="np-stat-label">Refresh</p>
+                <p className="np-stat-label">{ft("statRefresh", "Refresh")}</p>
                 <div className="np-stat-value">
-                  5<span className="np-stat-unit">min</span>
+                  {ft("statRefreshValue", "5")}
+                  <span className="np-stat-unit">{ft("statRefreshUnit", "min")}</span>
                 </div>
-                <p className="np-stat-note">automatic</p>
+                <p className="np-stat-note">{ft("statRefreshNote", "automatic")}</p>
               </div>
             </div>
           )}
@@ -334,7 +355,7 @@ export default function NewsPage() {
                   type="search"
                   value={query}
                   onChange={(e) => resetTo(() => setQuery(e.target.value))}
-                  placeholder="Search headlines…"
+                  placeholder={ft("searchPlaceholder", "Search headlines…")}
                   aria-label="Search headlines"
                 />
               </div>
@@ -347,7 +368,7 @@ export default function NewsPage() {
                     data-active={source === s}
                     onClick={() => resetTo(() => setSource(s))}
                   >
-                    {s}
+                    {s === "All" ? ft("allSources", "All") : s}
                   </button>
                 ))}
               </div>
@@ -370,21 +391,23 @@ export default function NewsPage() {
 
           {error && (
             <div className="np-state">
-              <h3>Couldn&apos;t load the news feed</h3>
-              <p>The feed is temporarily unreachable. Please try again shortly.</p>
+              <h3>{ft("errorTitle", "Couldn't load the news feed")}</h3>
+              <p>
+                {ft("errorBody", "The feed is temporarily unreachable. Please try again shortly.")}
+              </p>
             </div>
           )}
 
           {!isLoading && !error && filtered.length === 0 && (
             <div className="np-state">
-              <h3>No stories match your filters</h3>
-              <p>Try a different search term or clear the source filter.</p>
+              <h3>{ft("emptyTitle", "No stories match your filters")}</h3>
+              <p>{ft("emptyBody", "Try a different search term or clear the source filter.")}</p>
               <button
                 type="button"
                 className="btn btn-primary"
                 onClick={() => resetTo(() => { setQuery(""); setSource("All"); })}
               >
-                Clear filters
+                {ft("clearFilters", "Clear filters")}
               </button>
             </div>
           )}
@@ -406,7 +429,7 @@ export default function NewsPage() {
                 </div>
                 <h2 className="np-lead-title">{lead.headline}</h2>
                 {lead.summary && <p className="np-lead-sum">{lead.summary}</p>}
-                <span className="np-read">Read on {lead.source} →</span>
+                <span className="np-read">{readOn(lead.source)}</span>
               </div>
             </a>
           )}
@@ -430,7 +453,7 @@ export default function NewsPage() {
                   </div>
                   <h3 className="np-card-title">{item.headline}</h3>
                   {item.summary && <p className="np-card-sum">{item.summary}</p>}
-                  <span className="np-read">Read on {item.source} →</span>
+                  <span className="np-read">{readOn(item.source)}</span>
                 </a>
               ))}
             </div>
@@ -443,22 +466,31 @@ export default function NewsPage() {
                 className="btn btn-outline btn-lg"
                 onClick={() => setVisible((v) => v + PAGE_SIZE)}
               >
-                Load more stories
+                {ft("loadMore", "Load more stories")}
               </button>
               <span className="np-count">
-                Showing {shown.length} of {rest.length}
+                {fill(ft("showing", "Showing {shown} of {total}"), {
+                  shown: shown.length,
+                  total: rest.length
+                })}
               </span>
             </div>
           )}
 
           {!isLoading && !error && items.length > 0 && (
             <p className="np-attrib">
-              Headlines aggregated from{" "}
-              <a href="https://pulse.zerodha.com/" target="_blank" rel="noopener noreferrer">
-                Zerodha Pulse
+              {ft("attribPrefix", "Headlines aggregated from")}{" "}
+              <a
+                href={ft("attribHref", "https://pulse.zerodha.com/")}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {ft("attribLink", "Zerodha Pulse")}
               </a>
-              . Every story links to the publisher that reported it, and all rights
-              remain with them. Finvoq does not author or edit this coverage.
+              {ft(
+                "attribSuffix",
+                ". Every story links to the publisher that reported it, and all rights remain with them. Finvoq does not author or edit this coverage."
+              )}
             </p>
           )}
         </div>

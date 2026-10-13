@@ -162,6 +162,87 @@ export const uploadUnlistedLogo = (id: string, file: File) =>
     reader.readAsDataURL(file);
   });
 
+// ---------- unlisted: market source sync ----------
+type SyncFieldChange<T> = { from: T; to: T };
+
+export type UnlistedSyncDiff = {
+  updates: {
+    id: string;
+    name: string;
+    sourceName: string;
+    matchedBy: string;
+    changes: Partial<{
+      price: SyncFieldChange<number>;
+      min_units: SyncFieldChange<number>;
+      market_cap: SyncFieldChange<string>;
+      pe: SyncFieldChange<string>;
+      sector: SyncFieldChange<string>;
+    }>;
+  }[];
+  additions: {
+    name: string;
+    price: number;
+    sector: string;
+    min_units: number | null;
+    market_cap: string;
+    pe: string;
+    sourceUrl: string;
+    logo: string;
+    similarTo: string[];
+  }[];
+  invalid: {
+    name: string;
+    rawPrice: string;
+    reason: string;
+    matchedId: string | null;
+    matchedName: string | null;
+    currentPrice?: number;
+  }[];
+  missingFromSource: { id: string; name: string; price: number }[];
+  ambiguous: { id: string; name: string; candidates: string[] }[];
+  unchanged: number;
+  counts: {
+    source: number;
+    existing: number;
+    updates: number;
+    priceChanges: number;
+    sectorChanges: number;
+    additions: number;
+    invalid: number;
+    missingFromSource: number;
+    ambiguous: number;
+    unchanged: number;
+  };
+};
+
+export type UnlistedSyncPreview = {
+  diff: UnlistedSyncDiff;
+  source: { url: string; fetchedAt: string; origin: "live" | "items" };
+  notes: string[];
+};
+
+export type UnlistedSyncResult = {
+  result: {
+    updated: { id: string; name: string; fields: string[] }[];
+    added: { id: string; name: string; logo_url: string | null }[];
+    skipped: { name: string; reason: string }[];
+    errors: { name: string; error: string }[];
+  };
+  counts: { updated: number; added: number; skipped: number; errors: number };
+  notes: string[];
+};
+
+// Fetch the market source live and diff it against our inventory (no writes).
+export const previewUnlistedSync = () =>
+  apiPostJSON<UnlistedSyncPreview>("/api/admin/unlisted/sync/preview", {});
+
+// Apply the reviewed subset. `addIds` are source names from diff.additions.
+export const applyUnlistedSync = (payload: {
+  applyUpdates: boolean;
+  applySectors: boolean;
+  addIds: string[];
+}) => apiPostJSON<UnlistedSyncResult>("/api/admin/unlisted/sync/apply", payload);
+
 // ---------- stocks ----------
 export const fetchStocks = () =>
   apiFetch<{ items: AdminStock[] }>("/api/admin/stocks").then((r) => r.items);

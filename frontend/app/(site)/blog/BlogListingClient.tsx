@@ -4,10 +4,18 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { fetcher, apiUrl } from "@/lib/api";
 import { type Blog, DEFAULT_BLOGS } from "@/lib/blogData";
+import { useContent, imgSrc } from "@/lib/content";
 import { ArrowUpRight, Search, Sparkles, Tag, Clock, Calendar } from "lucide-react";
 import "./blog.css";
 
 export default function BlogListingClient() {
+  // Page copy only (Content Manager → Blog listing); the posts come from the
+  // Blog manager via /api/blogs.
+  const cms = useContent("blog");
+  const header = (field: string, fallback: string) => cms.t("header", field, fallback);
+  const copy = (field: string, fallback: string) => cms.t("listing", field, fallback);
+  const fallbackImage = imgSrc(copy("fallbackImage", "/images/blogs/blog-1.jpg"));
+
   const [blogs, setBlogs] = useState<Blog[]>(DEFAULT_BLOGS);
   const [loading, setLoading] = useState(false);
   const [selectedCat, setSelectedCat] = useState("all");
@@ -56,11 +64,14 @@ export default function BlogListingClient() {
       <div className="blog-container">
         <header className="blog-page-header">
           <span className="blog-page-eyebrow">
-            <Sparkles size={14} /> Finvoq Research & Insights
+            <Sparkles size={14} /> {header("eyebrow", "Finvoq Research & Insights")}
           </span>
-          <h1 className="blog-page-title">Perspectives that shape wealth.</h1>
+          <h1 className="blog-page-title">{header("title", "Perspectives that shape wealth.")}</h1>
           <p className="blog-page-sub">
-            Expert market commentary, multi-asset allocation strategies, and pre-IPO intelligence from SEBI-registered specialists.
+            {header(
+              "subtitle",
+              "Expert market commentary, multi-asset allocation strategies, and pre-IPO intelligence from SEBI-registered specialists."
+            )}
           </p>
         </header>
 
@@ -74,7 +85,7 @@ export default function BlogListingClient() {
                 className={`blog-cat-chip ${selectedCat === c ? "active" : ""}`}
                 onClick={() => setSelectedCat(c)}
               >
-                {c === "all" ? "All Topics" : c}
+                {c === "all" ? copy("allTopicsLabel", "All Topics") : c}
               </button>
             ))}
           </div>
@@ -86,7 +97,7 @@ export default function BlogListingClient() {
             />
             <input
               className="blog-search-input"
-              placeholder="Search articles & tags…"
+              placeholder={copy("searchPlaceholder", "Search articles & tags…")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -97,7 +108,7 @@ export default function BlogListingClient() {
           <div className="blog-spinner" />
         ) : filtered.length === 0 ? (
           <div className="blog-empty">
-            <p>No blog posts found matching your filter.</p>
+            <p>{copy("emptyText", "No blog posts found matching your filter.")}</p>
             <button
               type="button"
               className="btn btn-outline btn-sm"
@@ -107,7 +118,7 @@ export default function BlogListingClient() {
               }}
               style={{ marginTop: 12 }}
             >
-              Reset Filters
+              {copy("resetLabel", "Reset Filters")}
             </button>
           </div>
         ) : (
@@ -119,7 +130,7 @@ export default function BlogListingClient() {
                 ? b.image_url.startsWith("http") || b.image_url.startsWith("/")
                   ? b.image_url
                   : apiUrl(b.image_url)
-                : "/images/blogs/blog-1.jpg";
+                : fallbackImage;
 
               return (
                 <Link
@@ -136,17 +147,19 @@ export default function BlogListingClient() {
                       className="blog-card-img"
                       loading="lazy"
                       onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src = "/images/blogs/blog-1.jpg";
+                        const img = e.currentTarget as HTMLImageElement;
+                        // Guard against a loop when the fallback itself is broken.
+                        if (!img.src.endsWith(fallbackImage)) img.src = fallbackImage;
                       }}
                     />
                     <span className="blog-card-category-badge">
-                      {b.category || "Wealth Advisory"}
+                      {b.category || copy("fallbackCategory", "Wealth Advisory")}
                     </span>
                   </div>
 
                   <div className="blog-card-body">
                     <div className="blog-card-meta">
-                      <span className="blog-card-author">{b.author || "Finvoq Admin"}</span>
+                      <span className="blog-card-author">{b.author || copy("fallbackAuthor", "Finvoq Admin")}</span>
                       <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
                         {(b.created_at || b.updated_at) && (
                           <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
@@ -169,7 +182,7 @@ export default function BlogListingClient() {
 
                     <div className="blog-card-footer">
                       <span className="blog-card-read">
-                        Read article <ArrowUpRight size={13} />
+                        {copy("readLabel", "Read article")} <ArrowUpRight size={13} />
                       </span>
                       {b.tags && b.tags.length > 0 && (
                         <div className="blog-card-tags">

@@ -4,6 +4,7 @@ import { SIP_DATES } from "@/lib/mfData";
 import { apiUrl } from "@/lib/api";
 import { simulateSip, sortNavAscending, fmtINR, fmtINR2, type NavPoint } from "@/lib/mfCalc";
 import AmcSchemeSelect, { type SchemeOption } from "./AmcSchemeSelect";
+import MfToolHeader from "./MfToolHeader";
 
 type Result = ReturnType<typeof simulateSip>;
 
@@ -51,10 +52,11 @@ export default function PastSipPerformance() {
 
   return (
     <div className="mf-tool-container">
-      <div className="mf-tool-header">
-        <h2>Past SIP Performance</h2>
-        <p>Real historical NAV-based calculation. Pick any scheme and see how a SIP would have performed.</p>
-      </div>
+      <MfToolHeader
+        id="pastSip"
+        title="Past SIP Performance"
+        intro="Real historical NAV-based calculation. Pick any scheme and see how a SIP would have performed."
+      />
 
       <form className="mf-tool-form" onSubmit={handleCalculate}>
         <AmcSchemeSelect

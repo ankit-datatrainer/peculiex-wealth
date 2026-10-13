@@ -1,0 +1,161 @@
+/* ══════════════════════════════════════════════════════════════════════
+   Main nav — dropdown trigger
+   A top-level item that has children (Products, Calculators) is a <button>
+   that only opens its dropdown; it never navigates. These rules make that
+   button look exactly like the sibling <a> nav links on desktop and like the
+   accordion rows in the mobile drawer, in light, dark and the gold premium
+   (PMS/AIF) header.
+   ══════════════════════════════════════════════════════════════════════ */
+
+.nav-links .nav-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: .02em;
+  line-height: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: color .25s;
+}
+
+/* Same sliding underline as the plain links, under the label only. */
+.nav-links .nav-trigger-label {
+  position: relative;
+}
+
+.nav-links .nav-trigger-label::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 1.5px;
+  background: var(--color-primary);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform .35s var(--ease-out);
+  border-radius: var(--radius-full);
+}
+
+.nav-links .nav-trigger:hover .nav-trigger-label::after,
+.nav-links .nav-trigger.active .nav-trigger-label::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.main-nav .nav-links .nav-trigger:hover,
+.main-nav .nav-links .nav-trigger.active,
+.main-nav .nav-links .nav-trigger[aria-expanded="true"] {
+  color: var(--color-primary-ink);
+}
+
+.nav-links .nav-trigger:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+
+.nav-trigger-caret {
+  display: inline-flex;
+  align-items: center;
+  color: #5b6f6d;
+}
+
+.dark .nav-trigger-caret {
+  color: #9fc7bd;
+}
+
+/* Gold premium header (dark mode, before scroll) — mirrors the <a> rules. */
+.dark body:has(.premium-product-page) .main-nav:not(.scrolled) .nav-links .nav-trigger {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.dark body:has(.premium-product-page) .main-nav:not(.scrolled) .nav-links .nav-trigger:hover,
+.dark body:has(.premium-product-page) .main-nav:not(.scrolled) .nav-links .nav-trigger.active,
+.dark body:has(.premium-product-page) .main-nav:not(.scrolled) .nav-links .nav-trigger[aria-expanded="true"] {
+  color: #d4af37;
+}
+
+.dark body:has(.premium-product-page) .main-nav:not(.scrolled) .nav-trigger-caret {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ── Desktop ──
+   Hover still previews the menu (globals.css). A click or Enter/Space pins it
+   open (.open) until an outside click, Escape, or focus leaves the group.
+   Keyboard focus alone no longer pops it open: the trigger is a disclosure
+   button, so what is shown must agree with its aria-expanded. */
+.nav-links:not(.mobile-open) .nav-trigger-group.open:not(.disable-hover) .nav-dropdown {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.nav-links:not(.mobile-open) .nav-trigger-group.open:not(.disable-hover) .nav-caret {
+  transform: rotate(180deg);
+}
+
+.nav-links:not(.mobile-open) .nav-trigger-group:focus-within:not(.open):not(:hover) .nav-dropdown {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ── Mobile drawer ──
+   The whole row is the toggle: label on the left, the round caret chip on
+   the right where the separate caret button used to be. */
+.nav-links.mobile-open>li>.nav-parent-row .nav-trigger {
+  width: 100%;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 12px 0 20px !important;
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: var(--color-text);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.nav-links.mobile-open .nav-trigger-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.nav-links.mobile-open .nav-trigger-label::after {
+  display: none;
+}
+
+.nav-links.mobile-open .nav-trigger-caret {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transition: background .2s;
+}
+
+.nav-links.mobile-open .nav-trigger-group.open .nav-trigger-caret {
+  background: var(--color-surface-2);
+}
+
+.nav-links.mobile-open .nav-trigger:focus-visible {
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-links .nav-trigger,
+  .nav-links .nav-trigger-label::after,
+  .nav-links .nav-trigger-caret {
+    transition: none;
+  }
+}

@@ -13,6 +13,14 @@ const nextConfig = {
       bodySizeLimit: "10mb"
     }
   },
+  async redirects() {
+    return [
+      // The products overview page was retired: products are reached only
+      // through the nav dropdown. 308 so search engines move the URL's
+      // equity to the home page instead of indexing a dead end.
+      { source: "/products", destination: "/", permanent: true }
+    ];
+  },
   async rewrites() {
     const target = process.env.API_BASE || process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:4000";
     return [

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { AMC_LIST, amcSearchTerm } from "@/lib/mfData";
 import { apiUrl } from "@/lib/api";
 import { fmtINR2 } from "@/lib/mfCalc";
+import MfToolHeader from "./MfToolHeader";
 
 type Row = { schemeCode: number; schemeName: string; nav: number | null; date: string | null };
 
@@ -53,10 +54,11 @@ export default function LatestNav() {
 
   return (
     <div className="mf-tool-container">
-      <div className="mf-tool-header">
-        <h2>Latest NAV</h2>
-        <p>Live, real NAV data. Pick an AMC to see its schemes' latest published NAV.</p>
-      </div>
+      <MfToolHeader
+        id="latestNav"
+        title="Latest NAV"
+        intro="Live, real NAV data. Pick an AMC to see its schemes' latest published NAV."
+      />
 
       <form className="mf-tool-form" onSubmit={handleSubmit}>
         <div className="mf-form-row">

@@ -2,16 +2,22 @@
 import { useState } from "react";
 import Link from "next/link";
 import { SCHEME_CATEGORIES } from "@/lib/mfData";
+import MfToolHeader from "./MfToolHeader";
+import { useContent } from "@/lib/content";
+import { fill } from "@/lib/template";
 
 export default function CurrentNfos() {
   const [category, setCategory] = useState<string>("Equity");
+  const cms = useContent("resources-mf");
+  const t = (field: string, fallback: string) => cms.t("emptyStates", field, fallback);
 
   return (
     <div className="mf-tool-container">
-      <div className="mf-tool-header">
-        <h2>Current NFOs</h2>
-        <p>New Fund Offers open for subscription right now.</p>
-      </div>
+      <MfToolHeader
+        id="currentNfo"
+        title="Current NFOs"
+        intro="New Fund Offers open for subscription right now."
+      />
 
       <div className="mf-tool-form">
         <div className="mf-form-row">
@@ -35,14 +41,18 @@ export default function CurrentNfos() {
 
       <div className="mf-empty-state">
         <div className="icon">📋</div>
-        <h3>No live NFO feed connected yet</h3>
+        <h3>{t("nfoTitle", "No live NFO feed connected yet")}</h3>
         <p>
-          New Fund Offers open and close on a rolling basis, so we don&apos;t publish unverified listings here.
-          Our advisory desk tracks every {category.toLowerCase()} NFO currently open and can tell you the exact
-          subscription window, minimum investment, and whether it fits your portfolio.
+          {fill(
+            t(
+              "nfoBody",
+              "New Fund Offers open and close on a rolling basis, so we don't publish unverified listings here. Our advisory desk tracks every {category} NFO currently open and can tell you the exact subscription window, minimum investment, and whether it fits your portfolio."
+            ),
+            { category: category.toLowerCase() }
+          )}
         </p>
-        <Link href="/get-started" className="btn btn-primary">
-          Ask about current NFOs →
+        <Link href={t("nfoHref", "/get-started")} className="btn btn-primary">
+          {t("nfoCta", "Ask about current NFOs →")}
         </Link>
       </div>
     </div>

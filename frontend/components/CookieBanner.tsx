@@ -1,8 +1,11 @@
 "use client";
 import { useEffect, useRef } from "react";
+import { useContent } from "@/lib/content";
 
 export default function CookieBanner() {
   const ref = useRef<HTMLDivElement | null>(null);
+  // Copy is edited in the Content Manager (Global -> Cookie banner).
+  const cms = useContent("global");
 
   useEffect(() => {
     const banner = ref.current;
@@ -64,19 +67,22 @@ export default function CookieBanner() {
         </svg>
       </div>
       <div className="cb-text">
-        <strong>We use cookies to keep things working.</strong>
+        <strong>{cms.t("cookie", "title", "We use cookies to keep things working.")}</strong>
         <span>
-          Essential cookies run the platform. Analytics cookies help us improve
-          the experience. Read how we use them in our{" "}
-          <a href="/legal/privacy" style={{ textDecoration: "underline" }}>
-            privacy policy
+          {cms.t(
+            "cookie",
+            "body",
+            "Essential cookies run the platform. Analytics cookies help us improve the experience. Read how we use them in our"
+          )}{" "}
+          <a href={cms.t("cookie", "linkHref", "/legal/privacy")} style={{ textDecoration: "underline" }}>
+            {cms.t("cookie", "linkLabel", "privacy policy")}
           </a>
           .
         </span>
       </div>
       <div className="cb-actions">
         <button className="btn btn-ghost" type="button" id="cookieDecline">
-          Essential only
+          {cms.t("cookie", "declineLabel", "Essential only")}
         </button>
         <button
           className="btn btn-primary"
@@ -84,7 +90,7 @@ export default function CookieBanner() {
           id="cookieAccept"
           data-magnetic
         >
-          Accept all
+          {cms.t("cookie", "acceptLabel", "Accept all")}
         </button>
       </div>
     </div>

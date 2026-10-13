@@ -200,14 +200,35 @@ export const REGULATORY_CREDENTIALS: { label: string; value: string }[] = [
   { label: 'EUIN code', value: EUIN_CODE },
 ].filter((row) => row.value);
 
+/**
+ * Copy around the registration grid (the "Our AMFI registration" box on
+ * /about and the card on /contact). The super admin edits all of it under
+ * Global → AMFI registration box; these are the shipped defaults and the
+ * fallback when the content API is unreachable.
+ */
+export const AMFI_BOX_HEADING = 'Our AMFI registration';
+export const AMFI_BOX_INTRO =
+  'Verify these against the AMFI register before you invest. We publish them in full because a distributor who will not show you their ARN is a distributor you should not be dealing with.';
+export const AMFI_BOX_NOTE =
+  'EUIN helps AMFI trace the advice you received to the person who gave it. Quoting it on your transaction protects you in the event of any mis-selling dispute.';
+
 /** Founding year of the firm */
 export const FOUNDED_YEAR = '2021';
 
-/** Single-line form for the footer band and other tight spaces (excluding enrollment date). */
-export const REGISTRATION_CODES_LINE = REGULATORY_CREDENTIALS
-  .filter((row) => row.label !== 'Enrollment date')
-  .map((row) => `${row.label} ${row.value}`)
-  .join('  ·  ');
+/**
+ * Single-line form of the registration rows, for the footer band and other
+ * tight spaces. The enrollment date is a record-keeping detail, not a code an
+ * investor quotes, so it is left out. Exported as a function so the CMS-driven
+ * rows (lib/amfi) collapse to exactly the same line as the static ones.
+ */
+export function registrationCodesLine(rows: { label: string; value: string }[]): string {
+  return rows
+    .filter((row) => row.value && row.label.trim().toLowerCase() !== 'enrollment date')
+    .map((row) => `${row.label} ${row.value}`)
+    .join('  ·  ');
+}
+
+export const REGISTRATION_CODES_LINE = registrationCodesLine(REGULATORY_CREDENTIALS);
 
 export const REGULATORY_LABEL =
   REGULATORY_ROLE === 'adviser'
@@ -229,6 +250,8 @@ export const DEMAT_DISCLOSURE =
   'Demat services are provided by SEBI-registered partner brokers.';
 
 /** Rendered only when a number exists, so a blank never ships as "RIA ". */
-export const REGISTRATION_LINE = REGISTRATION_NUMBER
-  ? `${REGULATORY_LABEL} — ${REGISTRATION_NUMBER}`
-  : REGULATORY_LABEL;
+export function registrationLine(label: string, number: string): string {
+  return number ? `${label} — ${number}` : label;
+}
+
+export const REGISTRATION_LINE = registrationLine(REGULATORY_LABEL, REGISTRATION_NUMBER);

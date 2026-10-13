@@ -3,6 +3,7 @@ import { useState } from "react";
 import { apiUrl } from "@/lib/api";
 import { trailingReturn, sortNavAscending, type NavPoint } from "@/lib/mfCalc";
 import AmcSchemeSelect, { type SchemeOption } from "./AmcSchemeSelect";
+import MfToolHeader from "./MfToolHeader";
 
 const PERIODS = [
   { label: "1Y", years: 1 },
@@ -56,10 +57,11 @@ export default function SchemeComparison() {
 
   return (
     <div className="mf-tool-container">
-      <div className="mf-tool-header">
-        <h2>Scheme Comparison</h2>
-        <p>Compare two schemes' real trailing returns side by side.</p>
-      </div>
+      <MfToolHeader
+        id="comparison"
+        title="Scheme Comparison"
+        intro="Compare two schemes' real trailing returns side by side."
+      />
 
       <form className="mf-tool-form" onSubmit={handleSubmit}>
         <div className="mf-compare-cols">

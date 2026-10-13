@@ -7,12 +7,9 @@ import Logo from "./Logo";
 import { useContent, accent } from "@/lib/content";
 import {
   COMPANY_LEGAL_NAME,
-  DEMAT_DISCLOSURE,
-  REGISTRATION_CODES_LINE,
-  REGISTRATION_LINE,
-  REGISTRATION_NUMBER,
-  REGULATORY_LABEL
+  DEMAT_DISCLOSURE
 } from "@/lib/siteFacts";
+import { amfiFrom } from "@/lib/amfi";
 import { SOCIAL_ICON_PATHS } from "@/lib/socialIcons";
 import {
   contactFrom,
@@ -72,6 +69,10 @@ const FOOTER_COLUMNS: FooterColumn[] = [
   }
 ];
 
+/* Mandated MF risk-factor text behind the collapsed disclosure toggle. */
+const FOOTER_LEGAL_TEXT =
+  "Risk Factors: Investments in Mutual Funds are subject to Market Risks. Read all scheme related documents carefully before investing. Mutual Fund Schemes do not assure or guarantee any returns. Past performances of any Mutual Fund Scheme may or may not be sustained in future. There is no guarantee that the investment objective of any suggested scheme shall be achieved. All existing and prospective investors are advised to check and evaluate the Exit loads and other cost structure (TER) applicable at the time of making the investment before finalizing on any investment decision for Mutual Funds schemes. We deal in Regular Plans only for Mutual Fund Schemes and earn a Trailing Commission on client investments. Disclosure For Commission earnings is made to clients at the time of investments. Option of Direct Plan for every Mutual Fund Scheme is available to investors offering advantage of lower expense ratio. We are not entitled to earn any commission on Direct plans. Hence we do not deal in Direct Plans.";
+
 /** Render a *starred* CMS heading with the <em> accent the design uses. */
 function heading(text: string) {
   return accent(text).map((p, i) =>
@@ -85,6 +86,7 @@ export default function Footer() {
   const social = socialFrom(cms);
   const whatsapp = whatsappFrom(cms);
   const contact = contactFrom(cms);
+  const amfi = amfiFrom(cms);
   const companyName = cms.t("footer", "companyName", COMPANY_LEGAL_NAME);
   const pathname = usePathname();
   const year = new Date().getFullYear();
@@ -125,7 +127,7 @@ export default function Footer() {
       {newsletterEnabled && (
         <div className="container foot-newsletter reveal">
           <div className="fn-text">
-            <h3>{heading(cms.t("footer", "newsletterTitle", "Get the *weekly market brief.*"))}</h3>
+            <h3>{heading(cms.t("footer", "newsletterTitle", "Get the weekly market brief."))}</h3>
             <p>
               {cms.t(
                 "footer",
@@ -143,7 +145,7 @@ export default function Footer() {
             <input
               type="email"
               name="email"
-              placeholder="you@email.com"
+              placeholder={cms.t("footer", "newsletterPlaceholder", "you@email.com")}
               required
               aria-label="Email address"
             />
@@ -155,7 +157,11 @@ export default function Footer() {
               style={{ opacity: submitting ? 0.7 : 1 }}
             >
               <span>
-                {submitting ? "Subscribing…" : success ? "Subscribed ✓" : "Subscribe"}
+                {submitting
+                  ? cms.t("footer", "newsletterSending", "Subscribing…")
+                  : success
+                    ? cms.t("footer", "newsletterSubscribed", "Subscribed ✓")
+                    : cms.t("footer", "newsletterButton", "Subscribe")}
               </span>
               <svg viewBox="0 0 14 14" fill="none" width="14" height="14">
                 <path
@@ -169,7 +175,11 @@ export default function Footer() {
             </button>
             {success && (
               <p className="fn-msg show" id="fnMsg">
-                ✓ Subscribed. Look out for Monday's brief in your inbox.
+                {cms.t(
+                  "footer",
+                  "newsletterSuccess",
+                  "✓ Subscribed. Look out for Monday's brief in your inbox."
+                )}
               </p>
             )}
             {error && (
@@ -202,7 +212,7 @@ export default function Footer() {
           {badgeEnabled && (
             <div className="foot-reg">
               <span className="status-dot"></span>
-              {cms.t("footer", "badge", REGISTRATION_LINE)}
+              {cms.t("footer", "badge", amfi.registrationLine)}
             </div>
           )}
           {/* Direct routes in the footer: the number is the fastest path to a
@@ -214,7 +224,7 @@ export default function Footer() {
                   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" width="15" height="15">
                     <path d={SOCIAL_ICON_PATHS.whatsapp} />
                   </svg>
-                  <span>WhatsApp {whatsapp.display}</span>
+                  <span>{cms.t("footer", "whatsappPrefix", "WhatsApp")} {whatsapp.display}</span>
                 </a>
               </li>
             ) : null}
@@ -224,7 +234,7 @@ export default function Footer() {
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="15" height="15" aria-hidden="true">
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                   </svg>
-                  <span>Call {contact.phoneDisplay}</span>
+                  <span>{cms.t("footer", "callPrefix", "Call")} {contact.phoneDisplay}</span>
                 </a>
               </li>
             ) : null}
@@ -260,12 +270,20 @@ export default function Footer() {
         <div className="foot-disclaim">
           <p>
             <strong>
-              Investments in securities markets are subject to market risks.
+              {cms.t(
+                "footer",
+                "riskLead",
+                "Investments in securities markets are subject to market risks."
+              )}
             </strong>{" "}
-            Read all related documents carefully before investing. Past
-            performance does not guarantee future returns. {companyName} is an{" "}
-            {REGULATORY_LABEL}
-            {REGISTRATION_NUMBER ? ` (${REGISTRATION_NUMBER})` : ""}.{" "}
+            {cms.t(
+              "footer",
+              "riskBody",
+              "Read all related documents carefully before investing. Past performance does not guarantee future returns."
+            )}{" "}
+            {companyName} is an{" "}
+            {amfi.badge}
+            {amfi.arn ? ` (${amfi.arn})` : ""}.{" "}
             {DEMAT_DISCLOSURE}
           </p>
           {/* The full AMFI risk-factor text is ~200 words of mandated small
@@ -273,7 +291,7 @@ export default function Footer() {
               away, instead of ending every page in a wall of grey type. */}
           <details className="foot-legal">
             <summary>
-              <span>Full risk factors &amp; commission disclosure</span>
+              <span>{cms.t("footer", "legalSummary", "Full risk factors & commission disclosure")}</span>
               <svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true">
                 <path
                   d="M2.5 4.5L6 8l3.5-3.5"
@@ -285,12 +303,10 @@ export default function Footer() {
                 />
               </svg>
             </summary>
-            <p>
-              Risk Factors: Investments in Mutual Funds are subject to Market Risks. Read all scheme related documents carefully before investing. Mutual Fund Schemes do not assure or guarantee any returns. Past performances of any Mutual Fund Scheme may or may not be sustained in future. There is no guarantee that the investment objective of any suggested scheme shall be achieved. All existing and prospective investors are advised to check and evaluate the Exit loads and other cost structure (TER) applicable at the time of making the investment before finalizing on any investment decision for Mutual Funds schemes. We deal in Regular Plans only for Mutual Fund Schemes and earn a Trailing Commission on client investments. Disclosure For Commission earnings is made to clients at the time of investments. Option of Direct Plan for every Mutual Fund Scheme is available to investors offering advantage of lower expense ratio. We are not entitled to earn any commission on Direct plans. Hence we do not deal in Direct Plans.
-            </p>
+            <p>{cms.t("footer", "legalText", FOOTER_LEGAL_TEXT)}</p>
           </details>
-          {REGISTRATION_CODES_LINE ? (
-            <p className="foot-codes">{REGISTRATION_CODES_LINE}</p>
+          {amfi.codesLine ? (
+            <p className="foot-codes">{amfi.codesLine}</p>
           ) : null}
         </div>
         {social.length > 0 && (
@@ -310,7 +326,7 @@ export default function Footer() {
           footer a deliberate end, rather than trailing off into small print.
           Decorative only — the accessible brand name is in the logo above. */}
       <div className="foot-wordmark" aria-hidden="true">
-        <span>Finvoq</span>
+        <span>{cms.t("footer", "wordmark", "Finvoq")}</span>
       </div>
 
       <div className="container foot-base">

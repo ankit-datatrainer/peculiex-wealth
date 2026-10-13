@@ -3,6 +3,7 @@ import { useState } from "react";
 import { apiUrl } from "@/lib/api";
 import { simulateSwp, sortNavAscending, fmtINR, type NavPoint } from "@/lib/mfCalc";
 import AmcSchemeSelect, { type SchemeOption } from "./AmcSchemeSelect";
+import MfToolHeader from "./MfToolHeader";
 
 type Result = ReturnType<typeof simulateSwp>;
 
@@ -52,10 +53,11 @@ export default function SwpCalculator() {
 
   return (
     <div className="mf-tool-container">
-      <div className="mf-tool-header">
-        <h2>SWP Calculator</h2>
-        <p>Real historical NAV-based simulation of a Systematic Withdrawal Plan.</p>
-      </div>
+      <MfToolHeader
+        id="swp"
+        title="SWP Calculator"
+        intro="Real historical NAV-based simulation of a Systematic Withdrawal Plan."
+      />
 
       <form className="mf-tool-form" onSubmit={handleCalculate}>
         <AmcSchemeSelect idPrefix="swp" amc={amc} onAmcChange={setAmc} scheme={scheme} onSchemeChange={setScheme} />

@@ -27,6 +27,11 @@ export default function ContactRoutes({
   const social = socialFrom(cms);
   const contact = contactFrom(cms);
 
+  // The cards' own copy lives on the Contact page (Contact → Contact cards);
+  // the number, hours and address above stay global.
+  const page = useContent("contact");
+  const t = (field: string, fallback: string) => page.t("routes", field, fallback);
+
   const linkStyle: React.CSSProperties = {
     color: "var(--color-primary)",
     fontWeight: 600,
@@ -44,7 +49,7 @@ export default function ContactRoutes({
           opens the thread with a message already typed. */}
       {wa.href ? (
         <div style={cardStyle}>
-          <div style={labelStyle}>WhatsApp</div>
+          <div style={labelStyle}>{t("whatsappLabel", "WhatsApp")}</div>
           <a
             href={wa.href}
             target="_blank"
@@ -57,15 +62,17 @@ export default function ContactRoutes({
             {wa.display}
           </a>
           <p style={noteStyle}>
-            Message us on WhatsApp for a quick answer — usually within the hour
-            during working hours.
+            {t(
+              "whatsappNote",
+              "Message us on WhatsApp for a quick answer — usually within the hour during working hours."
+            )}
           </p>
         </div>
       ) : null}
 
       {contact.phoneDisplay ? (
         <div style={cardStyle}>
-          <div style={labelStyle}>Phone</div>
+          <div style={labelStyle}>{t("phoneLabel", "Phone")}</div>
           <a href={`tel:${contact.phone}`} style={linkStyle}>
             {contact.phoneDisplay}
           </a>
@@ -74,15 +81,15 @@ export default function ContactRoutes({
       ) : null}
 
       <div style={cardStyle}>
-        <div style={labelStyle}>Working hours</div>
+        <div style={labelStyle}>{t("hoursLabel", "Working hours")}</div>
         <p style={{ margin: 0, lineHeight: 1.7 }}>{contact.hours}</p>
         <p style={noteStyle}>
-          Messages sent outside these hours are answered the next working day.
+          {t("hoursNote", "Messages sent outside these hours are answered the next working day.")}
         </p>
       </div>
 
       <div style={cardStyle}>
-        <div style={labelStyle}>Registered office</div>
+        <div style={labelStyle}>{page.t("office", "addressTitle", "Registered office")}</div>
         <p style={{ margin: 0, lineHeight: 1.7, fontSize: "0.92rem" }}>{contact.address}</p>
         {contact.mapUrl ? (
           <a
@@ -100,14 +107,14 @@ export default function ContactRoutes({
             }}
           >
             <MapPin size={14} />
-            View on Google Maps →
+            {t("mapLinkLabel", "View on Google Maps →")}
           </a>
         ) : null}
       </div>
 
       {social.length > 0 ? (
         <div style={cardStyle}>
-          <div style={labelStyle}>Follow us</div>
+          <div style={labelStyle}>{t("socialLabel", "Follow us")}</div>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {social.map((s) => (
               <a

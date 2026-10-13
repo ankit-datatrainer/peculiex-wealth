@@ -3,6 +3,7 @@ import { useState } from "react";
 import { apiUrl } from "@/lib/api";
 import { trailingReturn, sortNavAscending, type NavPoint } from "@/lib/mfCalc";
 import AmcSchemeSelect, { type SchemeOption } from "./AmcSchemeSelect";
+import MfToolHeader from "./MfToolHeader";
 
 const PERIODS = [
   { label: "1M", years: 1 / 12 },
@@ -51,10 +52,11 @@ export default function MfPerformanceTool() {
 
   return (
     <div className="mf-tool-container">
-      <div className="mf-tool-header">
-        <h2>MF Performance</h2>
-        <p>Real trailing returns computed from historical NAV: 1M through 5Y, annualised beyond 1 year.</p>
-      </div>
+      <MfToolHeader
+        id="performance"
+        title="MF Performance"
+        intro="Real trailing returns computed from historical NAV: 1M through 5Y, annualised beyond 1 year."
+      />
 
       <form className="mf-tool-form" onSubmit={handleSubmit}>
         <AmcSchemeSelect idPrefix="perf" amc={amc} onAmcChange={setAmc} scheme={scheme} onSchemeChange={setScheme} />

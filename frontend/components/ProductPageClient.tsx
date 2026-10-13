@@ -7,8 +7,14 @@
  * can edit every section of every product page through the Content Manager.
  * Falls back to the static `ProductContent` for SSR and for any field the
  * admin hasn't edited yet.
+ *
+ * Members only: a logged-out visitor gets the hero and then <ProductGate>
+ * instead of the rest of the page. Until the session check resolves (which
+ * includes the server render) only the hero and a neutral skeleton render, so
+ * neither the content nor the gate ever flashes for the wrong visitor.
  */
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { PRODUCTS, type ProductContent } from "@/lib/productContent";
 import { useContent, accent } from "@/lib/content";
@@ -19,6 +25,8 @@ import FactsheetEmbed from "@/components/FactsheetEmbed";
 import PmsFramework from "@/components/PmsFramework";
 import AifFramework from "@/components/AifFramework";
 import PremiumThemeSync from "@/components/PremiumThemeSync";
+import ProductGate, { ProductGateSkeleton } from "@/components/ProductGate";
+import { useAuth } from "@/lib/auth-context";
 import { LAMF_RATE } from "@/lib/siteFacts";
 
 /** Render *accented* text: `*words*` → <em>words</em>. */
@@ -40,6 +48,41 @@ type Props = {
 export default function ProductPageClient({ slug, product: p }: Props) {
   const cmsKey = `product-${slug}`;
   const cms = useContent(cmsKey);
+  const { user, ready } = useAuth();
+  const unlocked = ready && !!user;
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  /* The site-wide scroll-reveal observer (GlobalUX) only scans the DOM when
+     the route changes. On a hard load the content below mounts later, once
+     the session check resolves, so hand its .reveal blocks to that observer
+     here or they would stay at opacity 0. */
+  useEffect(() => {
+    if (!unlocked) return;
+    const root = rootRef.current;
+    if (!root) return;
+    const nodes = Array.from(
+      root.querySelectorAll<HTMLElement>(".reveal, .reveal-stagger, .reveal-children")
+    ).filter((n) => !n.classList.contains("visible"));
+    const shared = (window as unknown as { __finvoqReveal?: IntersectionObserver })
+      .__finvoqReveal;
+    if (shared) {
+      nodes.forEach((n) => shared.observe(n));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) {
+            en.target.classList.add("visible");
+            io.unobserve(en.target);
+          }
+        });
+      },
+      { threshold: 0.14, rootMargin: "0px 0px -60px 0px" }
+    );
+    nodes.forEach((n) => io.observe(n));
+    return () => io.disconnect();
+  }, [unlocked]);
 
   const isPremium = slug === "pms" || slug === "aif";
 
@@ -120,7 +163,7 @@ export default function ProductPageClient({ slug, product: p }: Props) {
       : p.related || [];
 
   return (
-    <div className={isPremium ? "premium-product-page" : ""}>
+    <div className={isPremium ? "premium-product-page" : ""} ref={rootRef}>
       {isPremium && (
         <>
           <script
@@ -151,235 +194,246 @@ export default function ProductPageClient({ slug, product: p }: Props) {
         }
       />
 
-      {/* Metrics row */}
-      <section className="product-metrics-sec" style={{ padding: "0 0 80px" }}>
-        <div className="container">
-          <div
-            className="premium-metrics-grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-              gap: "1px",
-              background: "var(--color-divider)",
-              borderRadius: "16px",
-              overflow: "hidden",
-              border: "1px solid var(--color-divider)"
-            }}
-          >
-            {metrics.map((m) => (
-              <div
-                key={m.label}
-                className="premium-metric-card"
-                style={{
-                  background: "var(--color-surface-2)",
-                  padding: "28px 24px",
-                  textAlign: "center"
-                }}
-              >
-                <div
-                  className="premium-metric-value"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "2rem",
-                    fontWeight: 500,
-                    color: "var(--color-primary)"
-                  }}
-                >
-                  {m.value}
-                </div>
-                <div
-                  className="premium-metric-label"
-                  style={{
-                    fontSize: "0.78rem",
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                    color: "var(--color-text-muted)",
-                    marginTop: 4
-                  }}
-                >
-                  {m.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Partner logos */}
-      <PartnerLogos productSlug={slug} />
-
-      {/* PMS: benefits, taxation and shortlisting parameters — sits directly
-          above the factsheet so the reader has the framework before the data. */}
-      {slug === "pms" && <PmsFramework />}
-      {slug === "aif" && <AifFramework />}
-
-      {/* Factsheet */}
-      {slug !== "pms" && <Factsheet slug={slug} label={p.label} />}
-      <FactsheetEmbed slug={slug} label={p.label} />
-
-      {/* Highlights */}
-      <section className="product-highlights-sec" style={{ padding: "0 0 100px" }}>
-        <div className="container">
-          <div className="sec-head reveal">
-            <div className="label">{highlightEyebrow}</div>
-            <h2 className="stitle">{renderAccented(highlightTitleRaw)}</h2>
-          </div>
-          {slug === "insurance" && insuranceCards.length > 0 ? (
-            <div className="insurance-card-grid reveal-stagger">
-              {insuranceCards.map((card, i) => (
-                <article key={i} className="insurance-card reveal">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={card.img} alt={card.title} className="insurance-card-img" />
-                  <div className="insurance-card-footer">
-                    <span>{card.title}</span>
-                    <span>🍃</span>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                gap: "20px"
-              }}
-              className="reveal-stagger product-why-grid"
-            >
-              {highlights.map((h) => (
-                <article
-                  key={h.title}
-                  className="why-card reveal"
-                  data-tilt
-                  style={{ minHeight: "auto" }}
-                >
-                  <h3>{h.title}</h3>
-                  <p>{h.body}</p>
-                </article>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section className="product-how-sec" style={{ padding: "0 0 100px" }}>
-        <div className="container">
-          <div className="sec-head reveal">
-            <div className="label">{howEyebrow}</div>
-            <h2 className="stitle">{renderAccented(howTitleRaw)}</h2>
-          </div>
-          <ol
-            className="steps"
-            style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}
-          >
-            {howItWorks.map((s) => (
-              <li className="reveal" key={s.step}>
-                <span className="step-no">{s.step}</span>
-                <div>
-                  <h4>{s.title}</h4>
-                  <p>{s.body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      {/* Closing CTA */}
-      <section className="product-closing-sec" style={{ padding: "0 0 140px" }}>
-        <div className="container" style={{ textAlign: "center", maxWidth: 760, margin: "0 auto" }}>
-          <h2
-            className="premium-closing-title"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "clamp(1.6rem, 3vw, 2.4rem)",
-              fontWeight: 500,
-              letterSpacing: "-0.01em",
-              lineHeight: 1.3,
-              marginBottom: 16
-            }}
-          >
-            {closingText}
-          </h2>
-          {ctaLabel && ctaHref && (
-            <Link href={ctaHref} className="btn btn-primary btn-lg" data-magnetic>
-              {ctaLabel}
-            </Link>
-          )}
-        </div>
-      </section>
-
-      {/* LAMF cross-sell: appears only on mutual funds page */}
-      {slug === "mutual-funds" && (
-        <section className="product-lamf-sec" style={{ padding: "0 0 110px" }}>
-          <div className="container">
-            <div className="lamf-band reveal">
-              <div className="lamf-band-text">
-                <div className="label">Loan Against Mutual Funds</div>
-                <h3>Need liquidity? Don&apos;t sell, pledge.</h3>
-                <p>
-                  Pledge your mutual fund units and unlock an instant overdraft from minimum {LAMF_RATE}{" "}
-                  while your investments stay invested. Interest only on what you use.
-                </p>
-              </div>
-              <div className="lamf-band-cta">
-                <Link href="/products/loan-against-mutual-funds" className="btn btn-primary" data-magnetic>
-                  Explore LAMF →
-                </Link>
-                <Link href="/get-started" className="btn btn-ghost" data-magnetic>
-                  Check my limit
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
+      {!ready && <ProductGateSkeleton />}
+      {ready && !user && (
+        // The product's own name, not the hero eyebrow: the CMS stores that
+        // eyebrow in display caps, which reads as shouting mid-sentence.
+        <ProductGate slug={slug} label={p.label} />
       )}
 
-      {/* Related products */}
-      {relatedSlugs.length > 0 && (
-        <section className="product-related-sec" style={{ padding: "0 0 120px", borderTop: "1px solid var(--color-divider)" }}>
-          <div className="container" style={{ paddingTop: 60 }}>
-            <div className="label" style={{ marginBottom: 16 }}>You might also like</div>
-            <div
-              className="product-related-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-                gap: "16px"
-              }}
-            >
-              {relatedSlugs.map((rs) => {
-                const r = PRODUCTS[rs];
-                if (!r) return null;
-                return (
-                  <Link
-                    href={`/products/${r.slug}`}
-                    key={r.slug}
-                    className="premium-related-card"
+      {unlocked && (
+        <>
+          {/* Metrics row */}
+          <section className="product-metrics-sec" style={{ padding: "0 0 80px" }}>
+            <div className="container">
+              <div
+                className="premium-metrics-grid"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                  gap: "1px",
+                  background: "var(--color-divider)",
+                  borderRadius: "16px",
+                  overflow: "hidden",
+                  border: "1px solid var(--color-divider)"
+                }}
+              >
+                {metrics.map((m) => (
+                  <div
+                    key={m.label}
+                    className="premium-metric-card"
                     style={{
                       background: "var(--color-surface-2)",
-                      border: "1px solid var(--color-divider)",
-                      borderRadius: 14,
-                      padding: 20,
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 6
+                      padding: "28px 24px",
+                      textAlign: "center"
                     }}
                   >
-                    <strong className="premium-related-title" style={{ color: "var(--color-text)" }}>{r.label}</strong>
-                    <span className="premium-related-desc" style={{ color: "var(--color-text-muted)", fontSize: "0.92rem" }}>
-                      {r.subtitle.split(".")[0]}.
-                    </span>
-                    <span className="premium-related-link" style={{ color: "var(--color-primary)", fontWeight: 600, marginTop: 6 }}>
-                      Learn more →
-                    </span>
-                  </Link>
-                );
-              })}
+                    <div
+                      className="premium-metric-value"
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "2rem",
+                        fontWeight: 500,
+                        color: "var(--color-primary)"
+                      }}
+                    >
+                      {m.value}
+                    </div>
+                    <div
+                      className="premium-metric-label"
+                      style={{
+                        fontSize: "0.78rem",
+                        letterSpacing: "0.06em",
+                        textTransform: "uppercase",
+                        color: "var(--color-text-muted)",
+                        marginTop: 4
+                      }}
+                    >
+                      {m.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+
+          {/* Partner logos */}
+          <PartnerLogos productSlug={slug} />
+
+          {/* PMS: benefits, taxation and shortlisting parameters — sits directly
+              above the factsheet so the reader has the framework before the data. */}
+          {slug === "pms" && <PmsFramework />}
+          {slug === "aif" && <AifFramework />}
+
+          {/* Factsheet */}
+          {slug !== "pms" && <Factsheet slug={slug} label={p.label} />}
+          <FactsheetEmbed slug={slug} label={p.label} />
+
+          {/* Highlights */}
+          <section className="product-highlights-sec" style={{ padding: "0 0 100px" }}>
+            <div className="container">
+              <div className="sec-head reveal">
+                <div className="label">{highlightEyebrow}</div>
+                <h2 className="stitle">{renderAccented(highlightTitleRaw)}</h2>
+              </div>
+              {slug === "insurance" && insuranceCards.length > 0 ? (
+                <div className="insurance-card-grid reveal-stagger">
+                  {insuranceCards.map((card, i) => (
+                    <article key={i} className="insurance-card reveal">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={card.img} alt={card.title} className="insurance-card-img" />
+                      <div className="insurance-card-footer">
+                        <span>{card.title}</span>
+                        <span>🍃</span>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: "20px"
+                  }}
+                  className="reveal-stagger product-why-grid"
+                >
+                  {highlights.map((h) => (
+                    <article
+                      key={h.title}
+                      className="why-card reveal"
+                      data-tilt
+                      style={{ minHeight: "auto" }}
+                    >
+                      <h3>{h.title}</h3>
+                      <p>{h.body}</p>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* How it works */}
+          <section className="product-how-sec" style={{ padding: "0 0 100px" }}>
+            <div className="container">
+              <div className="sec-head reveal">
+                <div className="label">{howEyebrow}</div>
+                <h2 className="stitle">{renderAccented(howTitleRaw)}</h2>
+              </div>
+              <ol
+                className="steps"
+                style={{ gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))" }}
+              >
+                {howItWorks.map((s) => (
+                  <li className="reveal" key={s.step}>
+                    <span className="step-no">{s.step}</span>
+                    <div>
+                      <h4>{s.title}</h4>
+                      <p>{s.body}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </section>
+
+          {/* Closing CTA */}
+          <section className="product-closing-sec" style={{ padding: "0 0 140px" }}>
+            <div className="container" style={{ textAlign: "center", maxWidth: 760, margin: "0 auto" }}>
+              <h2
+                className="premium-closing-title"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "clamp(1.6rem, 3vw, 2.4rem)",
+                  fontWeight: 500,
+                  letterSpacing: "-0.01em",
+                  lineHeight: 1.3,
+                  marginBottom: 16
+                }}
+              >
+                {closingText}
+              </h2>
+              {ctaLabel && ctaHref && (
+                <Link href={ctaHref} className="btn btn-primary btn-lg" data-magnetic>
+                  {ctaLabel}
+                </Link>
+              )}
+            </div>
+          </section>
+
+          {/* LAMF cross-sell: appears only on mutual funds page */}
+          {slug === "mutual-funds" && (
+            <section className="product-lamf-sec" style={{ padding: "0 0 110px" }}>
+              <div className="container">
+                <div className="lamf-band reveal">
+                  <div className="lamf-band-text">
+                    <div className="label">Loan Against Mutual Funds</div>
+                    <h3>Need liquidity? Don&apos;t sell, pledge.</h3>
+                    <p>
+                      Pledge your mutual fund units and unlock an instant overdraft from minimum {LAMF_RATE}{" "}
+                      while your investments stay invested. Interest only on what you use.
+                    </p>
+                  </div>
+                  <div className="lamf-band-cta">
+                    <Link href="/products/loan-against-mutual-funds" className="btn btn-primary" data-magnetic>
+                      Explore LAMF →
+                    </Link>
+                    <Link href="/get-started" className="btn btn-ghost" data-magnetic>
+                      Check my limit
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Related products */}
+          {relatedSlugs.length > 0 && (
+            <section className="product-related-sec" style={{ padding: "0 0 120px", borderTop: "1px solid var(--color-divider)" }}>
+              <div className="container" style={{ paddingTop: 60 }}>
+                <div className="label" style={{ marginBottom: 16 }}>You might also like</div>
+                <div
+                  className="product-related-grid"
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                    gap: "16px"
+                  }}
+                >
+                  {relatedSlugs.map((rs) => {
+                    const r = PRODUCTS[rs];
+                    if (!r) return null;
+                    return (
+                      <Link
+                        href={`/products/${r.slug}`}
+                        key={r.slug}
+                        className="premium-related-card"
+                        style={{
+                          background: "var(--color-surface-2)",
+                          border: "1px solid var(--color-divider)",
+                          borderRadius: 14,
+                          padding: 20,
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 6
+                        }}
+                      >
+                        <strong className="premium-related-title" style={{ color: "var(--color-text)" }}>{r.label}</strong>
+                        <span className="premium-related-desc" style={{ color: "var(--color-text-muted)", fontSize: "0.92rem" }}>
+                          {r.subtitle.split(".")[0]}.
+                        </span>
+                        <span className="premium-related-link" style={{ color: "var(--color-primary)", fontWeight: 600, marginTop: 6 }}>
+                          Learn more →
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          )}
+        </>
       )}
     </div>
   );

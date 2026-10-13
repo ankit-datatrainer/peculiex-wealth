@@ -2,16 +2,22 @@
 import { useState } from "react";
 import Link from "next/link";
 import { SCHEME_CATEGORIES } from "@/lib/mfData";
+import MfToolHeader from "./MfToolHeader";
+import { useContent } from "@/lib/content";
+import { fill } from "@/lib/template";
 
 export default function RecentDividends() {
   const [category, setCategory] = useState<string>("Equity");
+  const cms = useContent("resources-mf");
+  const t = (field: string, fallback: string) => cms.t("emptyStates", field, fallback);
 
   return (
     <div className="mf-tool-container">
-      <div className="mf-tool-header">
-        <h2>Recent Announced Dividends</h2>
-        <p>Latest dividend / IDCW payouts declared by mutual fund schemes.</p>
-      </div>
+      <MfToolHeader
+        id="dividends"
+        title="Recent Announced Dividends"
+        intro="Latest dividend / IDCW payouts declared by mutual fund schemes."
+      />
 
       <div className="mf-tool-form">
         <div className="mf-form-row">
@@ -35,14 +41,18 @@ export default function RecentDividends() {
 
       <div className="mf-empty-state">
         <div className="icon">💰</div>
-        <h3>No live dividend feed connected yet</h3>
+        <h3>{t("divTitle", "No live dividend feed connected yet")}</h3>
         <p>
-          Dividend/IDCW announcements are declared by AMCs on a rolling basis. Rather than show stale or
-          unverified figures, our advisory desk can confirm the latest {category.toLowerCase()} scheme
-          payouts and record dates for you directly.
+          {fill(
+            t(
+              "divBody",
+              "Dividend/IDCW announcements are declared by AMCs on a rolling basis. Rather than show stale or unverified figures, our advisory desk can confirm the latest {category} scheme payouts and record dates for you directly."
+            ),
+            { category: category.toLowerCase() }
+          )}
         </p>
-        <Link href="/get-started" className="btn btn-primary">
-          Ask about recent dividends →
+        <Link href={t("divHref", "/get-started")} className="btn btn-primary">
+          {t("divCta", "Ask about recent dividends →")}
         </Link>
       </div>
     </div>

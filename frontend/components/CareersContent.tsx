@@ -72,6 +72,8 @@ export default function CareersContent() {
     applyEmail?: string;
   }>("openRoles", "roles", DEFAULT_ROLES);
 
+  const applyLabel = cms.t("openRoles", "applyLabel", "Apply →");
+
   const calloutText = cms.t(
     "openRoles",
     "calloutText",
@@ -90,7 +92,7 @@ export default function CareersContent() {
         page="careers"
         label="Careers"
         title={<>Build the platform <em>India's investors deserve.</em></>}
-        subtitle="We're a small team rebuilding the wealth-management experience from first principles. We hire for craft, ownership, and unglamorous reliability."
+        subtitle="We're a small team rebuilding the wealth-management experience from first principles. We hire for craft, ownership, and unusual clarity of thought."
       />
 
       <section style={{ padding: "0 0 80px" }}>
@@ -131,7 +133,7 @@ export default function CareersContent() {
                 <div className="role-meta">
                   <span style={{ color: "var(--color-primary)" }}>{r.type}</span>
                 </div>
-                <a href={`mailto:${r.applyEmail || "info@finvoq.com"}`}>Apply →</a>
+                <a href={`mailto:${r.applyEmail || "info@finvoq.com"}`}>{applyLabel}</a>
               </div>
             ))}
           </div>

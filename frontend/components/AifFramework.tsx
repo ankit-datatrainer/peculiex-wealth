@@ -9,25 +9,151 @@
  * branches, the strategies under whichever branch is open — and everything
  * below the branch selector swaps in place.
  *
- * Content lives in lib/aifContent.ts.
+ * Every string is CMS-overridable through the `aifIntro`, `aifEquity` and
+ * `aifDebt` sections of the `product-aif` page (backend/src/content/schema.js);
+ * lib/aifContent.ts holds the shipped defaults and is the fallback.
  */
 
 import { useEffect, useRef, useState } from "react";
 import {
-  AIF_BRANCHES,
+  AIF_DEBT,
+  AIF_EQUITY,
   AIF_INTRO,
   type AifBranch,
   type AifFund
 } from "@/lib/aifContent";
+import { accent, useContent, type Reader } from "@/lib/content";
 import ParameterExplorer from "@/components/ParameterExplorer";
 import "./premium-block.css";
 import "./aif-framework.css";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+/* ── CMS ─────────────────────────────────────────────────────────────── */
+
+/** Shared labels from the `aifIntro` section, with the shipped defaults. */
+function aifLabels(cms: Reader) {
+  const t = (field: string, fallback: string) => cms.t("aifIntro", field, fallback);
+  return {
+    eyebrow: t("eyebrow", "How AIFs are structured"),
+    title: t("title", "Two routes into *private markets.*"),
+    intro: t("intro", AIF_INTRO),
+    rootMark: t("rootMark", "AIF"),
+    rootTitle: t("rootTitle", "Alternative Investment Funds"),
+    rootSubtitle: t("rootSubtitle", "SEBI-regulated, privately pooled, ₹1 Cr minimum"),
+    strategies: t("strategiesSuffix", "strategies"),
+    viewing: t("viewingLabel", "Viewing"),
+    explore: t("exploreLabel", "Explore"),
+    categoriesTitle: t("categoriesTitle", "Categories of an AIF"),
+    shortlistTitle: t("shortlistTitle", "Shortlisting parameters"),
+    shortlistKicker: t("shortlistKicker", "Parameter"),
+    shortlistNext: t("shortlistNext", "Next"),
+    taxTenure: t("taxTenureHeader", "Tenure"),
+    tenureChip: t("tenureChip", "Tenure"),
+    exitLoadChip: t("exitLoadChip", "Exit load")
+  };
+}
+
+type AifLabels = ReturnType<typeof aifLabels>;
+
+type TitleBodyRow = { title: string; body: string };
+type FundRow = { name: string; description: string; tenure: string; exitLoad: string };
+
+/**
+ * Rebuild one branch from its CMS section. Lists are flat rows in the CMS, so
+ * the nested shapes (taxation cells, the ring) are reassembled here; the
+ * compiled branch supplies every fallback.
+ */
+function branchFromCms(cms: Reader, section: string, fb: AifBranch): AifBranch {
+  const t = (field: string, fallback: string) => cms.t(section, field, fallback);
+  const titleBody = (field: string, rows: { title: string; body?: string }[]) =>
+    cms.list<TitleBodyRow>(
+      section,
+      field,
+      rows.map((r) => ({ title: r.title, body: r.body || "" }))
+    );
+
+  const branch: AifBranch = {
+    key: fb.key,
+    label: t("label", fb.label),
+    tagline: t("tagline", fb.tagline),
+    title: t("title", fb.title),
+    lead: t("lead", fb.lead),
+    benefitsTitle: t("benefitsTitle", fb.benefitsTitle),
+    benefits: titleBody("benefits", fb.benefits),
+    featuresTitle: t("featuresTitle", fb.featuresTitle),
+    features: titleBody("features", fb.features),
+    parameters: cms.list(section, "parameters", fb.parameters),
+    fundsTitle: t("fundsTitle", fb.fundsTitle),
+    funds: cms.list<FundRow>(
+      section,
+      "funds",
+      fb.funds.map((f) => ({ ...f, exitLoad: f.exitLoad || "" }))
+    )
+  };
+
+  if (fb.categories) {
+    const cats = cms.list(section, "categories", fb.categories);
+    if (cats.length) branch.categories = cats;
+  }
+
+  if (fb.taxation) {
+    const tx = fb.taxation;
+    const rows = cms.list(
+      section,
+      "taxRows",
+      tx.rows.map((r) => ({
+        tenure: r.tenure,
+        full: r.full,
+        cell1: r.cells[0] || "",
+        cell2: r.cells[1] || ""
+      }))
+    );
+    if (rows.length) {
+      branch.taxation = {
+        title: t("taxTitle", tx.title),
+        columns: [t("taxCol1", tx.columns[0] || ""), t("taxCol2", tx.columns[1] || "")],
+        rows: rows.map((r) => ({
+          tenure: r.tenure,
+          full: r.full,
+          cells: [r.cell1, r.cell2]
+        })),
+        note: t("taxNote", tx.note)
+      };
+    }
+  }
+
+  if (fb.ring) {
+    const items = cms
+      .list(section, "ringItems", fb.ring.items.map((text) => ({ text })))
+      .map((r) => r.text)
+      .filter(Boolean);
+    if (items.length) branch.ring = { hub: t("ringHub", fb.ring.hub), items };
+  }
+
+  return branch;
+}
+
+/** Render *accented* text: `*words*` → <em>words</em>. */
+function renderAccented(text: string) {
+  return accent(text)
+    .filter((part) => part !== "")
+    .map((part, i) =>
+      typeof part === "string" ? <span key={i}>{part}</span> : <em key={i}>{part.em}</em>
+    );
+}
+
 /* ── Strategy accordion ──────────────────────────────────────────────── */
 
-function FundList({ funds, branchKey }: { funds: AifFund[]; branchKey: string }) {
+function FundList({
+  funds,
+  branchKey,
+  labels
+}: {
+  funds: AifFund[];
+  branchKey: string;
+  labels: AifLabels;
+}) {
   const [open, setOpen] = useState(0);
 
   // Reset to the first strategy when the branch changes under us.
@@ -45,7 +171,7 @@ function FundList({ funds, branchKey }: { funds: AifFund[]; branchKey: string })
              the whole class attribute and wipe it, and the observer has
              already unobserved the node. Keep className static on anything
              carrying `.reveal`. */
-          <article className="aifx-fund reveal" data-open={isOpen || undefined} key={f.name}>
+          <article className="aifx-fund reveal" data-open={isOpen || undefined} key={`${i}-${f.name}`}>
             <h4 className="aifx-fund-h">
               <button
                 type="button"
@@ -61,12 +187,12 @@ function FundList({ funds, branchKey }: { funds: AifFund[]; branchKey: string })
                 <span className="aifx-fund-name">{f.name}</span>
                 <span className="aifx-fund-meta">
                   <span className="aifx-chip">
-                    <em>Tenure</em>
+                    <em>{labels.tenureChip}</em>
                     {f.tenure}
                   </span>
                   {f.exitLoad && (
                     <span className="aifx-chip aifx-chip-exit">
-                      <em>Exit load</em>
+                      <em>{labels.exitLoadChip}</em>
                       {f.exitLoad}
                     </span>
                   )}
@@ -99,10 +225,10 @@ function FundList({ funds, branchKey }: { funds: AifFund[]; branchKey: string })
 
 /* ── Branch detail ───────────────────────────────────────────────────── */
 
-function BranchDetail({ b }: { b: AifBranch }) {
+function BranchDetail({ b, labels }: { b: AifBranch; labels: AifLabels }) {
   return (
     <div className="aifx-detail" key={b.key}>
-      <p className="aifx-lead">{b.lead}</p>
+      {b.lead && <p className="aifx-lead">{b.lead}</p>}
 
       {/* Benefits + key features, side by side */}
       <div className="aifx-two">
@@ -112,8 +238,8 @@ function BranchDetail({ b }: { b: AifBranch }) {
             <i aria-hidden="true" />
           </div>
           <ul className="aifx-ticks">
-            {b.benefits.map((x) => (
-              <li key={x.title}>
+            {b.benefits.map((x, i) => (
+              <li key={`${i}-${x.title}`}>
                 <span className="aifx-tick" aria-hidden="true" />
                 <span>
                   <strong>{x.title}</strong>
@@ -130,8 +256,8 @@ function BranchDetail({ b }: { b: AifBranch }) {
             <i aria-hidden="true" />
           </div>
           <ul className="aifx-ticks">
-            {b.features.map((x) => (
-              <li key={x.title}>
+            {b.features.map((x, i) => (
+              <li key={`${i}-${x.title}`}>
                 <span className="aifx-tick" aria-hidden="true" />
                 <span>
                   <strong>{x.title}</strong>
@@ -147,12 +273,12 @@ function BranchDetail({ b }: { b: AifBranch }) {
       {b.categories && (
         <div className="aifx-block">
           <div className="fvblk-subhead">
-            <h3>Categories of an AIF</h3>
+            <h3>{labels.categoriesTitle}</h3>
             <i aria-hidden="true" />
           </div>
           <div className="aifx-cats reveal-stagger">
             {b.categories.map((c, i) => (
-              <article className="aifx-cat reveal" key={c.name}>
+              <article className="aifx-cat reveal" key={`${i}-${c.name}`}>
                 <span className="aifx-cat-roman" aria-hidden="true">
                   {pad(i + 1)}
                 </span>
@@ -176,7 +302,7 @@ function BranchDetail({ b }: { b: AifBranch }) {
               {b.ring.items.map((t, i) => (
                 <li
                   className="aifx-ring-item reveal"
-                  key={t}
+                  key={`${i}-${t}`}
                   style={{ ["--i" as string]: i }}
                 >
                   <span className="aifx-ring-dot" aria-hidden="true">
@@ -199,15 +325,15 @@ function BranchDetail({ b }: { b: AifBranch }) {
           </div>
           <div className="aifx-tax" role="table" aria-label={b.taxation.title}>
             <div className="aifx-tax-row aifx-tax-head" role="row">
-              <span role="columnheader">Tenure</span>
-              {b.taxation.columns.map((c) => (
-                <span role="columnheader" key={c}>
+              <span role="columnheader">{labels.taxTenure}</span>
+              {b.taxation.columns.map((c, i) => (
+                <span role="columnheader" key={i}>
                   {c}
                 </span>
               ))}
             </div>
-            {b.taxation.rows.map((r) => (
-              <div className="aifx-tax-row" role="row" key={r.tenure}>
+            {b.taxation.rows.map((r, ri) => (
+              <div className="aifx-tax-row" role="row" key={`${ri}-${r.tenure}`}>
                 <span className="aifx-tax-tenure" role="rowheader">
                   <strong>{r.tenure}</strong>
                   <em>{r.full}</em>
@@ -221,20 +347,22 @@ function BranchDetail({ b }: { b: AifBranch }) {
               </div>
             ))}
           </div>
-          <p className="aifx-tax-note">{b.taxation.note}</p>
+          {b.taxation.note && <p className="aifx-tax-note">{b.taxation.note}</p>}
         </div>
       )}
 
       {/* Shortlisting */}
       <div className="aifx-block">
         <div className="fvblk-subhead">
-          <h3>Shortlisting parameters</h3>
+          <h3>{labels.shortlistTitle}</h3>
           <i aria-hidden="true" />
         </div>
         <ParameterExplorer
           items={b.parameters}
           label={`${b.label} shortlisting parameters`}
           idPrefix={`aif-${b.key}-shortlist`}
+          kicker={labels.shortlistKicker}
+          nextLabel={labels.shortlistNext}
         />
       </div>
 
@@ -243,9 +371,11 @@ function BranchDetail({ b }: { b: AifBranch }) {
         <div className="fvblk-subhead">
           <h3>{b.fundsTitle}</h3>
           <i aria-hidden="true" />
-          <span className="aifx-count">{pad(b.funds.length)} strategies</span>
+          <span className="aifx-count">
+            {pad(b.funds.length)} {labels.strategies}
+          </span>
         </div>
-        <FundList funds={b.funds} branchKey={b.key} />
+        <FundList funds={b.funds} branchKey={b.key} labels={labels} />
       </div>
     </div>
   );
@@ -254,9 +384,15 @@ function BranchDetail({ b }: { b: AifBranch }) {
 /* ── Root ────────────────────────────────────────────────────────────── */
 
 export default function AifFramework() {
+  const cms = useContent("product-aif");
+  const labels = aifLabels(cms);
+  const branches = [
+    branchFromCms(cms, "aifEquity", AIF_EQUITY),
+    branchFromCms(cms, "aifDebt", AIF_DEBT)
+  ];
   const [branchKey, setBranchKey] = useState<AifBranch["key"]>("equity");
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const branch = AIF_BRANCHES.find((b) => b.key === branchKey) || AIF_BRANCHES[0];
+  const branch = branches.find((b) => b.key === branchKey) || branches[0];
 
   /* Scroll-reveal. Reuses the site-wide observer GlobalUX exposes and falls
      back to a local one; re-runs on every branch switch because the detail
@@ -295,22 +431,19 @@ export default function AifFramework() {
         </span>
         <div className="container">
           <div className="sec-head reveal">
-            <div className="label">How AIFs are structured</div>
-            <h2 className="stitle">
-              <span>Two routes into </span>
-              <em>private markets.</em>
-            </h2>
-            <p className="sdesc">{AIF_INTRO}</p>
+            <div className="label">{labels.eyebrow}</div>
+            <h2 className="stitle">{renderAccented(labels.title)}</h2>
+            {labels.intro && <p className="sdesc">{labels.intro}</p>}
           </div>
 
           <div className="aifx-tree reveal">
             <div className="aifx-root">
               <span className="aifx-root-mark" aria-hidden="true">
-                AIF
+                {labels.rootMark}
               </span>
               <div className="aifx-root-copy">
-                <strong>Alternative Investment Funds</strong>
-                <span>SEBI-regulated, privately pooled, ₹1 Cr minimum</span>
+                <strong>{labels.rootTitle}</strong>
+                <span>{labels.rootSubtitle}</span>
               </div>
             </div>
 
@@ -322,7 +455,7 @@ export default function AifFramework() {
             </div>
 
             <div className="aifx-branches" role="tablist" aria-label="AIF type">
-              {AIF_BRANCHES.map((b) => (
+              {branches.map((b) => (
                 <button
                   key={b.key}
                   type="button"
@@ -336,7 +469,7 @@ export default function AifFramework() {
                   onKeyDown={(e) => {
                     if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
                     e.preventDefault();
-                    const other = AIF_BRANCHES.find((x) => x.key !== b.key);
+                    const other = branches.find((x) => x.key !== b.key);
                     if (other) {
                       setBranchKey(other.key);
                       document
@@ -349,12 +482,12 @@ export default function AifFramework() {
                   <span className="aifx-branch-top">
                     <span className="aifx-branch-label">{b.label}</span>
                     <span className="aifx-branch-n">
-                      {pad(b.funds.length)} strategies
+                      {pad(b.funds.length)} {labels.strategies}
                     </span>
                   </span>
                   <span className="aifx-branch-tag">{b.tagline}</span>
                   <span className="aifx-branch-go" aria-hidden="true">
-                    {b.key === branchKey ? "Viewing" : "Explore"} →
+                    {b.key === branchKey ? labels.viewing : labels.explore} →
                   </span>
                 </button>
               ))}
@@ -385,7 +518,7 @@ export default function AifFramework() {
             <span className="aifx-detail-kicker">{branch.label}</span>
             <h2 className="stitle">{branch.title}</h2>
           </div>
-          <BranchDetail b={branch} />
+          <BranchDetail b={branch} labels={labels} />
         </div>
       </section>
     </div>

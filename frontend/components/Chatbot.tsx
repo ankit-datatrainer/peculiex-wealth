@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useContent } from "@/lib/content";
 
 type Message = {
   id: number;
@@ -9,25 +10,43 @@ type Message = {
   link?: string;
 };
 
-const KNOWLEDGE_BASE = [
-  { label: "Mutual Funds", keywords: ["mutual fund", "mutual firm"], text: "We offer expert guidance on Mutual Funds. Would you like to explore our Mutual Funds page?", link: "/products/mutual-funds" },
-  { label: "Unlisted Shares", keywords: ["unlisted", "pre-ipo", "pre ipo"], text: "Discover private market opportunities through our Unlisted Shares. Want to see available shares?", link: "/unlisted" },
-  { label: "PMS", keywords: ["pms", "portfolio management"], text: "We provide Portfolio Management Services (PMS). Check out our PMS page for more details.", link: "/products/pms" },
-  { label: "AIF", keywords: ["aif", "alternative investment"], text: "Explore Alternative Investment Funds (AIF) curated by our experts. View the AIF page?", link: "/products/aif" },
-  { label: "Fixed Deposits", keywords: ["fd", "fixed deposit"], text: "Secure your capital with Corporate FDs. Would you like to know more?", link: "/products/fixed-deposits" },
-  { label: "Bonds", keywords: ["bond"], text: "Invest in high-yield bonds for regular income. Visit our Bonds section?", link: "/products/bonds" },
-  { label: "Insurance", keywords: ["insurance", "health", "life"], text: "Protect your wealth and health with our Insurance products. Check them out here.", link: "/products/insurance" },
+type Topic = { label: string; keywords: string; text: string; link: string };
+
+/* Topics as they ship. The Content Manager (Global -> Ask AI chat assistant)
+   replaces the list wholesale; keywords are one comma-separated string so the
+   admin editor can hold them in a plain text input. */
+const KNOWLEDGE_BASE: Topic[] = [
+  { label: "Mutual Funds", keywords: "mutual fund, mutual firm", text: "We offer expert guidance on Mutual Funds. Would you like to explore our Mutual Funds page?", link: "/products/mutual-funds" },
+  { label: "Unlisted Shares", keywords: "unlisted, pre-ipo, pre ipo", text: "Discover private market opportunities through our Unlisted Shares. Want to see available shares?", link: "/unlisted" },
+  { label: "PMS", keywords: "pms, portfolio management", text: "We provide Portfolio Management Services (PMS). Check out our PMS page for more details.", link: "/products/pms" },
+  { label: "AIF", keywords: "aif, alternative investment", text: "Explore Alternative Investment Funds (AIF) curated by our experts. View the AIF page?", link: "/products/aif" },
+  { label: "Fixed Deposits", keywords: "fd, fixed deposit", text: "Secure your capital with Corporate FDs. Would you like to know more?", link: "/products/fixed-deposits" },
+  { label: "Bonds", keywords: "bond", text: "Invest in high-yield bonds for regular income. Visit our Bonds section?", link: "/products/bonds" },
+  { label: "Insurance", keywords: "insurance, health, life", text: "Protect your wealth and health with our Insurance products. Check them out here.", link: "/products/insurance" },
 ];
 
-const INITIAL_MESSAGE: Message = { 
-  id: 1, 
-  text: "Hi! I am the Finvoq AI Assistant. Ask me about our investment products like Mutual Funds, Unlisted Shares, Bonds, or PMS.", 
-  sender: "bot" 
-};
+const GREETING =
+  "Hi! I am the Finvoq AI Assistant. Ask me about our investment products like Mutual Funds, Unlisted Shares, Bonds, or PMS.";
+
+/* The greeting keeps a fixed id so it always renders the current CMS copy,
+   even from a transcript restored out of localStorage. */
+const INITIAL_ID = 1;
+const INITIAL_MESSAGE: Message = { id: INITIAL_ID, text: GREETING, sender: "bot" };
+
+const keywordsOf = (t: Topic) =>
+  (t.keywords || "")
+    .split(",")
+    .map((k) => k.trim().toLowerCase())
+    .filter(Boolean);
 
 export default function Chatbot() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
+  const cms = useContent("global");
+  const topics = cms
+    .list<Topic>("chatbot", "topics", KNOWLEDGE_BASE)
+    .filter((t) => t.label?.trim());
+  const greeting = cms.t("chatbot", "greeting", GREETING);
   const chatbotRootRef = useRef<HTMLDivElement | null>(null);
 
   // Dismiss on Escape or a click outside, matching the support widget.
@@ -85,10 +104,10 @@ export default function Chatbot() {
 
     // Simple predefined search
     let found = false;
-    for (const item of KNOWLEDGE_BASE) {
-      if (item.keywords.some(kw => query.includes(kw)) || query === item.label.toLowerCase()) {
+    for (const item of topics) {
+      if (keywordsOf(item).some(kw => query.includes(kw)) || query === item.label.toLowerCase()) {
         setTimeout(() => {
-          setMessages(prev => [...prev, { id: Date.now(), text: item.text, sender: "bot", link: item.link }]);
+          setMessages(prev => [...prev, { id: Date.now(), text: item.text, sender: "bot", link: item.link || undefined }]);
         }, 500);
         found = true;
         break;
@@ -97,7 +116,7 @@ export default function Chatbot() {
 
     if (!found) {
       setTimeout(() => {
-        setMessages(prev => [...prev, { id: Date.now(), text: "I'm sorry, I couldn't find information about that. Try asking about mutual funds, unlisted shares, or bonds.", sender: "bot" }]);
+        setMessages(prev => [...prev, { id: Date.now(), text: cms.t("chatbot", "fallbackReply", "I'm sorry, I couldn't find information about that. Try asking about mutual funds, unlisted shares, or bonds."), sender: "bot" }]);
       }, 500);
     }
   };
@@ -119,7 +138,7 @@ export default function Chatbot() {
       {open && (
         <div className="chatbot-window">
           <div className="chatbot-header">
-            <h4>Finvoq AI</h4>
+            <h4>{cms.t("chatbot", "title", "Finvoq AI")}</h4>
             <div style={{ display: "flex", gap: "8px" }}>
               <button 
                 className="chatbot-clear-btn" 
@@ -129,7 +148,7 @@ export default function Chatbot() {
                 onMouseEnter={(e) => e.currentTarget.style.color = "#fff"}
                 onMouseLeave={(e) => e.currentTarget.style.color = "rgba(255, 255, 255, 0.8)"}
               >
-                Clear
+                {cms.t("chatbot", "clearLabel", "Clear")}
               </button>
               <button className="chatbot-close-btn" onClick={() => setOpen(false)} aria-label="Close chat">✕</button>
             </div>
@@ -137,10 +156,12 @@ export default function Chatbot() {
           <div className="chatbot-messages" data-lenis-prevent>
             {messages.map((m) => (
               <div key={m.id} className={`chatbot-message ${m.sender}`}>
-                <p className="chatbot-msg-text">{m.text}</p>
+                <p className="chatbot-msg-text">
+                  {m.id === INITIAL_ID && m.sender === "bot" ? greeting : m.text}
+                </p>
                 {m.link && (
                   <button className="chatbot-link-btn" onClick={() => handleLinkClick(m.link!)}>
-                    Explore Option →
+                    {cms.t("chatbot", "linkLabel", "Explore Option →")}
                   </button>
                 )}
               </div>
@@ -150,7 +171,7 @@ export default function Chatbot() {
           {/* Capped and scrollable on phones (see responsive/chrome.css), so it
               needs the Lenis opt-out the transcript above already carries. */}
           <div className="chatbot-options" data-lenis-prevent>
-            {KNOWLEDGE_BASE.map(item => (
+            {topics.map(item => (
               <button 
                 key={item.label} 
                 className="chatbot-option-pill"
@@ -166,7 +187,7 @@ export default function Chatbot() {
       {!open && (
         <button className="chatbot-toggle" onClick={() => setOpen(true)} aria-label="Open AI Chat">
           <span className="chatbot-toggle-icon">✨</span>
-          <span className="chatbot-toggle-text">Ask AI</span>
+          <span className="chatbot-toggle-text">{cms.t("chatbot", "toggleLabel", "Ask AI")}</span>
         </button>
       )}
     </div>

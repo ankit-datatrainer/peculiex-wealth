@@ -15,11 +15,12 @@ const QUESTIONS: Q[] = [
   { id: "retention", group: "Centricity", label: "Proactive reviews & retention efforts" }
 ];
 
+/** Score band; `key` names the CMS field that labels it. */
 function band(score: number) {
-  if (score >= 80) return { label: "Excellent", color: "#16a34a" };
-  if (score >= 60) return { label: "Strong", color: "#0ea5e9" };
-  if (score >= 40) return { label: "Developing", color: "#f59e0b" };
-  return { label: "Needs work", color: "#dc2626" };
+  if (score >= 80) return { key: "bandExcellent", label: "Excellent", color: "#16a34a" };
+  if (score >= 60) return { key: "bandStrong", label: "Strong", color: "#0ea5e9" };
+  if (score >= 40) return { key: "bandDeveloping", label: "Developing", color: "#f59e0b" };
+  return { key: "bandNeedsWork", label: "Needs work", color: "#dc2626" };
 }
 
 export default function Reckoner() {
@@ -85,12 +86,14 @@ export default function Reckoner() {
         <aside className="reckoner-result reveal">
           <div className="reckoner-score" style={{ borderColor: b.color }}>
             <span className="reckoner-score-num" style={{ color: b.color }}>{total}</span>
-            <span className="reckoner-score-of">/ 100</span>
-            <span className="reckoner-band" style={{ background: b.color }}>{b.label}</span>
+            <span className="reckoner-score-of">{cms.t("results", "scoreOf", "/ 100")}</span>
+            <span className="reckoner-band" style={{ background: b.color }}>
+              {cms.t("results", b.key, b.label)}
+            </span>
           </div>
           <ul className="reckoner-breakdown">
-            <li><span>Marcom score</span><b>{marcom}%</b></li>
-            <li><span>Centricity score</span><b>{centricity}%</b></li>
+            <li><span>{cms.t("results", "marcomScore", "Marcom score")}</span><b>{marcom}%</b></li>
+            <li><span>{cms.t("results", "centricityScore", "Centricity score")}</span><b>{centricity}%</b></li>
           </ul>
           <p className="reckoner-note">
             {resultNote}

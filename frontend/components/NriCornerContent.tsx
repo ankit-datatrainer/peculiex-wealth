@@ -69,7 +69,7 @@ export default function NriCornerContent() {
         page="nri"
         label="For Non-Resident Indians"
         title={<>Invest in India, <em>from anywhere.</em></>}
-        subtitle="Mutual funds, PMS, AIF, unlisted shares, bonds and Gift City offshore access, with repatriation-aware, FEMA-compliant routing for NRIs and OCIs."
+        subtitle="Mutual funds, PMS, AIF, unlisted shares, bonds and Gift City offshore access, with repatriation-aware, FEMA-compliant paperwork."
       />
 
       <section style={{ padding: "0 0 100px" }}>

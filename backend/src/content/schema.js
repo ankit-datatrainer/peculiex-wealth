@@ -45,6 +45,27 @@ const hero = (label, title, subtitle) => ({
   ]
 });
 
+/* One /legal/<slug> document: its header plus the full body as HTML. */
+const LEGAL_DEFAULTS = require("./legalDefaults");
+const legalDoc = (key, label, slug = key) => {
+  const d = LEGAL_DEFAULTS[slug];
+  return {
+    key,
+    label: `${label} (/legal/${slug})`,
+    fields: [
+      f("label", "Eyebrow label", "text", d.label),
+      f("title", "Heading", "text", d.title),
+      f("subtitle", "Sub-heading", "textarea", d.subtitle),
+      f("updated", "\"Last updated\" line", "text", d.updated),
+      f("body", "Page body (HTML)", "textarea", d.body, {
+        hint:
+          "HTML: <h2>/<h3> headings, <p> paragraphs, <ul>/<ol> with <li>, <strong>, <a href=\"…\">, <table>. " +
+          "{{registration}} is replaced with the AMFI registration line from Global → AMFI registration box."
+      })
+    ]
+  };
+};
+
 const PAGES = [
   /* ─────────────────────────── Home ─────────────────────────── */
   {
@@ -59,19 +80,22 @@ const PAGES = [
           f("titleA", "Headline (line 1)", "text", "Invest with clarity"),
           f("titleB", "Headline (line 2)", "text", "across every"),
           f("titleAccent", "Headline accent word", "text", "asset class."),
-          f("portrait", "Advisor portrait", "image", "/homeclone-portrait.jpg"),
           f("infinity", "Hero infinity mark (leave blank to use the drawn one)", "image", ""),
           f("linkLabel", "Left link text", "text", "Start investing"),
           f("linkHref", "Left link target", "url", "/get-started"),
-          f("ctaGhost", "Secondary button", "text", "Explore"),
-          f("ctaPrimary", "Primary button", "text", "Open Account"),
-          f("ctaPrimaryHref", "Primary button target", "url", "/signup"),
           f("stat1Value", "Hero Stat 1 Value", "text", "182cr+"),
           f("stat1Label", "Hero Stat 1 Label", "text", "Assets Managed"),
           f("stat2Value", "Hero Stat 2 Value", "text", "400+"),
           f("stat2Label", "Hero Stat 2 Label", "text", "Trusted Investors"),
           f("stat3Value", "Hero Stat 3 Value", "text", "0%"),
-          f("stat3Label", "Hero Stat 3 Label", "text", "Advisory Fee")
+          f("stat3Label", "Hero Stat 3 Label", "text", "Advisory Fee"),
+          f("stat4Value", "Hero Stat 4 Value (optional)", "text", "", {
+            hint: "Fill both the value and the label to show a fourth figure."
+          }),
+          f("stat4Label", "Hero Stat 4 Label (optional)", "text", ""),
+          f("trustBadgeBold", "Trust pill (bold part)", "text", "India's Multi-Asset Investment Gateway"),
+          f("trustBadgeText", "Trust pill (plain part)", "text", "SEBI-Registered"),
+          f("shareLabel", "Share button text", "text", "Share")
         ]
       },
       {
@@ -144,7 +168,20 @@ const PAGES = [
           f("rowOneValue", "Device row 1 value", "text", "Nifty 50 Index Fund"),
           f("rowTwoLabel", "Device row 2 label", "text", "SIP DATE"),
           f("rowTwoValue", "Device row 2 value", "text", "1st of every month"),
-          f("deviceCta", "Device button", "text", "DONE")
+          f("deviceCta", "Device button", "text", "DONE"),
+          {
+            key: "phoneDates",
+            label: "Phone chart date labels",
+            type: "list",
+            hint: "Shown left to right under the phone's chart. Four reads best.",
+            fields: [f("label", "Label", "text", "")],
+            default: [
+              { label: "SEP 25" },
+              { label: "DEC 25" },
+              { label: "MAR 26" },
+              { label: "JUN 26" }
+            ]
+          }
         ]
       },
       {
@@ -278,6 +315,19 @@ const PAGES = [
           }
         ]
       },
+      /* The cards themselves are the latest published posts (Blog manager);
+         only the band's own copy lives here. */
+      {
+        key: "blog",
+        label: "Blog preview",
+        fields: [
+          f("eyebrow", "Eyebrow", "text", "From Our Blog"),
+          f("title", "Heading", "text", "Insights & perspectives."),
+          f("linkLabel", "Link text", "text", "See more"),
+          f("linkHref", "Link target", "url", "/blog"),
+          f("readMore", "Card link text", "text", "Read more")
+        ]
+      },
       {
         key: "news",
         label: "News teasers",
@@ -349,7 +399,45 @@ const PAGES = [
             "Registration badge",
             "text",
             "AMFI Registered Mutual Fund Distributor — ARN-346787"
-          )
+          ),
+          f("emailPlaceholder", "Email box placeholder", "text", "you@email.com"),
+          f("sending", "Button text while sending", "text", "Sending…"),
+          f("subscribed", "Button text after signing up", "text", "Subscribed ✓"),
+          f("whatsappPrefix", "WhatsApp pill prefix", "text", "WhatsApp", {
+            hint: "Shown before the number from Global → WhatsApp chat."
+          }),
+          f(
+            "riskLead",
+            "Disclaimer (bold opening)",
+            "text",
+            "Investments in securities markets are subject to market risks."
+          ),
+          f(
+            "riskBody",
+            "Disclaimer (body)",
+            "textarea",
+            "Read all related documents carefully before investing. Past performance does not guarantee future returns.",
+            {
+              hint: "Followed by \"<company> is an <AMFI badge> (<ARN>).\" from Global → AMFI registration box."
+            }
+          ),
+          f("companyName", "Company name in the disclaimer", "text", "East Side Global"),
+          f(
+            "legalSummary",
+            "Risk factors toggle text",
+            "text",
+            "Full risk factors & commission disclosure"
+          ),
+          f(
+            "legalText",
+            "Risk factors & commission disclosure",
+            "textarea",
+            "Risk Factors: Investments in Mutual Funds are subject to Market Risks. Read all scheme related documents carefully before investing. Mutual Fund Schemes do not assure or guarantee any returns. Past performances of any Mutual Fund Scheme may or may not be sustained in future. There is no guarantee that the investment objective of any suggested scheme shall be achieved. We deal in Regular Plans only for Mutual Fund Schemes and earn a Trailing Commission on client investments. Disclosure for commission earnings is made to clients at the time of investment. Option of Direct Plan for every Mutual Fund Scheme is available to investors offering advantage of lower expense ratio. We are not entitled to earn any commission on Direct plans; hence we do not deal in Direct Plans."
+          ),
+          f("wordmark", "Oversized wordmark", "text", "Finvoq"),
+          f("copyright", "Copyright line (after the year)", "text", "East Side Global. All rights reserved."),
+          f("madeIn", "Location line", "text", "Crafted with care · Delhi, India"),
+          f("backToTop", "Back-to-top link", "text", "Back to top ↑")
         ]
       }
     ]
@@ -506,14 +594,10 @@ const PAGES = [
             "body",
             "Regulator description",
             "textarea",
-            "We work within the framework set by SEBI and AMFI (mutual fund distribution), RBI (banking rails), and IRDAI (insurance distribution). Disputes can be raised through our grievance redressal process, with escalation to the SEBI SCORES portal at every stage."
-          ),
-          f("credentialsHeading", "Credentials card heading", "text", "Our AMFI registration"),
-          f(
-            "credentialsIntro",
-            "Credentials card intro",
-            "textarea",
-            "Verify these against the AMFI register before you invest. We publish them in full because a distributor who will not show you their ARN is a distributor you should not be dealing with."
+            "We work within the framework set by SEBI and AMFI (mutual fund distribution), RBI (banking rails), and IRDAI (insurance distribution). Disputes can be raised through our grievance redressal process, with escalation to the SEBI SCORES portal at every stage.",
+            {
+              hint: "The \"Our AMFI registration\" box under this text is shared with /contact and is edited under Global → AMFI registration box."
+            }
           )
         ]
       },
@@ -705,6 +789,7 @@ const PAGES = [
               }
             ]
           },
+          f("applyLabel", "Apply link text (on every role card)", "text", "Apply →"),
           f("calloutText", "Footer callout text", "text", "Don't see a fit but think you'd add value? Email"),
           f("calloutEmail", "Contact email", "text", "info@finvoq.com"),
           f("calloutSub", "Callout sub-text", "text", "with what you'd want to build, and a link to your best work.")
@@ -1014,6 +1099,57 @@ const PAGES = [
       }
     ]
   },
+  /* One section per /legal/<slug> document. The body is plain HTML (the
+     defaults are the shipped pages verbatim, see legalDefaults.js). */
+  {
+    key: "legal",
+    label: "Legal pages",
+    path: "/legal/terms",
+    sections: [
+      legalDoc("terms", "Terms of Service"),
+      legalDoc("privacy", "Privacy Policy"),
+      legalDoc("riskDisclosure", "Risk Disclosure", "risk-disclosure"),
+      legalDoc("grievance", "Grievance Redressal"),
+      legalDoc("investorCharter", "Investor Charter", "investor-charter")
+    ]
+  },
+  /* Only the listing page's own copy; the cards are the posts in the Blog
+     manager. */
+  {
+    key: "blog",
+    label: "Blog listing",
+    path: "/blog",
+    sections: [
+      {
+        key: "header",
+        label: "Page header",
+        fields: [
+          f("eyebrow", "Eyebrow label", "text", "Finvoq Research & Insights"),
+          f("title", "Heading", "text", "Perspectives that shape wealth."),
+          f(
+            "subtitle",
+            "Sub-heading",
+            "textarea",
+            "Expert market commentary, multi-asset allocation strategies, and pre-IPO intelligence from SEBI-registered specialists."
+          )
+        ]
+      },
+      {
+        key: "listing",
+        label: "Filters & cards",
+        fields: [
+          f("allTopicsLabel", "\"All\" filter chip", "text", "All Topics"),
+          f("searchPlaceholder", "Search box placeholder", "text", "Search articles & tags…"),
+          f("emptyText", "No-results message", "text", "No blog posts found matching your filter."),
+          f("resetLabel", "Reset filters button", "text", "Reset Filters"),
+          f("readLabel", "Card link text", "text", "Read article"),
+          f("fallbackCategory", "Category badge when a post has none", "text", "Wealth Advisory"),
+          f("fallbackAuthor", "Author when a post has none", "text", "Finvoq Admin"),
+          f("fallbackImage", "Cover image when a post has none", "image", "/images/blogs/blog-1.jpg")
+        ]
+      }
+    ]
+  },
   {
     key: "reckoner",
     label: "Advisor Reckoner",
@@ -1058,7 +1194,14 @@ const PAGES = [
         key: "results",
         label: "Results note",
         fields: [
-          f("note", "Summary explanation note", "textarea", "The reckoner blends your marketing-communication and client-centricity ratings into a single readiness score. Use it to spot the weakest lever and prioritise where to invest next.")
+          f("note", "Summary explanation note", "textarea", "The reckoner blends your marketing-communication and client-centricity ratings into a single readiness score. Use it to spot the weakest lever and prioritise where to invest next."),
+          f("scoreOf", "Score suffix", "text", "/ 100"),
+          f("bandExcellent", "Band: 80 and above", "text", "Excellent"),
+          f("bandStrong", "Band: 60 to 79", "text", "Strong"),
+          f("bandDeveloping", "Band: 40 to 59", "text", "Developing"),
+          f("bandNeedsWork", "Band: below 40", "text", "Needs work"),
+          f("marcomScore", "Breakdown: group 1", "text", "Marcom score"),
+          f("centricityScore", "Breakdown: group 2", "text", "Centricity score")
         ]
       }
     ]
@@ -1121,6 +1264,56 @@ const PAGES = [
               }
             ]
           }
+        ]
+      },
+      {
+        key: "form",
+        label: "Interest form fields",
+        fields: [
+          f("nameLabel", "Name label", "text", "Full Name"),
+          f("namePlaceholder", "Name placeholder", "text", "Your full name"),
+          f("emailLabel", "Email label", "text", "Email"),
+          f("emailPlaceholder", "Email placeholder", "text", "you@email.com"),
+          f("phoneLabel", "Phone label", "text", "Phone"),
+          f("phonePlaceholder", "Phone placeholder", "text", "+91 ..."),
+          f("interestLabel", "Interest label", "text", "Interest"),
+          {
+            key: "interests",
+            label: "Interest options",
+            type: "list",
+            hint: "The first option is pre-selected.",
+            fields: [f("label", "Option", "text", "")],
+            default: [
+              { label: "Demat Account" },
+              { label: "Mutual Funds" },
+              { label: "PMS / AIF" },
+              { label: "Unlisted Shares" },
+              { label: "Bonds" },
+              { label: "Insurance" }
+            ]
+          },
+          f("budgetLabel", "Budget label", "text", "Budget"),
+          {
+            key: "budgets",
+            label: "Budget options",
+            type: "list",
+            hint: "The first option is pre-selected.",
+            fields: [f("label", "Option", "text", "")],
+            default: [
+              { label: "Below ₹1 Lakh" },
+              { label: "₹1 Lakh to ₹10 Lakh" },
+              { label: "₹10 Lakh to ₹50 Lakh" },
+              { label: "₹50 Lakh to ₹1 Cr" },
+              { label: "₹1 Cr and above" }
+            ]
+          },
+          f("messageLabel", "Message label", "text", "Message (optional)"),
+          f("messagePlaceholder", "Message placeholder", "text", "Anything you'd like to share..."),
+          f("submittingLabel", "Button while sending", "text", "Submitting…"),
+          f("submittedLabel", "Button after sending", "text", "Submitted ✓"),
+          f("successText", "Success message", "text", "✓ Submitted. We'll reach out within 24 hours."),
+          f("requiredError", "Missing-details error", "text", "Please fill name, email, and phone."),
+          f("genericError", "Send-failed error (when the server gives no reason)", "text", "Something went wrong. Please try again.")
         ]
       }
     ]
@@ -1273,6 +1466,46 @@ const PAGES = [
             ]
           }
         ]
+      },
+      {
+        key: "headings",
+        label: "Section headings",
+        fields: [
+          f("includedLabel", "Highlights eyebrow", "text", "What's included"),
+          f("includedTitle", "Highlights heading", "text", "Everything handled, *end to end.*"),
+          f("processLabel", "Process eyebrow", "text", "Process"),
+          f("processTitle", "Process heading", "text", "How it *works.*"),
+          f("docsLabel", "Documents eyebrow", "text", "Documents"),
+          f("docsTitle", "Documents heading", "text", "What you'll *need.*"),
+          f("faqLabel", "FAQ eyebrow", "text", "FAQ"),
+          f("faqTitle", "FAQ heading", "text", "Common *questions.*")
+        ]
+      },
+      {
+        key: "form",
+        label: "Callback form",
+        fields: [
+          f("title", "Form heading & button", "text", "Request a callback"),
+          f("subtitle", "Form sub-heading", "text", "Share a few details and our team will get in touch."),
+          f("nameLabel", "Name label", "text", "Full name *"),
+          f("namePlaceholder", "Name placeholder", "text", "Your name"),
+          f("emailLabel", "Email label", "text", "Email *"),
+          f("emailPlaceholder", "Email placeholder", "text", "you@email.com"),
+          f("phoneLabel", "Phone label", "text", "Phone / WhatsApp *"),
+          f("phonePlaceholder", "Phone placeholder", "text", "+91 98765 43210"),
+          f("countryLabel", "Country label", "text", "Country of residence *"),
+          f("countryPlaceholder", "Country placeholder", "text", "e.g. UAE, USA, UK"),
+          f("messageLabel", "Message label", "text", "Anything specific we should know? (optional)"),
+          f("messagePlaceholder", "Message placeholder", "text", "Tell us a bit about your situation…"),
+          f("submitting", "Button while sending", "text", "Submitting…"),
+          f("consent", "Consent line", "textarea", "By submitting, you authorise us to contact you by call, email or WhatsApp."),
+          f("requiredError", "Missing-fields error", "text", "Please fill in all required fields."),
+          f("genericError", "Send-failure error", "text", "Something went wrong. Please try again."),
+          f("successTitle", "Success heading", "text", "Request received"),
+          f("successBody", "Success message", "textarea", "Thank you. Our NRI desk will reach out within one business day to discuss your {service} requirement.", {
+            hint: "{service} is replaced with this page's service name, in lower case."
+          })
+        ]
       }
     ]
   },
@@ -1358,6 +1591,46 @@ const PAGES = [
             ]
           }
         ]
+      },
+      {
+        key: "headings",
+        label: "Section headings",
+        fields: [
+          f("includedLabel", "Highlights eyebrow", "text", "What's included"),
+          f("includedTitle", "Highlights heading", "text", "Everything handled, *end to end.*"),
+          f("processLabel", "Process eyebrow", "text", "Process"),
+          f("processTitle", "Process heading", "text", "How it *works.*"),
+          f("docsLabel", "Documents eyebrow", "text", "Documents"),
+          f("docsTitle", "Documents heading", "text", "What you'll *need.*"),
+          f("faqLabel", "FAQ eyebrow", "text", "FAQ"),
+          f("faqTitle", "FAQ heading", "text", "Common *questions.*")
+        ]
+      },
+      {
+        key: "form",
+        label: "Callback form",
+        fields: [
+          f("title", "Form heading & button", "text", "Request a callback"),
+          f("subtitle", "Form sub-heading", "text", "Share a few details and our team will get in touch."),
+          f("nameLabel", "Name label", "text", "Full name *"),
+          f("namePlaceholder", "Name placeholder", "text", "Your name"),
+          f("emailLabel", "Email label", "text", "Email *"),
+          f("emailPlaceholder", "Email placeholder", "text", "you@email.com"),
+          f("phoneLabel", "Phone label", "text", "Phone / WhatsApp *"),
+          f("phonePlaceholder", "Phone placeholder", "text", "+91 98765 43210"),
+          f("countryLabel", "Country label", "text", "Country of residence *"),
+          f("countryPlaceholder", "Country placeholder", "text", "e.g. UAE, USA, UK"),
+          f("messageLabel", "Message label", "text", "Anything specific we should know? (optional)"),
+          f("messagePlaceholder", "Message placeholder", "text", "Tell us a bit about your situation…"),
+          f("submitting", "Button while sending", "text", "Submitting…"),
+          f("consent", "Consent line", "textarea", "By submitting, you authorise us to contact you by call, email or WhatsApp."),
+          f("requiredError", "Missing-fields error", "text", "Please fill in all required fields."),
+          f("genericError", "Send-failure error", "text", "Something went wrong. Please try again."),
+          f("successTitle", "Success heading", "text", "Request received"),
+          f("successBody", "Success message", "textarea", "Thank you. Our NRI desk will reach out within one business day to discuss your {service} requirement.", {
+            hint: "{service} is replaced with this page's service name, in lower case."
+          })
+        ]
       }
     ]
   },
@@ -1440,6 +1713,46 @@ const PAGES = [
             ]
           }
         ]
+      },
+      {
+        key: "headings",
+        label: "Section headings",
+        fields: [
+          f("includedLabel", "Highlights eyebrow", "text", "What's included"),
+          f("includedTitle", "Highlights heading", "text", "Everything handled, *end to end.*"),
+          f("processLabel", "Process eyebrow", "text", "Process"),
+          f("processTitle", "Process heading", "text", "How it *works.*"),
+          f("docsLabel", "Documents eyebrow", "text", "Documents"),
+          f("docsTitle", "Documents heading", "text", "What you'll *need.*"),
+          f("faqLabel", "FAQ eyebrow", "text", "FAQ"),
+          f("faqTitle", "FAQ heading", "text", "Common *questions.*")
+        ]
+      },
+      {
+        key: "form",
+        label: "Callback form",
+        fields: [
+          f("title", "Form heading & button", "text", "Request a callback"),
+          f("subtitle", "Form sub-heading", "text", "Share a few details and our team will get in touch."),
+          f("nameLabel", "Name label", "text", "Full name *"),
+          f("namePlaceholder", "Name placeholder", "text", "Your name"),
+          f("emailLabel", "Email label", "text", "Email *"),
+          f("emailPlaceholder", "Email placeholder", "text", "you@email.com"),
+          f("phoneLabel", "Phone label", "text", "Phone / WhatsApp *"),
+          f("phonePlaceholder", "Phone placeholder", "text", "+91 98765 43210"),
+          f("countryLabel", "Country label", "text", "Country of residence *"),
+          f("countryPlaceholder", "Country placeholder", "text", "e.g. UAE, USA, UK"),
+          f("messageLabel", "Message label", "text", "Anything specific we should know? (optional)"),
+          f("messagePlaceholder", "Message placeholder", "text", "Tell us a bit about your situation…"),
+          f("submitting", "Button while sending", "text", "Submitting…"),
+          f("consent", "Consent line", "textarea", "By submitting, you authorise us to contact you by call, email or WhatsApp."),
+          f("requiredError", "Missing-fields error", "text", "Please fill in all required fields."),
+          f("genericError", "Send-failure error", "text", "Something went wrong. Please try again."),
+          f("successTitle", "Success heading", "text", "Request received"),
+          f("successBody", "Success message", "textarea", "Thank you. Our NRI desk will reach out within one business day to discuss your {service} requirement.", {
+            hint: "{service} is replaced with this page's service name, in lower case."
+          })
+        ]
       }
     ]
   },
@@ -1473,11 +1786,57 @@ const PAGES = [
         ]
       },
       {
+        key: "labels",
+        label: "Sliders & results labels",
+        fields: [
+          f("amount", "Slider: monthly amount", "text", "Monthly SIP"),
+          f("rate", "Slider: return", "text", "Expected annual return"),
+          f("duration", "Slider: duration", "text", "Duration"),
+          f("yearOne", "Duration unit (1 year)", "text", "Year"),
+          f("yearMany", "Duration unit (2+ years)", "text", "Years"),
+          f("share", "Share button", "text", "Copy projection link"),
+          f("copied", "Share confirmation", "text", "Link copied to clipboard"),
+          f("shareError", "Share failure message", "text", "Could not create share link."),
+          f("donut", "Donut caption", "text", "TOTAL VALUE"),
+          f("invest", "Result: invested", "text", "You invest"),
+          f("returns", "Result: returns", "text", "Est. returns"),
+          f("total", "Result: total", "text", "Total value")
+        ]
+      },
+      {
         key: "graph",
         label: "Wealth progression chart",
         fields: [
           f("title", "Chart title", "text", "Wealth Progression"),
-          f("subtitle", "Chart subtitle template", "text", "Projected growth over duration")
+          f("subtitle", "Chart subtitle", "text", "Projected growth over {years} years", { hint: "{years} is replaced with the projection length." }),
+          f("tooltipYear", "Tooltip heading", "text", "Year {year}"),
+          f("tooltipTotal", "Tooltip: total", "text", "Total:"),
+          f("tooltipInvested", "Tooltip: invested", "text", "Invested:"),
+          f("axisYear", "Axis tick", "text", "Year {year}")
+        ]
+      },
+      {
+        key: "insights",
+        label: "Why SIP works & advisor box",
+        fields: [
+          f("label", "Eyebrow label", "text", "Insights"),
+          f("title", "Heading", "text", "Why SIP *works*", { hint: "Wrap the highlighted part in *asterisks* to accent it." }),
+          f("subtitle", "Sub-heading", "textarea", "Small monthly investments, compounded over time, build significant wealth."),
+          {
+            key: "items",
+            label: "Insight cards",
+            type: "list",
+            fields: [f("title", "Title", "text", ""), f("body", "Description", "textarea", "")],
+            default: [
+              { title: "Rupee cost averaging", body: "Buy more units when prices are low, fewer when high, automatically." },
+              { title: "Power of compounding", body: "Your returns earn returns. Time is the greatest multiplier." },
+              { title: "Start from ₹1,000", body: "No large lump sum needed. Begin with what's comfortable." }
+            ]
+          },
+          f("advisorTitle", "Advisor box heading", "text", "Need help choosing a fund?"),
+          f("advisorBody", "Advisor box text", "textarea", "Our advisors will match funds to your goals, risk profile, and timeline."),
+          f("advisorCta", "Advisor box button", "text", "Talk to Advisor"),
+          f("advisorHref", "Advisor box link", "url", "/get-started")
         ]
       }
     ]
@@ -1503,10 +1862,49 @@ const PAGES = [
         key: "actions",
         label: "Call to action buttons",
         fields: [
-          f("primaryLabel", "Primary button label", "text", "Invest Lumpsum"),
+          f("primaryLabel", "Primary button label", "text", "Start investing"),
           f("primaryHref", "Primary button link", "url", "/get-started"),
           f("secondaryLabel", "Secondary button label", "text", "Talk to Advisor"),
           f("secondaryHref", "Secondary button link", "url", "/get-started")
+        ]
+      },
+      {
+        key: "intro",
+        label: "Calculator heading (beside the sliders)",
+        fields: [
+          f("label", "Eyebrow label", "text", "Mutual Funds"),
+          f("title", "Heading", "text", "Lumpsum *compound calculator*", { hint: "Wrap the highlighted part in *asterisks* to accent it." }),
+          f("subtitle", "Sub-heading", "textarea", "See what a one-time investment grows to over time, at your assumed rate of return.")
+        ]
+      },
+      {
+        key: "labels",
+        label: "Sliders & results labels",
+        fields: [
+          f("amount", "Slider: amount", "text", "Lumpsum amount"),
+          f("rate", "Slider: return", "text", "Expected annual return"),
+          f("duration", "Slider: duration", "text", "Duration"),
+          f("yearOne", "Duration unit (1 year)", "text", "Year"),
+          f("yearMany", "Duration unit (2+ years)", "text", "Years"),
+          f("share", "Share button", "text", "Copy projection link"),
+          f("copied", "Share confirmation", "text", "Link copied to clipboard"),
+          f("shareError", "Share failure message", "text", "Could not create share link."),
+          f("donut", "Donut caption", "text", "TOTAL VALUE"),
+          f("invest", "Result: invested", "text", "You invest"),
+          f("returns", "Result: returns", "text", "Est. returns"),
+          f("total", "Result: total", "text", "Total value")
+        ]
+      },
+      {
+        key: "graph",
+        label: "Wealth progression chart",
+        fields: [
+          f("title", "Chart title", "text", "Wealth Progression"),
+          f("subtitle", "Chart subtitle", "text", "Projected growth over {years} years", { hint: "{years} is replaced with the projection length." }),
+          f("tooltipYear", "Tooltip heading", "text", "Year {year}"),
+          f("tooltipTotal", "Tooltip: total", "text", "Total:"),
+          f("tooltipInvested", "Tooltip: invested", "text", "Invested:"),
+          f("axisYear", "Axis tick", "text", "Year {year}")
         ]
       }
     ]
@@ -1527,6 +1925,55 @@ const PAGES = [
         fields: [
           f("note", "Disclaimer text", "textarea", "Illustrative projection only. Returns are assumed, not guaranteed — actual returns vary with market performance. This is not investment advice.")
         ]
+      },
+      {
+        key: "actions",
+        label: "Call to action buttons",
+        fields: [
+          f("primaryLabel", "Primary button label", "text", "Start this SIP"),
+          f("primaryHref", "Primary button link", "url", "/get-started"),
+          f("secondaryLabel", "Secondary button label", "text", "Talk to Advisor"),
+          f("secondaryHref", "Secondary button link", "url", "/get-started")
+        ]
+      },
+      {
+        key: "intro",
+        label: "Calculator heading (beside the sliders)",
+        fields: [
+          f("label", "Eyebrow label", "text", "Goal Planner"),
+          f("title", "Heading", "text", "Reach your *target corpus*", { hint: "Wrap the highlighted part in *asterisks* to accent it." }),
+          f("subtitle", "Sub-heading", "textarea", "Tell us your goal and time horizon. We work backward to the monthly SIP you need.")
+        ]
+      },
+      {
+        key: "labels",
+        label: "Sliders & results labels",
+        fields: [
+          f("goal", "Slider: target corpus", "text", "Target corpus"),
+          f("horizon", "Slider: time horizon", "text", "Time horizon"),
+          f("rate", "Slider: return", "text", "Expected annual return"),
+          f("yearOne", "Duration unit (1 year)", "text", "Year"),
+          f("yearMany", "Duration unit (2+ years)", "text", "Years"),
+          f("share", "Share button", "text", "Copy projection link"),
+          f("copied", "Share confirmation", "text", "Link copied to clipboard"),
+          f("shareError", "Share failure message", "text", "Could not create share link."),
+          f("donut", "Donut caption", "text", "TARGET CORPUS"),
+          f("sip", "Result: required SIP", "text", "Required SIP / month"),
+          f("invest", "Result: invested", "text", "You invest"),
+          f("returns", "Result: returns", "text", "Est. returns")
+        ]
+      },
+      {
+        key: "graph",
+        label: "Wealth progression chart",
+        fields: [
+          f("title", "Chart title", "text", "Wealth Progression"),
+          f("subtitle", "Chart subtitle", "text", "Projected growth over {years} years", { hint: "{years} is replaced with the projection length." }),
+          f("tooltipYear", "Tooltip heading", "text", "Year {year}"),
+          f("tooltipTotal", "Tooltip: total", "text", "Total:"),
+          f("tooltipInvested", "Tooltip: invested", "text", "Invested:"),
+          f("axisYear", "Axis tick", "text", "Year {year}")
+        ]
       }
     ]
   },
@@ -1545,6 +1992,54 @@ const PAGES = [
         label: "Projection disclaimer & notes",
         fields: [
           f("note", "Disclaimer text", "textarea", "Illustrative projection only. Returns are assumed, not guaranteed — actual returns vary with market performance. This is not investment advice.")
+        ]
+      },
+      {
+        key: "actions",
+        label: "Call to action buttons",
+        fields: [
+          f("primaryLabel", "Primary button label", "text", "Start this SIP"),
+          f("primaryHref", "Primary button link", "url", "/get-started"),
+          f("secondaryLabel", "Secondary button label", "text", "Talk to Advisor"),
+          f("secondaryHref", "Secondary button link", "url", "/get-started")
+        ]
+      },
+      {
+        key: "intro",
+        label: "Calculator heading (beside the sliders)",
+        fields: [
+          f("label", "Eyebrow label", "text", "Retirement Planner"),
+          f("title", "Heading", "text", "Secure your *golden years*", { hint: "Wrap the highlighted part in *asterisks* to accent it." }),
+          f("subtitle", "Sub-heading", "textarea", "Calculate the corpus needed for retirement and the SIP required to get there.")
+        ]
+      },
+      {
+        key: "labels",
+        label: "Sliders & results labels",
+        fields: [
+          f("currentAge", "Slider: current age", "text", "Current Age"),
+          f("retireAge", "Slider: retirement age", "text", "Retirement Age"),
+          f("expenses", "Slider: monthly expenses", "text", "Current Monthly Expenses"),
+          f("ageUnit", "Age unit", "text", "Years"),
+          f("share", "Share button", "text", "Copy projection link"),
+          f("copied", "Share confirmation", "text", "Link copied to clipboard"),
+          f("shareError", "Share failure message", "text", "Could not create share link."),
+          f("donut", "Donut caption", "text", "REQUIRED CORPUS"),
+          f("sip", "Result: required SIP", "text", "Required SIP / month"),
+          f("invest", "Result: invested", "text", "You invest"),
+          f("returns", "Result: returns", "text", "Est. returns")
+        ]
+      },
+      {
+        key: "graph",
+        label: "Wealth progression chart",
+        fields: [
+          f("title", "Chart title", "text", "Wealth Progression"),
+          f("subtitle", "Chart subtitle", "text", "Projected growth over {years} years", { hint: "{years} is replaced with the projection length." }),
+          f("tooltipYear", "Tooltip heading", "text", "Year {year}"),
+          f("tooltipTotal", "Tooltip: total", "text", "Total:"),
+          f("tooltipInvested", "Tooltip: invested", "text", "Invested:"),
+          f("axisYear", "Axis tick", "text", "Year {year}")
         ]
       }
     ]
@@ -1565,19 +2060,56 @@ const PAGES = [
         fields: [
           f("note", "Disclaimer text", "textarea", "Illustrative projection only. Returns are assumed, not guaranteed — actual returns vary with market performance. This is not investment advice.")
         ]
+      },
+      {
+        key: "actions",
+        label: "Call to action buttons",
+        fields: [
+          f("primaryLabel", "Primary button label", "text", "Start this SIP"),
+          f("primaryHref", "Primary button link", "url", "/get-started"),
+          f("secondaryLabel", "Secondary button label", "text", "Talk to Advisor"),
+          f("secondaryHref", "Secondary button link", "url", "/get-started")
+        ]
+      },
+      {
+        key: "intro",
+        label: "Calculator heading (beside the sliders)",
+        fields: [
+          f("label", "Eyebrow label", "text", "Goal Planner"),
+          f("title", "Heading", "text", "Reach your *target corpus*", { hint: "Wrap the highlighted part in *asterisks* to accent it." }),
+          f("subtitle", "Sub-heading", "textarea", "Tell us your goal and time horizon. We work backward to the monthly SIP you need.")
+        ]
+      },
+      {
+        key: "labels",
+        label: "Sliders & results labels",
+        fields: [
+          f("goal", "Slider: target corpus", "text", "Target corpus"),
+          f("horizon", "Slider: time horizon", "text", "Time horizon"),
+          f("rate", "Slider: return", "text", "Expected annual return"),
+          f("yearOne", "Duration unit (1 year)", "text", "Year"),
+          f("yearMany", "Duration unit (2+ years)", "text", "Years"),
+          f("share", "Share button", "text", "Copy projection link"),
+          f("copied", "Share confirmation", "text", "Link copied to clipboard"),
+          f("shareError", "Share failure message", "text", "Could not create share link."),
+          f("donut", "Donut caption", "text", "TARGET CORPUS"),
+          f("sip", "Result: required SIP", "text", "Required SIP / month"),
+          f("invest", "Result: invested", "text", "You invest"),
+          f("returns", "Result: returns", "text", "Est. returns")
+        ]
+      },
+      {
+        key: "graph",
+        label: "Wealth progression chart",
+        fields: [
+          f("title", "Chart title", "text", "Wealth Progression"),
+          f("subtitle", "Chart subtitle", "text", "Projected growth over {years} years", { hint: "{years} is replaced with the projection length." }),
+          f("tooltipYear", "Tooltip heading", "text", "Year {year}"),
+          f("tooltipTotal", "Tooltip: total", "text", "Total:"),
+          f("tooltipInvested", "Tooltip: invested", "text", "Invested:"),
+          f("axisYear", "Axis tick", "text", "Year {year}")
+        ]
       }
-    ]
-  },
-  {
-    key: "products",
-    label: "Products index",
-    path: "/products",
-    sections: [
-      hero(
-        "Products",
-        "Every asset class, *one platform.*",
-        "Equities, mutual funds, PMS, AIF, bonds, FDs, insurance and unlisted shares, each curated and advisory-led."
-      )
     ]
   },
 
@@ -1591,7 +2123,7 @@ const PAGES = [
 
   /** Build a full product-page schema entry. */
   ...(function buildProductPages() {
-    const productPage = (key, label, pagePath, { shortLabel, heroLabel, heroTitle, heroSubtitle, metrics, highlights, howItWorks, closing, ctaLabel, ctaHref, related, insuranceCards, pmsBenefits, pmsTaxRows, pmsShortlisting }) => ({
+    const productPage = (key, label, pagePath, { shortLabel, heroLabel, heroTitle, heroSubtitle, metrics, highlights, howItWorks, closing, ctaLabel, ctaHref, related, insuranceCards, pmsBenefits, pmsTaxRows, pmsShortlisting, extraSections }) => ({
       key,
       label,
       path: pagePath,
@@ -1657,6 +2189,8 @@ const PAGES = [
             f("sectionEyebrow", "Section eyebrow", "text", "Our diligence"),
             f("sectionTitle", "Section heading", "text", "Shortlisting *parameters.*"),
             f("sectionDesc", "Section description", "textarea", "Every strategy we put in front of a client clears the same eight-point screen. Select a parameter to see why it earns its place."),
+            f("kicker", "Detail panel kicker", "text", "Parameter"),
+            f("nextLabel", "Next-parameter button label", "text", "Next"),
             {
               key: "items",
               label: "Parameters",
@@ -1669,6 +2203,7 @@ const PAGES = [
             }
           ]
         }] : []),
+        ...(extraSections || []),
         {
           key: "highlights",
           label: "Highlight cards (What you get)",
@@ -1850,7 +2385,165 @@ const PAGES = [
         closing: "AIFs provide non-correlated returns but come with illiquidity and complexity. We guide you to the right structures.",
         ctaLabel: "Talk to a private-client advisor →",
         ctaHref: "/get-started",
-        related: ["pms", "mutual-funds"]
+        related: ["pms", "mutual-funds"],
+        /* AIF only: the explorer (AifFramework.tsx) that renders above the
+           factsheet. One section for the shared flow and labels, then one per
+           branch; the defaults mirror frontend/lib/aifContent.ts. */
+        extraSections: (function aifExplorer() {
+          const list = (key, label, fields, def) => ({ key, label, type: "list", fields, default: def });
+          const titleBody = [
+            f("title", "Title", "text", ""),
+            f("body", "Supporting line (optional)", "textarea", "")
+          ];
+          const fund = [
+            f("name", "Strategy name", "text", ""),
+            f("description", "Description", "textarea", ""),
+            f("tenure", "Tenure", "text", ""),
+            f("exitLoad", "Exit load (leave blank to hide)", "text", "")
+          ];
+          return [
+            {
+              key: "aifIntro",
+              label: "AIF explorer: intro & labels",
+              fields: [
+                f("eyebrow", "Section eyebrow", "text", "How AIFs are structured"),
+                f("title", "Section heading", "text", "Two routes into *private markets.*", {
+                  hint: "Wrap the highlighted part in *asterisks* to accent it."
+                }),
+                f("intro", "Intro paragraph", "textarea", "Alternate Investment Funds are funds established in India as a privately pooled investment vehicle in order to collect funds from sophisticated investors. AIFs invest in listed and unlisted asset classes but are more focused on investing in instruments other than conventional equity and debt."),
+                f("rootMark", "Root node badge", "text", "AIF"),
+                f("rootTitle", "Root node title", "text", "Alternative Investment Funds"),
+                f("rootSubtitle", "Root node line", "text", "SEBI-regulated, privately pooled, ₹1 Cr minimum"),
+                f("strategiesSuffix", "Strategy count suffix", "text", "strategies"),
+                f("viewingLabel", "Active branch label", "text", "Viewing"),
+                f("exploreLabel", "Inactive branch label", "text", "Explore"),
+                f("categoriesTitle", "Categories heading", "text", "Categories of an AIF"),
+                f("shortlistTitle", "Shortlisting heading", "text", "Shortlisting parameters"),
+                f("shortlistKicker", "Shortlisting detail kicker", "text", "Parameter"),
+                f("shortlistNext", "Next-parameter button label", "text", "Next"),
+                f("taxTenureHeader", "Taxation first column header", "text", "Tenure"),
+                f("tenureChip", "Strategy tenure chip", "text", "Tenure"),
+                f("exitLoadChip", "Strategy exit-load chip", "text", "Exit load")
+              ]
+            },
+            {
+              key: "aifEquity",
+              label: "AIF explorer: Equity branch",
+              fields: [
+                f("label", "Branch name", "text", "Equity AIF"),
+                f("tagline", "Branch tagline", "text", "Listed, pre-IPO and private equity strategies"),
+                f("title", "Branch heading", "text", "Equity Alternative Investment Funds"),
+                f("lead", "Lead paragraph", "textarea", "Alternate Investment Funds are funds established in India as a privately pooled investment vehicle in order to collect funds from sophisticated investors. AIFs invest in listed and unlisted asset classes but are more focused on investing in instruments other than conventional equity and debt."),
+                f("benefitsTitle", "Benefits heading", "text", "Benefits"),
+                list("benefits", "Benefits", titleBody, [
+                  { title: "High return potential", body: "" },
+                  { title: "Diversification", body: "" },
+                  { title: "Participation in alternate asset classes that cannot be accessed by mutual funds", body: "" }
+                ]),
+                f("featuresTitle", "Features heading", "text", "Key features"),
+                list("features", "Key features", titleBody, [
+                  { title: "Pooling of funds", body: "Capital is pooled for investing in an AIF." },
+                  { title: "Minimum investment", body: "₹1 Crore." },
+                  { title: "Taxation", body: "Pass-through taxation applies to Category II AIFs; Category III AIFs are taxed at the fund's end." },
+                  { title: "Lock-in period", body: "AIF Category I & II are close-ended with a tenure of 3–5 years. Category III can be either open-ended or close-ended." }
+                ]),
+                list("categories", "Categories (leave empty to hide)", [
+                  f("name", "Category", "text", ""),
+                  f("body", "Description", "textarea", "")
+                ], [
+                  { name: "Category I AIF", body: "AIFs that invest in startups, infrastructure, SMEs, social enterprises, etc." },
+                  { name: "Category II AIF", body: "Funds that do not use leverage or borrow for any reason other than to cover operational needs, and typically invest in private companies." },
+                  { name: "Category III AIF", body: "Funds that invest in specifically designed public equity portfolios, including listed or unlisted derivatives. These can be both open-ended and close-ended." }
+                ]),
+                f("taxTitle", "Taxation heading", "text", "Taxation"),
+                f("taxCol1", "Taxation column 2 header", "text", "AIF Cat I & II (Equity / Debt) — 24M"),
+                f("taxCol2", "Taxation column 3 header", "text", "AIF Cat III (Equity) — 12M"),
+                list("taxRows", "Taxation rows (leave empty to hide)", [
+                  f("tenure", "Tenure", "text", "", { hint: "e.g. LTCG, STCG" }),
+                  f("full", "Tenure expanded", "text", ""),
+                  f("cell1", "Column 2 value", "text", ""),
+                  f("cell2", "Column 3 value", "text", "")
+                ], [
+                  { tenure: "LTCG", full: "Long-term capital gains", cell1: "12.5% / Investor Slab", cell2: "12.50%" },
+                  { tenure: "STCG", full: "Short-term capital gains", cell1: "Investor Slab / Investor Slab", cell2: "20%" }
+                ]),
+                f("taxNote", "Taxation footnote", "textarea", "Indicative rates. The holding period shown in each column defines long term for that category. Cess and surcharge apply as per your income slab — please confirm the final position with your tax advisor."),
+                list("parameters", "Shortlisting parameters", [
+                  f("name", "Parameter", "text", ""),
+                  f("rationale", "Rationale", "textarea", "")
+                ], [
+                  { name: "Fund Manager Expertise & Proven Track Record", rationale: "Evaluate the fund manager's experience, particularly in managing equity portfolios, and their historical performance across various market cycles." },
+                  { name: "Fund House Track Record", rationale: "Assess the fund house's overall reputation, history in managing AUM, and its ability to execute strategy and manage risk effectively." },
+                  { name: "Historical Performance (for CAT II & CAT III AIFs)", rationale: "Examine the fund's past performance relative to benchmarks and peers, focusing on risk-adjusted returns and consistency across varying market conditions." },
+                  { name: "Unique Investment Strategy", rationale: "Understand the fund's investment philosophy (e.g. growth vs. value investing) and approach to stock selection, portfolio construction, and risk management." },
+                  { name: "Risk Management Framework", rationale: "Review the fund house's approach to managing market, sectoral, and individual stock risks, including hedging strategies, diversification, and volatility control." }
+                ]),
+                f("fundsTitle", "Strategies heading", "text", "AIF — Equity"),
+                list("funds", "Strategies", fund, [
+                  { name: "Carnelian Private Growth & Innovation Fund", description: "PGIF is a private equity strategy investing in high-growth businesses at key inflection points across Growth, Late Stage/Pre-IPO, and PIPE opportunities, aiming to maximise IRR, preserve capital, and enhance liquidity. It applies Carnelian's MAGIC framework, supported by CLEAR Forensic and Quality & Growth disciplines, to identify companies with accelerating earnings, strong fundamentals, and high-quality management.", tenure: "6 years 9 months", exitLoad: "Close ended" },
+                  { name: "InCred Growth Partners Fund II", description: "IGPF-II targets growth and late-stage, best-in-class privately owned companies — referred to as “SUPER 8 companies” — that demonstrate strong potential for value creation and successful exit. These companies are characterized by their scale, with revenues above ₹500 crore; a unique and defensible competitive edge; positive EBITDA indicating profitability; clear exit visibility through a potential IPO within 2 to 4 years; and attractive relative positioning, either through lower valuations compared to listed peers or higher growth trajectories.", tenure: "6 years from initial close", exitLoad: "Close ended" },
+                  { name: "360 One Early-Stage Fund Series I", description: "The fund targets early-stage companies from Seed to Series A across Fintech, Consumer Tech, Deep Tech, and Defence sectors in India. It aims to build a portfolio of companies that have demonstrated product-market fit, deploying an average ticket size of INR 15–20 crore per investment and targeting a meaningful 10–20% ownership stake in each. The investment team combines experience with the broader ecosystem, bringing founder networks, institutional relationships, and platform support to every portfolio company.", tenure: "10 years from initial close", exitLoad: "Close ended" },
+                  { name: "Emkay Emerging Stars Fund VII", description: "The fund blends the proven Golden Decade Portfolio strategy with pre-IPO investment opportunities, allocating 70% to listed equities and 30% to high-quality unlisted pre-IPO companies. The listed portfolio is based on the E-QUAL framework and five structural growth themes, while the unlisted allocation targets emerging leaders, offering exposure to both established compounders and future market leaders.", tenure: "Open ended", exitLoad: "2% for redemption within 24 months from date of allotment against final drawdown; nil after." },
+                  { name: "Alchemy Long Term Ventures Fund 3", description: "The fund invests across listed (small to micro) and unlisted companies with a long-term, growth-oriented approach. It focuses on emerging structural growth themes such as Data Centres & AI, Defence, Semiconductors, Green Energy and Biotech, targeting high-growth opportunities positioned to drive India's next phase of economic expansion.", tenure: "4 years (+1) from first close", exitLoad: "Close ended" },
+                  { name: "Vedartha India Opportunities Fund", description: "This fund follows a contra investing strategy focused mainly on mid- and small-cap stocks. It aims to generate alpha by identifying fundamentally strong but currently undervalued, mispriced or out-of-favour companies caused by market cycles, investor sentiment, or behavioural biases. The portfolio will be concentrated in 25–30 stocks across 4–7 high-conviction value opportunities, with the goal of benefiting from future valuation re-rating as market perceptions improve.", tenure: "5 years (+1+1)", exitLoad: "Post lock-in — 2% (year 1), 1% (years 2 & 3), nil thereafter." },
+                  { name: "Carnelian Bharat Amritkaal Fund", description: "The fund is designed to leverage opportunities arising from 7 mega trends emerging across 5 sectors. The team believes in investing in “quality growth at a reasonable price” and in “risk diversification through forensic analysis”. A 25–30 stock portfolio (Quality Growth at Reasonable Price), benchmarked against the S&P BSE 500 Index.", tenure: "Open ended", exitLoad: "2% if within 12 months" },
+                  { name: "Buoyant Capital — Opportunities Strategy", description: "It aims to take concentrated bets for the long term, following an altering balance in the aggressiveness-to-defensiveness continuum, which is attained through diversification of cash flow streams, the choice between predictable vs. growing cash flow streams, and cash calls.", tenure: "Open ended", exitLoad: "Nil" },
+                  { name: "Motilal Oswal Founders Fund Series VII", description: "A growth-driven investment fund designed to leverage India's entrepreneurial spirit by backing founder-led companies with significant growth potential. It follows a structured investment approach, prioritizing high-quality, high-growth businesses that align with India's economic trajectory. The fund focuses on companies with strong leadership, market leadership, and favourable sectoral trends, fostering long-term value creation.", tenure: "9 years from first close, +2 years extension provision", exitLoad: "For all classes — 1% until 24 months, nil thereafter" }
+                ])
+              ]
+            },
+            {
+              key: "aifDebt",
+              label: "AIF explorer: Debt branch",
+              fields: [
+                f("label", "Branch name", "text", "Debt AIF"),
+                f("tagline", "Branch tagline", "text", "Secured credit and infrastructure income"),
+                f("title", "Branch heading", "text", "Debt Alternate Investment Funds"),
+                f("lead", "Lead paragraph", "textarea", "Debt AIFs are usually structured as Category II AIFs. They are closed-ended instruments which invest primarily in debt or debt securities of listed or unlisted investee companies, according to the stated objectives of the fund."),
+                f("benefitsTitle", "Benefits heading", "text", "Why one should invest in a Debt AIF"),
+                list("benefits", "Benefits", titleBody, [
+                  { title: "Diversification", body: "An AIF is a good option for portfolio diversification." },
+                  { title: "Volatility", body: "Most alternative investments are comparatively less volatile than stocks, which makes them a good choice for those looking for portfolio stability." },
+                  { title: "Better returns", body: "They offer significantly better returns in comparison to other traditional debt investments." },
+                  { title: "Passive income", body: "AIFs can be a good source of passive income for investors." }
+                ]),
+                f("featuresTitle", "Features heading", "text", "Features of a Debt AIF"),
+                list("features", "Key features", titleBody, [
+                  { title: "Lower-rated, higher-yielding credit", body: "Primarily invests in companies that have a lower credit rating and therefore higher yields." },
+                  { title: "Category II mandate", body: "Funds in Category II can invest only in units of other AIFs or in unlisted companies." },
+                  { title: "Corpus and ticket size", body: "A minimum ₹20 crore corpus is required to operate an AIF; the minimum investment cut-off is INR 1 crore." }
+                ]),
+                f("ringHub", "Feature ring centre", "text", "Features of Debt AIF"),
+                list("ringItems", "Feature ring items (leave empty to hide)", [
+                  f("text", "Feature", "text", "")
+                ], [
+                  { text: "Amount invested greater than ₹1 crore" },
+                  { text: "Locked in for a specific period" },
+                  { text: "Higher risk" },
+                  { text: "Credit rating usually AA and below" },
+                  { text: "Can invest in both listed and unlisted" },
+                  { text: "Not subject to restrictions such as sectoral exposure caps or sticking to one class of investments" }
+                ]),
+                list("parameters", "Shortlisting parameters", [
+                  f("name", "Parameter", "text", ""),
+                  f("rationale", "Rationale", "textarea", "")
+                ], [
+                  { name: "Fund Manager Expertise & Proven Track Record", rationale: "Assess the manager's experience in managing fixed-income and debt portfolios, along with a strong track record in credit analysis and interest rate management." },
+                  { name: "Credit Rating of Debt Instruments", rationale: "Review the credit ratings of the underlying debt instruments to ensure the fund maintains a balance of risk and return, with a focus on investment-grade securities." },
+                  { name: "Underlying Investments & Cash Flow Stability", rationale: "Evaluate the quality and diversification of the debt assets, along with their cash flow predictability and liquidity, particularly in adverse market conditions." },
+                  { name: "Fund House Track Record", rationale: "The fund house's experience in managing debt-focused funds, including its success in risk management, returns generation, and adherence to regulatory standards." },
+                  { name: "Unique Investment Strategy", rationale: "Analyze the fund house's approach to managing interest rate risk, credit risk, and liquidity, along with any proprietary strategies for selecting bonds or structured products." },
+                  { name: "Liquidity Management", rationale: "Review the fund's liquidity strategy, ensuring adequate flexibility for redemptions and risk mitigation in case of market volatility or credit downgrades." }
+                ]),
+                f("fundsTitle", "Strategies heading", "text", "AIF — Debt"),
+                list("funds", "Strategies", fund, [
+                  { name: "Mosaic Multiyield Fund Series II", description: "The fund invests in fully secured debt of 25–30 profitable companies in sectors like NBFCs, mid-income housing, rural finance, MSME lending, and vehicle finance, with strict selection, strong collateral, and the exclusion of high-risk assets for quality and risk control.", tenure: "~5 years", exitLoad: "" },
+                  { name: "Neo Infra Income Opportunities Fund II", description: "The fund follows a proven infrastructure strategy, allocating ~80% to operating solar and road assets with creditworthy counterparties, targeting ~20–21% annual returns. The remaining ~20% is invested in InvITs and opportunistic infrastructure segments, aiming for ~18–19% returns through pricing and access advantages.", tenure: "7 years", exitLoad: "" }
+                ])
+              ]
+            }
+          ];
+        })()
       }),
 
       productPage("product-bonds", "Product: Bonds & G-Sec", "/products/bonds", {
@@ -2048,6 +2741,32 @@ const PAGES = [
     ];
   })(),
 
+  /* The factsheet document card shown on every product page except PMS. */
+  {
+    key: "product-factsheet",
+    label: "Product: Factsheet card",
+    path: "/products/aif",
+    sections: [
+      {
+        key: "card",
+        label: "Factsheet card (all product pages)",
+        fields: [
+          f("eyebrow", "Section eyebrow", "text", "Documents"),
+          f("title", "Section heading", "text", "{product} *factsheet.*", {
+            hint: "{product} is replaced with the product name; wrap the accent in *asterisks*."
+          }),
+          f("badge", "Card badge", "text", "PDF Document"),
+          f("cardTitle", "Card title", "text", "{product} Factsheet"),
+          f("cardBody", "Card description", "textarea", "The latest {productLower} factsheet, curated by our research desk.", {
+            hint: "{productLower} is the product name in lower case."
+          }),
+          f("viewLabel", "View button", "text", "View factsheet"),
+          f("downloadLabel", "Download button", "text", "Download ↓")
+        ]
+      }
+    ]
+  },
+
   {
     key: "unlisted",
     label: "Unlisted Shares",
@@ -2083,6 +2802,123 @@ const PAGES = [
           f("label", "Button Text", "text", "Join our WhatsApp Community"),
           f("link", "WhatsApp Link", "url", "https://chat.whatsapp.com/Iw7tEFsgfEp74Vbl5MwE5J")
         ]
+      },
+      {
+        key: "listing",
+        label: "Listing: search, count & cards",
+        fields: [
+          f("searchPlaceholder", "Search box placeholder", "text", "Search by company name or sector..."),
+          f("countTemplate", "Result count", "text", "Showing {shown} of {total} companies", {
+            hint: "{shown} and {total} are replaced with the live numbers."
+          }),
+          f("statSector", "Card label: sector", "text", "Sector"),
+          f("statMinUnits", "Card label: minimum units", "text", "Minimum Units"),
+          f("statMarketCap", "Card label: market cap", "text", "Market Cap"),
+          f("statPe", "Card label: P/E", "text", "P/E(x)"),
+          f("investLabel", "Card button", "text", "Invest Now"),
+          f("emptyTemplate", "No-results message", "text", "No companies match \"{query}\". Try a different search.", {
+            hint: "{query} is replaced with what the visitor typed."
+          })
+        ]
+      },
+      {
+        key: "detail",
+        label: "Company detail page (/unlisted/…)",
+        fields: [
+          f("loading", "Loading heading", "text", "Loading…"),
+          f("notFoundTitle", "Not-found heading", "text", "Company not found"),
+          f("notFoundBody", "Not-found message", "textarea", "We couldn’t find that unlisted company. It may no longer be in our inventory."),
+          f("notFoundBack", "Not-found button", "text", "← Back to all unlisted shares"),
+          f("backLink", "Back link", "text", "← All unlisted shares"),
+          f("statPrice", "Stat label: price", "text", "Price / Share"),
+          f("statMinUnits", "Stat label: minimum units", "text", "Minimum Units"),
+          f("statSector", "Stat label: sector", "text", "Sector"),
+          f("statMarketCap", "Stat label: market cap", "text", "Market Cap"),
+          f("statPe", "Stat label: P/E", "text", "P/E (x)"),
+          f("aboutTitle", "About heading", "text", "About the opportunity"),
+          f("aboutBody", "About paragraph", "textarea", "{company} is available as an unlisted / pre-IPO holding through Finvoq’s private-markets desk. Shares settle via off-market transfer directly into your demat account, with transparent pricing, recent transaction history, and full compliance disclosures shared before purchase.", {
+            hint: "{company} is replaced with the company name."
+          }),
+          f("knowTitle", "Before-you-invest heading", "text", "What to know before you invest"),
+          {
+            key: "knowItems",
+            label: "Before-you-invest points",
+            type: "list",
+            fields: [f("text", "Point", "textarea", "")],
+            default: [
+              { text: "Unlisted shares are illiquid and may carry a lock-in of up to 6 months post-listing." },
+              { text: "Pricing reflects the latest available transaction and can move between funding rounds." },
+              { text: "Minimum ticket sizes and settlement timelines are confirmed on your diligence call." },
+              { text: "Capital gains, stamp duty and GST are computed and declared per SEBI norms." }
+            ]
+          },
+          f("ctaPrimary", "Primary button", "text", "Request a diligence call →"),
+          f("ctaPrimaryHref", "Primary button link", "url", "/get-started"),
+          f("ctaSecondary", "Factsheet button", "text", "Download factsheet ↓")
+        ]
+      }
+    ]
+  },
+  {
+    key: "resources-mf",
+    label: "Mutual Fund Resources",
+    path: "/resources/mutual-funds",
+    sections: [
+      hero(
+        "Resources",
+        "Mutual Fund Resources",
+        "Explore past performance, latest NAVs, scheme comparisons, and a suite of tools designed to help you invest smarter."
+      ),
+      {
+        key: "sidebar",
+        label: "Tool menu",
+        fields: [
+          f("title", "Sidebar heading", "text", "MF Resources"),
+          f("pastSip", "Menu: Past SIP Performance", "text", "Past SIP Performance"),
+          f("currentNfo", "Menu: Current NFOs", "text", "Current NFOs"),
+          f("latestNav", "Menu: Latest NAV", "text", "Latest NAV"),
+          f("factsheets", "Menu: Fund Factsheets", "text", "Fund Factsheets"),
+          f("performance", "Menu: MF Performance", "text", "MF Performance"),
+          f("comparison", "Menu: Scheme Comparison", "text", "Scheme Comparison"),
+          f("dividends", "Menu: Recent Announced Dividends", "text", "Recent Announced Dividends"),
+          f("swp", "Menu: SWP Calculator", "text", "SWP Calculator")
+        ]
+      },
+      {
+        key: "tools",
+        label: "Tool headings & intros",
+        fields: [
+          f("pastSipTitle", "Past SIP Performance: heading", "text", "Past SIP Performance"),
+          f("pastSipIntro", "Past SIP Performance: intro", "textarea", "Real historical NAV-based calculation. Pick any scheme and see how a SIP would have performed."),
+          f("currentNfoTitle", "Current NFOs: heading", "text", "Current NFOs"),
+          f("currentNfoIntro", "Current NFOs: intro", "textarea", "New Fund Offers open for subscription right now."),
+          f("latestNavTitle", "Latest NAV: heading", "text", "Latest NAV"),
+          f("latestNavIntro", "Latest NAV: intro", "textarea", "Live, real NAV data. Pick an AMC to see its schemes' latest published NAV."),
+          f("factsheetsTitle", "Fund Factsheets: heading", "text", "Fund Factsheets"),
+          f("factsheetsIntro", "Fund Factsheets: intro", "textarea", "A real, live quick-factsheet built from actual fund data, with a link to the official published PDF."),
+          f("performanceTitle", "MF Performance: heading", "text", "MF Performance"),
+          f("performanceIntro", "MF Performance: intro", "textarea", "Real trailing returns computed from historical NAV: 1M through 5Y, annualised beyond 1 year."),
+          f("comparisonTitle", "Scheme Comparison: heading", "text", "Scheme Comparison"),
+          f("comparisonIntro", "Scheme Comparison: intro", "textarea", "Compare two schemes' real trailing returns side by side."),
+          f("dividendsTitle", "Recent Announced Dividends: heading", "text", "Recent Announced Dividends"),
+          f("dividendsIntro", "Recent Announced Dividends: intro", "textarea", "Latest dividend / IDCW payouts declared by mutual fund schemes."),
+          f("swpTitle", "SWP Calculator: heading", "text", "SWP Calculator"),
+          f("swpIntro", "SWP Calculator: intro", "textarea", "Real historical NAV-based simulation of a Systematic Withdrawal Plan.")
+        ]
+      },
+      {
+        key: "emptyStates",
+        label: "NFO & dividend panels",
+        fields: [
+          f("nfoTitle", "NFO: heading", "text", "No live NFO feed connected yet"),
+          f("nfoBody", "NFO: text", "textarea", "New Fund Offers open and close on a rolling basis, so we don't publish unverified listings here. Our advisory desk tracks every {category} NFO currently open and can tell you the exact subscription window, minimum investment, and whether it fits your portfolio.", { hint: "{category} is the selected category, in lower case." }),
+          f("nfoCta", "NFO: button", "text", "Ask about current NFOs →"),
+          f("nfoHref", "NFO: button link", "url", "/get-started"),
+          f("divTitle", "Dividends: heading", "text", "No live dividend feed connected yet"),
+          f("divBody", "Dividends: text", "textarea", "Dividend/IDCW announcements are declared by AMCs on a rolling basis. Rather than show stale or unverified figures, our advisory desk can confirm the latest {category} scheme payouts and record dates for you directly.", { hint: "{category} is the selected category, in lower case." }),
+          f("divCta", "Dividends: button", "text", "Ask about recent dividends →"),
+          f("divHref", "Dividends: button link", "url", "/get-started")
+        ]
       }
     ]
   },
@@ -2095,7 +2931,33 @@ const PAGES = [
         "Markets",
         "Live BSE *prices.*",
         "Track every listed share with real-time quotes, charts and your own watchlist."
-      )
+      ),
+      {
+        key: "labels",
+        label: "Tabs, search & list labels",
+        fields: [
+          f("tabAll", "Tab: all stocks", "text", "All Stocks"),
+          f("tabGainers", "Tab: gainers", "text", "Top Gainers"),
+          f("tabLosers", "Tab: losers", "text", "Top Losers"),
+          f("searchPlaceholder", "Search box placeholder", "text", "Search stocks by name or symbol..."),
+          f("showing", "Result count", "text", "Showing {from}–{to} of {total} stocks", {
+            hint: "{from}, {to} and {total} are replaced with the live numbers."
+          }),
+          f("matching", "Result count search suffix", "text", "matching \"{query}\"", {
+            hint: "Appended while a search is active; {query} is the search text."
+          }),
+          f("noResults", "No search results", "text", "No stocks found for \"{query}\""),
+          f("noData", "No stocks available", "text", "No stocks available. Make sure FINNHUB_API_KEY is set in backend .env"),
+          f("noMovers", "No gainers / losers", "text", "No {tab} data available. Market may be closed.", {
+            hint: "{tab} becomes gainers or losers."
+          }),
+          f("exchange", "Exchange tag on each card", "text", "BSE"),
+          f("volumePrefix", "Volume prefix", "text", "Vol"),
+          f("prev", "Previous page button", "text", "← Prev"),
+          f("next", "Next page button", "text", "Next →"),
+          f("pageOf", "Page indicator", "text", "Page {page} of {pages}")
+        ]
+      }
     ]
   },
   {
@@ -2104,10 +2966,65 @@ const PAGES = [
     path: "/news",
     sections: [
       hero(
-        "News",
+        "Live Intelligence & Market Insights",
         "Markets, *decoded.*",
         "Company news, market moves and the context behind them."
-      )
+      ),
+      {
+        key: "blogs",
+        label: "From our blog",
+        fields: [
+          f("updated", "Feed freshness badge", "text", "Updated {time}", {
+            hint: "{time} becomes e.g. 5m ago."
+          }),
+          f("eyebrow", "Eyebrow", "text", "From Our Blog"),
+          f("title", "Heading", "text", "Finvoq Wealth Blogs & Market Perspectives"),
+          f("desc", "Description", "textarea", "In-depth analysis, asset allocation strategies, and actionable market intelligence."),
+          f("seeMore", "Top button", "text", "See more"),
+          f("seeMoreHref", "Blog link", "url", "/blog"),
+          f("authorFallback", "Author when none is set", "text", "Finvoq Admin"),
+          f("readTime", "Read-time tag", "text", "5 min read"),
+          f("readMore", "Card link", "text", "Read full article"),
+          f("bottomTitle", "Bottom bar heading", "text", "Want to explore more wealth strategies?"),
+          f("bottomBody", "Bottom bar text", "textarea", "Browse our complete archive of in-depth guides, pre-IPO breakdowns, and bond research."),
+          f("bottomCta", "Bottom bar button", "text", "See more blogs")
+        ]
+      },
+      {
+        key: "feed",
+        label: "Live news feed",
+        fields: [
+          f("eyebrow", "Eyebrow", "text", "Live Feed"),
+          f("title", "Heading", "text", "Real-Time Market News"),
+          f("desc", "Description", "textarea", "Latest breaking financial headlines, regulatory updates, and corporate developments across India."),
+          f("statStories", "Stat 1 label", "text", "Stories"),
+          f("statStoriesNote", "Stat 1 note", "text", "in the live feed"),
+          f("statPublishers", "Stat 2 label", "text", "Publishers"),
+          f("statPublishersNote", "Stat 2 note", "text", "Indian financial media"),
+          f("statToday", "Stat 3 label", "text", "Last 24 hours"),
+          f("statTodayNote", "Stat 3 note", "text", "new headlines"),
+          f("statRefresh", "Stat 4 label", "text", "Refresh"),
+          f("statRefreshValue", "Stat 4 value", "text", "5"),
+          f("statRefreshUnit", "Stat 4 unit", "text", "min"),
+          f("statRefreshNote", "Stat 4 note", "text", "automatic"),
+          f("searchPlaceholder", "Search box placeholder", "text", "Search headlines…"),
+          f("allSources", "All-sources chip", "text", "All"),
+          f("errorTitle", "Feed error heading", "text", "Couldn't load the news feed"),
+          f("errorBody", "Feed error text", "text", "The feed is temporarily unreachable. Please try again shortly."),
+          f("emptyTitle", "No-results heading", "text", "No stories match your filters"),
+          f("emptyBody", "No-results text", "text", "Try a different search term or clear the source filter."),
+          f("clearFilters", "Clear-filters button", "text", "Clear filters"),
+          f("readOn", "Story link", "text", "Read on {source} →", {
+            hint: "{source} is the publisher's name."
+          }),
+          f("loadMore", "Load-more button", "text", "Load more stories"),
+          f("showing", "Shown count", "text", "Showing {shown} of {total}"),
+          f("attribPrefix", "Attribution: before link", "text", "Headlines aggregated from"),
+          f("attribLink", "Attribution: link text", "text", "Zerodha Pulse"),
+          f("attribHref", "Attribution: link", "url", "https://pulse.zerodha.com/"),
+          f("attribSuffix", "Attribution: after link", "textarea", ". Every story links to the publisher that reported it, and all rights remain with them. Finvoq does not author or edit this coverage.")
+        ]
+      }
     ]
   },
   {
@@ -2213,7 +3130,71 @@ const PAGES = [
         label: "Contact form header",
         fields: [
           f("title", "Form title", "text", "Send us a message"),
-          f("subtitle", "Form subtitle", "textarea", "We reply within one working day.")
+          f("subtitle", "Form subtitle", "textarea", "We reply within one working day."),
+          f("nameLabel", "Name label", "text", "Your name"),
+          f("emailLabel", "Email label", "text", "Email"),
+          f("phoneLabel", "Phone label", "text", "Phone"),
+          f("phoneOptional", "Phone \"optional\" note", "text", "(optional)"),
+          f("topicLabel", "Topic label", "text", "What is this about?"),
+          {
+            key: "topics",
+            label: "Topic options",
+            type: "list",
+            hint: "The first topic is pre-selected. The chosen topic becomes the enquiry's subject.",
+            fields: [f("label", "Topic", "text", "")],
+            default: [
+              { label: "General enquiry" },
+              { label: "Mutual funds" },
+              { label: "PMS / AIF" },
+              { label: "Bonds & fixed income" },
+              { label: "Unlisted equity" },
+              { label: "NRI services" },
+              { label: "Existing investment" },
+              { label: "Grievance" }
+            ]
+          },
+          f("messageLabel", "Message label", "text", "Message"),
+          f("submitLabel", "Send button", "text", "Send message"),
+          f("sendingLabel", "Send button while sending", "text", "Sending…"),
+          f("privacyNote", "Note under the button", "text", "We use your details only to respond to this enquiry. We never sell your data."),
+          f(
+            "errorText",
+            "Send-failed message",
+            "textarea",
+            "Something went wrong sending that. Please try again, or email us directly using the address on this page."
+          ),
+          f("successTitle", "Thank-you heading", "text", "Thank you — we've got it."),
+          f(
+            "successBody",
+            "Thank-you message",
+            "textarea",
+            "A member of the team will reply within one working day. If it's urgent, call us on the number listed on this page during working hours."
+          ),
+          f("anotherLabel", "\"Send another\" link", "text", "Send another message")
+        ]
+      },
+      {
+        key: "routes",
+        label: "Contact cards (WhatsApp, phone, hours, office, social)",
+        fields: [
+          f("whatsappLabel", "WhatsApp card title", "text", "WhatsApp", {
+            hint: "The number itself is edited under Global → WhatsApp chat."
+          }),
+          f(
+            "whatsappNote",
+            "WhatsApp card note",
+            "textarea",
+            "Message us on WhatsApp for a quick answer — usually within the hour during working hours."
+          ),
+          f("phoneLabel", "Phone card title", "text", "Phone", {
+            hint: "The number and hours are edited under Global → Contact details."
+          }),
+          f("hoursLabel", "Working hours card title", "text", "Working hours"),
+          f("hoursNote", "Working hours card note", "textarea", "Messages sent outside these hours are answered the next working day."),
+          f("mapLinkLabel", "Office card map link", "text", "View on Google Maps →", {
+            hint: "The office card's title is \"Address label\" under Office location & Google Map."
+          }),
+          f("socialLabel", "Social card title", "text", "Follow us")
         ]
       },
       {
@@ -2240,9 +3221,14 @@ const PAGES = [
         fields: [
           f("eyebrow", "Eyebrow label", "text", "Headquarters"),
           f("title", "Section title", "text", "Visit Our Office"),
-          f("addressTitle", "Address label", "text", "Registered office"),
+          f("addressTitle", "Address label", "text", "Registered office", {
+            hint: "Title of the office card beside the form."
+          }),
           f("address", "Registered office address", "textarea", "B-5, Ashoka Chambers, G/F, Pusa Rd, Block A, Rajendra Park, Rajendra Place, New Delhi, Delhi, 110060"),
           f("landmark", "Landmark / Metro hint", "text", "Near Rajendra Place Metro Station (Blue Line) · Pusa Road"),
+          f("copyLabel", "Copy button", "text", "Copy Address"),
+          f("copiedLabel", "Copy button after copying", "text", "Address Copied!"),
+          f("mapButtonLabel", "Map button", "text", "Open in Google Maps"),
           f("mapUrl", "Google Map link", "url", "https://maps.google.com/?q=B-5,+Ashoka+Chambers,+G/F,+Pusa+Rd,+Block+A,+Rajendra+Park,+Rajendra+Place,+New+Delhi,+Delhi+110060"),
           f("mapEmbedUrl", "Google Map embed iframe URL", "url", "https://maps.google.com/maps?q=B-5,+Ashoka+Chambers,+G/F,+Pusa+Rd,+Block+A,+Rajendra+Park,+Rajendra+Place,+New+Delhi,+Delhi+110060&t=&z=16&ie=UTF8&iwloc=&output=embed")
         ]
@@ -2269,13 +3255,15 @@ const PAGES = [
             key: "items",
             label: "Top-level menu items",
             type: "list",
+            hint:
+              "An item with dropdown links below only opens its dropdown and never navigates, so its link target is ignored (use #).",
             fields: [
               f("label", "Label", "text", ""),
               f("href", "Link target", "url", "")
             ],
             default: [
               { label: "Watchlist", href: "/watchlist" },
-              { label: "Products", href: "/products" },
+              { label: "Products", href: "#" },
               { label: "Unlisted", href: "/unlisted" },
               { label: "NRI Corner", href: "/nri" },
               { label: "Calculators", href: "/calculator" },
@@ -2316,6 +3304,40 @@ const PAGES = [
           f("signupEnabled", "Show sign-up button", "select", "yes", {
             options: ["yes", "no"]
           })
+        ]
+      },
+      /* ── Product page gate ──
+         What a logged-out visitor sees on /products/<slug> in place of
+         everything below the hero. "{product}" is replaced with the product's
+         name, so one set of copy serves every product page. */
+      {
+        key: "productGate",
+        label: "Product pages — members-only gate",
+        fields: [
+          f("eyebrow", "Eyebrow label", "text", "Members only"),
+          f("headline", "Headline", "text", "Log in to see the full *{product}* briefing.", {
+            hint: 'Use {product} for the product name. Wrap the highlighted part in *asterisks*.'
+          }),
+          f(
+            "body",
+            "Reason line",
+            "textarea",
+            "Detailed factsheets, costs and how investing works are reserved for Finvoq members. It takes a minute and costs nothing."
+          ),
+          {
+            key: "bullets",
+            label: "What members unlock",
+            type: "list",
+            fields: [f("text", "Benefit", "text", "")],
+            default: [
+              { text: "Live factsheets, returns and portfolio data" },
+              { text: "Clear costs, fees and taxation, side by side" },
+              { text: "A step-by-step path to invest, with an advisor on call" }
+            ]
+          },
+          f("primaryLabel", "Primary button (log in)", "text", "Log in to view details"),
+          f("secondaryLabel", "Secondary button (sign up)", "text", "Create a free account"),
+          f("footnote", "Small print under the buttons", "text", "Free forever. No spam, no obligation to invest.")
         ]
       },
       /* The NRI item opens a bespoke two-column mega menu, so its contents
@@ -2390,6 +3412,9 @@ const PAGES = [
             "Hi Finvoq team! I'd like to know more about investing through your platform."
           ),
           f("buttonLabel", "Floating button label", "text", "Chat with us"),
+          f("fallbackLabel", "Button label when no number is set", "text", "Contact us", {
+            hint: "With no number the button links to /contact instead of WhatsApp."
+          }),
           f("enabled", "Show the floating button", "select", "yes", {
             options: ["yes", "no"]
           })
@@ -2456,7 +3481,188 @@ const PAGES = [
             "Curated insights from our research team, every Monday before markets open. No promotions, no spam, ever."
           ),
           f("copyright", "Copyright line", "text", "Finvoq Wealth Pvt. Ltd. All rights reserved."),
-          f("madeIn", "Location line", "text", "Crafted with care · Delhi, India")
+          f("madeIn", "Location line", "text", "Crafted with care · Delhi, India"),
+          f("newsletterPlaceholder", "Newsletter email placeholder", "text", "you@email.com"),
+          f("newsletterButton", "Newsletter button", "text", "Subscribe"),
+          f("newsletterSending", "Newsletter button while sending", "text", "Subscribing…"),
+          f("newsletterSubscribed", "Newsletter button after signing up", "text", "Subscribed ✓"),
+          f(
+            "newsletterSuccess",
+            "Newsletter confirmation message",
+            "text",
+            "✓ Subscribed. Look out for Monday's brief in your inbox."
+          ),
+          f("whatsappPrefix", "WhatsApp pill prefix", "text", "WhatsApp"),
+          f("callPrefix", "Phone pill prefix", "text", "Call"),
+          f(
+            "riskLead",
+            "Disclaimer (bold opening)",
+            "text",
+            "Investments in securities markets are subject to market risks."
+          ),
+          f(
+            "riskBody",
+            "Disclaimer (body)",
+            "textarea",
+            "Read all related documents carefully before investing. Past performance does not guarantee future returns.",
+            {
+              hint: "Followed by \"<company> is an <AMFI badge> (<ARN>).\" from the AMFI registration box below."
+            }
+          ),
+          f("companyName", "Company name in the disclaimer", "text", "East Side Global"),
+          f(
+            "legalSummary",
+            "Risk factors toggle text",
+            "text",
+            "Full risk factors & commission disclosure"
+          ),
+          f(
+            "legalText",
+            "Risk factors & commission disclosure",
+            "textarea",
+            "Risk Factors: Investments in Mutual Funds are subject to Market Risks. Read all scheme related documents carefully before investing. Mutual Fund Schemes do not assure or guarantee any returns. Past performances of any Mutual Fund Scheme may or may not be sustained in future. There is no guarantee that the investment objective of any suggested scheme shall be achieved. All existing and prospective investors are advised to check and evaluate the Exit loads and other cost structure (TER) applicable at the time of making the investment before finalizing on any investment decision for Mutual Funds schemes. We deal in Regular Plans only for Mutual Fund Schemes and earn a Trailing Commission on client investments. Disclosure For Commission earnings is made to clients at the time of investments. Option of Direct Plan for every Mutual Fund Scheme is available to investors offering advantage of lower expense ratio. We are not entitled to earn any commission on Direct plans. Hence we do not deal in Direct Plans."
+          ),
+          f("wordmark", "Oversized wordmark", "text", "Finvoq")
+        ]
+      },
+      {
+        key: "cookie",
+        label: "Cookie banner",
+        fields: [
+          f("title", "Heading", "text", "We use cookies to keep things working."),
+          f(
+            "body",
+            "Body (the policy link follows it)",
+            "textarea",
+            "Essential cookies run the platform. Analytics cookies help us improve the experience. Read how we use them in our"
+          ),
+          f("linkLabel", "Policy link text", "text", "privacy policy"),
+          f("linkHref", "Policy link target", "url", "/legal/privacy"),
+          f("declineLabel", "Decline button", "text", "Essential only"),
+          f("acceptLabel", "Accept button", "text", "Accept all")
+        ]
+      },
+      /* ── Chat assistant ──
+         The quick-reply topics double as the assistant's keyword table, so an
+         admin can add a topic without a deploy. Keywords are comma-separated
+         and matched case-insensitively anywhere in the visitor's message. */
+      {
+        key: "chatbot",
+        label: "Ask AI chat assistant",
+        fields: [
+          f("toggleLabel", "Launcher button", "text", "Ask AI"),
+          f("title", "Window title", "text", "Finvoq AI"),
+          f("clearLabel", "Clear button", "text", "Clear"),
+          f(
+            "greeting",
+            "Greeting message",
+            "textarea",
+            "Hi! I am the Finvoq AI Assistant. Ask me about our investment products like Mutual Funds, Unlisted Shares, Bonds, or PMS."
+          ),
+          f(
+            "fallbackReply",
+            "Reply when nothing matches",
+            "textarea",
+            "I'm sorry, I couldn't find information about that. Try asking about mutual funds, unlisted shares, or bonds."
+          ),
+          f("linkLabel", "Answer link button", "text", "Explore Option →"),
+          {
+            key: "topics",
+            label: "Topics (quick replies)",
+            type: "list",
+            fields: [
+              f("label", "Quick-reply label", "text", ""),
+              f("keywords", "Keywords (comma-separated)", "text", ""),
+              f("text", "Answer", "textarea", ""),
+              f("link", "Answer link target", "url", "")
+            ],
+            default: [
+              {
+                label: "Mutual Funds",
+                keywords: "mutual fund, mutual firm",
+                text: "We offer expert guidance on Mutual Funds. Would you like to explore our Mutual Funds page?",
+                link: "/products/mutual-funds"
+              },
+              {
+                label: "Unlisted Shares",
+                keywords: "unlisted, pre-ipo, pre ipo",
+                text: "Discover private market opportunities through our Unlisted Shares. Want to see available shares?",
+                link: "/unlisted"
+              },
+              {
+                label: "PMS",
+                keywords: "pms, portfolio management",
+                text: "We provide Portfolio Management Services (PMS). Check out our PMS page for more details.",
+                link: "/products/pms"
+              },
+              {
+                label: "AIF",
+                keywords: "aif, alternative investment",
+                text: "Explore Alternative Investment Funds (AIF) curated by our experts. View the AIF page?",
+                link: "/products/aif"
+              },
+              {
+                label: "Fixed Deposits",
+                keywords: "fd, fixed deposit",
+                text: "Secure your capital with Corporate FDs. Would you like to know more?",
+                link: "/products/fixed-deposits"
+              },
+              {
+                label: "Bonds",
+                keywords: "bond",
+                text: "Invest in high-yield bonds for regular income. Visit our Bonds section?",
+                link: "/products/bonds"
+              },
+              {
+                label: "Insurance",
+                keywords: "insurance, health, life",
+                text: "Protect your wealth and health with our Insurance products. Check them out here.",
+                link: "/products/insurance"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        key: "support",
+        label: "Support ticket widget",
+        fields: [
+          f("fabLabel", "Launcher button", "text", "Support"),
+          f("title", "Panel heading", "text", "Need help?"),
+          f("subtitle", "Panel sub-heading", "text", "Raise a ticket. We reply within a few hours."),
+          f("namePlaceholder", "Name placeholder", "text", "Your name"),
+          f("emailPlaceholder", "Email placeholder", "text", "Email"),
+          f("subjectPlaceholder", "Subject placeholder", "text", "Subject"),
+          f("messagePlaceholder", "Message placeholder", "text", "How can we help?"),
+          f("submitLabel", "Submit button", "text", "Submit ticket"),
+          f("sendingLabel", "Submit button while sending", "text", "Sending…"),
+          f("errorText", "Error message", "text", "Something went wrong. Please try again."),
+          f(
+            "successText",
+            "Confirmation message",
+            "textarea",
+            "Thanks! Your ticket is in. Our team will get back to you shortly."
+          ),
+          f("againLabel", "Raise-another button", "text", "Raise another")
+        ]
+      },
+      /* Copy for the partner band shared by every product page. The logo
+         sets themselves stay per product in components/PartnerLogos. */
+      {
+        key: "partnerBand",
+        label: "Product pages — partner band",
+        fields: [
+          f("title", "Heading", "textarea", "The Trusted Wealth Partner\nFor Growing Portfolios", {
+            hint: "A line break here becomes a line break on the page."
+          }),
+          f(
+            "body",
+            "Body",
+            "textarea",
+            "Access institutional-grade investment products through our partnerships with India’s leading asset managers and financial institutions."
+          ),
+          f("ctaLabel", "Button text", "text", "Book a Consultation"),
+          f("ctaHref", "Button target", "url", "/contact")
         ]
       },
       /* Four link columns, one list each. Kept as separate lists rather than
@@ -2541,6 +3747,59 @@ const PAGES = [
           f("mapUrl", "Google Map link", "url", "https://maps.google.com/?q=B-5,+Ashoka+Chambers,+G/F,+Pusa+Rd,+Block+A,+Rajendra+Park,+Rajendra+Place,+New+Delhi,+Delhi+110060"),
           f("mapEmbedUrl", "Google Map embed iframe URL", "url", "https://maps.google.com/maps?q=B-5,+Ashoka+Chambers,+G/F,+Pusa+Rd,+Block+A,+Rajendra+Park,+Rajendra+Place,+New+Delhi,+Delhi+110060&t=&z=16&ie=UTF8&iwloc=&output=embed")
         ]
+      },
+      /* ── AMFI registration ──
+         The "Our AMFI registration" box on /about and the registration card
+         on /contact, plus the ARN/EUIN quoted in both footers' disclaimers
+         and the grievance policy. Defaults mirror lib/siteFacts. */
+      {
+        key: "amfi",
+        label: "AMFI registration box",
+        fields: [
+          f("heading", "Box heading", "text", "Our AMFI registration", {
+            hint: "Shown on /about. The /contact card uses its own title (Contact → Regulatory card)."
+          }),
+          f(
+            "intro",
+            "Intro paragraph",
+            "textarea",
+            "Verify these against the AMFI register before you invest. We publish them in full because a distributor who will not show you their ARN is a distributor you should not be dealing with."
+          ),
+          f("badge", "Registration type badge", "text", "AMFI Registered Mutual Fund Distributor", {
+            hint: "Also used in the footer disclaimer: \"East Side Global is an <this text> (<ARN>)\"."
+          }),
+          {
+            key: "items",
+            label: "Registration details (label / value tiles)",
+            type: "list",
+            hint: "Rows with an empty value are hidden. Every row except \"Enrollment date\" is also listed in the footer's registration line.",
+            fields: [
+              f("label", "Label", "text", ""),
+              f("value", "Value", "text", "")
+            ],
+            default: [
+              { label: "AMFI Regn. No.", value: "ARN-346787" },
+              { label: "EUIN", value: "E660362" },
+              { label: "ARN validity", value: "01 Dec 2025 – 20 Nov 2028" },
+              { label: "Enrollment date", value: "24 Apr 2026" },
+              { label: "APRN code", value: "APRN08920" },
+              { label: "EUIN code", value: "E17644" }
+            ]
+          },
+          f(
+            "footnote",
+            "Footnote",
+            "textarea",
+            "EUIN helps AMFI trace the advice you received to the person who gave it. Quoting it on your transaction protects you in the event of any mis-selling dispute.",
+            { hint: "Shown on /about. The /contact card uses its own note (Contact → Regulatory card)." }
+          ),
+          f("arn", "ARN (quoted inline)", "text", "ARN-346787", {
+            hint: "Used in the footer disclaimers and the grievance policy. Keep it in step with the \"AMFI Regn. No.\" row above."
+          }),
+          f("euin", "EUIN (quoted inline)", "text", "E660362", {
+            hint: "Used in the grievance policy. Keep it in step with the \"EUIN\" row above."
+          })
+        ]
       }
     ]
   }
@@ -2564,6 +3823,19 @@ function defaultsFor(pageKey) {
   }
   return out;
 }
+
+/**
+ * Former defaults of fields that nothing rendered until their default was
+ * corrected to the copy the page actually shows. The editor saves every field
+ * of a page, so any page saved before the correction still carries the old,
+ * never-displayed value; treat it as "not edited" so wiring the field up does
+ * not suddenly change the live text. Keyed "page.section.field".
+ */
+const RETIRED_DEFAULTS = {
+  "news.hero.label": ["News"],
+  "calculator.graph.subtitle": ["Projected growth over duration"],
+  "calculator-lumpsum.actions.primaryLabel": ["Invest Lumpsum"]
+};
 
 /**
  * Merge saved overrides on top of the defaults, keeping only keys the schema
@@ -2593,7 +3865,9 @@ function merge(pageKey, saved) {
           return clean;
         });
       } else if (typeof v === "string") {
-        base[section.key][field.key] = v.trim() === "" ? field.default : v;
+        const retired = RETIRED_DEFAULTS[`${pageKey}.${section.key}.${field.key}`];
+        base[section.key][field.key] =
+          v.trim() === "" || (retired && retired.includes(v)) ? field.default : v;
       }
     }
   }

@@ -1,5 +1,9 @@
+"use client";
+
+import { Fragment } from "react";
 import { getCompanyLogo } from "@/lib/util";
 import Link from "next/link";
+import { useContent } from "@/lib/content";
 
 type Partner = { name: string; domain?: string; imgUrl?: string };
 
@@ -57,7 +61,16 @@ const SETS: Record<string, { title: string; partners: Partner[] }> = {
 
 export default function PartnerLogos({ productSlug }: { productSlug: string }) {
   const set = SETS[productSlug];
+  // Band copy is shared by every product page (Global -> Product pages —
+  // partner band); the logo sets above stay per product.
+  const cms = useContent("global");
   if (!set) return null;
+
+  const title = cms.t(
+    "partnerBand",
+    "title",
+    "The Trusted Wealth Partner\nFor Growing Portfolios"
+  );
 
   const topPartners = set.partners.slice(0, 7);
   const marqueePartners = set.partners.slice(7);
@@ -85,15 +98,24 @@ export default function PartnerLogos({ productSlug }: { productSlug: string }) {
 
         <div className="reveal" style={{ textAlign: 'center' }}>
           <h2 className="stitle">
-            The Trusted Wealth Partner <br /> For Growing Portfolios
+            {title.split("\n").map((line, i) => (
+              <Fragment key={i}>
+                {i > 0 && <br />}
+                {line}
+              </Fragment>
+            ))}
           </h2>
           <p className="sdesc" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-            Access institutional-grade investment products through our partnerships with India’s leading asset managers and financial institutions.
+            {cms.t(
+              "partnerBand",
+              "body",
+              "Access institutional-grade investment products through our partnerships with India’s leading asset managers and financial institutions."
+            )}
           </p>
           
           <div className="partner-cta" style={{ justifyContent: 'center' }}>
-            <Link href="/contact" className="btn-primary">
-              Book a Consultation
+            <Link href={cms.t("partnerBand", "ctaHref", "/contact")} className="btn-primary">
+              {cms.t("partnerBand", "ctaLabel", "Book a Consultation")}
             </Link>
           </div>
         </div>

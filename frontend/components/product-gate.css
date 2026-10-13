@@ -1,0 +1,394 @@
+/* ══════════════════════════════════════════════════════════════════════
+   Product page members-only gate (components/ProductGate.tsx)
+   Sits directly under the PageHero on /products/<slug> for logged-out
+   visitors. Everything reads from the theme tokens, so it follows light,
+   dark and — via the overrides at the bottom — the gold PMS/AIF dark page.
+   ══════════════════════════════════════════════════════════════════════ */
+
+.pgate {
+  padding: 8px 0 120px;
+  position: relative;
+}
+
+.pgate-stage {
+  position: relative;
+}
+
+/* ── Teaser: the blurred "content continues" impression ─────────────── */
+
+.pgate-teaser {
+  display: grid;
+  gap: 20px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.pgate .pgate-stage .pgate-teaser {
+  filter: blur(7px);
+  opacity: .9;
+  /* Fade out downwards without painting a colour, so it melts into any
+     page background — including the premium page's gradient. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 35%, transparent 92%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 35%, transparent 92%);
+  animation: pgate-fade .7s var(--ease-out) both;
+}
+
+.pgate-sk-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--color-divider);
+  border: 1px solid var(--color-divider);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.pgate-sk-metric {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 28px 24px;
+  background: var(--color-surface-2);
+}
+
+.pgate-sk-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.pgate-sk-card {
+  display: grid;
+  gap: 12px;
+  padding: 28px 26px;
+  border: 1px solid var(--color-divider);
+  border-radius: 18px;
+  background: var(--color-surface-2);
+}
+
+.pgate-sk-line {
+  display: block;
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-text) 10%, transparent);
+}
+
+.pgate-sk-value {
+  width: 56%;
+  height: 26px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--color-primary) 22%, transparent);
+}
+
+.pgate-sk-caption {
+  width: 38%;
+  height: 8px;
+}
+
+.pgate-sk-heading {
+  width: 62%;
+  height: 16px;
+  margin-bottom: 4px;
+  background: color-mix(in srgb, var(--color-text) 16%, transparent);
+}
+
+.pgate-sk-short {
+  width: 48%;
+}
+
+/* Loading variant: same shape, unblurred, with a soft sweep. */
+.pgate--loading {
+  padding-bottom: 80px;
+}
+
+.pgate-teaser.is-shimmer .pgate-sk-line {
+  background-image: linear-gradient(
+    100deg,
+    transparent 20%,
+    color-mix(in srgb, var(--color-surface) 70%, transparent) 50%,
+    transparent 80%
+  );
+  background-size: 220% 100%;
+  background-repeat: no-repeat;
+  animation: pgate-shimmer 1.4s ease-in-out infinite;
+}
+
+/* ── The card ───────────────────────────────────────────────────────── */
+
+.pgate-card {
+  position: relative;
+  z-index: 1;
+  width: min(640px, 100%);
+  margin: -150px auto 0;
+  padding: 44px 44px 36px;
+  text-align: center;
+  background:
+    radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--color-primary) 9%, transparent), transparent 70%),
+    var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  box-shadow:
+    0 1px 0 color-mix(in srgb, #fff 60%, transparent) inset,
+    0 30px 70px -20px rgba(15, 23, 42, .22),
+    0 10px 24px -12px rgba(15, 23, 42, .12);
+  animation: pgate-rise .75s var(--ease-out) .08s both;
+}
+
+.pgate-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 18px;
+  border-radius: 18px;
+  color: var(--color-primary-ink);
+  background: var(--color-primary-highlight);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 22%, transparent);
+}
+
+.pgate-badge svg {
+  width: 26px;
+  height: 26px;
+}
+
+.pgate-eyebrow {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--color-primary-ink);
+}
+
+.pgate-title {
+  margin: 0 auto 12px;
+  max-width: 30ch;
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 2.6vw, 2rem);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -.01em;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.pgate-title em {
+  font-style: normal;
+  color: var(--color-primary-ink);
+}
+
+.pgate-body {
+  margin: 0 auto 24px;
+  max-width: 48ch;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.pgate-benefits {
+  display: grid;
+  gap: 12px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 30px;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.pgate-benefits li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: var(--color-text);
+}
+
+.pgate-check {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border-radius: 50%;
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+}
+
+.pgate-check svg {
+  width: 13px;
+  height: 13px;
+}
+
+.pgate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.pgate-btn {
+  min-height: 48px;
+}
+
+.pgate-footnote {
+  margin: 16px 0 0;
+  font-size: 12.5px;
+  color: var(--color-text-faint);
+}
+
+/* ── Dark ───────────────────────────────────────────────────────────── */
+
+.dark .pgate-card {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, .04) inset,
+    0 30px 70px -20px rgba(0, 0, 0, .7);
+}
+
+/* ── Gold premium page (PMS / AIF, dark mode) ───────────────────────── */
+
+.dark .premium-product-page .pgate-card {
+  background:
+    radial-gradient(120% 70% at 50% 0%, rgba(212, 175, 55, .12), transparent 70%),
+    linear-gradient(180deg, #17171d, #101014);
+  border-color: rgba(212, 175, 55, .35);
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, .06),
+    0 30px 80px -24px rgba(0, 0, 0, .85),
+    0 0 60px -30px rgba(212, 175, 55, .35);
+}
+
+.dark .premium-product-page .pgate-badge {
+  color: #d4af37;
+  background: rgba(212, 175, 55, .1);
+  border-color: rgba(212, 175, 55, .35);
+}
+
+.dark .premium-product-page .pgate-eyebrow,
+.dark .premium-product-page .pgate-title em {
+  color: #d4af37;
+}
+
+.dark .premium-product-page .pgate-title {
+  color: #fff;
+}
+
+.dark .premium-product-page .pgate-body {
+  color: #d1d5db;
+}
+
+.dark .premium-product-page .pgate-check {
+  color: #000;
+  background: linear-gradient(135deg, #b8860b, #d4af37);
+}
+
+.dark .premium-product-page .pgate-sk-metric,
+.dark .premium-product-page .pgate-sk-card {
+  background: rgba(20, 20, 20, .8);
+}
+
+.dark .premium-product-page .pgate-sk-value {
+  background: rgba(212, 175, 55, .3);
+}
+
+.dark .premium-product-page .pgate .btn-ghost {
+  color: #fff;
+  border-color: rgba(212, 175, 55, .45);
+}
+
+.dark .premium-product-page .pgate .btn-ghost:hover {
+  color: #d4af37;
+  border-color: #d4af37;
+  background: rgba(212, 175, 55, .08);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .pgate-sk-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pgate-sk-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pgate-sk-cards .pgate-sk-card:nth-child(n + 2) {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .pgate {
+    padding-bottom: 80px;
+  }
+
+  .pgate-card {
+    margin-top: -120px;
+    padding: 32px 20px 26px;
+    border-radius: 20px;
+  }
+
+  .pgate-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+    margin-bottom: 14px;
+  }
+
+  .pgate-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pgate-btn {
+    width: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .pgate-sk-metric {
+    padding: 22px 14px;
+  }
+}
+
+/* ── Motion ─────────────────────────────────────────────────────────── */
+
+@keyframes pgate-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pgate-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pgate-shimmer {
+  from {
+    background-position: 120% 0;
+  }
+
+  to {
+    background-position: -120% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pgate-card,
+  .pgate .pgate-stage .pgate-teaser,
+  .pgate-teaser.is-shimmer .pgate-sk-line {
+    animation: none;
+  }
+}

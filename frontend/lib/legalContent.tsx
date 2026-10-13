@@ -1,4 +1,4 @@
-import { EUIN, REGISTRATION_LINE } from "./siteFacts";
+import { RegistrationLine } from "@/components/RegulatoryCredentials";
 
 export type LegalDoc = {
   slug: string;
@@ -8,6 +8,16 @@ export type LegalDoc = {
   updated: string;
   body: React.ReactNode;
 };
+
+/**
+ * Content Manager section for a slug on the "legal" page ("risk-disclosure"
+ * → "riskDisclosure"). The CMS defaults in backend/src/content/
+ * legalDefaults.js are these documents rendered to HTML, so if you change a
+ * body here, regenerate that file too or the site keeps the old copy.
+ */
+export function legalSection(slug: string): string {
+  return slug.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
+}
 
 export const LEGAL: Record<string, LegalDoc> = {
   terms: {
@@ -337,8 +347,7 @@ export const LEGAL: Record<string, LegalDoc> = {
             https://scores.sebi.gov.in/
           </a>
           . You'll need our registration details:{" "}
-          <strong>{REGISTRATION_LINE}</strong>
-          {EUIN ? <> (EUIN {EUIN})</> : null}.
+          <RegistrationLine />.
         </p>
 
         <h2>What information to include</h2>

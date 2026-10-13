@@ -15,7 +15,7 @@ export default function ReckonerPage() {
         page="reckoner"
         label="Advisor Toolkit"
         title={<>Marcom &amp; Centricity <em>Reckoner</em></>}
-        subtitle="Rate your marketing communication and client engagement across eight levers. Get an instant readiness score and see which area to strengthen first."
+        subtitle="Rate your marketing communication and client engagement across eight levers. Get an instant readiness score and a focused action list."
       />
       <Reckoner />
     </>

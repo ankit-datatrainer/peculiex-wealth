@@ -155,6 +155,8 @@ export default function PmsFramework() {
     "items",
     PARAMETERS
   );
+  const paramKicker = cms.t("pmsShortlisting", "kicker", "Parameter");
+  const paramNext = cms.t("pmsShortlisting", "nextLabel", "Next");
 
   /* Scroll-reveal: reuse the site-wide observer GlobalUX exposes, and fall
      back to a local one if this component ever mounts before it (or on a
@@ -201,7 +203,7 @@ export default function PmsFramework() {
             <div className="pmsb-grid">
               <ul className="pmsb-list reveal-stagger">
                 {benefits.map((b, i) => (
-                  <li className="pmsb-item reveal" key={b.title}>
+                  <li className="pmsb-item reveal" key={`${i}-${b.title}`}>
                     <span className="pmsb-rail" aria-hidden="true" />
                     <span className="pmsb-num" aria-hidden="true">
                       {pad(i)}
@@ -233,8 +235,8 @@ export default function PmsFramework() {
                       <span role="columnheader">{taxColTenure}</span>
                       <span role="columnheader">{taxColRate}</span>
                     </div>
-                    {taxRows.map((r) => (
-                      <div className="pmsb-tax-row" role="row" key={r.tenure}>
+                    {taxRows.map((r, i) => (
+                      <div className="pmsb-tax-row" role="row" key={`${i}-${r.tenure}`}>
                         <span role="cell">
                           <strong>{r.tenure}</strong>
                           {r.full && <em>{r.full}</em>}
@@ -273,7 +275,8 @@ export default function PmsFramework() {
               items={params}
               label="PMS shortlisting parameters"
               idPrefix="pms-shortlist"
-              kicker="Parameter"
+              kicker={paramKicker}
+              nextLabel={paramNext}
             />
           </div>
         </section>

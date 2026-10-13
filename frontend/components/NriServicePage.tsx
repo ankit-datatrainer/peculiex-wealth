@@ -2,7 +2,14 @@
 import { useState } from "react";
 import PageHero from "./PageHero";
 import NriServiceForm from "./NriServiceForm";
-import { useContent } from "@/lib/content";
+import { accent, useContent } from "@/lib/content";
+
+/** "How it *works.*" -> JSX with the <em> accent the design uses. */
+function renderAccented(text: string) {
+  return accent(text).map((part, i) =>
+    typeof part === "string" ? <span key={i}>{part}</span> : <em key={i}>{part.em}</em>
+  );
+}
 
 type Faq = { q: string; a: string };
 type Step = { title: string; body: string };
@@ -26,14 +33,18 @@ export default function NriServicePage({ content, page }: { content: NriServiceC
 
   const intro = cms.t("service", "intro", content.intro);
   const serviceName = cms.t("service", "serviceName", content.serviceName);
-  const cmsHighlights = cms.list<Highlight>("service", "highlights", []);
-  const highlights = cmsHighlights.length > 0 ? cmsHighlights : content.highlights;
-  const cmsSteps = cms.list<Step>("service", "steps", []);
-  const steps = cmsSteps.length > 0 ? cmsSteps : content.steps;
-  const cmsDocs = cms.list<{ text?: string }>("service", "documents", []);
-  const documents = cmsDocs.length > 0 ? cmsDocs.map((d: any) => d.text || String(d)) : content.documents;
-  const cmsFaqs = cms.list<Faq>("service", "faqs", []);
-  const faqs = cmsFaqs.length > 0 ? cmsFaqs : content.faqs;
+  const highlights = cms.list<Highlight>("service", "highlights", content.highlights);
+  const steps = cms.list<Step>("service", "steps", content.steps);
+  const documents = cms
+    .list<{ text: string }>(
+      "service",
+      "documents",
+      content.documents.map((text) => ({ text }))
+    )
+    .map((d) => d.text)
+    .filter(Boolean);
+  const faqs = cms.list<Faq>("service", "faqs", content.faqs);
+  const h = (field: string, fallback: string) => cms.t("headings", field, fallback);
 
   return (
     <>
@@ -50,29 +61,27 @@ export default function NriServicePage({ content, page }: { content: NriServiceC
           {/* Left: content */}
           <div className="nri-svc-content">
             <div className="sec-head reveal">
-              <div className="label">What's included</div>
+              <div className="label">{h("includedLabel", "What's included")}</div>
               <h2 className="stitle">
-                Everything handled, <em>end to end.</em>
+                {renderAccented(h("includedTitle", "Everything handled, *end to end.*"))}
               </h2>
             </div>
             <div className="nri-svc-highlights">
-              {highlights.map((h) => (
-                <article className="why-card why-card-static reveal" key={h.title} style={{ minHeight: "auto" }}>
-                  <h3>{h.title}</h3>
-                  <p>{h.body}</p>
+              {highlights.map((x, i) => (
+                <article className="why-card why-card-static reveal" key={`${i}-${x.title}`} style={{ minHeight: "auto" }}>
+                  <h3>{x.title}</h3>
+                  <p>{x.body}</p>
                 </article>
               ))}
             </div>
 
             <div className="sec-head reveal" style={{ marginTop: 56 }}>
-              <div className="label">Process</div>
-              <h2 className="stitle">
-                How it <em>works.</em>
-              </h2>
+              <div className="label">{h("processLabel", "Process")}</div>
+              <h2 className="stitle">{renderAccented(h("processTitle", "How it *works.*"))}</h2>
             </div>
             <ol className="steps" style={{ gridTemplateColumns: "1fr" }}>
               {steps.map((s, i) => (
-                <li className="reveal" key={s.title}>
+                <li className="reveal" key={`${i}-${s.title}`}>
                   <span className="step-no">{String(i + 1).padStart(2, "0")}</span>
                   <div>
                     <h4>{s.title}</h4>
@@ -83,26 +92,22 @@ export default function NriServicePage({ content, page }: { content: NriServiceC
             </ol>
 
             <div className="sec-head reveal" style={{ marginTop: 56 }}>
-              <div className="label">Documents</div>
-              <h2 className="stitle">
-                What you'll <em>need.</em>
-              </h2>
+              <div className="label">{h("docsLabel", "Documents")}</div>
+              <h2 className="stitle">{renderAccented(h("docsTitle", "What you'll *need.*"))}</h2>
             </div>
             <ul className="nri-svc-doc-list reveal">
-              {documents.map((d) => (
-                <li key={d}>{d}</li>
+              {documents.map((d, i) => (
+                <li key={`${i}-${d}`}>{d}</li>
               ))}
             </ul>
 
             <div className="sec-head reveal" style={{ marginTop: 56 }}>
-              <div className="label">FAQ</div>
-              <h2 className="stitle">
-                Common <em>questions.</em>
-              </h2>
+              <div className="label">{h("faqLabel", "FAQ")}</div>
+              <h2 className="stitle">{renderAccented(h("faqTitle", "Common *questions.*"))}</h2>
             </div>
             <ul className="faq-list">
               {faqs.map((f, i) => (
-                <li className="faq-item reveal" data-open={openFaq === i} key={f.q}>
+                <li className="faq-item reveal" data-open={openFaq === i} key={`${i}-${f.q}`}>
                   <button
                     className="faq-q"
                     type="button"
@@ -126,7 +131,7 @@ export default function NriServicePage({ content, page }: { content: NriServiceC
 
           {/* Right: sticky inquiry form */}
           <aside className="nri-svc-sidebar">
-            <NriServiceForm serviceName={serviceName} />
+            <NriServiceForm serviceName={serviceName} page={page} />
           </aside>
         </div>
       </section>

@@ -6,6 +6,11 @@
  * branch supplies the same shape, so the UI renders one code path twice and
  * only the branch-specific extras (equity's categories and taxation matrix,
  * debt's feature ring) are optional.
+ *
+ * These are the shipped defaults. The live copy is editable from the super
+ * admin (`product-aif` → `aifIntro` / `aifEquity` / `aifDebt` in
+ * backend/src/content/schema.js, whose defaults mirror this file verbatim);
+ * AifFramework falls back to the values here for anything not supplied.
  */
 
 export type AifFund = {

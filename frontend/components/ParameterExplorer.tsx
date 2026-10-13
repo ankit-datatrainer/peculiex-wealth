@@ -22,7 +22,8 @@ export default function ParameterExplorer({
   items,
   label,
   idPrefix,
-  kicker = "Parameter"
+  kicker = "Parameter",
+  nextLabel = "Next"
 }: {
   items: Parameter[];
   /** Accessible name for the tab list. */
@@ -30,6 +31,8 @@ export default function ParameterExplorer({
   /** Unique per instance — two explorers can share a page. */
   idPrefix: string;
   kicker?: string;
+  /** Label on the "next parameter" button. */
+  nextLabel?: string;
 }) {
   const [active, setActive] = useState(0);
   const railRef = useRef<HTMLDivElement | null>(null);
@@ -185,7 +188,7 @@ export default function ParameterExplorer({
             className="fvpe-next"
             onClick={() => setActive((idx + 1) % items.length)}
           >
-            <span className="fvpe-next-label">Next</span>
+            <span className="fvpe-next-label">{nextLabel}</span>
             <span className="fvpe-next-name">
               {items[(idx + 1) % items.length].name}
             </span>

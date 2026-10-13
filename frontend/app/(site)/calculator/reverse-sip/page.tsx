@@ -15,9 +15,9 @@ export default function ReverseSipPage() {
         page="calculator-reverse-sip"
         label="Reverse SIP Calculator"
         title={<>Enter your goal: get the <em>monthly SIP.</em></>}
-        subtitle="Type a target corpus (e.g. ₹1 Cr) and a time horizon (e.g. 10 years), and we work backward to the exact monthly SIP, total invested, and expected gains, all auto-calculated."
+        subtitle="Type a target corpus and a time horizon, and we work backward to the exact monthly investment."
       />
-      <GoalPlanner />
+      <GoalPlanner page="calculator-reverse-sip" />
     </>
   );
 }

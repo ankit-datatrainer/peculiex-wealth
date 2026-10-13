@@ -11,6 +11,22 @@ function heading(text: string) {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { fmtINR } from "@/lib/util";
 import { postJSON } from "@/lib/api";
+import { fill } from "@/lib/template";
+
+const INSIGHTS = [
+  {
+    title: "Rupee cost averaging",
+    body: "Buy more units when prices are low, fewer when high, automatically."
+  },
+  {
+    title: "Power of compounding",
+    body: "Your returns earn returns. Time is the greatest multiplier."
+  },
+  {
+    title: "Start from ₹1,000",
+    body: "No large lump sum needed. Begin with what's comfortable."
+  }
+];
 
 const C = 2 * Math.PI * 92; // donut circumference
 
@@ -39,6 +55,10 @@ function animateText(
 
 export default function Calculator() {
   const cms = useContent("calculator");
+  const l = (field: string, fallback: string) => cms.t("labels", field, fallback);
+  const g = (field: string, fallback: string) => cms.t("graph", field, fallback);
+  const ins = (field: string, fallback: string) => cms.t("insights", field, fallback);
+  const insights = cms.list("insights", "items", INSIGHTS);
   const [amt, setAmt] = useState(10000);
   const [rate, setRate] = useState(12);
   const [yr, setYr] = useState(10);
@@ -130,7 +150,7 @@ export default function Calculator() {
         // still shown below so it can be copied manually.
       }
     } catch (e: any) {
-      setShareErr(e?.message || "Could not create share link.");
+      setShareErr(e?.message || l("shareError", "Could not create share link."));
     }
   };
 
@@ -140,14 +160,20 @@ export default function Calculator() {
     <section id="calculator" className="calc-sec">
       <div className="container calc-grid">
         <div className="calc-left reveal">
-          <div className="label">{cms.t("hero", "label", "Mutual Funds")}</div>
-          <h2 className="stitle">{heading(cms.t("hero", "title", "Plan your *SIP returns*"))}</h2>
-          <p className="sdesc">{cms.t("hero", "subtitle", "Visualise how systematic investments compound over time.")}</p>
+          <div className="label">{cms.t("hero", "label", "Calculator")}</div>
+          <h2 className="stitle">{heading(cms.t("hero", "title", "SIP *calculator*"))}</h2>
+          <p className="sdesc">
+            {cms.t(
+              "hero",
+              "subtitle",
+              "See what a monthly investment can grow into, and adjust until the number feels right."
+            )}
+          </p>
 
           <div className="calc-card">
             <div className="slider-row">
               <div className="slider-head">
-                <span>Monthly SIP</span>
+                <span>{l("amount", "Monthly SIP")}</span>
                 <strong id="sipAmtLabel">{fmtINR(amt)}</strong>
               </div>
               <input
@@ -168,7 +194,7 @@ export default function Calculator() {
             </div>
             <div className="slider-row">
               <div className="slider-head">
-                <span>Expected annual return</span>
+                <span>{l("rate", "Expected annual return")}</span>
                 <strong id="sipRateLabel">{rate.toFixed(1)}%</strong>
               </div>
               <input
@@ -189,9 +215,9 @@ export default function Calculator() {
             </div>
             <div className="slider-row">
               <div className="slider-head">
-                <span>Duration</span>
+                <span>{l("duration", "Duration")}</span>
                 <strong id="sipYrLabel">
-                  {yr} {yr === 1 ? "Year" : "Years"}
+                  {yr} {yr === 1 ? l("yearOne", "Year") : l("yearMany", "Years")}
                 </strong>
               </div>
               <input
@@ -218,11 +244,11 @@ export default function Calculator() {
                 className="btn btn-outline"
                 data-magnetic
               >
-                Copy projection link
+                {l("share", "Copy projection link")}
               </button>
               {shareCopied && (
                 <span style={{ color: "var(--color-primary)", fontSize: "0.85rem" }}>
-                  Link copied to clipboard
+                  {l("copied", "Link copied to clipboard")}
                 </span>
               )}
               {shareUrl && (
@@ -306,25 +332,25 @@ export default function Calculator() {
                 fontSize="11"
                 letterSpacing="2"
               >
-                TOTAL VALUE
+                {l("donut", "TOTAL VALUE")}
               </text>
             </svg>
           </div>
           <div className="calc-stats">
             <div className="cs-row">
-              <span className="dotI" style={{backgroundColor: "var(--color-primary-highlight)"}}></span>You invest
+              <span className="dotI" style={{backgroundColor: "var(--color-primary-highlight)"}}></span>{l("invest", "You invest")}
               <strong id="sipInvested" ref={oInv as any}>
                 {fmtINR(invested)}
               </strong>
             </div>
             <div className="cs-row">
-              <span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>Est. returns
+              <span className="dotG" style={{backgroundColor: "var(--color-primary)"}}></span>{l("returns", "Est. returns")}
               <strong id="sipReturns" ref={oRet as any}>
                 {"+" + fmtINR(gains)}
               </strong>
             </div>
             <div className="cs-row total">
-              <span></span>Total value
+              <span></span>{l("total", "Total value")}
               <strong id="sipTotal" ref={oTot as any}>
                 {fmtINR(total)}
               </strong>
@@ -376,9 +402,11 @@ export default function Calculator() {
       <div className="container calc-graph reveal" style={{ marginTop: "4rem" }}>
          <div className="graph-header" style={{ marginBottom: "2rem" }}>
             <h3 style={{ fontSize: "1.5rem", fontWeight: 500 }}>
-              {cms.t("graph", "title", "Wealth Progression")}
+              {g("title", "Wealth Progression")}
             </h3>
-            <p style={{ color: "var(--color-text-faint)", fontSize: "0.95rem" }}>Projected growth over {yr} years</p>
+            <p style={{ color: "var(--color-text-faint)", fontSize: "0.95rem" }}>
+              {fill(g("subtitle", "Projected growth over {years} years"), { years: yr })}
+            </p>
          </div>
          <div className="chart-container" style={{ position: "relative", width: "100%", overflow: "visible", display: "flex", alignItems: "flex-end", gap: "3px" }}>
             {projection.map((pt, i) => {
@@ -388,9 +416,9 @@ export default function Calculator() {
               return (
                 <div key={i} className="chart-bar-group" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", height: "100%" }}>
                   <div className="chart-tooltip">
-                     <strong>Year {pt.year}</strong><br/>
-                     Total: {fmtINR(pt.total)}<br/>
-                     Invested: {fmtINR(pt.invested)}
+                     <strong>{fill(g("tooltipYear", "Year {year}"), { year: pt.year })}</strong><br/>
+                     {g("tooltipTotal", "Total:")} {fmtINR(pt.total)}<br/>
+                     {g("tooltipInvested", "Invested:")} {fmtINR(pt.invested)}
                   </div>
                   <div 
                     className="bar-gains" 
@@ -405,46 +433,43 @@ export default function Calculator() {
             })}
          </div>
          <div className="chart-axis" style={{ display: "flex", justifyContent: "space-between", marginTop: "1rem", color: "var(--color-text-faint)", fontSize: "0.85rem", borderTop: "1px solid var(--color-border)", paddingTop: "0.5rem" }}>
-            <span>Year 1</span>
-            <span>Year {Math.floor(yr / 2) || 1}</span>
-            <span>Year {yr}</span>
+            <span>{fill(g("axisYear", "Year {year}"), { year: 1 })}</span>
+            <span>{fill(g("axisYear", "Year {year}"), { year: Math.floor(yr / 2) || 1 })}</span>
+            <span>{fill(g("axisYear", "Year {year}"), { year: yr })}</span>
          </div>
       </div>
 
       <div className="container insights-grid" style={{ marginTop: "5rem" }}>
         <div className="sec-head reveal" style={{ gridColumn: "1/-1" }}>
-          <div className="label">Insights</div>
+          <div className="label">{ins("label", "Insights")}</div>
           <h2 className="stitle">
-            Why SIP <em>works</em>
+            {accent(ins("title", "Why SIP *works*")).map((p, i) =>
+              typeof p === "string" ? p : <em key={i}>{p.em}</em>
+            )}
           </h2>
           <p className="sdesc">
-            Small monthly investments, compounded over time, build significant
-            wealth.
+            {ins(
+              "subtitle",
+              "Small monthly investments, compounded over time, build significant wealth."
+            )}
           </p>
         </div>
-        <div className="insight reveal" data-tilt>
-          <h4>Rupee cost averaging</h4>
-          <p>
-            Buy more units when prices are low, fewer when high,
-            automatically.
-          </p>
-        </div>
-        <div className="insight reveal" data-tilt>
-          <h4>Power of compounding</h4>
-          <p>Your returns earn returns. Time is the greatest multiplier.</p>
-        </div>
-        <div className="insight reveal" data-tilt>
-          <h4>Start from ₹1,000</h4>
-          <p>No large lump sum needed. Begin with what's comfortable.</p>
-        </div>
+        {insights.map((it, i) => (
+          <div className="insight reveal" data-tilt key={i}>
+            <h4>{it.title}</h4>
+            <p>{it.body}</p>
+          </div>
+        ))}
         <div className="advisor-cta reveal">
-          <h4>Need help choosing a fund?</h4>
+          <h4>{ins("advisorTitle", "Need help choosing a fund?")}</h4>
           <p>
-            Our advisors will match funds to your goals, risk profile, and
-            timeline.
+            {ins(
+              "advisorBody",
+              "Our advisors will match funds to your goals, risk profile, and timeline."
+            )}
           </p>
-          <a href="/get-started" className="btn btn-gold" data-magnetic>
-            Talk to Advisor
+          <a href={ins("advisorHref", "/get-started")} className="btn btn-gold" data-magnetic>
+            {ins("advisorCta", "Talk to Advisor")}
           </a>
         </div>
       </div>

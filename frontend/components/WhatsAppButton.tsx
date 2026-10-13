@@ -1,5 +1,6 @@
 "use client";
-import { useWhatsApp } from "@/lib/siteSettings";
+import { useContent } from "@/lib/content";
+import { GLOBAL_PAGE, whatsappFrom } from "@/lib/siteSettings";
 
 // Number, message and label are edited in the super-admin Content Manager
 // (Global → WhatsApp chat) and shared with the footer, /contact and the invest
@@ -15,19 +16,21 @@ const WA_ICON = (
 );
 
 export default function WhatsAppButton() {
-  const wa = useWhatsApp();
+  const cms = useContent(GLOBAL_PAGE);
+  const wa = whatsappFrom(cms);
   if (!wa.enabled) return null;
 
   const configured = Boolean(wa.href);
   const chatHref = configured ? wa.href : "/contact";
-  const label = configured ? wa.buttonLabel : "Contact us";
+  const fallbackLabel = cms.t("whatsapp", "fallbackLabel", "Contact us");
+  const label = configured ? wa.buttonLabel : fallbackLabel;
 
   return (
     <div className="whatsapp-root">
       <a
         href={chatHref}
         {...(configured ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-        aria-label={configured ? `${label} on WhatsApp` : "Contact us"}
+        aria-label={configured ? `${label} on WhatsApp` : fallbackLabel}
         className="whatsapp-btn"
         style={{ textDecoration: 'none' }}
       >

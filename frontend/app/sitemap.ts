@@ -24,7 +24,6 @@ const STATIC_ROUTES: Array<{
   { path: "/", priority: 1.0, changeFrequency: "daily" },
 
   // Money pages — the reason someone searches for us.
-  { path: "/products", priority: 0.9, changeFrequency: "weekly" },
   { path: "/unlisted", priority: 0.9, changeFrequency: "daily" },
   { path: "/markets", priority: 0.8, changeFrequency: "daily" },
   { path: "/get-started", priority: 0.8, changeFrequency: "monthly" },
@@ -204,7 +203,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
      - /news/<slug>: article pages are proxied third-party content; submitting
        someone else's article as our canonical URL is a duplicate-content risk.
      - /dashboard, /sip/*, /login, /signup, /admin/*: private or auth-only, and
-       disallowed in robots.txt. */
+       disallowed in robots.txt.
+     - /products: the overview page was retired and 308s to the home page;
+       the product pages themselves are listed below. */
 
   return [
     ...staticEntries,

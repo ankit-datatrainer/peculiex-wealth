@@ -3,58 +3,80 @@
  *
  * A distributor's ARN, EUIN and validity window are the facts an investor is
  * entitled to verify before dealing with us, so they get a deliberate,
- * readable block rather than being buried in small print. Every value comes
- * from lib/siteFacts, which is the single source of truth for the site.
+ * readable block rather than being buried in small print. Every word of it —
+ * heading, intro, badge, the label/value tiles and the footnote — is edited
+ * in the Content Manager under Global → AMFI registration box (lib/amfi), with
+ * lib/siteFacts as the fallback when the content API is unreachable.
  *
  * Two presentations, same data:
  *   panel  (default)  bordered card with a heading — used on /about
  *   inline            no chrome, sits inside an existing card — used on /contact
  */
 
-import {
-  REGULATORY_CREDENTIALS,
-  REGULATORY_LABEL
-} from "@/lib/siteFacts";
+"use client";
+
+import { useAmfi } from "@/lib/amfi";
 
 type Props = {
-  /** Heading shown above the grid. Pass null to omit it. */
+  /** Heading override. Omit to use the CMS heading; pass null to hide it. */
   heading?: string | null;
-  /** Explanatory line under the heading. Pass null to omit it. */
+  /**
+   * Intro override. Omit to use the CMS intro on the panel (the inline card
+   * has no room for it); pass null to hide it.
+   */
   intro?: string | null;
   /** `panel` draws its own card; `inline` inherits the parent's. */
   variant?: "panel" | "inline";
-  /** Footnote under the grid. Defaults to the EUIN explainer AMFI expects. */
+  /** Footnote override. Omit to use the CMS footnote; pass null to hide it. */
   note?: string | null;
 };
 
-const DEFAULT_NOTE =
-  "EUIN helps AMFI trace the advice you received to the person who gave it. Quoting it on your transaction protects you in the event of any mis-selling dispute.";
-
 export default function RegulatoryCredentials({
-  heading = "Our AMFI registration",
-  intro = null,
+  heading,
+  intro,
   variant = "panel",
-  note = DEFAULT_NOTE
+  note
 }: Props) {
-  if (REGULATORY_CREDENTIALS.length === 0) return null;
+  const amfi = useAmfi();
+  if (amfi.rows.length === 0) return null;
+
+  const shownHeading = heading === undefined ? amfi.heading : heading;
+  const shownIntro =
+    intro === undefined ? (variant === "panel" ? amfi.intro : null) : intro;
+  const shownNote = note === undefined ? amfi.footnote : note;
 
   return (
     <div className={`reg-creds reg-creds--${variant}`}>
-      {heading ? <h3 className="reg-creds__heading">{heading}</h3> : null}
-      {intro ? <p className="reg-creds__intro">{intro}</p> : null}
+      {shownHeading ? <h3 className="reg-creds__heading">{shownHeading}</h3> : null}
+      {shownIntro ? <p className="reg-creds__intro">{shownIntro}</p> : null}
 
-      <p className="reg-creds__role">{REGULATORY_LABEL}</p>
+      {amfi.badge ? <p className="reg-creds__role">{amfi.badge}</p> : null}
 
       <dl className="reg-creds__grid">
-        {REGULATORY_CREDENTIALS.map((row) => (
-          <div className="reg-creds__row" key={row.label}>
+        {amfi.rows.map((row, i) => (
+          <div className="reg-creds__row" key={`${row.label}-${i}`}>
             <dt>{row.label}</dt>
             <dd>{row.value}</dd>
           </div>
         ))}
       </dl>
 
-      {note ? <p className="reg-creds__note">{note}</p> : null}
+      {shownNote ? <p className="reg-creds__note">{shownNote}</p> : null}
     </div>
+  );
+}
+
+/**
+ * The registration as a sentence fragment — "<type> — <ARN> (EUIN …)" — for
+ * running text such as the grievance policy, which is otherwise static and
+ * server-rendered. Kept here so it can never drift from the box above.
+ */
+export function RegistrationLine() {
+  const amfi = useAmfi();
+  return (
+    <>
+      <strong>{amfi.registrationLine}</strong>
+      {amfi.euin ? <> (EUIN {amfi.euin})</> : null}
+    </>
   );
 }
