@@ -815,6 +815,18 @@ function coerceBlogInput(input, { partial = false } = {}) {
   if (input.published !== undefined) {
     out.published = Boolean(input.published);
   }
+  // Scheduled go-live time. null/"" clears it (publish now / draft).
+  if (input.publish_at !== undefined) {
+    if (!input.publish_at) {
+      out.publish_at = null;
+    } else {
+      const d = new Date(input.publish_at);
+      if (isNaN(d.getTime())) {
+        throw Object.assign(new Error("publish_at must be a valid date and time"), { status: 400 });
+      }
+      out.publish_at = d.toISOString();
+    }
+  }
   for (const k of ["robots_noindex", "robots_nofollow", "pillar_content"]) {
     if (input[k] !== undefined) out[k] = Boolean(input[k]);
   }
@@ -898,7 +910,8 @@ function fillBlogDefaults(row) {
     schema_type: row.schema_type || "BlogPosting",
     robots_noindex: Boolean(row.robots_noindex),
     robots_nofollow: Boolean(row.robots_nofollow),
-    pillar_content: Boolean(row.pillar_content)
+    pillar_content: Boolean(row.pillar_content),
+    publish_at: row.publish_at || null
   };
 }
 
@@ -947,6 +960,18 @@ async function getBlogById(id) {
     if (data) return fillBlogDefaults(data);
   } catch {}
   return fillBlogDefaults(map.get(id)) || null;
+}
+
+/**
+ * Whether readers may see a post right now: published, and either not
+ * scheduled or past its go-live time. Evaluated per request, so a scheduled
+ * post appears at its minute with no background job.
+ */
+function isBlogVisible(b, at = Date.now()) {
+  if (!b || !b.published) return false;
+  if (!b.publish_at) return true;
+  const t = new Date(b.publish_at).getTime();
+  return isNaN(t) || t <= at;
 }
 
 async function getBlogBySlug(slug) {
@@ -1004,7 +1029,17 @@ function unknownColumnFrom(error) {
   return m ? m[1] : null;
 }
 
+/* Dropping publish_at is the one silent fallback that is never safe: the
+   post is published=true, so without its go-live time it would appear on the
+   site immediately instead of at the scheduled minute. */
+const SCHEDULE_COLUMN_MISSING =
+  "Scheduling needs the publish_at column. Run backend/migrations/002-blog-schedule.sql " +
+  "in Supabase, then schedule again. Nothing was published.";
+
 async function writeBlogRow(run, row) {
+  if (row.publish_at && missingBlogColumns.has("publish_at")) {
+    return { error: new Error(SCHEDULE_COLUMN_MISSING), fatal: true };
+  }
   let payload = stripMissingBlogColumns(row);
   // Bounded: each pass can only ever remove one more key.
   for (let i = 0; i <= Object.keys(row).length; i++) {
@@ -1013,6 +1048,9 @@ async function writeBlogRow(run, row) {
     const col = unknownColumnFrom(error);
     if (!col || !(col in payload)) return { error };
     missingBlogColumns.add(col);
+    if (col === "publish_at" && payload.publish_at) {
+      return { error: new Error(SCHEDULE_COLUMN_MISSING), fatal: true };
+    }
     console.warn(
       `[blogs] live table has no "${col}" column - dropping it from writes. ` +
         "Apply backend/migrations/001-blog-seo-fields.sql to persist it."
@@ -1056,6 +1094,7 @@ async function createBlog(input) {
     robots_noindex: Boolean(fields.robots_noindex),
     robots_nofollow: Boolean(fields.robots_nofollow),
     pillar_content: Boolean(fields.pillar_content),
+    publish_at: fields.publish_at || null,
     created_at: fields.created_at || nowIso,
     updated_at: fields.updated_at || nowIso
   };
@@ -1064,11 +1103,13 @@ async function createBlog(input) {
   map.set(row.id, row);
 
   if (isLive()) {
+    let fatal = null;
     try {
-      const { data, error } = await writeBlogRow(
+      const { data, error, fatal: isFatal } = await writeBlogRow(
         (payload) => client.from(BLOGS_TABLE).insert(payload).select("*").single(),
         row
       );
+      if (isFatal) fatal = error;
       if (!error && data) {
         map.set(data.id, fillBlogDefaults(data));
         return fillBlogDefaults(data);
@@ -1078,6 +1119,12 @@ async function createBlog(input) {
       }
     } catch (err) {
       console.error("[createBlog] Supabase exception:", err);
+    }
+    // Thrown outside the try so the catch-all above cannot turn it into a
+    // silent in-memory "success".
+    if (fatal) {
+      map.delete(row.id);
+      throw Object.assign(new Error(fatal.message), { status: 409 });
     }
   }
   return fillBlogDefaults(row);
@@ -1099,12 +1146,14 @@ async function updateBlog(id, patch) {
   map.set(id, next);
 
   if (isLive()) {
+    let fatal = null;
     try {
-      const { data, error } = await writeBlogRow(
+      const { data, error, fatal: isFatal } = await writeBlogRow(
         (payload) =>
           client.from(BLOGS_TABLE).update(payload).eq("id", id).select("*").single(),
         fields
       );
+      if (isFatal) fatal = error;
       if (!error && data) {
         const filled = fillBlogDefaults(data);
         map.set(id, filled);
@@ -1115,6 +1164,11 @@ async function updateBlog(id, patch) {
       }
     } catch (err) {
       console.error("[updateBlog] Supabase exception:", err);
+    }
+    if (fatal) {
+      if (Object.keys(cur).length) map.set(id, cur);
+      else map.delete(id);
+      throw Object.assign(new Error(fatal.message), { status: 409 });
     }
   }
   return next;
@@ -1223,6 +1277,7 @@ module.exports = {
   countStocks,
   // blogs
   listBlogs,
+  isBlogVisible,
   getBlogById,
   getBlogBySlug,
   createBlog,

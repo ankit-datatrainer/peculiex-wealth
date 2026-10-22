@@ -331,6 +331,8 @@ export type AdminBlog = {
   robots_noindex?: boolean;
   robots_nofollow?: boolean;
   pillar_content?: boolean;
+  /** Scheduled go-live time (ISO). Set + published = scheduled. */
+  publish_at?: string | null;
   created_at?: string;
   updated_at?: string;
 };

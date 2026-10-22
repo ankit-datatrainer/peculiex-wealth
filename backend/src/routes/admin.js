@@ -542,6 +542,8 @@ const BlogCreateSchema = z.object({
   author: z.string().trim().max(120).optional().default("Finvoq"),
   category: z.string().trim().max(120).nullish(),
   published: z.boolean().optional().default(false),
+  // Go-live time for scheduled posts (ISO). null = publish now / not scheduled.
+  publish_at: z.string().trim().max(40).nullish(),
   position: z.coerce.number().nonnegative().optional().default(0),
 
   // Search appearance
@@ -594,8 +596,8 @@ router.post("/blogs", async (req, res, next) => {
     const item = await admin.createBlog(parsed.data);
     res.status(201).json({ item });
   } catch (err) {
-    if (err && err.status === 409) {
-      return res.status(409).json({ error: err.message });
+    if (err && (err.status === 409 || err.status === 400)) {
+      return res.status(err.status).json({ error: err.message });
     }
     next(err);
   }
@@ -615,8 +617,8 @@ router.patch("/blogs/:id", async (req, res, next) => {
     if (!updated) return res.status(404).json({ error: "Not found" });
     res.json({ item: updated });
   } catch (err) {
-    if (err && err.status === 409) {
-      return res.status(409).json({ error: err.message });
+    if (err && (err.status === 409 || err.status === 400)) {
+      return res.status(err.status).json({ error: err.message });
     }
     next(err);
   }

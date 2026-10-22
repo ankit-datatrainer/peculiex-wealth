@@ -13,6 +13,16 @@ import RichTextEditor from "@/components/admin/RichTextEditor";
 import MediaPicker, { resolveMediaUrl } from "@/components/admin/MediaPicker";
 import SeoPanel from "@/components/admin/SeoPanel";
 import { analyseSeo } from "@/lib/seoAnalysis";
+import PublishControls from "@/components/admin/PublishControls";
+import {
+  blogStatus,
+  formatSchedule,
+  formatScheduleShort,
+  fromLocalInput,
+  timeUntil,
+  toLocalInput,
+  type PublishMode
+} from "@/lib/blogSchedule";
 import {
   Search,
   Plus,
@@ -30,6 +40,7 @@ import {
   Monitor,
   Share2,
   Calendar,
+  CalendarClock,
   Save
 } from "lucide-react";
 
@@ -43,6 +54,10 @@ type FormState = {
   author: string;
   category: string;
   published: boolean;
+  /** Draft / publish now / schedule — drives `published` + `publish_at` on save. */
+  publish_mode: PublishMode;
+  /** datetime-local value for scheduling, "YYYY-MM-DDTHH:mm". */
+  schedule_at: string;
   position: number;
   article_date: string;
   meta_title: string;
@@ -103,6 +118,8 @@ const blank = (): FormState => ({
   author: "Finvoq Admin",
   category: "Wealth Advisory",
   published: true,
+  publish_mode: "now",
+  schedule_at: "",
   position: 0,
   article_date: getTodayDateStr(),
   meta_title: "",
@@ -139,7 +156,14 @@ export default function AdminBlogsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [filterPub, setFilterPub] = useState<"all" | "published" | "draft">("all");
+  const [filterPub, setFilterPub] = useState<"all" | "published" | "scheduled" | "draft">("all");
+  // Re-evaluates Live/Scheduled every 30s so a post flips to Live in the list
+  // at its go-live minute without a reload.
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = window.setInterval(() => setNow(Date.now()), 30000);
+    return () => window.clearInterval(t);
+  }, []);
   const [filterCat, setFilterCat] = useState("all");
 
   const [form, setForm] = useState<FormState>(blank());
@@ -185,8 +209,10 @@ export default function AdminBlogsPage() {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return items.filter((b) => {
-      if (filterPub === "published" && !b.published) return false;
-      if (filterPub === "draft" && b.published) return false;
+      const st = blogStatus(b, now);
+      if (filterPub === "published" && st !== "live") return false;
+      if (filterPub === "scheduled" && st !== "scheduled") return false;
+      if (filterPub === "draft" && st !== "draft") return false;
       if (filterCat !== "all" && b.category !== filterCat) return false;
       if (!q) return true;
       return (
@@ -197,7 +223,16 @@ export default function AdminBlogsPage() {
         (b.tags || []).some((t) => t.toLowerCase().includes(q))
       );
     });
-  }, [items, search, filterPub, filterCat]);
+  }, [items, search, filterPub, filterCat, now]);
+
+  /** Upcoming scheduled posts, soonest first. */
+  const scheduledQueue = useMemo(
+    () =>
+      items
+        .filter((b) => blogStatus(b, now) === "scheduled")
+        .sort((a, b) => new Date(a.publish_at!).getTime() - new Date(b.publish_at!).getTime()),
+    [items, now]
+  );
 
   const startCreate = () => {
     setForm(blank());
@@ -227,6 +262,9 @@ export default function AdminBlogsPage() {
       author: item.author || "Finvoq Admin",
       category: item.category || "Wealth Advisory",
       published: item.published,
+      publish_mode:
+        blogStatus(item) === "draft" ? "draft" : blogStatus(item) === "scheduled" ? "schedule" : "now",
+      schedule_at: blogStatus(item) === "scheduled" ? toLocalInput(item.publish_at) : "",
       position: item.position || 0,
       article_date: initialDate,
       meta_title: item.meta_title || "",
@@ -304,8 +342,28 @@ export default function AdminBlogsPage() {
     [report]
   );
 
+  /** Turns the chosen publish mode into stored fields, or an error message. */
+  const resolvePublishing = ():
+    | { published: boolean; publish_at: string | null }
+    | { error: string } => {
+    if (form.publish_mode === "draft") return { published: false, publish_at: null };
+    if (form.publish_mode === "now") return { published: true, publish_at: null };
+    const iso = fromLocalInput(form.schedule_at);
+    if (!iso) return { error: "Pick a date and time to schedule this post." };
+    if (new Date(iso).getTime() <= Date.now() + 30000) {
+      return { error: "The scheduled time must be in the future. Pick a later time, or choose Publish now." };
+    }
+    return { published: true, publish_at: iso };
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const publishing = resolvePublishing();
+    if ("error" in publishing) {
+      setFormError(publishing.error);
+      setActiveTab("content");
+      return;
+    }
     setSubmitting(true);
     setFormError(null);
     try {
@@ -336,9 +394,11 @@ export default function AdminBlogsPage() {
         image_url: form.image_url || null,
         author: form.author,
         category: form.category || "Wealth Advisory",
-        published: form.published,
+        published: publishing.published,
+        publish_at: publishing.publish_at,
         position: form.position,
-        created_at: chosenDateIso,
+        // A scheduled post's article date is its go-live time.
+        created_at: publishing.publish_at || chosenDateIso,
         updated_at: nowIso,
         meta_title: form.meta_title || null,
         meta_description: form.meta_description || null,
@@ -409,6 +469,7 @@ export default function AdminBlogsPage() {
         author: form.author,
         category: form.category || "Wealth Advisory",
         published: false,
+        publish_at: null,
         position: form.position,
         created_at: chosenDateIso,
         updated_at: nowIso,
@@ -460,7 +521,15 @@ export default function AdminBlogsPage() {
 
   const togglePublished = async (item: AdminBlog) => {
     try {
-      await updateBlog(item.id, { published: !item.published });
+      // Live or scheduled -> draft; draft -> live right now.
+      const toLive = blogStatus(item) === "draft";
+      if (
+        blogStatus(item) === "scheduled" &&
+        !window.confirm(`Unschedule "${item.title}"? It will become a draft.`)
+      ) {
+        return;
+      }
+      await updateBlog(item.id, { published: toLive, publish_at: null });
       await reload();
     } catch (err: any) {
       alert(err?.message || "Update failed");
@@ -473,7 +542,7 @@ export default function AdminBlogsPage() {
         /* ── Unified No-Scroll Theme Styles for Admin Blogs ── */
         .ab-stat-grid {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(5, 1fr);
           gap: 14px;
           margin-bottom: 18px;
         }
@@ -520,6 +589,94 @@ export default function AdminBlogsPage() {
         }
         .ab-stat-value.draft {
           color: #f59e0b;
+        }
+        .ab-stat-value.sched {
+          color: #2563eb;
+        }
+        .dark .ab-stat-value.sched,
+        [data-theme="dark"] .ab-stat-value.sched {
+          color: #60a5fa;
+        }
+        .ab-status-btn.scheduled {
+          color: #1d4ed8;
+          background: rgba(37, 99, 235, 0.1);
+          border-color: rgba(37, 99, 235, 0.3);
+        }
+        .dark .ab-status-btn.scheduled,
+        [data-theme="dark"] .ab-status-btn.scheduled {
+          color: #93c5fd;
+          background: rgba(96, 165, 250, 0.12);
+          border-color: rgba(96, 165, 250, 0.35);
+        }
+        .ab-sched-when {
+          display: block;
+          margin-top: 4px;
+          font-size: 10.5px;
+          line-height: 1.3;
+          color: var(--color-text-faint, #64748b);
+          white-space: nowrap;
+        }
+        .ab-queue {
+          margin-bottom: 16px;
+          padding: 14px 16px;
+          border-radius: 12px;
+          border: 1px solid rgba(37, 99, 235, 0.28);
+          background: rgba(37, 99, 235, 0.05);
+        }
+        .ab-queue-head {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 10px;
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--color-text, #0f172a);
+        }
+        .ab-queue-list {
+          display: grid;
+          gap: 6px;
+        }
+        .ab-queue-row {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto auto;
+          gap: 12px;
+          align-items: center;
+          padding: 8px 10px;
+          border-radius: 8px;
+          background: var(--color-surface, #ffffff);
+          border: 1px solid var(--color-border, #e2e8f0);
+          font-size: 12.5px;
+        }
+        .dark .ab-queue-row,
+        [data-theme="dark"] .ab-queue-row {
+          background: rgba(15, 23, 42, 0.6);
+          border-color: rgba(148, 163, 184, 0.2);
+        }
+        .ab-queue-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-weight: 600;
+          color: var(--color-text, #0f172a);
+        }
+        .ab-queue-when {
+          color: #1d4ed8;
+          font-weight: 600;
+          white-space: nowrap;
+        }
+        .dark .ab-queue-when,
+        [data-theme="dark"] .ab-queue-when {
+          color: #93c5fd;
+        }
+        .ab-queue-in {
+          color: var(--color-text-faint, #64748b);
+          white-space: nowrap;
+        }
+        @media (max-width: 640px) {
+          .ab-queue-row {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 2px;
+          }
         }
         .ab-stat-value.cat {
           color: #6366f1;
@@ -1035,13 +1192,17 @@ export default function AdminBlogsPage() {
         <div className="ab-stat-card">
           <span className="ab-stat-label">Published Live</span>
           <div className="ab-stat-value pub">
-            {items.filter((b) => b.published).length}
+            {items.filter((b) => blogStatus(b, now) === "live").length}
           </div>
+        </div>
+        <div className="ab-stat-card">
+          <span className="ab-stat-label">Scheduled</span>
+          <div className="ab-stat-value sched">{scheduledQueue.length}</div>
         </div>
         <div className="ab-stat-card">
           <span className="ab-stat-label">Drafts</span>
           <div className="ab-stat-value draft">
-            {items.filter((b) => !b.published).length}
+            {items.filter((b) => blogStatus(b, now) === "draft").length}
           </div>
         </div>
         <div className="ab-stat-card">
@@ -1049,6 +1210,32 @@ export default function AdminBlogsPage() {
           <div className="ab-stat-value cat">{categories.length}</div>
         </div>
       </div>
+
+      {/* Publishing queue */}
+      {scheduledQueue.length > 0 && (
+        <div className="ab-queue">
+          <div className="ab-queue-head">
+            <CalendarClock size={15} color="#2563eb" /> Scheduled to publish ({scheduledQueue.length})
+          </div>
+          <div className="ab-queue-list">
+            {scheduledQueue.map((b) => (
+              <div className="ab-queue-row" key={b.id}>
+                <button
+                  type="button"
+                  className="ab-queue-title"
+                  onClick={() => startEdit(b)}
+                  style={{ border: 0, background: "none", padding: 0, textAlign: "left", cursor: "pointer", font: "inherit" }}
+                  title="Edit or reschedule"
+                >
+                  {b.title}
+                </button>
+                <span className="ab-queue-when">{formatSchedule(b.publish_at)}</span>
+                <span className="ab-queue-in">{timeUntil(b.publish_at, now)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {error && <div className="admin-error">{error}</div>}
 
@@ -1073,6 +1260,7 @@ export default function AdminBlogsPage() {
         >
           <option value="all">All Statuses</option>
           <option value="published">Published Live</option>
+          <option value="scheduled">Scheduled</option>
           <option value="draft">Drafts Only</option>
         </select>
         <select
@@ -1194,23 +1382,40 @@ export default function AdminBlogsPage() {
 
                     {/* Status Pill in Single Line */}
                     <td style={{ textAlign: "center" }}>
-                      <button
-                        type="button"
-                        onClick={() => togglePublished(b)}
-                        className={`ab-status-btn ${b.published ? "live" : "draft"}`}
-                        title="Click to toggle publish state"
-                      >
-                        <span
-                          style={{
-                            width: 6,
-                            height: 6,
-                            borderRadius: "50%",
-                            background: b.published ? "#34d399" : "#fbbf24",
-                            display: "inline-block"
-                          }}
-                        />
-                        <span>{b.published ? "Live" : "Draft"}</span>
-                      </button>
+                      {(() => {
+                        const st = blogStatus(b, now);
+                        return (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => togglePublished(b)}
+                              className={`ab-status-btn ${st}`}
+                              title={
+                                st === "scheduled"
+                                  ? `Goes live ${formatSchedule(b.publish_at)}. Click to unschedule.`
+                                  : st === "live"
+                                    ? "Live. Click to move back to draft."
+                                    : "Draft. Click to publish now."
+                              }
+                            >
+                              <span
+                                style={{
+                                  width: 6,
+                                  height: 6,
+                                  borderRadius: "50%",
+                                  background:
+                                    st === "live" ? "#34d399" : st === "scheduled" ? "#3b82f6" : "#fbbf24",
+                                  display: "inline-block"
+                                }}
+                              />
+                              <span>{st === "live" ? "Live" : st === "scheduled" ? "Scheduled" : "Draft"}</span>
+                            </button>
+                            {st === "scheduled" && (
+                              <span className="ab-sched-when">{formatScheduleShort(b.publish_at)}</span>
+                            )}
+                          </>
+                        );
+                      })()}
                     </td>
 
                     {/* Actions with Explicit Bold Icons */}
@@ -1548,18 +1753,32 @@ export default function AdminBlogsPage() {
                       />
                     </div>
 
-                    {/* Published toggle */}
-                    <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", paddingTop: 2 }}>
-                      <input
-                        type="checkbox"
-                        checked={form.published}
-                        onChange={(e) => setForm((f) => ({ ...f, published: e.target.checked }))}
-                        style={{ width: 16, height: 16, accentColor: "#10b981" }}
-                      />
-                      <span style={{ fontSize: 13.5, fontWeight: 600, color: "var(--color-text, #ffffff)" }}>
-                        Publish this blog live on website immediately
-                      </span>
-                    </label>
+                    {/* Publishing: draft / publish now / schedule */}
+                    <PublishControls
+                      mode={form.publish_mode}
+                      scheduleAt={form.schedule_at}
+                      isLiveAlready={Boolean(
+                        form.id && blogStatus(items.find((x) => x.id === form.id) || {}, now) === "live"
+                      )}
+                      onModeChange={(m) =>
+                        setForm((f) => ({
+                          ...f,
+                          publish_mode: m,
+                          published: m !== "draft",
+                          // Pre-fill tomorrow 9 AM the first time Schedule is picked.
+                          schedule_at:
+                            m === "schedule" && !f.schedule_at
+                              ? (() => {
+                                  const d = new Date();
+                                  d.setDate(d.getDate() + 1);
+                                  d.setHours(9, 0, 0, 0);
+                                  return toLocalInput(d.toISOString());
+                                })()
+                              : f.schedule_at
+                        }))
+                      }
+                      onScheduleChange={(v) => setForm((f) => ({ ...f, schedule_at: v }))}
+                    />
                   </div>
                 )}
 
@@ -2025,7 +2244,13 @@ export default function AdminBlogsPage() {
               {/* Modal Footer Controls */}
               <div className="ab-modal-foot">
                 <div style={{ fontSize: 12, color: "#94a3b8" }}>
-                  {form.published ? "🟢 Ready to publish live" : "🟡 Saving as draft"}
+                  {form.publish_mode === "draft"
+                    ? "🟡 Saving as draft"
+                    : form.publish_mode === "schedule"
+                      ? fromLocalInput(form.schedule_at)
+                        ? `🔵 Scheduled for ${formatSchedule(fromLocalInput(form.schedule_at))}`
+                        : "🔵 Pick a go-live time"
+                      : "🟢 Ready to publish live"}
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
                   <button
@@ -2060,7 +2285,15 @@ export default function AdminBlogsPage() {
                     disabled={submitting}
                     style={{ minWidth: 110 }}
                   >
-                    {submitting ? "Saving…" : form.id ? "Update Post & SEO" : "Publish Post"}
+                    {submitting
+                      ? "Saving…"
+                      : form.publish_mode === "schedule"
+                        ? "Schedule Post"
+                        : form.publish_mode === "draft"
+                          ? "Save Draft"
+                          : form.id
+                            ? "Update Post & SEO"
+                            : "Publish Post"}
                   </button>
                 </div>
               </div>
