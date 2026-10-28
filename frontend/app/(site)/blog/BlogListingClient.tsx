@@ -152,12 +152,14 @@ export default function BlogListingClient() {
                         if (!img.src.endsWith(fallbackImage)) img.src = fallbackImage;
                       }}
                     />
-                    <span className="blog-card-category-badge">
-                      {b.category || copy("fallbackCategory", "Wealth Advisory")}
-                    </span>
                   </div>
 
                   <div className="blog-card-body">
+                    {/* Category sits in the card body, not over the cover, so it
+                        never hides the image's own headline. */}
+                    <span className="blog-card-category-badge">
+                      {b.category || copy("fallbackCategory", "Wealth Advisory")}
+                    </span>
                     <div className="blog-card-meta">
                       <span className="blog-card-author">{b.author || copy("fallbackAuthor", "Finvoq Admin")}</span>
                       <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
