@@ -38,20 +38,49 @@ function detectExt(buffer) {
 }
 
 // ---------- public: serve an uploaded blog image ----------
-router.get("/file/:filename", (req, res) => {
+router.get("/file/:filename", async (req, res) => {
   const filename = String(req.params.filename || "").replace(/[^a-zA-Z0-9._-]/g, "");
   let file = path.join(UPLOAD_DIR, filename);
 
   if (!file.startsWith(UPLOAD_DIR) || !fs.existsSync(file)) {
-    // Fallback: match by blog ID prefix if exact filename is not found
+    // Fallback for the old cover naming "<blogId>-<timestamp>.<ext>": a cover
+    // that was re-uploaded under a new timestamp is still found by its blog id.
+    // Only for real ids — "media-…" names would otherwise match any other
+    // media file and serve the wrong picture.
     const baseId = filename.split(".")[0].split("-")[0];
-    if (baseId) {
+    if (baseId && /^[0-9a-f]{8}$/i.test(baseId)) {
       try {
         const match = fs.readdirSync(UPLOAD_DIR).find((f) => f.startsWith(baseId));
         if (match) {
           file = path.join(UPLOAD_DIR, match);
         }
       } catch {}
+    }
+  }
+
+  if (!file.startsWith(UPLOAD_DIR) || !fs.existsSync(file)) {
+    // Uploads live on the server's disk, so a local copy of the site has none
+    // of the live images. In development, set BLOG_IMAGE_FALLBACK_ORIGIN (e.g.
+    // https://finvoq.com): a missing image is downloaded from there once,
+    // saved into uploads/blog-images, and served locally from then on.
+    // (Redirecting doesn't work: the live site's Cross-Origin-Resource-Policy
+    // stops browsers showing its images on another origin.)
+    const origin = (process.env.BLOG_IMAGE_FALLBACK_ORIGIN || "").replace(/\/+$/, "");
+    const host = req.get("host") || "(no host)";
+    if (origin && filename && !origin.includes(host)) {
+      try {
+        const r = await fetch(`${origin}/api/blog-images/file/${encodeURIComponent(filename)}`, {
+          signal: AbortSignal.timeout(15000)
+        });
+        const buf = Buffer.from(await r.arrayBuffer());
+        if (r.ok && detectExt(buf)) {
+          const target = path.join(UPLOAD_DIR, filename);
+          fs.writeFileSync(target, buf);
+          file = target;
+        }
+      } catch (err) {
+        console.warn(`[blog-images] could not fetch ${filename} from ${origin}: ${err.message}`);
+      }
     }
   }
 
