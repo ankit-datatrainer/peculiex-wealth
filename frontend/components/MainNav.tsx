@@ -195,7 +195,7 @@ export default function MainNav() {
     <header className="main-nav" id="mainNav">
       <div className="nav-inner">
         <Link href="/" className="logo" data-magnetic>
-          <Logo width={180} height={70} />
+          <Logo width={112} height={80} />
         </Link>
         <nav>
           <ul
@@ -432,7 +432,7 @@ export default function MainNav() {
           {!ready ? (
             // Tiny placeholder during boot — avoids "logged-out flash" before
             // /api/auth/me resolves.
-            <span style={{ width: 36, height: 36, display: "inline-block" }} />
+            <span className="nav-auth-placeholder" style={{ width: 36, height: 36, display: "inline-block" }} />
           ) : user ? (
             <div
               data-account-menu

@@ -44,7 +44,7 @@ export default function Preloader() {
     <div className="preloader" id="preloader" ref={ref}>
       <div className="pre-inner">
         <div className="pre-logo">
-          <Logo width={220} height={88} />
+          <Logo width={140} height={100} />
         </div>
         <div className="pre-bar">
           <span style={{ width: `${pct}%` }}></span>

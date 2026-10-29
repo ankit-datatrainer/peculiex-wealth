@@ -8,8 +8,8 @@ import { useEffect, useState } from "react";
  * Shows light_mode_logo.svg in light mode and dark_mode_logo.svg in dark mode.
  */
 export default function Logo({
-  width = 172,
-  height = 68,
+  width = 112,
+  height = 80,
   className = "",
   forceLight = false,
   forceDark = false,
@@ -43,8 +43,8 @@ export default function Logo({
       alt="Finvoq"
       width={width}
       height={height}
-      className={className}
-      style={{ display: "block", objectFit: "contain", ...style }}
+      className={`finvoq-logo ${className}`.trim()}
+      style={style}
     />
   );
 }

@@ -756,7 +756,7 @@ export default function HomeClone() {
                       pinned to the light-ink file. Following the site theme
                       here serves the dark-ink logo in light mode, which is
                       invisible against the navy. */}
-                  <Logo width={180} height={72} forceDark />
+                  <Logo width={140} height={100} forceDark />
                 </div>
                 <p className="sfc-footer-blurb">
                   {c.t("footerCta", "blurb", "India's premium investment marketplace. Multiple asset classes, one platform, advisory-led.")}
@@ -2348,9 +2348,9 @@ export default function HomeClone() {
           align-items: center;
           margin-bottom: 16px;
         }
-        .sfc-footer-logo img {
-          height: 60px;
-          width: auto;
+        .sfc-footer-logo :global(.finvoq-logo) {
+          height: 100px;
+          width: 140px;
         }
         .sfc-footer-blurb {
           color: rgba(255, 255, 255, 0.65);

@@ -680,12 +680,18 @@ svg.icon {
   }
 }
 
-/* ── Slim proportions ──
-   The logo is the tallest thing in the pill, so capping it is what makes
-   the whole bar thinner. Links and buttons tighten to match. */
+/* SVGs use a tight viewport so the visible mark fills its image box. */
+.finvoq-logo {
+  display: block;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .main-nav .logo img {
-  height: 64px;
-  width: auto;
+  width: 112px;
+  height: 80px;
 }
 
 .main-nav .nav-links {
@@ -5648,8 +5654,8 @@ section {
 
 /* Brand column: give the mark room, keep links comfortable to hit. */
 .site-footer .foot-brand .logo img {
-  height: 72px;
-  width: auto;
+  width: 140px;
+  height: 100px;
 }
 
 .foot-col ul li {
@@ -6560,6 +6566,7 @@ section {
   .nav-cta .btn-outline,
   .nav-cta .btn-primary,
   .nav-cta .btn-gold,
+  .nav-cta .nav-auth-placeholder,
   .nav-cta [data-account-menu] {
     display: none !important;
   }
@@ -6595,9 +6602,9 @@ section {
     flex-shrink: 0;
   }
 
-  .logo img {
-    height: 52px !important;
-    width: auto !important;
+  .main-nav .logo img {
+    width: 98px;
+    height: 70px;
   }
 
   .mobile-toggle span {
@@ -6609,16 +6616,18 @@ section {
    further so the pill (logo + theme toggle + hamburger) always fits cleanly. */
 @media (max-width: 380px) {
   .nav-inner {
-    padding: 6px 10px;
-    margin: 0 10px;
+    padding: 6px 4px;
+    margin: 0 4px;
+    max-width: calc(100vw - 8px);
   }
 
   .nav-cta {
     gap: 6px !important;
   }
 
-  .logo img {
-    height: 44px !important;
+  .main-nav .logo img {
+    width: 98px;
+    height: 70px;
   }
 }
 
@@ -8311,6 +8320,7 @@ html:not(.dark) .auth-aside .logo {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 28px;
 }
@@ -14012,8 +14022,8 @@ html:not(.dark) .auth-aside .logo {
 }
 
 .page-hero-logo {
-  height: 70px;
-  width: auto;
+  width: 112px;
+  height: 80px;
 }
 
 /* Get-started onboarding had no top padding, so its heading sat under the
@@ -14028,7 +14038,8 @@ html:not(.dark) .auth-aside .logo {
   }
 
   .page-hero-logo {
-    height: 58px;
+    width: 112px;
+    height: 80px;
   }
 
   .onboard-sec {
@@ -14579,8 +14590,8 @@ html:not(.dark) .auth-aside .logo {
 }
 
 .site-footer .foot-brand .logo img {
-  height: 72px;
-  width: auto;
+  width: 140px;
+  height: 100px;
 }
 
 .foot-brand p {
