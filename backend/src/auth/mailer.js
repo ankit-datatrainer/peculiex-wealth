@@ -138,7 +138,7 @@ function renderText({ name, otp, isReset }) {
 
 function renderHtml({ name, otp, isReset }) {
   const appUrl = (process.env.APP_URL || "https://finvoq.com").replace(/\/$/, "");
-  const logoUrl = `${appUrl}/logo_light.svg`;
+  const logoUrl = `${appUrl}/light_mode_logo.svg`;
   const title = isReset 
     ? `Reset your password`
     : `Verify your email`;
@@ -267,7 +267,7 @@ function renderWelcomeText({ name }) {
 
 function renderWelcomeHtml({ name }) {
   const appUrl = (process.env.APP_URL || "https://finvoq.com").replace(/\/$/, "");
-  const logoUrl = `${appUrl}/logo_light.svg`;
+  const logoUrl = `${appUrl}/light_mode_logo.svg`;
   const escapedName = escapeHtml(name || "Investor");
 
   return `<!doctype html>
@@ -432,7 +432,7 @@ function renderContactFormText({ name, email, subject, message }) {
 
 function renderContactFormHtml({ name, email, subject, message }) {
   const appUrl = (process.env.APP_URL || "https://finvoq.com").replace(/\/$/, "");
-  const logoUrl = `${appUrl}/logo_light.svg`;
+  const logoUrl = `${appUrl}/light_mode_logo.svg`;
 
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><meta name="color-scheme" content="light"/><title>New Contact Form Submission</title></head>

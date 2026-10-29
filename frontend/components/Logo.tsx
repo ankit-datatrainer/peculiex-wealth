@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 /**
  * Theme-aware logo component.
- * Shows logo_light.svg in light mode and logo_dark.svg in dark mode.
+ * Shows light_mode_logo.svg in light mode and dark_mode_logo.svg in dark mode.
  */
 export default function Logo({
   width = 140,
@@ -34,8 +34,8 @@ export default function Logo({
   // Before mounting, render the light logo as a safe default (avoids hydration mismatch)
   const src =
     forceDark || (!forceLight && mounted && resolvedTheme === "dark")
-      ? "/logo_dark.svg"
-      : "/logo_light.svg";
+      ? "/dark_mode_logo.svg"
+      : "/light_mode_logo.svg";
 
   return (
     <img

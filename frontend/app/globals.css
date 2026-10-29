@@ -14235,8 +14235,8 @@ html:not(.dark) .auth-aside .logo {
 
 
 /* ── Logo on dark grounds ──────────────────────────────────────────────
-   No filter needed: logo_dark.svg genuinely is the light-ink lockup
-   (measured: 178 avg luminance vs 94 for logo_light), so it is used as
+   No filter needed: dark_mode_logo.svg genuinely is the light-ink lockup
+   so it is used as
    authored. Surfaces that stay dark in both themes pin it with the
    Logo component’s forceDark prop. */
 
