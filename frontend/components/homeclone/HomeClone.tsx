@@ -756,7 +756,7 @@ export default function HomeClone() {
                       pinned to the light-ink file. Following the site theme
                       here serves the dark-ink logo in light mode, which is
                       invisible against the navy. */}
-                  <Logo width={176} height={70} forceDark />
+                  <Logo width={180} height={72} forceDark />
                 </div>
                 <p className="sfc-footer-blurb">
                   {c.t("footerCta", "blurb", "India's premium investment marketplace. Multiple asset classes, one platform, advisory-led.")}

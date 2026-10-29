@@ -83,8 +83,8 @@ export default function Onboard() {
         <div className="onboard-left">
           <div className="sec-head reveal">
             <Logo
-              width={148}
-              height={58}
+              width={176}
+              height={70}
               className="page-hero-logo"
               style={{ margin: "0 0 22px" }}
             />

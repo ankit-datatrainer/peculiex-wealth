@@ -43,8 +43,8 @@ export default function PageHero({ label, title, subtitle, align = "left", page,
         <div className={`sec-head${center ? " sec-head-center" : ""}`}>
           {/* Finvoq branding above the page heading */}
           <Logo
-            width={148}
-            height={58}
+            width={176}
+            height={70}
             className="page-hero-logo"
             style={center ? { margin: "0 auto 22px" } : { margin: "0 0 22px" }}
           />

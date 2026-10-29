@@ -8,8 +8,8 @@ import { useEffect, useState } from "react";
  * Shows light_mode_logo.svg in light mode and dark_mode_logo.svg in dark mode.
  */
 export default function Logo({
-  width = 140,
-  height = 56,
+  width = 172,
+  height = 68,
   className = "",
   forceLight = false,
   forceDark = false,

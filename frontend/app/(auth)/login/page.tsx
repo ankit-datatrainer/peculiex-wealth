@@ -151,7 +151,7 @@ function LoginInner() {
     <div className="auth-shell">
       <aside className="auth-aside">
         <Link href="/" className="logo" data-magnetic>
-          <Logo width={172} height={68} />
+          <Logo width={180} height={72} />
         </Link>
         <div>
           <h2>
@@ -172,7 +172,7 @@ function LoginInner() {
         <div className="auth-card">
           <div className="auth-mobile-logo">
             <Link href="/" className="logo" data-magnetic>
-              <Logo width={160} height={60} />
+              <Logo width={160} height={64} />
             </Link>
           </div>
           {step === "creds" && (

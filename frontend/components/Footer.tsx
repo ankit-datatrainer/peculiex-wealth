@@ -200,7 +200,7 @@ export default function Footer() {
       <div className="container foot-grid">
         <div className="foot-col foot-brand">
           <div className="logo">
-            <Logo width={168} height={66} />
+            <Logo width={180} height={72} />
           </div>
           <p>
             {cms.t(

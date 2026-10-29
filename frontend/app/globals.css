@@ -668,7 +668,7 @@ svg.icon {
 .nav-inner {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 16px 24px;
+  padding: 12px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -684,7 +684,7 @@ svg.icon {
    The logo is the tallest thing in the pill, so capping it is what makes
    the whole bar thinner. Links and buttons tighten to match. */
 .main-nav .logo img {
-  height: 48px;
+  height: 64px;
   width: auto;
 }
 
@@ -5648,7 +5648,7 @@ section {
 
 /* Brand column: give the mark room, keep links comfortable to hit. */
 .site-footer .foot-brand .logo img {
-  height: 58px;
+  height: 72px;
   width: auto;
 }
 
@@ -6596,7 +6596,7 @@ section {
   }
 
   .logo img {
-    height: 40px !important;
+    height: 52px !important;
     width: auto !important;
   }
 
@@ -6618,7 +6618,7 @@ section {
   }
 
   .logo img {
-    height: 34px !important;
+    height: 44px !important;
   }
 }
 
@@ -14012,7 +14012,7 @@ html:not(.dark) .auth-aside .logo {
 }
 
 .page-hero-logo {
-  height: 58px;
+  height: 70px;
   width: auto;
 }
 
@@ -14028,7 +14028,7 @@ html:not(.dark) .auth-aside .logo {
   }
 
   .page-hero-logo {
-    height: 48px;
+    height: 58px;
   }
 
   .onboard-sec {
@@ -14579,7 +14579,7 @@ html:not(.dark) .auth-aside .logo {
 }
 
 .site-footer .foot-brand .logo img {
-  height: 56px;
+  height: 72px;
   width: auto;
 }
 

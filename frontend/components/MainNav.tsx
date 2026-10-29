@@ -195,7 +195,7 @@ export default function MainNav() {
     <header className="main-nav" id="mainNav">
       <div className="nav-inner">
         <Link href="/" className="logo" data-magnetic>
-          <Logo width={172} height={68} />
+          <Logo width={180} height={70} />
         </Link>
         <nav>
           <ul
