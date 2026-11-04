@@ -26,6 +26,8 @@ export type Unl = {
   min_units: number;
   market_cap: string;
   pe: string;
+  quote_status?: "quoted" | "unavailable" | "unverified";
+  source_checked_at?: string | null;
 };
 
 export default function Unlisted() {
@@ -249,6 +251,10 @@ export default function Unlisted() {
                 {/* Stats */}
                 <div className="ulv2-card__stats">
                   <div className="ulv2-card__stat">
+                    <span>{u.quote_status === "unverified" ? "Last recorded price" : "Price / Share"}</span>
+                    <strong>{u.price > 0 ? fmtINR(u.price) : "Price on request"}</strong>
+                  </div>
+                  <div className="ulv2-card__stat">
                     <span>{statSector}</span>
                     <strong>{u.sector}</strong>
                   </div>
@@ -258,7 +264,7 @@ export default function Unlisted() {
                   </div>
                   <div className="ulv2-card__stat">
                     <span>{statMarketCap}</span>
-                    <strong>₹ {u.market_cap || "—"}</strong>
+                    <strong>{u.market_cap && !/^n\/?a/i.test(u.market_cap) ? `₹ ${u.market_cap}` : "N/A"}</strong>
                   </div>
                   <div className="ulv2-card__stat">
                     <span>{statPe}</span>

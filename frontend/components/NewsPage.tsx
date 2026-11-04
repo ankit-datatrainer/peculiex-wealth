@@ -5,7 +5,9 @@ import { useMemo, useState, useEffect } from "react";
 import useSWR from "swr";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { fetcher, apiUrl } from "@/lib/api";
+import { fetcher } from "@/lib/api";
+import BlogCard from "./BlogCard";
+import { type Blog, DEFAULT_BLOGS } from "@/lib/blogData";
 import { fill } from "@/lib/template";
 import "./news-portal.css";
 
@@ -24,74 +26,6 @@ interface NewsItem {
   url: string;
   publishedAt: number;
 }
-
-type BlogItem = {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  image_url: string | null;
-  author: string;
-  category?: string;
-  created_at?: string;
-};
-
-const DEFAULT_NEWS_BLOGS: BlogItem[] = [
-  {
-    id: "b1",
-    title: "Why Advisory-Led Investing Beats Pure DIY in 2026",
-    slug: "advisory-led-investing-beats-diy-2026",
-    excerpt: "Navigating volatile markets requires discipline and expert curation. Here's why personalized advisory creates durable wealth over pure DIY trading.",
-    image_url: "/images/blogs/blog-1.jpg",
-    author: "Finvoq Admin",
-    category: "Wealth Advisory"
-  },
-  {
-    id: "b2",
-    title: "Pre-IPO & Unlisted Equities: The New Frontier of Alpha",
-    slug: "pre-ipo-unlisted-equities-alpha",
-    excerpt: "Discover how early access to India's high-growth private champions before their IPO can deliver outsized portfolio returns.",
-    image_url: "/images/blogs/blog-2.jpg",
-    author: "Finvoq Admin",
-    category: "Private Equity & Pre-IPO"
-  },
-  {
-    id: "b3",
-    title: "The Art of Multi-Asset Allocation: Stocks, Bonds & Alternatives",
-    slug: "art-of-multi-asset-allocation",
-    excerpt: "Why true diversification goes beyond large-cap equities. A comprehensive framework for balancing risk and reward across 10+ asset classes.",
-    image_url: "/images/blogs/blog-3.jpg",
-    author: "Finvoq Admin",
-    category: "Portfolio Strategy"
-  },
-  {
-    id: "b4",
-    title: "Mastering Market Volatility: A Systematic Compounding Playbook",
-    slug: "mastering-market-volatility-playbook",
-    excerpt: "How institutional investors use market corrections to strategically rebalance and accelerate compound interest over decades.",
-    image_url: "/images/blogs/blog-4.jpg",
-    author: "Finvoq Admin",
-    category: "Market Insights"
-  },
-  {
-    id: "b5",
-    title: "Fixed Income Reimagined: High-Yield Corporate Bonds & FDs",
-    slug: "fixed-income-high-yield-bonds-fds",
-    excerpt: "Secure steady, predictable cash flows with senior secured bonds and AAA-rated fixed income securities in a shifting interest rate cycle.",
-    image_url: "/images/blogs/blog-5.jpg",
-    author: "Finvoq Admin",
-    category: "Fixed Income & Debt"
-  },
-  {
-    id: "b6",
-    title: "Portfolio Management Services (PMS) vs Mutual Funds",
-    slug: "pms-vs-mutual-funds-guide",
-    excerpt: "Unpacking the key differences in portfolio concentration, fee structures, and customization for high-net-worth investors.",
-    image_url: "/images/blogs/blog-6.jpg",
-    author: "Finvoq Admin",
-    category: "Investment Vehicles"
-  }
-];
 
 const PAGE_SIZE = 30;
 
@@ -124,11 +58,11 @@ export default function NewsPage() {
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [query, setQuery] = useState("");
   const [source, setSource] = useState("All");
-  const [blogs, setBlogs] = useState<BlogItem[]>(DEFAULT_NEWS_BLOGS);
+  const [blogs, setBlogs] = useState<Blog[]>(DEFAULT_BLOGS);
 
   useEffect(() => {
     let killed = false;
-    fetcher<{ items: BlogItem[] }>("/api/blogs")
+    fetcher<{ items: Blog[] }>("/api/blogs")
       .then((j) => {
         if (!killed && j?.items?.length) setBlogs(j.items);
       })
@@ -240,40 +174,8 @@ export default function NewsPage() {
             </div>
 
             <div className="np-blog-featured-grid">
-              {blogs.slice(0, 6).map((b, idx) => (
-                <Link href={`/blog/${b.slug}`} key={b.slug} className="np-blog-featured-card">
-                  <div className="np-blog-featured-img-wrap">
-                    <img
-                      src={b.image_url ? apiUrl(b.image_url) : `/images/blogs/blog-${(idx % 6) + 1}.jpg`}
-                      alt={b.title}
-                      className="np-blog-featured-img"
-                      loading="lazy"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src = `/images/blogs/blog-${(idx % 6) + 1}.jpg`;
-                      }}
-                    />
-                    {b.category && (
-                      <span className="np-blog-featured-cat-tag">
-                        {b.category}
-                      </span>
-                    )}
-                  </div>
-                  <div className="np-blog-featured-body">
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                      <span className="np-blog-featured-author">
-                        {b.author || bt("authorFallback", "Finvoq Admin")}
-                      </span>
-                      <span style={{ fontSize: 11, color: "var(--color-text-faint)" }}>
-                        {bt("readTime", "5 min read")}
-                      </span>
-                    </div>
-                    <h3 className="np-blog-featured-card-title">{b.title}</h3>
-                    {b.excerpt && <p className="np-blog-featured-excerpt">{b.excerpt}</p>}
-                    <span className="np-blog-featured-read">
-                      {bt("readMore", "Read full article")} <ArrowUpRight size={14} />
-                    </span>
-                  </div>
-                </Link>
+              {blogs.slice(0, 6).map((b) => (
+                <BlogCard key={b.id || b.slug} blog={b} />
               ))}
             </div>
 

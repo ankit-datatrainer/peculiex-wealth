@@ -105,8 +105,8 @@ export default function UnlistedDetail({ slug }: { slug: string }) {
 
         <section className="unl-detail-stats">
           <div className="unl-stat">
-            <span>{t("statPrice", "Price / Share")}</span>
-            <strong>₹{item.price.toLocaleString("en-IN")}</strong>
+            <span>{item.quote_status === "unverified" ? "Last recorded price" : t("statPrice", "Price / Share")}</span>
+            <strong>{item.price > 0 ? `₹${item.price.toLocaleString("en-IN")}` : "Price on request"}</strong>
           </div>
           <div className="unl-stat">
             <span>{t("statMinUnits", "Minimum Units")}</span>
@@ -118,7 +118,7 @@ export default function UnlistedDetail({ slug }: { slug: string }) {
           </div>
           <div className="unl-stat">
             <span>{t("statMarketCap", "Market Cap")}</span>
-            <strong>{item.market_cap ? `₹ ${item.market_cap}` : "—"}</strong>
+            <strong>{item.market_cap && !/^n\/?a/i.test(item.market_cap) ? `₹ ${item.market_cap}` : "N/A"}</strong>
           </div>
           <div className="unl-stat">
             <span>{t("statPe", "P/E (x)")}</span>

@@ -12,6 +12,7 @@ type InvestModalProps = {
     min_units: number;
     sector: string;
     logo_url?: string | null;
+    quote_status?: "quoted" | "unavailable" | "unverified";
   };
 };
 
@@ -45,6 +46,7 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
 
   if (!open) return null;
 
+  const hasQuote = company.price > 0 && company.quote_status !== "unverified";
   const investmentAmount = units * company.price;
   const stampDuty = investmentAmount * 0.00015;
   const finalAmount = investmentAmount + stampDuty;
@@ -66,7 +68,9 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
         email: email.trim(),
         mobile: phone.trim(),
         source: "unlisted-invest",
-        notes: `Interest in ${company.name}, ${units} units @ ${fmtINR(company.price)}/unit = ${fmtINR(finalAmount)}`
+        notes: hasQuote
+          ? `Interest in ${company.name}, ${units} units @ ${fmtINR(company.price)}/unit = ${fmtINR(finalAmount)}`
+          : `Quote requested for ${company.name}, ${units} units; price to be confirmed.`
       });
       setSubmitted(true);
     } catch {
@@ -228,7 +232,7 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
               <div className="invest-modal__header-top">
                 {company.logo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={company.logo_url} alt={company.name} className="invest-modal__logo" />
+                  <img src={company.logo_url} alt={company.name} className="invest-modal__logo" onError={(e) => { e.currentTarget.style.display = "none"; }} />
                 ) : null}
                 <div>
                   <span className="invest-modal__sector-badge">{company.sector || "Unlisted Share"}</span>
@@ -237,9 +241,8 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
               </div>
               <div className="invest-modal__price-row">
                 <div className="invest-modal__price">
-                  {fmtINR(company.price)} <span className="invest-modal__unit-label">/ unit</span>
+                  {hasQuote ? <>{fmtINR(company.price)} <span className="invest-modal__unit-label">/ unit</span></> : "Price on request"}
                 </div>
-                <span className="invest-modal__change-badge">+0 (0%) 1Y</span>
               </div>
             </div>
 
@@ -292,7 +295,7 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
               </div>
 
               {/* Summary Card */}
-              <div className="invest-modal__summary-card">
+              {hasQuote ? <div className="invest-modal__summary-card">
                 <div className="invest-modal__summary-row">
                   <span>Investment Amount</span>
                   <strong>{fmtINR(investmentAmount)}</strong>
@@ -305,7 +308,11 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
                   <span>Total Payable Amount</span>
                   <strong className="invest-modal__total-price">{fmtINR(finalAmount)}</strong>
                 </div>
-              </div>
+              </div> : (
+                <div className="invest-modal__summary-card">
+                  Price and total will be confirmed by our private markets desk.
+                </div>
+              )}
 
               {/* Inquiry Form */}
               <form className="invest-modal__form" onSubmit={handleSubmit}>

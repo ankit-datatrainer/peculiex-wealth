@@ -181,9 +181,26 @@ function coerceStockInput(input, { partial = false } = {}) {
 // UNLISTED SHARES
 // --------------------------------------------------------------
 
+// Fundamentals and quote provenance ship with the checked market snapshot.
+// Older deployments do not have database columns for these fields.
+function enrichUnlisted(item) {
+  if (!item) return null;
+  const snapshot = seed.UNLISTED.find((u) => u.name === item.name);
+  return {
+    ...item,
+    min_units: item.min_units ?? snapshot?.min_units ?? 0,
+    market_cap: item.market_cap ?? snapshot?.market_cap ?? "",
+    pe: item.pe || snapshot?.pe || "N/A",
+    logo_url: item.logo_url ?? snapshot?.logo_url ?? null,
+    quote_status: snapshot?.quote_status || (Number(item.price) > 0 ? "unverified" : "unavailable"),
+    source_checked_at: snapshot?.source_checked_at || null,
+    source_url: snapshot?.source_url || null
+  };
+}
+
 async function listUnlisted() {
   if (!isLive()) {
-    return Array.from(seedUnlistedMem().values()).sort((a, b) =>
+    return Array.from(seedUnlistedMem().values()).map(enrichUnlisted).sort((a, b) =>
       a.name.localeCompare(b.name)
     );
   }
@@ -193,24 +210,12 @@ async function listUnlisted() {
     .order("name", { ascending: true });
   if (error) throw new Error(error.message);
   
-  const seedUnlisted = require("../seed").UNLISTED;
-  const seedByName = new Map(seedUnlisted.map(u => [u.name, u]));
-  return (data || []).map(item => {
-    const s = seedByName.get(item.name);
-    if (!s) return item;
-    return {
-      ...item,
-      min_units: item.min_units ?? s.min_units ?? 0,
-      market_cap: item.market_cap ?? s.market_cap ?? "",
-      pe: item.pe ?? s.pe ?? "N/A",
-      logo_url: item.logo_url ?? s.logo_url ?? null
-    };
-  });
+  return (data || []).map(enrichUnlisted);
 }
 
 async function getUnlistedById(id) {
   if (!id) return null;
-  if (!isLive()) return seedUnlistedMem().get(id) || null;
+  if (!isLive()) return enrichUnlisted(seedUnlistedMem().get(id));
   const { data, error } = await client
     .from(UNLISTED_TABLE)
     .select("*")
@@ -218,15 +223,7 @@ async function getUnlistedById(id) {
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) return null;
-  const s = require("../seed").UNLISTED.find(u => u.name === data.name);
-  if (!s) return data;
-  return {
-    ...data,
-    min_units: data.min_units ?? s.min_units ?? 0,
-    market_cap: data.market_cap ?? s.market_cap ?? "",
-    pe: data.pe ?? s.pe ?? "N/A",
-    logo_url: data.logo_url ?? s.logo_url ?? null
-  };
+  return enrichUnlisted(data);
 }
 
 async function createUnlisted(input) {
@@ -267,14 +264,7 @@ async function createUnlisted(input) {
     }
     throw new Error(error.message);
   }
-  const s = require("../seed").UNLISTED.find(u => u.name === data.name);
-  return s ? {
-    ...data,
-    min_units: data.min_units ?? s.min_units ?? 0,
-    market_cap: data.market_cap ?? s.market_cap ?? "",
-    pe: data.pe ?? s.pe ?? "N/A",
-    logo_url: data.logo_url ?? s.logo_url ?? null
-  } : data;
+  return enrichUnlisted(data);
 }
 
 async function updateUnlisted(id, patch) {
@@ -318,14 +308,7 @@ async function updateUnlisted(id, patch) {
     throw new Error(error.message);
   }
   if (!data) return null;
-  const s = require("../seed").UNLISTED.find(u => u.name === data.name);
-  return s ? {
-    ...data,
-    min_units: data.min_units ?? s.min_units ?? 0,
-    market_cap: data.market_cap ?? s.market_cap ?? "",
-    pe: data.pe ?? s.pe ?? "N/A",
-    logo_url: data.logo_url ?? s.logo_url ?? null
-  } : data;
+  return enrichUnlisted(data);
 }
 
 async function deleteUnlisted(id) {
