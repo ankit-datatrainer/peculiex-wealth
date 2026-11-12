@@ -9,7 +9,9 @@ function heading(text: string) {
   );
 }
 import { Fragment, useEffect, useState, useMemo } from "react";
-import { fetcher } from "@/lib/api";
+import Link from "next/link";
+import { unlistedSlug } from "@/lib/util";
+import { useUnlisted } from "@/lib/useUnlisted";
 import { fill } from "@/lib/template";
 import InvestModal from "./InvestModal";
 
@@ -28,25 +30,20 @@ export type Unl = {
   pe: string;
   quote_status?: "quoted" | "unavailable" | "unverified";
   source_checked_at?: string | null;
+  source_url?: string;
+  fundamentals?: Record<string, string>;
+  financials?: { title: string; rows: string[][] }[];
 };
 
 export default function Unlisted() {
   const cms = useContent("unlisted");
-  const [items, setItems] = useState<Unl[]>([]);
+  const { items } = useUnlisted();
   const [search, setSearch] = useState("");
   const [modalItem, setModalItem] = useState<Unl | null>(null);
-
+  const modalCompany = items.find(item => item.name === modalItem?.name) || null;
   useEffect(() => {
-    let killed = false;
-    fetcher<{ items: Unl[] }>("/api/unlisted")
-      .then((j) => {
-        if (!killed && j?.items?.length) setItems(j.items);
-      })
-      .catch(() => { });
-    return () => {
-      killed = true;
-    };
-  }, []);
+    if (modalItem && !items.some(item => item.name === modalItem.name)) setModalItem(null);
+  }, [items, modalItem]);
 
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -246,7 +243,7 @@ export default function Unlisted() {
                 </div>
 
                 {/* Company name */}
-                <h4 className="ulv2-card__name">{u.name}</h4>
+                <h4 className="ulv2-card__name"><Link href={`/unlisted/${unlistedSlug(u.name)}`} style={{ color: "inherit", textDecoration: "none" }} aria-label={`View details for ${u.name}`}>{u.name}</Link></h4>
 
                 {/* Stats */}
                 <div className="ulv2-card__stats">
@@ -302,9 +299,9 @@ export default function Unlisted() {
 
       {/* Invest Modal */}
       <InvestModal
-        open={!!modalItem}
+        open={!!modalCompany}
         onClose={() => setModalItem(null)}
-        company={modalItem || { name: "", price: 0, min_units: 0, sector: "" }}
+        company={modalCompany || { name: "", price: 0, min_units: 0, sector: "" }}
       />
     </>
   );

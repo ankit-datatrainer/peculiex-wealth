@@ -209,6 +209,7 @@ function parseSourceHtml(html) {
     const minUnits = parseNumber(fields["minimum units"]);
     const row = {
       name: name.slice(0, MAX_NAME),
+      sourceFields: Object.keys(fields),
       price,
       rawPrice,
       sector: (fields["sector"] || "").slice(0, MAX_SECTOR),
@@ -634,6 +635,8 @@ module.exports = {
   normalizeSourceItems,
   normalizeName,
   nameKeys,
+  matchTier,
+  cleanText,
   computeDiff,
   newShareFields,
   brandFor,

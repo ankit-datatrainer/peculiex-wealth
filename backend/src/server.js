@@ -121,6 +121,8 @@ if (!process.env.VERCEL) {
   server.listen(PORT, async () => {
     console.log(`[server] Finvoq API listening on http://localhost:${PORT}`);
     console.log(`[server] CORS allowed: ${ORIGIN}`);
+    // Persistent VPS process: refresh on boot and then every 15 minutes.
+    require("./services/unlistedMirror").startAutoSync();
     // Best-effort super-admin bootstrap — never crash the boot if this fails.
     try {
       const result = await bootstrapSuperAdmin({ hashPassword });

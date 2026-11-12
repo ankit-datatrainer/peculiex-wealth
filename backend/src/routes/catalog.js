@@ -124,10 +124,24 @@ router.get("/stocks", async (_req, res) => {
 });
 
 /* ---------- everything below is unchanged: static catalog ---------- */
-router.get("/unlisted", async (_req, res) => {
+router.get("/unlisted", async (req, res) => {
+  const catalog = require("../services/unlistedCatalogState").getCatalog();
+  res.setHeader("Cache-Control", "no-store");
+  if (catalog) {
+    const company = typeof req.query.company === "string" ? req.query.company : null;
+    const items = company
+      ? catalog.items.filter(item => require("../services/unlistedSource").slugify(item.name) === company)
+      : catalog.items.map(({ financials, ...item }) => item);
+    return res.json({ items, synced_at: catalog.synced_at });
+  }
   const adminStore = require("../admin/store");
   const items = await adminStore.listUnlisted();
   res.json({ items });
+});
+
+router.get("/unlisted/sync-status", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.json(require("../services/unlistedCatalogState").getStatus());
 });
 
 router.get("/products", async (_req, res) => {

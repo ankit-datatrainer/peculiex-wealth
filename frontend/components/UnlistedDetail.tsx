@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { getCompanyLogo, unlistedSlug } from "@/lib/util";
-import { fetcher } from "@/lib/api";
+import { useUnlisted } from "@/lib/useUnlisted";
 import { useContent } from "@/lib/content";
 import { fill } from "@/lib/template";
 import { type Unl } from "./Unlisted";
@@ -23,21 +23,8 @@ export default function UnlistedDetail({ slug }: { slug: string }) {
   // company data itself is live from the API.
   const cms = useContent("unlisted");
   const t = (field: string, fallback: string) => cms.t("detail", field, fallback);
-  const [items, setItems] = useState<Unl[]>([]);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    let killed = false;
-    fetcher<{ items: Unl[] }>("/api/unlisted")
-      .then((j) => {
-        if (!killed && j?.items?.length) setItems(j.items);
-      })
-      .catch(() => {})
-      .finally(() => !killed && setLoaded(true));
-    return () => {
-      killed = true;
-    };
-  }, []);
+  const { items, loading, error } = useUnlisted(slug);
+  const loaded = !loading;
 
   const item = useMemo(
     () => items.find((u) => unlistedSlug(u.name) === slug),
@@ -48,7 +35,7 @@ export default function UnlistedDetail({ slug }: { slug: string }) {
     return (
       <main className="container" style={{ padding: "120px 0", textAlign: "center" }}>
         <h1 style={{ fontFamily: "var(--font-display)", marginBottom: 12 }}>
-          {loaded ? t("notFoundTitle", "Company not found") : t("loading", "Loading…")}
+          {error ? "Could not load company details" : loaded ? t("notFoundTitle", "Company not found") : t("loading", "Loading…")}
         </h1>
         {loaded && (
           <>
@@ -125,6 +112,28 @@ export default function UnlistedDetail({ slug }: { slug: string }) {
             <strong>{item.pe || "N/A"}</strong>
           </div>
         </section>
+
+        {item.fundamentals && (
+          <section className="unl-detail-stats" aria-label="Company fundamentals">
+            {["ISIN", "Face Value", "EPS", "P/B Ratio", "Book Value", "Debt to Equity Ratio"].map(label => (
+              <div className="unl-stat" key={label}>
+                <span>{label}</span><strong>{item.fundamentals?.[label] || "N/A"}</strong>
+              </div>
+            ))}
+          </section>
+        )}
+
+        {item.financials?.map(table => table.rows.length > 0 && (
+          <section className="unl-detail-body" key={table.title}>
+            <h2>{table.title}</h2>
+            <div style={{ overflowX: "auto", marginBottom: 24 }} tabIndex={0} aria-label={table.title}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+                <thead><tr>{table.rows[0].map((cell, i) => <th key={i} style={{ padding: 12, textAlign: "left", borderBottom: "1px solid var(--color-border)", whiteSpace: "nowrap" }}>{cell}</th>)}</tr></thead>
+                <tbody>{table.rows.slice(1).map((row, i) => <tr key={i}>{row.map((cell, j) => <td key={j} style={{ padding: 12, borderBottom: "1px solid var(--color-border)" }}>{cell}</td>)}</tr>)}</tbody>
+              </table>
+            </div>
+          </section>
+        ))}
 
         <section className="unl-detail-body">
           <h2>{t("aboutTitle", "About the opportunity")}</h2>

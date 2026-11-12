@@ -1,28 +1,9 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { getCompanyLogo } from "@/lib/util";
-import { fetcher } from "@/lib/api";
+import { useUnlisted } from "@/lib/useUnlisted";
+import { type Unl } from "./Unlisted";
 import WatchlistButton, { makeUnlistedSymbol } from "./WatchlistButton";
-
-type Unl = {
-  domain: string;
-  name: string;
-  sector: string;
-  brand: string;
-  initial: string;
-  price: number;
-  iv: string;
-  tag: "trend" | "avail" | "lim";
-  logo_url?: string | null;
-};
-
-const FALLBACK: Unl[] = [
-  { domain: "oyorooms.com", name: "Oyo Hotels", sector: "Hospitality", brand: "#EE2E24", initial: "O", price: 54, iv: "1", tag: "trend" },
-  { domain: "nseindia.com", name: "NSE India", sector: "Exchange", brand: "#F58220", initial: "N", price: 3850, iv: "1", tag: "trend" },
-  { domain: "swiggy.com", name: "Swiggy", sector: "Foodtech", brand: "#FC8019", initial: "S", price: 430, iv: "10", tag: "lim" },
-  { domain: "tatacapital.com", name: "Tata Capital", sector: "NBFC", brand: "#486AAB", initial: "T", price: 920, iv: "10", tag: "lim" }
-];
 
 const TAG_LABEL: Record<Unl["tag"], string> = {
   trend: "Trending",
@@ -31,19 +12,7 @@ const TAG_LABEL: Record<Unl["tag"], string> = {
 };
 
 export default function UnlistedPreview() {
-  const [items, setItems] = useState<Unl[]>(FALLBACK);
-
-  useEffect(() => {
-    let killed = false;
-    fetcher<{ items: Unl[] }>("/api/unlisted")
-      .then((j) => {
-        if (!killed && j?.items?.length) setItems(j.items.slice(0, 4));
-      })
-      .catch(() => { });
-    return () => {
-      killed = true;
-    };
-  }, []);
+  const { items } = useUnlisted();
 
   return (
     <section className="preview-sec">
@@ -138,11 +107,11 @@ export default function UnlistedPreview() {
                 <div className="unl-stats">
                   <div className="unl-stat">
                     <span>Price / Share</span>
-                    <strong>₹{u.price.toLocaleString("en-IN")}</strong>
+                    <strong>{u.price > 0 ? `₹${u.price.toLocaleString("en-IN")}` : "Price on request"}</strong>
                   </div>
                   <div className="unl-stat">
                     <span>Face Value</span>
-                    <strong className="up">₹{u.iv}</strong>
+                    <strong className="up">{u.iv && u.iv !== "N/A" ? `₹${u.iv}` : "N/A"}</strong>
                   </div>
                 </div>
               </article>

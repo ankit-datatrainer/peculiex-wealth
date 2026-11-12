@@ -185,6 +185,9 @@ function coerceStockInput(input, { partial = false } = {}) {
 // Older deployments do not have database columns for these fields.
 function enrichUnlisted(item) {
   if (!item) return null;
+  const catalog = require("../services/unlistedCatalogState").getCatalog();
+  const mirrored = catalog?.items?.find((row) => row.id === item.id || row.name === item.name);
+  if (mirrored) return { ...item, ...mirrored, id: item.id };
   const snapshot = seed.UNLISTED.find((u) => u.name === item.name);
   return {
     ...item,
@@ -198,9 +201,9 @@ function enrichUnlisted(item) {
   };
 }
 
-async function listUnlisted() {
+async function listUnlisted({ raw = false } = {}) {
   if (!isLive()) {
-    return Array.from(seedUnlistedMem().values()).map(enrichUnlisted).sort((a, b) =>
+    return Array.from(seedUnlistedMem().values()).map(row => raw ? row : enrichUnlisted(row)).sort((a, b) =>
       a.name.localeCompare(b.name)
     );
   }
@@ -210,7 +213,7 @@ async function listUnlisted() {
     .order("name", { ascending: true });
   if (error) throw new Error(error.message);
   
-  return (data || []).map(enrichUnlisted);
+  return raw ? (data || []) : (data || []).map(enrichUnlisted);
 }
 
 async function getUnlistedById(id) {

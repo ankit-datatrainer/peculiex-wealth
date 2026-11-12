@@ -42,7 +42,11 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
     return () => {
       document.body.style.overflow = "";
     };
-  }, [open, company]);
+  }, [open, company.name]);
+
+  useEffect(() => {
+    if (open) setUnits(current => Math.max(current, company.min_units || 1));
+  }, [open, company.min_units]);
 
   if (!open) return null;
 

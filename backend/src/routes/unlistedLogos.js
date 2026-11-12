@@ -45,11 +45,18 @@ function detectExt(buffer) {
 // ---------- public: serve an uploaded logo ----------
 router.get("/file/:filename", (req, res) => {
   const filename = String(req.params.filename || "").replace(/[^a-zA-Z0-9._-]/g, "");
-  const file = path.join(UPLOAD_DIR, filename);
-  if (!file.startsWith(UPLOAD_DIR) || !fs.existsSync(file)) {
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*\.(png|jpe?g|gif|webp|avif)$/i.test(filename)) return res.status(404).json({ error: "Not found" });
+  let file = path.join(UPLOAD_DIR, filename);
+  // Initial catalog assets ship with Git; subsequent versions are downloaded
+  // into uploads at runtime, so no frontend rebuild is needed for new logos.
+  const bundled = path.join(__dirname, "../data/unlisted-logos", filename);
+  if (!fs.existsSync(file) && fs.existsSync(bundled)) file = bundled;
+  if (!filename || !fs.existsSync(file)) {
     return res.status(404).json({ error: "Not found" });
   }
   res.setHeader("Cache-Control", "public, max-age=86400");
+  const mime = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".webp": "image/webp", ".avif": "image/avif" };
+  res.type(mime[path.extname(filename).toLowerCase()]);
   fs.createReadStream(file).pipe(res);
 });
 

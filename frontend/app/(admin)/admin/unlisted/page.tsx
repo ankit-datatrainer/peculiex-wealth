@@ -2,16 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { getCompanyLogo } from "@/lib/util";
+import { apiFetch } from "@/lib/api";
 import {
   fetchUnlisted,
   createUnlisted,
   updateUnlisted,
   deleteUnlisted,
   uploadUnlistedLogo,
-  previewUnlistedSync,
-  applyUnlistedSync,
-  type AdminUnlisted,
-  type UnlistedSyncPreview
+  type AdminUnlisted
 } from "@/lib/admin-api";
 
 type FormState = {
@@ -626,470 +624,59 @@ export default function AdminUnlistedPage() {
 
 // --------------------------------------------------------------
 // Market source sync
-// Preview what the live source listing would change, pick what to apply.
-// Existing shares only ever get price / min units / market cap / P/E (and
-// sector when opted in); nothing is deleted.
+// Monitor the automatic mirror and request an immediate complete refresh.
 // --------------------------------------------------------------
 
-const UPDATES_PAGE = 20;
+type MirrorStatus = { enabled: boolean; running: boolean; interval_minutes: number; last_success_at: string | null; company_count: number; last_error: string | null };
 
-const inr = (n: number) =>
-  `₹${Number(n).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
-
-function pctChange(from: number, to: number) {
-  if (!from) return null;
-  return ((to - from) / from) * 100;
-}
-
-function UnlistedSyncPanel({
-  onClose,
-  onApplied
-}: {
+function UnlistedSyncPanel({ onClose, onApplied }: {
   onClose: () => void;
   onApplied: (message: string) => void | Promise<void>;
 }) {
-  const [preview, setPreview] = useState<UnlistedSyncPreview | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [applying, setApplying] = useState(false);
+  const [status, setStatus] = useState<MirrorStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [resultMsg, setResultMsg] = useState<string | null>(null);
-  const [resultIssues, setResultIssues] = useState<string[]>([]);
-
-  const [applyUpdates, setApplyUpdates] = useState(true);
-  const [applySectors, setApplySectors] = useState(false);
-  const [selectedAdds, setSelectedAdds] = useState<Set<string>>(new Set());
-  const [showAllUpdates, setShowAllUpdates] = useState(false);
-
-  const fetchPreview = async () => {
-    setLoading(true);
-    setError(null);
-    setResultMsg(null);
-    setResultIssues([]);
+  const [message, setMessage] = useState("");
+  const [starting, setStarting] = useState(false);
+  useEffect(() => {
+    let active = true;
+    let lastSuccess: string | null = null;
+    const refresh = () => apiFetch<MirrorStatus>("/api/admin/unlisted/sync/status")
+      .then(async value => {
+        if (!active) return;
+        setStatus(value);
+        if (lastSuccess && value.last_success_at !== lastSuccess) await onApplied("Market catalog refreshed.");
+        lastSuccess = value.last_success_at;
+      })
+      .catch(e => { if (active) setError(e.message); });
+    refresh();
+    const timer = setInterval(refresh, 10000);
+    return () => { active = false; clearInterval(timer); };
+  }, []);
+  const sync = async () => {
+    setStarting(true); setError(null);
     try {
-      const p = await previewUnlistedSync();
-      setPreview(p);
-      setShowAllUpdates(false);
-      // Pre-tick new shares, except ones that look like a share we already
-      // list under another name — those need a human look first.
-      setSelectedAdds(
-        new Set(p.diff.additions.filter((a) => a.similarTo.length === 0).map((a) => a.name))
-      );
-    } catch (e: any) {
-      setError(e?.message || "Could not fetch the market source.");
-    } finally {
-      setLoading(false);
-    }
+      await apiFetch("/api/admin/unlisted/sync/run", { method: "POST" });
+      const text = "Sync started. The catalog updates after all company details and logos are checked.";
+      setMessage(text);
+      setStatus(await apiFetch<MirrorStatus>("/api/admin/unlisted/sync/status"));
+      await onApplied(text);
+    } catch (e: any) { setError(e.message || "Could not start sync."); }
+    finally { setStarting(false); }
   };
-
-  const diff = preview?.diff;
-
-  // Updates that would actually write something with the current toggles.
-  const effectiveUpdates = useMemo(() => {
-    if (!diff || !applyUpdates) return 0;
-    return diff.updates.filter((u) =>
-      Object.keys(u.changes).some((k) => k !== "sector" || applySectors)
-    ).length;
-  }, [diff, applyUpdates, applySectors]);
-
-  const nothingSelected = effectiveUpdates === 0 && selectedAdds.size === 0;
-
-  const toggleAdd = (name: string) =>
-    setSelectedAdds((prev) => {
-      const next = new Set(prev);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
-      return next;
-    });
-
-  const onApply = async () => {
-    if (!diff || nothingSelected) return;
-    const parts = [];
-    if (effectiveUpdates) parts.push(`update ${effectiveUpdates} existing share${effectiveUpdates === 1 ? "" : "s"}`);
-    if (selectedAdds.size) parts.push(`add ${selectedAdds.size} new share${selectedAdds.size === 1 ? "" : "s"}`);
-    if (!confirm(`This will ${parts.join(" and ")}. Continue?`)) return;
-
-    setApplying(true);
-    setError(null);
-    try {
-      const r = await applyUnlistedSync({
-        applyUpdates: applyUpdates && effectiveUpdates > 0,
-        applySectors,
-        addIds: Array.from(selectedAdds)
-      });
-      const { counts, result } = r;
-      const msg =
-        `Market sync done: ${counts.updated} updated, ${counts.added} added` +
-        (counts.skipped ? `, ${counts.skipped} skipped` : "") +
-        (counts.errors ? `, ${counts.errors} failed` : "") +
-        ".";
-      setResultMsg(msg);
-      setResultIssues([
-        ...result.errors.map((e) => `${e.name}: ${e.error}`),
-        ...result.skipped.map((s) => `${s.name}: ${s.reason}`),
-        ...result.added
-          .filter((a) => !a.logo_url)
-          .map((a) => `${a.name}: no logo could be fetched, the initial badge will show`),
-        ...r.notes
-      ]);
-      setPreview(null);
-      setSelectedAdds(new Set());
-      await onApplied(msg);
-    } catch (e: any) {
-      setError(e?.message || "Sync failed.");
-    } finally {
-      setApplying(false);
-    }
-  };
-
-  const visibleUpdates = diff
-    ? showAllUpdates
-      ? diff.updates
-      : diff.updates.slice(0, UPDATES_PAGE)
-    : [];
-
-  return (
-    <section className="admin-card ul-sync" id="ul-sync-panel" aria-label="Sync with market source">
-      <header className="ul-sync-top">
-        <div>
-          <h2>Sync with market source</h2>
-          <p className="ul-sync-muted">
-            Compares every share with the live listing on{" "}
-            <a href="https://www.unlistedkraft.in/stocks/live" target="_blank" rel="noreferrer">
-              unlistedkraft.in
-            </a>
-            . Review the changes, then apply only what you want. Names, logos,
-            brand colours and tags are never changed and nothing is deleted.
-          </p>
-        </div>
-        <div className="ul-sync-top-actions">
-          <button type="button" className="btn btn-primary" onClick={fetchPreview} disabled={loading || applying}>
-            {loading ? "Fetching…" : preview ? "Refresh preview" : "Fetch preview"}
-          </button>
-          <button type="button" className="admin-icon-btn" onClick={onClose} aria-label="Close market sync">
-            ✕
-          </button>
-        </div>
-      </header>
-
-      {error && <div className="admin-error">{error}</div>}
-
-      {resultMsg && (
-        <div className="admin-success">
-          <strong>{resultMsg}</strong>
-          {resultIssues.length > 0 && (
-            <ul className="ul-sync-issues">
-              {resultIssues.map((m, i) => (
-                <li key={i}>{m}</li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
-
-      {loading && !preview && <div className="admin-loading">Reading the market source…</div>}
-
-      {diff && preview && (
-        <>
-          <p className="ul-sync-muted ul-sync-meta">
-            {diff.counts.source} shares on the source, {diff.counts.existing} in our inventory · fetched{" "}
-            {new Date(preview.source.fetchedAt).toLocaleString("en-IN")}
-          </p>
-
-          <div className="ul-sync-stats">
-            <div className="ul-sync-stat">
-              <b>{diff.counts.priceChanges}</b>
-              <span>Price changes</span>
-            </div>
-            <div className="ul-sync-stat">
-              <b>{diff.counts.updates - diff.counts.priceChanges}</b>
-              <span>Other field changes only</span>
-            </div>
-            <div className="ul-sync-stat">
-              <b>{diff.counts.additions}</b>
-              <span>New on source</span>
-            </div>
-            <div className="ul-sync-stat">
-              <b>{diff.counts.invalid}</b>
-              <span>Invalid source price</span>
-            </div>
-            <div className="ul-sync-stat">
-              <b>{diff.counts.missingFromSource}</b>
-              <span>Not on source</span>
-            </div>
-          </div>
-
-          {preview.notes.map((n, i) => (
-            <div key={i} className="ul-sync-note">{n}</div>
-          ))}
-
-          {/* ---- updates ---- */}
-          <div className="ul-sync-section">
-            <div className="ul-sync-section-head">
-              <h3>Changes to existing shares ({diff.updates.length})</h3>
-              <div className="ul-sync-toggles">
-                <label className="ul-sync-check">
-                  <input
-                    type="checkbox"
-                    checked={applyUpdates}
-                    onChange={(e) => setApplyUpdates(e.target.checked)}
-                  />
-                  <span>Apply price, min units, market cap &amp; P/E</span>
-                </label>
-                <label className="ul-sync-check">
-                  <input
-                    type="checkbox"
-                    checked={applySectors}
-                    disabled={!applyUpdates}
-                    onChange={(e) => setApplySectors(e.target.checked)}
-                  />
-                  <span>Also update sector labels ({diff.counts.sectorChanges})</span>
-                </label>
-              </div>
-            </div>
-            {diff.updates.length === 0 ? (
-              <div className="admin-empty">Every matched share is already up to date.</div>
-            ) : (
-              <div className="admin-table-wrap ul-sync-table">
-                <div className="admin-table-scroll" data-lenis-prevent>
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th>Share</th>
-                        <th style={{ textAlign: "right" }}>Price</th>
-                        <th style={{ textAlign: "right" }}>Change</th>
-                        <th>Other changes</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {visibleUpdates.map((u) => {
-                        const p = u.changes.price;
-                        const pct = p ? pctChange(p.from, p.to) : null;
-                        const others: { label: string; from: string; to: string; off?: boolean }[] = [];
-                        if (u.changes.min_units)
-                          others.push({ label: "Min units", from: String(u.changes.min_units.from || "—"), to: String(u.changes.min_units.to) });
-                        if (u.changes.market_cap)
-                          others.push({ label: "Mkt cap", from: u.changes.market_cap.from || "—", to: u.changes.market_cap.to });
-                        if (u.changes.pe)
-                          others.push({ label: "P/E", from: u.changes.pe.from || "—", to: u.changes.pe.to });
-                        if (u.changes.sector)
-                          others.push({ label: "Sector", from: u.changes.sector.from || "—", to: u.changes.sector.to, off: !applySectors });
-                        return (
-                          <tr key={u.id} className={applyUpdates ? undefined : "ul-sync-off"}>
-                            <td>
-                              <strong>{u.name}</strong>
-                              {u.sourceName !== u.name && (
-                                <div className="ul-sync-muted ul-sync-small">Source: {u.sourceName}</div>
-                              )}
-                            </td>
-                            <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                              {p ? (
-                                <>
-                                  <span className="ul-sync-old">{inr(p.from)}</span>
-                                  <span aria-hidden="true"> → </span>
-                                  <strong>{inr(p.to)}</strong>
-                                </>
-                              ) : (
-                                <span className="ul-sync-muted">No change</span>
-                              )}
-                            </td>
-                            <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                              {pct == null ? (
-                                <span className="ul-sync-muted">—</span>
-                              ) : (
-                                <span className={pct >= 0 ? "ul-sync-up" : "ul-sync-down"}>
-                                  {pct >= 0 ? "▲" : "▼"} {Math.abs(pct).toFixed(1)}%
-                                </span>
-                              )}
-                            </td>
-                            <td className="ul-sync-others">
-                              {others.length === 0 ? (
-                                <span className="ul-sync-muted">—</span>
-                              ) : (
-                                others.map((o) => (
-                                  <div key={o.label} className={o.off ? "ul-sync-off" : undefined}>
-                                    <span className="ul-sync-muted">{o.label}:</span> {o.from} → {o.to}
-                                    {o.off && <em className="ul-sync-muted"> (not applied)</em>}
-                                  </div>
-                                ))
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-            {diff.updates.length > UPDATES_PAGE && (
-              <button
-                type="button"
-                className="admin-chip ul-sync-more"
-                onClick={() => setShowAllUpdates((v) => !v)}
-              >
-                {showAllUpdates ? "Show fewer" : `Show all ${diff.updates.length} changes`}
-              </button>
-            )}
-          </div>
-
-          {/* ---- additions ---- */}
-          <div className="ul-sync-section">
-            <div className="ul-sync-section-head">
-              <h3>New shares on the source ({diff.additions.length})</h3>
-              {diff.additions.length > 0 && (
-                <div className="ul-sync-toggles">
-                  <button
-                    type="button"
-                    className="admin-chip"
-                    onClick={() => setSelectedAdds(new Set(diff.additions.map((a) => a.name)))}
-                  >
-                    Select all
-                  </button>
-                  <button type="button" className="admin-chip" onClick={() => setSelectedAdds(new Set())}>
-                    Select none
-                  </button>
-                </div>
-              )}
-            </div>
-            {diff.additions.length === 0 ? (
-              <div className="admin-empty">No new companies on the source.</div>
-            ) : (
-              <div className="admin-table-wrap ul-sync-table">
-                <div className="admin-table-scroll" data-lenis-prevent>
-                  <table className="admin-table">
-                    <thead>
-                      <tr>
-                        <th style={{ width: 44 }}>
-                          <span className="ul-sync-sr">Add</span>
-                        </th>
-                        <th>Company</th>
-                        <th>Sector</th>
-                        <th style={{ textAlign: "right" }}>Price</th>
-                        <th style={{ textAlign: "right" }}>Min units</th>
-                        <th>Market cap</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {diff.additions.map((a) => {
-                        const checked = selectedAdds.has(a.name);
-                        const id = `ul-sync-add-${a.name.replace(/[^a-z0-9]+/gi, "-")}`;
-                        return (
-                          <tr key={a.name} className={checked ? "row-selected" : undefined}>
-                            <td>
-                              <input
-                                id={id}
-                                type="checkbox"
-                                className="admin-table-checkbox"
-                                checked={checked}
-                                onChange={() => toggleAdd(a.name)}
-                              />
-                            </td>
-                            <td>
-                              <label htmlFor={id} className="ul-sync-add-name">
-                                <strong>{a.name}</strong>
-                              </label>
-                              {a.similarTo.length > 0 && (
-                                <div className="ul-sync-warn ul-sync-small">
-                                  Possible duplicate of {a.similarTo.join(", ")}
-                                </div>
-                              )}
-                            </td>
-                            <td>{a.sector || "—"}</td>
-                            <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>{inr(a.price)}</td>
-                            <td style={{ textAlign: "right" }}>{a.min_units || "—"}</td>
-                            <td style={{ whiteSpace: "nowrap" }}>{a.market_cap || "—"}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-            {diff.additions.length > 0 && (
-              <p className="ul-sync-muted ul-sync-small">
-                New shares are added as &ldquo;Available&rdquo; with face value ₹10, a generated brand
-                colour and the source logo saved to our own storage. Edit any of them afterwards like
-                any other share.
-              </p>
-            )}
-          </div>
-
-          {/* ---- info-only lists ---- */}
-          {diff.invalid.length > 0 && (
-            <div className="ul-sync-section">
-              <h3>Invalid prices on the source ({diff.invalid.length})</h3>
-              <p className="ul-sync-muted ul-sync-small">
-                The source shows a placeholder price for these (often a sold-out share). They are left
-                exactly as they are.
-              </p>
-              <ul className="ul-sync-list">
-                {diff.invalid.map((i) => (
-                  <li key={`${i.name}-${i.matchedId || ""}`}>
-                    <strong>{i.matchedName || i.name}</strong>
-                    <span className="ul-sync-muted">
-                      {" "}
-                      source shows {i.rawPrice || "nothing"}
-                      {i.currentPrice != null ? ` · ours stays ${inr(i.currentPrice)}` : " · not in our list"}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {diff.missingFromSource.length > 0 && (
-            <div className="ul-sync-section">
-              <h3>Not on the source ({diff.missingFromSource.length})</h3>
-              <p className="ul-sync-muted ul-sync-small">
-                For information only. These stay on the site until you edit or delete them yourself.
-              </p>
-              <ul className="ul-sync-list">
-                {diff.missingFromSource.map((m) => (
-                  <li key={m.id}>
-                    <strong>{m.name}</strong>
-                    <span className="ul-sync-muted"> {inr(m.price)}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {diff.ambiguous.length > 0 && (
-            <div className="ul-sync-section">
-              <h3>Unclear matches ({diff.ambiguous.length})</h3>
-              <p className="ul-sync-muted ul-sync-small">
-                More than one source company fits these names, so they were skipped. Update them by hand.
-              </p>
-              <ul className="ul-sync-list">
-                {diff.ambiguous.map((a) => (
-                  <li key={a.id}>
-                    <strong>{a.name}</strong>
-                    <span className="ul-sync-muted"> → {a.candidates.join(" / ")}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <footer className="ul-sync-foot">
-            <span className="ul-sync-muted">
-              {effectiveUpdates} update{effectiveUpdates === 1 ? "" : "s"} and {selectedAdds.size} new share
-              {selectedAdds.size === 1 ? "" : "s"} selected
-            </span>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={onApply}
-              disabled={applying || nothingSelected}
-            >
-              {applying ? "Applying…" : "Apply selected"}
-            </button>
-          </footer>
-        </>
-      )}
-    </section>
-  );
+  return <section className="admin-card ul-sync" id="ul-sync-panel" aria-label="Sync with market source">
+    <header className="ul-sync-top">
+      <div><h2>Automatic market sync</h2><p className="ul-sync-muted">The full catalog follows UnlistedKraft, including company details, logos, additions and removals.</p></div>
+      <button type="button" className="admin-icon-btn" onClick={onClose} aria-label="Close market sync">✕</button>
+    </header>
+    {error && <div className="admin-error">{error}</div>}
+    {message && <p role="status">{message}</p>}
+    {status && <>
+      <p>{status.enabled ? `Automatic sync every ${status.interval_minutes} minutes` : "Automatic sync disabled"}. {status.running ? "A sync is running." : "Ready."}</p>
+      <p>{status.company_count} source companies. Last successful check: {status.last_success_at ? new Date(status.last_success_at).toLocaleString("en-IN") : "Pending"}.</p>
+      {status.last_error && <p className="admin-error">Last sync failed: {status.last_error}. The previous catalog is retained.</p>}
+    </>}
+    <button type="button" className="btn btn-primary" onClick={sync} disabled={starting || status?.running}>Sync entire catalog now</button>
+  </section>;
 }
 
 const SYNC_CSS = `
