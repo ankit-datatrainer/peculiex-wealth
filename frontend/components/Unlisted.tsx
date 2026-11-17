@@ -33,6 +33,13 @@ export type Unl = {
   source_url?: string;
   fundamentals?: Record<string, string>;
   financials?: { title: string; rows: string[][] }[];
+  price_history?: import("@/lib/unlisted-types").PricePoint[];
+  daily_quotes?: import("@/lib/unlisted-types").PricePoint[];
+  daily_quote_date?: string;
+  documents?: import("@/lib/unlisted-types").InvestorDocument[];
+  shareholding?: { name: string; holding: string }[];
+  promoters?: { name: string; designation: string }[];
+  company_status?: string;
 };
 
 export default function Unlisted() {

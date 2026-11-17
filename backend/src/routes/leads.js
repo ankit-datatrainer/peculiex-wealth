@@ -1,20 +1,11 @@
 "use strict";
 
 const { Router } = require("express");
-const { z } = require("zod");
+const LeadSchema = require("../validation/leads");
 const { client, isLive } = require("../db");
 const { sendContactFormEmail } = require("../auth/mailer");
 
 const router = Router();
-
-const LeadSchema = z.object({
-  name: z.string().min(2).max(120),
-  email: z.string().email(),
-  phone: z.string().min(6).max(40),
-  interest: z.string().min(1).max(80),
-  budget: z.string().min(1).max(80),
-  message: z.string().max(2000).optional().nullable()
-});
 
 router.post("/", async (req, res) => {
   const parsed = LeadSchema.safeParse(req.body);

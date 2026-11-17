@@ -131,7 +131,7 @@ router.get("/unlisted", async (req, res) => {
     const company = typeof req.query.company === "string" ? req.query.company : null;
     const items = company
       ? catalog.items.filter(item => require("../services/unlistedSource").slugify(item.name) === company)
-      : catalog.items.map(({ financials, ...item }) => item);
+      : catalog.items.map(({ financials, price_history, daily_quotes, documents, promoters, shareholding, ...item }) => ({ ...item, history_count: price_history?.length || 0, document_count: documents?.length || 0 }));
     return res.json({ items, synced_at: catalog.synced_at });
   }
   const adminStore = require("../admin/store");

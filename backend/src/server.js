@@ -88,6 +88,7 @@ app.get("/", (_req, res) => {
 
 app.use("/api/health", health);
 app.use("/api", catalog);
+app.use("/api/unlisted-documents", require("./routes/unlistedDocuments"));
 app.use("/api/markets", markets);
 app.use("/api/blogs", require("./routes/blogs"));
 app.use("/api/mf", require("./routes/mf"));

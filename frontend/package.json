@@ -6,7 +6,9 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prebuild": "node scripts/prepare-pdf-worker.mjs",
+    "predev": "node scripts/prepare-pdf-worker.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.107.0",

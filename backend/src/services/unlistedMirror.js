@@ -69,23 +69,14 @@ function parseDetailHtml(html) {
   const pairs = html.slice(start, end).matchAll(/<span[^>]*class="fs16\s+me-auto"[^>]*>([\s\S]*?)<\/span>\s*<span[^>]*>([\s\S]*?)<\/span>/gi);
   for (const pair of pairs) fields[source.cleanText(pair[1])] = source.cleanText(pair[2]);
   if (!Object.hasOwn(fields, "ISIN") || !Object.hasOwn(fields, "Face Value")) throw new Error("Incomplete company fundamentals");
-  const financialStart = html.indexOf("<!-- Key Financials section start");
-  const financialEnd = html.indexOf("<!-- Key Financials section end", financialStart);
-  const section = financialStart >= 0 && financialEnd >= 0 ? html.slice(financialStart, financialEnd) : "";
-  const financials = ["Profit & Loss", "Balance Sheet"].flatMap((title, index) => {
-    const begin = section.indexOf(`id="nested-tabs-${index + 1}"`);
-    const finish = section.indexOf(`id="nested-tabs-${index + 2}"`, begin);
-    const panel = begin < 0 ? "" : section.slice(begin, finish < 0 ? section.length : finish);
-    const table = panel.match(/<table\b[^>]*>([\s\S]*?)<\/table>/i);
-    if (!table) return [];
-    return [{ title, rows: [...table[1].matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)].map(row =>
-      [...row[1].matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(cell => source.cleanText(cell[1]))
-    ).filter(row => row.length > 0) }];
-  });
-  return { fundamentals: fields, financials };
+  return { fundamentals: fields, ...require("./unlistedDetails").parseExtras(html) };
 }
 
 async function fetchDetail(row, previous) {
+  if (previous?.price_history && previous?.documents && Date.now() - Date.parse(previous.detail_fetched_at) < 6 * 60 * 60 * 1000) {
+    const { fundamentals, financials, price_history, documents, shareholding, promoters, company_status, detail_fetched_at } = previous;
+    return { fundamentals, financials, price_history, documents, shareholding, promoters, company_status, detail_fetched_at };
+  }
   const { body } = await request(row.sourceUrl);
   return { ...parseDetailHtml(body.toString("utf8")), detail_fetched_at: new Date().toISOString() };
 }
@@ -175,10 +166,11 @@ async function runSync(options = {}) {
     const staged = await mapLimit(plan.matched, 3, async ({ row, current }) => {
       const old = previous?.items?.find(item => item.source_url === row.sourceUrl);
       const details = await (options.fetchDetail || fetchDetail)(row, old);
+      if (details.documents?.length) details.documents = await (options.checkDocuments || require("./unlistedDocuments").checkDocuments)(details.documents, old?.documents);
       const logo = await (options.fetchLogo || fetchLogo)(row, old);
       const fields = source.newShareFields({ ...row, price: row.valid ? row.price : 0 });
       fields.iv = details.fundamentals["Face Value"] || "N/A";
-      return { current, item: { ...fields, ...details, ...logo, source_url: row.sourceUrl, source_checked_at: attempt, quote_status: row.valid ? "quoted" : "unavailable" } };
+      return { current, item: { ...fields, ...details, ...require("./unlistedDetails").mergeHistory(old, details, fields.price, attempt), ...logo, source_url: row.sourceUrl, source_checked_at: attempt, quote_status: row.valid ? "quoted" : "unavailable" } };
     });
     const changed = staged.filter(({ current, item }) => !current || DB_FIELDS.some(key => current[key] !== item[key]));
     const result = {

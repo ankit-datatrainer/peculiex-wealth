@@ -1,11 +1,14 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { postJSON } from "@/lib/api";
+import { buildUnlistedEnquiry } from "@/lib/unlisted-enquiry.mjs";
 import { useWhatsApp } from "@/lib/siteSettings";
 
 type InvestModalProps = {
   open: boolean;
   onClose: () => void;
+  initialUnits?: number;
+  intent?: "buy" | "sell";
   company: {
     name: string;
     price: number;
@@ -16,7 +19,7 @@ type InvestModalProps = {
   };
 };
 
-export default function InvestModal({ open, onClose, company }: InvestModalProps) {
+export default function InvestModal({ open, onClose, company, intent = "buy", initialUnits }: InvestModalProps) {
   const [units, setUnits] = useState<number>(company.min_units || 1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -29,7 +32,7 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
 
   useEffect(() => {
     if (open) {
-      setUnits(company.min_units || 1);
+      setUnits(intent === "sell" ? 1 : Math.max(initialUnits || 1, company.min_units || 1));
       setSubmitted(false);
       setError(null);
       setName("");
@@ -42,11 +45,28 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
     return () => {
       document.body.style.overflow = "";
     };
-  }, [open, company.name]);
+  }, [open, company.name, intent]);
 
   useEffect(() => {
-    if (open) setUnits(current => Math.max(current, company.min_units || 1));
-  }, [open, company.min_units]);
+    if (open) setUnits(current => Math.max(current, intent === "sell" ? 1 : company.min_units || 1));
+  }, [open, company.min_units, intent]);
+
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const dialog = overlayRef.current;
+    dialog?.querySelector<HTMLButtonElement>("button")?.focus();
+    const keydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+      if (event.key !== "Tab" || !dialog) return;
+      const fields = Array.from(dialog.querySelectorAll<HTMLElement>('button:not([disabled]), input, a[href]')).filter(field => field.offsetParent !== null);
+      const first = fields[0], last = fields[fields.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    document.addEventListener("keydown", keydown);
+    return () => { document.removeEventListener("keydown", keydown); previous?.focus(); };
+  }, [open]);
 
   if (!open) return null;
 
@@ -60,22 +80,18 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !phone.trim()) {
-      setError("Please fill in your name and phone.");
+    if (name.trim().length < 2 || !phone.trim() || !email.trim()) {
+      setError("Please fill in your name, phone and email.");
+      return;
+    }
+    if (!Number.isSafeInteger(units) || units < (intent === "sell" ? 1 : company.min_units || 1)) {
+      setError("Enter a valid whole number of units meeting the minimum quantity.");
       return;
     }
     setSubmitting(true);
     setError(null);
     try {
-      await postJSON("/api/leads", {
-        name: name.trim(),
-        email: email.trim(),
-        mobile: phone.trim(),
-        source: "unlisted-invest",
-        notes: hasQuote
-          ? `Interest in ${company.name}, ${units} units @ ${fmtINR(company.price)}/unit = ${fmtINR(finalAmount)}`
-          : `Quote requested for ${company.name}, ${units} units; price to be confirmed.`
-      });
+      await postJSON("/api/leads", buildUnlistedEnquiry({ name, email, phone, company: company.name, units, intent, hasQuote, total: finalAmount }));
       setSubmitted(true);
     } catch {
       setError("Something went wrong. Please try again.");
@@ -205,6 +221,7 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
         }
       `}</style>
       <div
+        role="dialog" aria-modal="true" aria-label={`${intent === "sell" ? "Sell" : "Buy"} enquiry for ${company.name}`}
         className={`invest-modal${submitted ? " invest-modal--success" : ""}`}
         data-lenis-prevent
       >
@@ -223,7 +240,7 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
                 <path className="invest-success__check" fill="none" stroke="var(--color-primary, #059669)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" d="M14.1 27.2l7.1 7.2 16.8-16.8" />
               </svg>
             </div>
-            <h3>Allocation Request Received!</h3>
+            <h3>{intent === "sell" ? "Sell Enquiry Received!" : "Buy Enquiry Received!"}</h3>
             <p>Our private wealth desk will contact you shortly regarding <strong>{company.name}</strong>.</p>
             <button className="invest-modal__btn" onClick={onClose} style={{ marginTop: 24 }}>
               Done
@@ -260,12 +277,12 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
                 <div className="invest-modal__calc-row">
                   <div>
                     <label className="invest-modal__label">Number of Units</label>
-                    <span className="invest-modal__sublabel">Minimum required: {company.min_units} units</span>
+                    <span className="invest-modal__sublabel">{intent === "sell" ? "Enter the number of units you hold" : `Minimum required: ${company.min_units} units`}</span>
                   </div>
                   <div className="invest-modal__input-wrapper">
                     <input
                       type="number"
-                      min={company.min_units || 1}
+                      min={intent === "sell" ? 1 : company.min_units || 1}
                       value={units}
                       onChange={(e) => setUnits(Math.max(1, parseInt(e.target.value) || 1))}
                       className="invest-modal__units-input"
@@ -299,7 +316,7 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
               </div>
 
               {/* Summary Card */}
-              {hasQuote ? <div className="invest-modal__summary-card">
+              {hasQuote && intent === "buy" ? <div className="invest-modal__summary-card">
                 <div className="invest-modal__summary-row">
                   <span>Investment Amount</span>
                   <strong>{fmtINR(investmentAmount)}</strong>
@@ -320,11 +337,13 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
 
               {/* Inquiry Form */}
               <form className="invest-modal__form" onSubmit={handleSubmit}>
-                <h4 className="invest-modal__form-title">Request Share Allocation</h4>
+                <h4 className="invest-modal__form-title">{intent === "sell" ? "Request a Sell Quote" : "Request a Buy Quote"}</h4>
                 <div className="invest-modal__field-group">
                   <input
                     type="text"
                     placeholder="Full Name *"
+                    minLength={2}
+                    maxLength={120}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
@@ -333,6 +352,8 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
                   <input
                     type="tel"
                     placeholder="Phone Number *"
+                    minLength={6}
+                    maxLength={40}
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     required
@@ -340,7 +361,8 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
                   />
                   <input
                     type="email"
-                    placeholder="Email Address (optional)"
+                    placeholder="Email Address *"
+                    required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="invest-modal__input"
@@ -355,13 +377,13 @@ export default function InvestModal({ open, onClose, company }: InvestModalProps
                   {submitting ? (
                     <span className="invest-modal__spinner" />
                   ) : (
-                    "Submit Inquiry & Reserve Shares"
+                    intent === "sell" ? "Submit Sell Enquiry" : "Submit Buy Enquiry"
                   )}
                 </button>
               </form>
 
               <div className="invest-modal__note">
-                🔒 <strong>Settlement terms:</strong> 100% verified transfer via your Demat account within standard 15 working days.
+                🔒 <strong>Next steps:</strong> Final price, availability, documentation and settlement timing are confirmed by the desk. This form submits an enquiry.
               </div>
             </div>
           </>

@@ -627,7 +627,7 @@ export default function AdminUnlistedPage() {
 // Monitor the automatic mirror and request an immediate complete refresh.
 // --------------------------------------------------------------
 
-type MirrorStatus = { enabled: boolean; running: boolean; interval_minutes: number; last_success_at: string | null; company_count: number; last_error: string | null };
+type MirrorStatus = { daily_quote_date: string | null; history_companies: number; document_count: number; enabled: boolean; running: boolean; interval_minutes: number; last_success_at: string | null; company_count: number; last_error: string | null };
 
 function UnlistedSyncPanel({ onClose, onApplied }: {
   onClose: () => void;
@@ -673,6 +673,7 @@ function UnlistedSyncPanel({ onClose, onApplied }: {
     {status && <>
       <p>{status.enabled ? `Automatic sync every ${status.interval_minutes} minutes` : "Automatic sync disabled"}. {status.running ? "A sync is running." : "Ready."}</p>
       <p>{status.company_count} source companies. Last successful check: {status.last_success_at ? new Date(status.last_success_at).toLocaleString("en-IN") : "Pending"}.</p>
+      <p>Daily quote date (India): {status.daily_quote_date || "Pending"}. {status.history_companies} companies with recorded prices; {status.document_count} investor documents.</p>
       {status.last_error && <p className="admin-error">Last sync failed: {status.last_error}. The previous catalog is retained.</p>}
     </>}
     <button type="button" className="btn btn-primary" onClick={sync} disabled={starting || status?.running}>Sync entire catalog now</button>

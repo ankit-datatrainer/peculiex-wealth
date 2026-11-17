@@ -27,6 +27,10 @@ function getCatalog() {
     const cached = cachedFiles.get(file);
     if (cached?.key === key) return cached.value;
     const value = readJson(file);
+    if (file === BUNDLED_FILE && value.history_archive === "unlisted-history.json.gz") {
+      const history = JSON.parse(require("zlib").gunzipSync(fs.readFileSync(path.join(__dirname, "../data/unlisted-history.json.gz"))));
+      value.items = value.items.map(item => ({ ...item, ...history[item.id] }));
+    }
     cachedFiles.set(file, { key, value });
     return value;
   }
@@ -40,6 +44,9 @@ function getStatus() {
     enabled: process.env.UNLISTED_SYNC_ENABLED !== "false",
     running: fs.existsSync(path.join(DATA_DIR, "sync.lock")),
     interval_minutes: Number(process.env.UNLISTED_SYNC_INTERVAL_MINUTES) || 15,
+    daily_quote_date: catalog?.items?.map(item => item.daily_quote_date).filter(Boolean).sort().at(-1) || null,
+    history_companies: catalog?.items?.filter(item => item.price_history?.length > 0).length || 0,
+    document_count: catalog?.items?.reduce((sum, item) => sum + (item.documents?.length || 0), 0) || 0,
     last_success_at: catalog?.synced_at || null,
     company_count: catalog?.items?.length || 0,
     last_attempt_at: status?.last_attempt_at || null,

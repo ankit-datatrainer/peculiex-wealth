@@ -4,6 +4,7 @@ import "./dashboard.css";
 // Last, so the responsive layer overrides the two above at equal specificity
 // without needing !important. See app/responsive/_tokens.css.
 import "./responsive/index.css";
+import "./unlisted-detail.css";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://finvoq.com";
