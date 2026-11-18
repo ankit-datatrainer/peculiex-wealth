@@ -36,6 +36,7 @@ export default function UnlistedPriceChart({
     last = all.at(-1)?.[0] || "";
   const [range, setRange] = useState({ from: "", to: "", preset: "All" });
   const [hover, setHover] = useState<number | null>(null);
+  const [inspected, setInspected] = useState<number | null>(null);
   const host = useRef<HTMLDivElement>(null);
   const dateFrom = useRef<HTMLInputElement>(null),
     dateTo = useRef<HTMLInputElement>(null);
@@ -60,8 +61,19 @@ export default function UnlistedPriceChart({
     [all, from, to],
   );
   const invalid = !!from && !!to && from > to;
-  const selected =
-    points[Math.min(hover ?? points.length - 1, points.length - 1)];
+  const selectedIndex = Math.min(
+    hover ?? inspected ?? points.length - 1,
+    points.length - 1,
+  );
+  const selected = points[selectedIndex];
+  const inspect = (index: number) => {
+    setHover(null);
+    setInspected(Math.min(points.length - 1, Math.max(0, index)));
+  };
+  const resetInspection = () => {
+    setHover(null);
+    setInspected(null);
+  };
   const values = points.map((p) => p[1]);
   const low = values.length ? Math.min(...values) : 0,
     high = values.length ? Math.max(...values) : 0;
@@ -69,13 +81,25 @@ export default function UnlistedPriceChart({
   const min = Math.max(0, low - pad),
     max = high + pad;
   const left = 12,
-    right = width - 68,
+    right = width - 78,
     top = 22,
     bottom = 274,
     height = 316;
   const start = time(from),
     end = time(to),
     span = Math.max(end - start, DAY);
+  const dateTickCount = width < 400 ? 3 : 4;
+  const dateTicks = [
+    ...new Set(
+      Array.from(
+        { length: dateTickCount },
+        (_, index) =>
+          start +
+          Math.round((((end - start) / DAY) * index) / (dateTickCount - 1)) *
+            DAY,
+      ),
+    ),
+  ];
   const x = (date: string) =>
     left + ((time(date) - start) / span) * (right - left);
   const y = (price: number) =>
@@ -118,7 +142,7 @@ export default function UnlistedPriceChart({
       to: last,
       preset,
     });
-    setHover(null);
+    resetInspection();
   };
   const exportCsv = () => {
     const csv =
@@ -157,18 +181,44 @@ export default function UnlistedPriceChart({
           Export CSV ↓
         </button>
       </div>
-      <div className="us-chart-summary" aria-live="polite">
-        <strong>{selected ? money(selected[1]) : "No price data"}</strong>
-        <span className={change < 0 ? "us-negative" : "us-positive"}>
-          {points.length > 1
-            ? `${change >= 0 ? "+" : "−"}${money(Math.abs(change))} (${percent.toFixed(2)}%)`
-            : "—"}
-        </span>
-        <small>
-          {selected
-            ? `${dateLabel(selected[0])} · ${dailyQuotes.some((p) => p[0] === selected[0]) ? "Daily observation" : "Source history"}`
-            : "No quotes in this date range"}
-        </small>
+      <div className="us-chart-readout">
+        <div className="us-chart-summary" aria-live="polite">
+          <strong>{selected ? money(selected[1]) : "No price data"}</strong>
+          <span className={change < 0 ? "us-negative" : "us-positive"}>
+            {points.length > 1
+              ? `${change >= 0 ? "+" : "−"}${money(Math.abs(change))} (${percent.toFixed(2)}%)`
+              : "—"}
+          </span>
+          <small>
+            {selected
+              ? `${dateLabel(selected[0])} · ${dailyQuotes.some((p) => p[0] === selected[0]) ? "Daily observation" : "Source history"}`
+              : "No quotes in this date range"}
+          </small>
+        </div>
+        {points.length > 1 && (
+          <div
+            className="us-point-controls"
+            role="group"
+            aria-label="Inspect recorded prices"
+          >
+            <button
+              type="button"
+              aria-label="Previous price observation"
+              disabled={selectedIndex === 0}
+              onClick={() => inspect(selectedIndex - 1)}
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              aria-label="Next price observation"
+              disabled={selectedIndex === points.length - 1}
+              onClick={() => inspect(selectedIndex + 1)}
+            >
+              →
+            </button>
+          </div>
+        )}
       </div>
       <div className="us-chart-controls">
         <div className="us-presets" aria-label="Chart period">
@@ -192,7 +242,7 @@ export default function UnlistedPriceChart({
               to: dateTo.current?.value || last,
               preset: "Custom",
             });
-            setHover(null);
+            resetInspection();
           }}
         >
           <label>
@@ -248,19 +298,12 @@ export default function UnlistedPriceChart({
             onKeyDown={(e) => {
               if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) {
                 e.preventDefault();
-                setHover(
+                inspect(
                   e.key === "Home"
                     ? 0
                     : e.key === "End"
                       ? points.length - 1
-                      : Math.min(
-                          points.length - 1,
-                          Math.max(
-                            0,
-                            (hover ?? points.length - 1) +
-                              (e.key === "ArrowLeft" ? -1 : 1),
-                          ),
-                        ),
+                      : selectedIndex + (e.key === "ArrowLeft" ? -1 : 1),
                 );
               }
             }}
@@ -302,8 +345,8 @@ export default function UnlistedPriceChart({
                   <text
                     x={right + 12}
                     y={y(value) + 4}
-                    fill="#718078"
-                    fontSize="11"
+                    fill="var(--us-muted)"
+                    fontSize="13"
                   >
                     {value.toLocaleString("en-IN", {
                       maximumFractionDigits: high < 10 ? 2 : 1,
@@ -346,20 +389,27 @@ export default function UnlistedPriceChart({
                 )}
               </g>
             ))}
-            {[0, 1, 2, 3].map((i) => {
-              const date = new Date(start + (span * i) / 3);
+            {dateTicks.map((tick, index) => {
+              const date = new Date(tick);
               return (
                 <text
-                  key={i}
-                  x={left + ((right - left) * i) / 3}
+                  key={tick}
+                  x={x(date.toISOString().slice(0, 10))}
                   y={304}
-                  textAnchor={i === 0 ? "start" : i === 3 ? "end" : "middle"}
-                  fill="#718078"
-                  fontSize="11"
+                  textAnchor={
+                    index === 0
+                      ? "start"
+                      : index === dateTicks.length - 1
+                        ? "end"
+                        : "middle"
+                  }
+                  fill="var(--us-muted)"
+                  fontSize="13"
                 >
                   {date.toLocaleDateString("en-GB", {
+                    day: span <= 90 * DAY ? "numeric" : undefined,
                     month: "short",
-                    year: "2-digit",
+                    year: span > 90 * DAY ? "2-digit" : undefined,
                     timeZone: "UTC",
                   })}
                 </text>
@@ -409,7 +459,7 @@ export default function UnlistedPriceChart({
                   to: date > to ? date : to,
                   preset: "Custom",
                 });
-                setHover(null);
+                resetInspection();
               }}
             />
           </label>
@@ -431,7 +481,7 @@ export default function UnlistedPriceChart({
                   to: date,
                   preset: "Custom",
                 });
-                setHover(null);
+                resetInspection();
               }}
             />
           </label>
