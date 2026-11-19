@@ -116,6 +116,8 @@ export default function GlobalUX() {
     /* smooth scroll w/ offset (same-page anchors only) */
     const anchorHandlers: Array<{ el: HTMLAnchorElement; fn: (e: Event) => void }> = [];
     $$<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
+      // The unlisted sections use scroll-margin to clear the ticker and disclosure.
+      if (a.closest(".us-section-nav")) return;
       const fn = (e: Event) => {
         const id = a.getAttribute("href") || "";
         // only intercept pure same-page anchors like "#hero"

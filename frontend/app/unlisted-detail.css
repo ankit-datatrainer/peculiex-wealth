@@ -1,7 +1,50 @@
+.unlisted-disclosure {
+  position: fixed;
+  inset: 44px 0 auto;
+  z-index: 119;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 12px;
+  padding: 9px 16px;
+  background: #20392d;
+  color: #e3eee8;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
+}
+.unlisted-disclosure strong {
+  color: #80ddb0;
+}
+body:has(.unlisted-disclosure) .main-nav {
+  top: calc(44px + var(--unlisted-disclosure-height, 40px)) !important;
+}
+body:has(.unlisted-disclosure) .main-nav.nav-hidden {
+  transform: translateY(calc(-100% - var(--unlisted-disclosure-height, 40px)));
+}
+body:has(.unlisted-disclosure) .unlisted-v2 {
+  padding-top: calc(155px + var(--unlisted-disclosure-height, 40px));
+}
+@media (min-width: 1100px) {
+  .unlisted-disclosure > span + span::before {
+    content: "•";
+    margin-inline-end: 12px;
+    color: #a0b9aa;
+  }
+}
+@media (max-width: 760px) {
+  .unlisted-disclosure {
+    flex-direction: column;
+    gap: 2px;
+    font-size: 13px;
+  }
+}
+
 .us-page {
   background: #f7f9f8;
   color: #192a23;
-  padding: 180px 0 64px;
+  padding: calc(180px + var(--unlisted-disclosure-height, 40px)) 0 64px;
   --us-green: #11765e;
   --us-muted: #53675c;
   --us-border: #e4eae6;
@@ -139,7 +182,7 @@
   border: 1px solid var(--us-border);
   border-radius: 16px;
   padding: 28px;
-  scroll-margin-top: 125px;
+  scroll-margin-top: calc(155px + var(--unlisted-disclosure-height, 40px));
   min-width: 0;
 }
 .us-card h2 {
@@ -688,15 +731,6 @@
   padding-right: 20px;
   margin: 14px 0 0;
 }
-.us-attribution {
-  font-size: 13px;
-  color: var(--us-muted);
-  line-height: 1.9;
-  padding: 0 10px;
-}
-.us-attribution a {
-  color: #588165;
-}
 .us-sidebar {
   position: sticky;
   top: 116px;
@@ -833,6 +867,9 @@
   padding-top: 16px;
 }
 .us-pdf-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
   border: 0;
   border-radius: 12px;
   padding: 0;
@@ -964,7 +1001,7 @@
 }
 @media (max-width: 760px) {
   .us-page {
-    padding-top: 144px;
+    padding-top: calc(144px + var(--unlisted-disclosure-height, 72px));
   }
   .us-container {
     width: 100% !important;
@@ -1064,7 +1101,7 @@
   .us-card {
     padding: 21px 18px;
     border-radius: 13px;
-    scroll-margin-top: 100px;
+    scroll-margin-top: calc(120px + var(--unlisted-disclosure-height, 72px));
   }
   .us-main-column {
     gap: 16px;
@@ -1148,9 +1185,6 @@
   }
   .us-faqs summary {
     line-height: 1.7;
-  }
-  .us-attribution {
-    padding: 0 4px;
   }
   .us-pdf-dialog > header {
     padding: 14px;

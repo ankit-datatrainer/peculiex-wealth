@@ -2,10 +2,13 @@
 
 const fs = require("fs");
 const path = require("path");
+const { gunzipSync } = require("zlib");
 
 const DATA_DIR = path.resolve(process.env.UNLISTED_SYNC_DIR || path.join(__dirname, "../../uploads/unlisted-sync"));
 const BUNDLED_FILE = path.join(__dirname, "../data/unlisted-catalog.json");
+const RUNTIME_FILE = path.join(DATA_DIR, "catalog.json");
 const cachedFiles = new Map();
+let resolvedCatalog;
 
 function readJson(file) {
   try { return JSON.parse(fs.readFileSync(file, "utf8")); }
@@ -19,22 +22,66 @@ function atomicJson(file, value) {
   fs.renameSync(temporary, file);
 }
 
-function getCatalog() {
-  for (const file of [path.join(DATA_DIR, "catalog.json"), BUNDLED_FILE]) {
-    let stat;
-    try { stat = fs.statSync(file); } catch (error) { if (error.code === "ENOENT") continue; throw error; }
-    const key = `${stat.mtimeMs}:${stat.size}`;
-    const cached = cachedFiles.get(file);
-    if (cached?.key === key) return cached.value;
-    const value = readJson(file);
-    if (file === BUNDLED_FILE && value.history_archive === "unlisted-history.json.gz") {
-      const history = JSON.parse(require("zlib").gunzipSync(fs.readFileSync(path.join(__dirname, "../data/unlisted-history.json.gz"))));
-      value.items = value.items.map(item => ({ ...item, ...history[item.id] }));
-    }
-    cachedFiles.set(file, { key, value });
-    return value;
+function readCatalog(file) {
+  let stat;
+  try { stat = fs.statSync(file); }
+  catch (error) { if (error.code === "ENOENT") return null; throw error; }
+  const key = `${stat.mtimeMs}:${stat.size}`;
+  const cached = cachedFiles.get(file);
+  if (cached?.key === key) return cached.value;
+  const value = readJson(file);
+  if (file === BUNDLED_FILE && value?.history_archive === "unlisted-history.json.gz") {
+    const archive = path.join(path.dirname(file), value.history_archive);
+    const history = JSON.parse(gunzipSync(fs.readFileSync(archive)));
+    value.items = value.items.map(item => ({ ...item, ...history[item.id] }));
   }
-  return null;
+  cachedFiles.set(file, { key, value });
+  return value;
+}
+
+function mergeSeries(archived = [], recent = []) {
+  if (!archived.length) return recent;
+  if (!recent.length) return archived;
+  const byDay = new Map([...archived, ...recent]);
+  return [...byDay].sort(([a], [b]) => a.localeCompare(b));
+}
+
+function getCatalog() {
+  const runtime = readCatalog(RUNTIME_FILE);
+  const bundled = readCatalog(BUNDLED_FILE);
+  if (!runtime || !bundled) return runtime || bundled;
+  if (resolvedCatalog?.runtime === runtime && resolvedCatalog.bundled === bundled) {
+    return resolvedCatalog.value;
+  }
+
+  // Older VPS snapshots predate the archive. Recover archived details for
+  // matching companies while keeping the saved inventory and current quotes.
+  const bySource = new Map(bundled.items.filter(item => item.source_url).map(item => [item.source_url, item]));
+  const byId = new Map(bundled.items.map(item => [item.id, item]));
+  const items = runtime.items.map(item => {
+    const saved = byId.get(item.id);
+    const archived = bySource.get(item.source_url) ||
+      (saved && (!saved.source_url || !item.source_url) ? saved : null);
+    if (!archived) return item;
+
+    const priceHistory = mergeSeries(archived.price_history, item.price_history);
+    const dailyQuotes = mergeSeries(archived.daily_quotes, item.daily_quotes);
+    return {
+      ...item,
+      price_history: priceHistory,
+      daily_quotes: dailyQuotes,
+      daily_quote_date: dailyQuotes.at(-1)?.[0] || null,
+      fundamentals: item.fundamentals ?? archived.fundamentals,
+      financials: item.financials ?? archived.financials,
+      documents: item.documents ?? archived.documents,
+      shareholding: item.shareholding ?? archived.shareholding,
+      promoters: item.promoters ?? archived.promoters,
+      company_status: item.company_status ?? archived.company_status,
+    };
+  });
+  const value = { ...runtime, items };
+  resolvedCatalog = { runtime, bundled, value };
+  return value;
 }
 
 function getStatus() {

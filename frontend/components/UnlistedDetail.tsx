@@ -369,19 +369,6 @@ export default function UnlistedDetail({ slug }: { slug: string }) {
                 ))}
               </div>
             </section>
-            <p className="us-attribution">
-              Data:{" "}
-              <a
-                href={item.source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                UnlistedKraft ↗
-              </a>
-              . Last quote check: {stamp(item.source_checked_at)}. Unlisted
-              investments can be illiquid and carry a risk of capital loss. A
-              quote or enquiry does not constitute a confirmed trade.
-            </p>
           </div>
           <aside className="us-sidebar">
             <div className="us-quote-card us-card">

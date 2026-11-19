@@ -5,6 +5,7 @@ import AuroraBackground from "./AuroraBackground";
 import ToastStack from "./ToastStack";
 import CookieBanner from "./CookieBanner";
 import TickerBar from "./TickerBar";
+import UnlistedDisclosure from "./UnlistedDisclosure";
 import MainNav from "./MainNav";
 import Footer from "./Footer";
 import ScrollProgress from "./ScrollProgress";
@@ -29,6 +30,7 @@ export default function ChromeShell({
       <CookieBanner />
 
       <TickerBar />
+      <UnlistedDisclosure />
       <MainNav />
 
       {children}
